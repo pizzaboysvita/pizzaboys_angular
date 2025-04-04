@@ -1,0 +1,35 @@
+<nav class="payment-methods-tab">
+    <ul class="nav nav-tabs" ngbNav #nav="ngbNav" [(activeId)]="active">
+        <li [ngbNavItem]="1">
+            <button class="nav-link" ngbNavLink><i class="ri-paypal-line"></i>PayPal</button>
+            <ng-template ngbNavContent>
+                <app-pay-pal></app-pay-pal>
+            </ng-template>
+        </li>
+        <li [ngbNavItem]="2">
+            <button class="nav-link" ngbNavLink><i class="ri-creative-commons-nc-line"></i>Stripe</button>
+            <ng-template ngbNavContent>
+                <app-stripe></app-stripe>
+            </ng-template>
+        </li>
+        <li [ngbNavItem]="3">
+            <button class="nav-link" ngbNavLink> ₹ Razorpay</button>
+            <ng-template ngbNavContent>
+                <app-razorpay></app-razorpay>
+            </ng-template>
+        </li>
+        <li [ngbNavItem]="4">
+            <button class="nav-link" ngbNavLink><i class="ri-money-euro-box-line"></i>Mollie</button>
+            <ng-template ngbNavContent>
+               <app-mollie></app-mollie>
+            </ng-template>
+        </li>
+        <li [ngbNavItem]="5">
+            <button class="nav-link" ngbNavLink><i class="ri-secure-payment-line"></i>COD</button>
+            <ng-template ngbNavContent>
+                  <app-cod></app-cod>
+            </ng-template>
+        </li>
+    </ul>
+    <div class="tab-content" [ngbNavOutlet]="nav"></div>
+</nav>

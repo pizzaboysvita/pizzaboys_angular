@@ -1,0 +1,18 @@
+<div class="modal-content">
+    <div class="modal-header d-block text-center">
+        <h5 class="modal-title w-100">Are You Sure ?</h5>
+        <button type="button" class="btn-close" (click)="modal.dismissAll()">
+            <i class="fa fa-times"></i>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="remove-box">
+            <p>The permission for the use/group, preview is inherited from the object, object will create a
+                new permission for this object</p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-animation btn-sm fw-bold" (click)="modal.dismissAll()">No</button>
+        <button type="button" class="btn btn-animation btn-sm fw-bold" (click)="doneModal()">Yes</button>
+    </div>
+</div>

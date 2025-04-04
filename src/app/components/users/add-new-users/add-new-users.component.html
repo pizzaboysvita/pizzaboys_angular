@@ -1,0 +1,31 @@
+<div class="row">
+    <div class="col-12">
+        <div class="row">
+            <div class="col-12">
+                <app-card [header]="true" [body]="true">
+                    <h5 header>Add New User</h5>
+                    <div class="row" body>
+                        <div class="col-12">
+                            <ul class="nav nav-pills flex-nowrap mb-3" ngbNav #nav="ngbNav" [(activeId)]="active">
+                                <li [ngbNavItem]="1" class="nav-item m-0">
+                                    <button ngbNavLink class="nav-link" type="button">Account</button>
+                                    <ng-template ngbNavContent>
+                                        <app-account></app-account>
+                                    </ng-template>
+                                </li>
+                                <li [ngbNavItem]="2" class="nav-item m-0">
+                                    <button ngbNavLink class="nav-link" type="button">Permission</button>
+                                    <ng-template ngbNavContent>
+                                        <app-permission></app-permission>
+                                    </ng-template>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-12" [ngbNavOutlet]="nav"></div>
+                    </div>
+                    <button body class="btn save-button mt-2" type="submit">Add User</button>
+                </app-card>
+            </div>
+        </div>
+    </div>
+</div>

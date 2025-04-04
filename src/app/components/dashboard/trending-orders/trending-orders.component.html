@@ -1,0 +1,47 @@
+<div class="trending-orders">
+    <div class="trnding-title">
+        <h5>Trending orders</h5>
+        <a [routerLink]="['/media']">View All
+            <i class="ri-arrow-right-s-line"></i>
+        </a>
+    </div>
+    <owl-carousel-o [options]="customOptions">
+        @for (item of TrendingOrders; track item) {
+        <ng-template carouselSlide>
+            <div class="swiper-slide trending-box">
+                <app-card [cardBodyClass]="'trending-items'" [body]="true">
+                        <img body class="img-fluid product-img" [src]="item.image_url" alt="">
+                        <div body class="d-flex align-items-center justify-content-between">
+                            <h5>{{item.order_name}}</h5>
+                            <h6>${{item.price}}</h6>
+                        </div>
+                        <p body>{{item.description}}</p>
+                        <ul body class="rating">
+                            <li>
+                                <h6>{{item.total_sale}}
+                                    <span>Sale</span>
+                                </h6>
+                            </li>
+                            <li>
+                                <p>
+                                    <ngb-rating [(rate)]="item.rating" />
+                                    {{item.rating}}
+                                </p>
+                            </li>
+                        </ul>
+                        <div body class="marquee-box">
+                            <ul class="marquee-discount">
+                                @for (items of item.marquee; track items) {
+                                <li class="discount-info">
+                                    <img [src]="items.gif" alt="">
+                                    {{items.text}}
+                                </li>
+                                }
+                            </ul>
+                        </div>
+                </app-card>
+            </div>
+        </ng-template>
+        }
+    </owl-carousel-o>
+</div>

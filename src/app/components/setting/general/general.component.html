@@ -1,0 +1,96 @@
+<div class="general-details">
+    <div class="row gy-md-4 gy-2 align-items-center">
+        <div class="col-xxl-3 col-xl-4 col-md-3">
+            <h5>
+                Light Logo :
+            </h5>
+        </div>
+        <div class="col-xxl-9 col-xl-8 col-md-9">
+             <app-light-logo></app-light-logo>
+        </div>
+        <div class="col-xxl-3 col-xl-4 col-md-3">
+            <h5>
+                Dark Logo :
+            </h5>
+        </div>
+        <div class="col-xxl-9 col-xl-8 col-md-9">
+            <app-dark-logo></app-dark-logo>
+        </div>
+        <div class="col-xxl-3 col-xl-4 col-md-3">
+            <h5>
+                Favicon :
+            </h5>
+        </div>
+        <div class="col-xxl-9 col-xl-8 col-md-9">
+            <app-favicon></app-favicon>
+        </div>
+        <div class="col-xxl-3 col-xl-4 col-md-3">
+            <h5>Site Title :</h5>
+        </div>
+        <div class="col-xxl-9 col-xl-8 col-md-9">
+            <input type="text" name="text" value="Zomo - Culinary exploration of cultural flavors">
+        </div>
+        <div class="col-xxl-3 col-xl-4 col-md-3">
+            <h5>Site Tagline :</h5>
+        </div>
+        <div class="col-xxl-9 col-xl-8 col-md-9">
+            <input type="text" name="text" value="Zomo - food admin">
+        </div>
+        <div class="col-xxl-3 col-xl-4 col-md-3">       
+            <h5>Timezone :</h5>
+        </div>
+        <div class="col-xxl-9 col-xl-8 col-md-9">
+            <app-dropdown [data]="timezone"> </app-dropdown>
+        </div>
+        <div class="col-xxl-3 col-xl-4 col-md-3">
+            <h5>Currency :</h5>
+        </div>
+        <div class="col-xxl-9 col-xl-8 col-md-9">
+            <app-dropdown [data]="currency"> </app-dropdown>
+        </div>
+        <div class="col-xxl-3 col-xl-4 col-md-3">
+            <h5>Language Direction :</h5>
+        </div>
+        <div class="col-xxl-9 col-xl-8 col-md-9">
+            <app-dropdown [data]="direction"> </app-dropdown>
+        </div>
+        <div class="col-xxl-3 col-xl-4 col-md-3">
+            <h5>Min Order Amount :</h5>
+        </div>
+        <div class="col-xxl-9 col-xl-8 col-md-9">
+            <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control" value="0" aria-label="Amount (to the nearest dollar)">
+            </div>
+            <span>**Please enter the minimum order amount for free shipping..</span>
+        </div>
+        <div class="col-xxl-3 col-xl-4 col-md-3">
+            <h5>Min Order Shipping :</h5>
+        </div>
+        <div class="col-xxl-9 col-xl-8 col-md-9">
+            <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control" value="50" aria-label="Amount (to the nearest dollar)">
+            </div>
+            <span>*Please enter the minimum order amount for free shipping.</span>
+        </div>
+        <div class="col-xxl-3 col-xl-4 col-md-3">
+            <h5>Store Prefix :</h5>
+        </div>
+        <div class="col-xxl-9 col-xl-8 col-md-9">
+            <input type="text" name="text" value="Zo">
+        </div>
+        <div class="col-xxl-3 col-xl-4 col-md-3">
+            <h5>Mode :</h5>
+        </div>
+        <div class="col-xxl-9 col-xl-8 col-md-9">
+            <app-dropdown [data]="mode"> </app-dropdown>
+        </div>
+        <div class="col-xxl-3 col-xl-4 col-md-3">
+            <h5>Copyright Text :</h5>
+        </div>
+        <div class="col-xxl-9 col-xl-8 col-md-9">
+            <input type="text" name="text" value="Copyright 2025 © Zomo theme by  pixelstrap">
+        </div>
+    </div>
+</div>

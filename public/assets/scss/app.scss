@@ -1,0 +1,20 @@
+//bootstrap
+@import "../../../node_modules/bootstrap/scss/bootstrap.scss";
+// owl carousal o
+@import 'ngx-owl-carousel-o/lib/styles/scss/owl.carousel';
+@import 'ngx-owl-carousel-o/lib/styles/scss/owl.theme.default';
+// ng-select
+@import "@ng-select/ng-select/themes/default.theme.css";
+
+@import 'dropzone/dist/min/dropzone.min.css';
+
+//feather-icon
+@import "../../assets/scss/vendors/feather-icon.scss";
+//font-awesome
+@import "./font-awesome.scss";
+//ratio
+@import "./ratio.scss";
+//theme fy
+@import "./themify.scss";
+//style
+@import "./style.scss";

@@ -1,0 +1,30 @@
+<div class="row">
+    <div class="col-xxl-3 col-xl-4 col-md-4 col-12">
+          <app-welcome-card></app-welcome-card>
+    </div>
+    <div class="col-xxl-9 col-xl-8 col-md-8 col-12">
+        <div class="row">
+            <div class="col-12">
+                 <app-menu-category></app-menu-category>
+            </div>
+            <div class="col-xxl-4 col-sm-6 ">
+                <app-top-chart [data]="TotalSale"></app-top-chart>
+            </div>
+            <div class="col-xxl-4 col-sm-6 ">
+                <app-top-chart [data]="TotalProfit"></app-top-chart>
+            </div>
+            <div class="col-xxl-4 col-xl-6 d-none d-xxl-block">
+                <app-top-chart [data]="CustomerRate"></app-top-chart>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-7">
+        <app-order-reports></app-order-reports>
+    </div>
+    <div class="col-xl-5">
+     <app-sales-figures></app-sales-figures>
+    </div>
+    <div class="col-12">
+     <app-trending-orders></app-trending-orders>
+    </div>
+</div>

@@ -1,0 +1,46 @@
+<app-card [header]="true" [body]="true">
+    <h5 header>Restaurants</h5>
+    <div class="row" body>
+        <div class="col-xxl-3 col-xl-4">
+            <ul class="nav setting-main-box sticky theme-scrollbar">
+                <li>
+                    <button class="nav-link" routerLinkActive="active" [routerLink]="['/restaurants/admin-settings']"><i class="ri-settings-line"></i> Admin Settings</button>
+                </li>
+                <li>
+                    <button class="nav-link" routerLinkActive="active" [routerLink]="['/restaurants/restaurant-info']"><i class="ri-information-2-line"></i>Restaurant Info</button>
+                </li>
+                <li>
+                    <button class="nav-link" routerLinkActive="active" [routerLink]="['/restaurants/image-gallery']"><i class="ri-image-circle-fill"></i> Image Gallery </button>
+                </li>
+                <li>
+                    <button class="nav-link" routerLinkActive="active" [routerLink]="['/restaurants/service']"><i class="ri-customer-service-line"></i>Service</button>
+                </li>
+                <li>
+                    <button class="nav-link" routerLinkActive="active" [routerLink]="['/restaurants/hours-of-working']"><i class="ri-hourglass-2-fill"></i>Hours of Working</button>
+                </li>
+                <li>
+                    <button class="nav-link" routerLinkActive="active" [routerLink]="['/restaurants/active-inactive']"><i class="ri-hotel-line"></i>Restaurant (Active/Inactive)</button>
+                </li>
+                <li>
+                    <button class="nav-link" routerLinkActive="active" [routerLink]="['/restaurants/feature-setting']"><i class="ri-settings-2-line"></i>Feature Setting</button>
+                </li>
+                <li>
+                    <button class="nav-link" routerLinkActive="active" [routerLink]="['/restaurants/delivery-charge']"><i class="ri-truck-line"></i>Delivery Charge</button>
+                </li>
+                <li>
+                    <button class="nav-link" routerLinkActive="active" [routerLink]="['/restaurants/special-offer']"> <i class="ri-alarm-warning-line"></i>Special Offer</button>
+                </li>
+            </ul>
+        </div>
+        <div class="col-xxl-9 col-xl-8 col-12">
+            <div class="restaurant-tab">
+                <div class="tab-content">
+                    <router-outlet></router-outlet>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <a href="javascript:void(0)" class="btn restaurant-button">Save</a>
+        </div>
+    </div>
+</app-card>

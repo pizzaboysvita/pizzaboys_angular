@@ -1,0 +1,10 @@
+<app-card [header]="true" [body]="true" [cardClass]="'o-hidden'" [cardHeaderClass]="'border-0 pb-1'" [cardBodyClass]="'p-0'">
+    <div class="card-header-title" header>
+        <h4>Expenses</h4>
+    </div>
+    <div id="expenses-cart" body>
+        <apx-chart [series]="Expenses.series" [chart]="Expenses.chart" [grid]="Expenses.grid" [colors]="Expenses.colors"
+            [stroke]="Expenses.stroke" [markers]="Expenses.markers" [tooltip]="Expenses.tooltip" [xaxis]="Expenses.xaxis"
+            [fill]="Expenses.fill" [fill]="Expenses.fill" [yaxis]="Expenses.yaxis" [legend]="Expenses.legend"></apx-chart>
+    </div>
+</app-card>

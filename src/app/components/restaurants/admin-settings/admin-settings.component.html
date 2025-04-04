@@ -1,0 +1,36 @@
+<div class="input-items">
+    <div class="row gy-3">
+        <div class="col-md-6">
+            <div class="input-box">
+                <h6>Name</h6>
+                <input type="text" name="text" placeholder="Enter Your Name">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="input-box">
+                <h6>Email</h6>
+                <input type="email" name="email" placeholder="Enter Your Email">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="input-box">
+                <h6>Phone</h6>
+                <input type="number" name="number" placeholder="Enter Your Number">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="input-box">
+                <h6>Password</h6>
+                <input type="password" name="password" placeholder="Enter Your Password">
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="input-box">
+                <h6>Image</h6>
+                <span class="choose-img-box" (click)="commonService.insertMedia()">
+                    <i class="ri-add-circle-line"></i>
+                    Choose image </span>
+            </div>
+        </div>
+    </div>
+</div>

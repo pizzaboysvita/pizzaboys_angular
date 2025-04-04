@@ -1,0 +1,62 @@
+<div>
+    <div class="logo-wrapper logo-wrapper-center">
+        <a [routerLink]="['/dashboard']">
+            <img class="img-fluid for-white" src="assets/images/logo/full-white.svg" alt="logo">
+        </a>
+        <div class="back-btn" (click)="navService.collapseSidebar = !navService.collapseSidebar">
+            <i class="fa fa-angle-left"></i>
+        </div>
+        <div class="toggle-sidebar" (click)="navService.collapseSidebar = !navService.collapseSidebar">
+            <i class="ri-apps-2-line status_toggle middle sidebar-toggle"></i>
+        </div>
+    </div>
+    <div class="logo-icon-wrapper">
+        <a [routerLink]="['/dashboard']">
+            <img class="img-fluid main-logo" src="assets/images/logo/logo.png" alt="logo">
+        </a>
+    </div>
+    <nav class="sidebar-main">
+        <div class="left-arrow">
+            <app-feather-icons [icons]="'arrow-left'"></app-feather-icons>
+        </div>
+        <div id="sidebar-menu">
+            <ul class="sidebar-links theme-scrollbar">
+                <li class="back-btn"></li>
+                <ng-container *ngTemplateOutlet="recursiveMenu; context: { $implicit: menuItemsList }"></ng-container>
+                <ng-template #recursiveMenu let-menuItemsList>
+                    @for (item of menuItemsList; track item) {
+                    <li [class.sidebar-list]="item.level === 1 && !item.children">
+                        <a [class]="item.level === 1 ? 'sidebar-link sidebar-title' : ''"
+                            [class.active]="!item.children ? item.active : ''" [routerLink]="item.path"
+                            routerLinkActive="active" [class.linear-icon-link]="item.children && item.type === 'sub'"
+                            [class.link-nav]="item.level === 1 && item.type === 'link'" (click)="toggleNavActive(item)">
+                            @if (item.level == 1) {
+                            <i [class]="item.icon"></i>
+                            }
+                            @if (item.level == 1) {
+                            <span>{{item.title}}</span>
+                            } @else {
+                            {{item.title }}
+                            }
+                            @if(item.type == 'sub' && item.level == 1){
+                            <div class="according-menu">
+                                <i [ngClass]="item.active ? 'ri-arrow-down-s-line':'ri-arrow-right-s-line'"></i>
+                            </div>
+                            }
+                        </a>
+                        @if (item.children) {
+                        <ul class="sidebar-submenu" [ngStyle]="{'display' : item.active ? 'block' : 'none' }">
+                            <ng-container
+                                *ngTemplateOutlet="recursiveMenu; context: { $implicit: item.children }"></ng-container>
+                        </ul>
+                        }
+                    </li>
+                    }
+                </ng-template>
+            </ul>
+        </div>
+        <div class="right-arrow">
+            <app-feather-icons [icons]="'arrow-right'"></app-feather-icons>
+        </div>
+    </nav>
+</div>

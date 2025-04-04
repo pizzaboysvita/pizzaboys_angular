@@ -1,0 +1,22 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title text-center">Done!</h5>
+        <button type="button" class="btn-close" (click)="modal.dismissAll()">
+            <i class="fa fa-times"></i>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="remove-box text-center">
+            <div class="wrapper">
+                <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                </svg>
+            </div>
+            <h4 class="text-content">It's Removed.</h4>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" (click)="modal.dismissAll()">Close</button>
+    </div>
+</div>

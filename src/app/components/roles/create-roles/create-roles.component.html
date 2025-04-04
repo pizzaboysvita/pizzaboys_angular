@@ -1,0 +1,42 @@
+<div class="row">
+    <div class="col-12">
+        <div class="row">
+            <div class="col-12">
+                <app-card [header]="true" [body]="true">
+                    <h5 header>Create Role</h5>
+                    <div body class="input-box d-flex align-items-center gap-4 mb-3">
+                        <h6 class="f-w-600">Name</h6>
+                        <input type="search" placeholder="Author Name">
+                    </div>
+                    <div body class="mb-3">
+                        <h4 class="form-label-title">Permissions</h4>
+                    </div>
+                    <form body class="theme-form theme-form-2 mega-form">
+                        <div class="row g-sm-4 g-2">
+                            @for (item of createRoles; track item) {
+                            <div class="col-xl-6">
+                                <div class="row roles-form">
+                                    @for (items of item.data; track items) {
+                                        <div class="col-12">
+                                            <ul>
+                                                <li>{{items.title}} :</li>
+                                                @for (subItem of items.subData; track subItem) {
+                                                    <li>
+                                                        <input class="custom-checkbox" type="checkbox" name="text" [id]="subItem.id">
+                                                        <label class="form-check-label m-0" [for]="subItem.id">{{subItem.title}}</label>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        </div>
+                        <button class="btn btn-primary ms-auto mt-4">Save</button>
+                    </form>
+                </app-card>
+            </div>
+        </div>
+    </div>
+</div>

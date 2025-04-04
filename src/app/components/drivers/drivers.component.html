@@ -1,0 +1,31 @@
+<app-card [header]="true" [body]="true">
+    <h5 header>Drivers</h5>
+    <div class="row" body>
+        <div class="col-12">
+            <ul ngbNav #nav="ngbNav" [(activeId)]="active"
+                class="nav setting-main-box driver-main-box sticky theme-scrollbar">
+                <li [ngbNavItem]="1">
+                    <button class="nav-link" ngbNavLink><i class="ri-settings-line"></i>Driver Details</button>
+                    <ng-template ngbNavContent>
+                        <app-driver-details></app-driver-details>
+                    </ng-template>
+                </li>
+                <li [ngbNavItem]="2">
+                    <button class="nav-link" ngbNavLink><i class="ri-information-2-line"></i>Driver
+                        (Activate/Deactivate)</button>
+                    <ng-template ngbNavContent>
+                        <app-activate-deactivate></app-activate-deactivate>
+                    </ng-template>
+                </li>
+                <li [ngbNavItem]="3">
+                    <button class="nav-link" ngbNavLink><i class="ri-image-circle-fill"></i>Car Details</button>
+                    <ng-template ngbNavContent>
+                        <app-car-details></app-car-details>
+                    </ng-template>
+                </li>
+            </ul>
+        </div>
+        <div class="col-12" [ngbNavOutlet]="nav"></div>
+    </div>
+    <button body class="btn save-button mt-2" type="submit">Save</button>
+</app-card>

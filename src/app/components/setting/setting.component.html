@@ -1,0 +1,79 @@
+<div class="row">
+    <div class="col-12">
+        <app-card [header]="true" [body]="true" [cardHeaderClass]="'card-no-border'">
+            <h5 header>Setting</h5>
+            <div class="row" body>
+                <div class="col-xxl-3 col-xl-4">
+                    <ul class="nav setting-main-box sticky theme-scrollbar">
+                        <li>
+                            <button class="nav-link" routerLinkActive="active"
+                                [routerLink]="['/settings/profile-setting/general']"><i class="ri-settings-line"></i>
+                                General</button>
+                        </li>
+                        <li>
+                            <button class="nav-link" routerLinkActive="active"
+                                [routerLink]="['/settings/profile-setting/activation']"><i
+                                    class="ri-radio-button-line"></i>Activation </button>
+                        </li>
+                        <li>
+                            <button class="nav-link" routerLinkActive="active"
+                                [routerLink]="['/settings/profile-setting/wallet-point']"><i class="ri-wallet-line"></i>
+                                Wallet Points</button>
+                        </li>
+                        <li>
+                            <button class="nav-link" routerLinkActive="active"
+                                [routerLink]="['/settings/profile-setting/email-configuration']"><i
+                                    class="ri-mail-open-line"></i>Email Configuration</button>
+                        </li>
+                        <li>
+                            <button class="nav-link" routerLinkActive="active"
+                                [routerLink]="['/settings/profile-setting/vendor-commission']"><i
+                                    class="ri-user-line"></i>Vendor Commissions</button>
+                        </li>
+                        <li>
+                            <button class="nav-link" routerLinkActive="active"
+                                [routerLink]="['/settings/profile-setting/refund']"><i
+                                    class="ri-exchange-dollar-line"></i>Refund</button>
+                        </li>
+                        <li>
+                            <button class="nav-link" routerLinkActive="active"
+                                [routerLink]="['/settings/profile-setting/news-letter']"><i
+                                    class="ri-mail-unread-line"></i>Newsletter</button>
+                        </li>
+                        <li>
+                            <button class="nav-link" routerLinkActive="active"
+                                [routerLink]="['/settings/profile-setting/delivery']"><i class="ri-truck-line"></i>
+                                Delivery</button>
+                        </li>
+                        <li>
+                            <button class="nav-link" routerLinkActive="active"
+                                [routerLink]="['/settings/profile-setting/payment-method']"><i
+                                    class="ri-bank-card-line"></i>Payment Method</button>
+                        </li>
+                        <li>
+                            <button class="nav-link" routerLinkActive="active"
+                                [routerLink]="['/settings/profile-setting/analytics']"><i
+                                    class="ri-line-chart-line"></i>Analytics</button>
+                        </li>
+                        <li>
+                            <button class="nav-link" routerLinkActive="active"
+                                [routerLink]="['/settings/profile-setting/re-captcha']"><i
+                                    class="ri-google-fill"></i>ReCaptcha</button>
+                        </li>
+                        <li>
+                            <button class="nav-link" routerLinkActive="active"
+                                [routerLink]="['/settings/profile-setting/maintenance']"><i
+                                    class="ri-alert-line"></i>Maintenance</button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-xxl-9 col-xl-8">
+                    <div class="setting-box">
+                        <router-outlet></router-outlet>
+                    </div>
+                </div>
+            </div>
+            <button class="btn save-button" type="submit">Save</button>
+        </app-card>
+    </div>
+</div>

@@ -1,0 +1,54 @@
+<div class="general-details mb-4">
+    <div class="row gy-md-4 gy-2 align-items-center">
+        <div class="col-xxl-3 col-xl-4 col-md-3">
+            <h5>Title :</h5>
+        </div>
+        <div class="col-xxl-9 col-xl-8 col-md-9">
+            <input type="text" name="text" value="Standard Delivery">
+        </div>
+        <div class="col-xxl-3 col-xl-4 col-md-3">
+            <h5>Description : :</h5>
+        </div>
+        <div class="col-xxl-9 col-xl-8 col-md-9">
+            <input type="text" name="text" value="Approx 5 to 7 Days">
+        </div>
+    </div>
+</div>
+<div class="row delivery-box">
+    <div class="col-md-10">
+        <ul class="activation">
+            <li class="w-100">
+                <div class="icon-state">
+                    <label class="switch-xsm mb-0">
+                        <input type="checkbox" id="flexSwitchCheckDefault-11" checked=""><span
+                            class="slider round"></span>
+                    </label>
+                    <label class="form-check-label" for="flexSwitchCheckDefault-11">Same Day Delivery</label>
+                </div>
+                <p><i class="ri-information-line"></i>*Enable Same Day Delivery.</p>
+            </li>
+        </ul>
+    </div>
+    <div class="col-md-10">
+        <div class="delivery-item">
+            <h5>Title :</h5>
+            <input type="text" name="text" value="Approx 5 to 7 Days">
+        </div>
+    </div>
+    <div class="col-md-10">
+        <div class="delivery-item">
+            <h5>Description :</h5>
+            <input type="text" name="text" value="Schedule">
+        </div>
+    </div>
+    <div class="col-md-10">
+        <div class="delivery-item">
+            <h5>Default Delivery :</h5>
+            <div class="d-flex flex-wrap align-items-center gap-2 delivery-box">
+                <app-dropdown [data]="delivery"></app-dropdown>
+                <app-dropdown [data]="deliveryTime"></app-dropdown>
+                <span>Remove</span>
+            </div>
+        </div>
+    </div>
+</div>

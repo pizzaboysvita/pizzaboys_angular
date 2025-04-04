@@ -1,0 +1,32 @@
+<div class="h-100">
+    <app-card [header]="true" [body]="true" [cardClass]="'o-hidden sales overview'" [cardHeaderClass]="'border-0 pb-1'" [cardBodyClass]="'p-0'">
+        <div class="d-flex align-items-center justify-content-between" header>
+            <div class="card-header-title">
+                <h4>Employees Satisfied</h4>
+            </div>
+        </div>
+        <div class="sales-chart" body>
+            <div class="shap-2">
+                <div class="rounded-shap"><i></i><i></i></div>
+            </div>
+            <div class="shap-2">
+                <div class="rounded-shap"><i></i><i></i></div>
+            </div>
+            <div class="shap-2">
+                <div class="rounded-shap"><i></i><i></i></div>
+            </div>
+            <div class="shap-2">
+                <div class="rounded-shap"><i></i><i></i></div>
+            </div>
+            <div id="employ-salary">
+                <apx-chart [series]="EmployeesSatisfied.series" [chart]="EmployeesSatisfied.chart"
+                    [stroke]="EmployeesSatisfied.stroke" [grid]="EmployeesSatisfied.grid"
+                    [labels]="EmployeesSatisfied.labels" [markers]="EmployeesSatisfied.markers"
+                    [tooltip]="EmployeesSatisfied.tooltip" [legend]="EmployeesSatisfied.legend"
+                    [colors]="EmployeesSatisfied.colors" [fill]="EmployeesSatisfied.fill"
+                    [xaxis]="EmployeesSatisfied.xaxis" [yaxis]="EmployeesSatisfied.yaxis"
+                    [responsive]="EmployeesSatisfied.responsive"></apx-chart>
+            </div>
+        </div>
+    </app-card>
+</div>

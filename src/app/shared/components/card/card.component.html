@@ -1,0 +1,18 @@
+<div class="card" [class]="cardClass">
+    @if(header){
+    <div class="card-header" [class]="cardHeaderClass">
+        <ng-content select="[header]"></ng-content>
+    </div>
+    }
+    @if (body) {
+    <div class="card-body" [class]="cardBodyClass">
+        <ng-content select="[body]"></ng-content>
+    </div>
+    }
+    @if(footer){
+    <div class="card-footer" [class]="cardFooterClass">
+        <ng-content select="[footer]"></ng-content>
+    </div>
+    }
+    <ng-content select="[card]"></ng-content>
+</div>

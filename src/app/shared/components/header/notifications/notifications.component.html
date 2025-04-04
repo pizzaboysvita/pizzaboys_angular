@@ -1,0 +1,37 @@
+<div class="notification-box" (click)="IsNotification=!IsNotification">
+    <i class="ri-notification-line"></i>
+    <span class="badge rounded-pill badge-theme">4</span>
+</div>
+<ul class="notification-dropdown onhover-show-div" [class.active]="IsNotification">
+    <li>
+        <i class="ri-notification-line"></i>
+        <h4 class="mb-0">Notifications</h4>
+    </li>
+    <li>
+        <p>
+            <i class="fa fa-circle me-2 font-primary"></i>Delivery processing <span
+                class="pull-right">10 min.</span>
+        </p>
+    </li>
+    <li>
+        <p>
+            <i class="fa fa-circle me-2 font-success"></i>Order Complete<span class="pull-right">1
+                hr</span>
+        </p>
+    </li>
+    <li>
+        <p>
+            <i class="fa fa-circle me-2 font-info"></i>Tickets Generated<span class="pull-right">3
+                hr</span>
+        </p>
+    </li>
+    <li>
+        <p>
+            <i class="fa fa-circle me-2 font-danger"></i>Delivery Complete<span class="pull-right">6
+                hr</span>
+        </p>
+    </li>
+    <li>
+        <a class="btn btn-primary" href="javascript:void(0)">Check all notification</a>
+    </li>
+</ul>

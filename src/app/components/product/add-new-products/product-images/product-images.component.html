@@ -1,0 +1,21 @@
+<app-card [header]="true" [body]="true">
+    <h5 header>Product Images</h5>
+    <div class="input-items" body>
+        <div class="row gy-3">
+            <div class="col-xl-6">
+                <div class="input-box">
+                    <h6>Images</h6>
+                        <dropzone [config]="imageConfig" (error)="onUploadErrorImage($event)"
+                            (success)="onUploadSuccessImage($event)" [message]="text" class="custom-dropzone"></dropzone>
+                </div>
+            </div>
+            <div class="col-xl-6">
+                <div class="input-box">
+                    <h6>Thumbnail Image</h6>
+                    <dropzone [config]="imageConfig" (error)="onUploadErrorThumbnail($event)"
+                        (success)="onUploadSuccessThumbnail($event)" [message]="text" class="custom-dropzone"></dropzone>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-card>

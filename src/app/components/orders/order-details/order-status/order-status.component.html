@@ -1,0 +1,38 @@
+<div class="input-items">
+    <div class="row gy-3">
+        <div class="col-12">
+            <div class="input-box driver-details-box">
+                <h6>Drivers Information</h6>
+                <div class="driver-details-item">
+                    <img src="assets/images/user/1.jpg" alt="">
+                    <div>
+                        <div>
+                            <p>Driver Name :</p>
+                            <h5>Jose Mike</h5>
+                        </div>
+                        <div>
+                            <p>Estimated Delivery Time :</p>
+                            <h5>30 mins</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="input-box driver-details-box">
+                <h6>Shipping Details</h6>
+                <ul class="delivery-list">
+                    @for (item of ShippingDetails; track item) {
+                    <li>
+                        <img [src]="item.image_url" alt="">
+                        <div>
+                            <h5>{{item.title}}</h5>
+                            <p>{{item.description}}</p>
+                        </div>
+                    </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,8 @@
+<app-card [header]="true" [body]="true" [cardHeaderClass]="'border-0 pb-1'">
+    <div class="card-header-title" header>
+        <h4>Transfer History</h4>
+    </div>
+    <div body>
+        <app-table [search]="false" [hasCheckbox]="false" [tableConfig]="tableConfig"></app-table>
+    </div>
+</app-card>

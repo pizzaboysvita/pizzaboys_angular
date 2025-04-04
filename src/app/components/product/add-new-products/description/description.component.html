@@ -1,0 +1,16 @@
+<app-card [header]="true" [body]="true">
+    <h5 header>Description</h5>
+    <div class="input-items" body>
+        <div class="row gy-3">
+            <div class="col-12">
+                <div class="input-box"> 
+                    <div class="NgxEditor__Wrapper">
+                        <ngx-editor-menu [editor]="editor">
+                        </ngx-editor-menu>
+                        <ngx-editor [editor]="editor" [ngModel]="html" [disabled]="false" [placeholder]="'Type here...'"></ngx-editor>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-card>

@@ -1,0 +1,75 @@
+<div class="header-wrapper m-0">
+    <div class="header-logo-wrapper p-0">
+        <div class="logo-wrapper">
+            <a [routerLink]="['/dashboard']">
+                <img class="img-fluid main-logo" src="assets/images/logo/1.png" alt="logo">
+                <img class="img-fluid white-logo" src="assets/images/logo/1-white.png" alt="logo">
+            </a>
+        </div>
+        <div class="toggle-sidebar" (click)="navService.collapseSidebar =!navService.collapseSidebar">
+            <app-feather-icons [icons]="'align-center'"
+                [class]="'status_toggle middle sidebar-toggle'"></app-feather-icons>
+            <a [routerLink]="['/dashboard']">
+                <img class="img-fluid for-light" src="assets/images/logo/1.png" alt="logo">
+                <img class="img-fluid for-dark" src="assets/images/logo/1-white.png" alt="logo">
+            </a>
+        </div>
+    </div>
+    <div class="welcome-title">
+        <h5>
+            Food that's you loved!
+            <img src="assets/images/header.gif" alt="">
+        </h5>
+        <span>
+            Delight your taste with our most famous food !!
+        </span>
+    </div>
+    <div class="nav-right col-xl-6 col-5 pull-right right-header p-0">
+        <ul class="nav-menus">
+            <li class="search-icon">
+                <span class="header-search" (click)="isSearch =!isSearch">
+                    <i class="ri-search-line"></i>
+                </span>
+            </li>
+            <li class="onhover-dropdown">
+                <app-notifications></app-notifications>
+            </li>
+            <li class="onhover-dropdown">
+                <app-messages></app-messages>
+            </li>
+            <li>
+                <app-mode></app-mode>
+            </li>
+            <li class="profile-nav onhover-dropdown pe-0 me-0">
+                <app-profile></app-profile>
+            </li>
+        </ul>
+    </div>
+    <div class="input-box" [class.open]="isSearch">
+        <i class="ri-search-line"></i>
+        <input class="search-box" type="search" placeholder="What are you looking for?" [(ngModel)]="searchText"
+        name="search" (keyup)="searchTerm(searchText)">
+        <app-feather-icons [icons]="'x'" [class]="'close-icon'" (click)="isSearch = false"></app-feather-icons>
+    </div>
+    @if(menuItems.length){
+    <div class="Typeahead-menu theme-scrollbar" [class.is-open]="searchResult">
+        @for(menuItem of menuItems | slice : 0 : 8; track menuItem){
+        <div class="ProfileCard u-cf">
+            <div class="ProfileCard-avatar">
+            </div>
+            <div class="ProfileCard-details">
+                <div class="ProfileCard-realName">
+                    <i [class]="menuItem.icon"></i>
+                    <a [routerLink]="menuItem?.path" class="realname" (click)="removeFix()">{{ menuItem?.title }}</a>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+    }
+    <div class="Typeahead-menu" [class.is-open]="searchResultEmpty" (clickOutside)="clickOutside()">
+        <div class="tt-dataset tt-dataset-0">
+            <div class="EmptyMessage" style="color: black;">Oops!! There are no result found.</div>
+        </div>
+    </div>
+</div>

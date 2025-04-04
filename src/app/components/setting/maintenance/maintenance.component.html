@@ -1,0 +1,37 @@
+<div class="icon-state align-items-center gap-5 mb-4">
+    <label class="switch-xsm mb-0">
+        <input type="checkbox" id="flexSwitchCheckDefault-17" checked><span class="slider round"></span>
+    </label>
+    <label class="form-check-label" for="flexSwitchCheckDefault-17">Maintenance Mode</label>
+</div>
+<div class="general-details">
+    <div class="row gy-md-4 gy-2 align-items-center">
+        <div class="col-xxl-3 col-xl-4 col-md-3">
+            <h5>Title :</h5>
+        </div>
+        <div class="col-xxl-9 col-xl-8 col-md-9">
+            <input type="text" name="text" value="We'll be back Soon..">
+        </div>
+        <div class="col-xxl-3 col-xl-4 col-md-3">
+            <h5>Description :</h5>
+        </div>
+        <div class="col-xxl-9 col-xl-8 col-md-9">
+            <input type="text" name="text" value="We are busy to updating our store for you.">
+        </div>
+        <div class="col-xxl-3 col-xl-4 col-md-3">
+            <h5>
+                Light Logo :
+            </h5>
+        </div>
+        <div class="col-xxl-9 col-xl-8 col-md-9">
+            <div class="image-select-list">
+                <p (click)="commonService.insertMedia()">
+                    <i class="ri-add-line"></i>
+                    Upload Light Logo
+                </p>
+            </div>
+            <span>*Upload image size 180x50px
+                recommended</span>
+        </div>
+    </div>
+</div>

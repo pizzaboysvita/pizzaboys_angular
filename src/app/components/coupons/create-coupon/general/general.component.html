@@ -1,0 +1,40 @@
+<div class="input-items">
+    <div class="row gy-3">
+        <div class="col-xl-6">
+            <div class="input-box">
+                <h6>Coupon Title</h6>
+                <input type="text" name="text" placeholder="Enter Your Coupon Title">
+            </div>
+        </div>
+        <div class="col-xl-6">
+            <div class="input-box">
+                <h6>Coupon Code</h6>
+                <input type="number" name="number" placeholder="Enter Your Coupon Code">
+            </div>
+        </div>
+        <div class="col-xl-6">
+            <div class="input-box">
+                <h6>Start Date</h6>
+                <input type="date" name="date">
+            </div>
+        </div>
+        <div class="col-xl-6">
+            <div class="input-box">
+                <h6>End Date</h6>
+                <input type="date" name="date">
+            </div>
+        </div>
+        <div class="col-xl-6">
+            <div class="input-box">
+                <h6>Quantity</h6>
+                <input type="number" name="number">
+            </div>
+        </div>
+        <div class="col-xl-6">
+            <div class="input-box">
+                <h6>Discount Type</h6>
+                 <app-dropdown [data]="DiscountType"></app-dropdown>
+            </div>
+        </div>
+    </div>
+</div>

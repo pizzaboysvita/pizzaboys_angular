@@ -1,0 +1,78 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>Insert Media</h2>
+        <button type="button" class="btn btn-close" (click)="modal.dismissAll()"><span class="lnr lnr-cross"></span></button>
+    </div>
+    <div class="modal-body">
+        <ul class="nav nav-tabs" ngbNav #nav="ngbNav" [(activeId)]="active">
+            <li class="nav-item" [ngbNavItem]="1">
+                <a class="nav-link" ngbNavLink>Upload New</a>
+                <ng-template ngbNavContent>
+                        <dropzone [config]="imageConfig" (error)="onUploadErrorImage($event)"
+                            (success)="onUploadSuccessImage($event)" [message]="text" class="custom-dropzone">
+                        </dropzone>
+                </ng-template>
+            </li>
+            <li class="nav-item" [ngbNavItem]="2">
+                <a class="nav-link" ngbNavLink>Select File</a>
+                <ng-template ngbNavContent>
+                    <div class="select-top-panel">
+                        <div>
+                            <input type="text" class="form-control" placeholder="Search your files">
+                        </div>
+                        <select class="form-select">
+                            <option>Sort By newest</option>
+                            <option>Sort By oldest</option>
+                            <option>Sort By smallest</option>
+                            <option>Sort By largest</option>
+                        </select>
+                    </div>
+                    <div class="content-section select-file-section py-0 ratio2_3">
+                        <div
+                            class="row g-sm-4 row-cols-xl-5 row-cols-lg-4 py-0 media-library-sec ratio_square row-cols-sm-3 row-cols-2 g-2">
+                            @for (item of addMedia; track item) {
+                            <div>
+                                <div class="library-box">
+                                    <input type="checkbox" [id]="item.id" />
+                                    <label [for]="item.id">
+                                        <div class="b_size_content bg-size"
+                                            [style.background-image]="'url('+item.image_url+')'">
+                                            <img [src]="item.image_url" class="img-fluid bg-img bg_size_content" alt=""
+                                                style="display: none;">
+                                        </div>
+                                        <div class="dropdown" (click)="open(item)" (clickOutside)="item.active = false">
+                                            <a href="javascript:void(0)" [class.show]="item.active">
+                                                <i class="ri-more-fill"></i>
+                                            </a>
+                                            <ul class="dropdown-menu dropdown-menu-end" [class.show]="item.active"style="position: absolute;inset: 0px 0px auto auto;margin: 0px;transform: translate(-5px, 22px);">
+                                                <li>
+                                                    <a class="dropdown-item d-flex align-items-center" href="javascript:void(0)"><i class="ri-download-2-line me-2"></i>Download</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item d-flex align-items-center" href="javascript:void(0)"><i class="ri-delete-bin-line me-2"></i>Delete</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                </ng-template>
+            </li>
+        </ul>
+        <div [ngbNavOutlet]="nav" class="mt-2"></div>
+    </div>
+    <div class="modal-footer">
+        <div class="left-part">
+            <div class="file-detail">
+                <h6>0 File Selected</h6>
+                <a href="javascript:void(0)" class="font-red">Clear</a>
+            </div>
+        </div>
+        <div class="right-part">
+            <a class="btn btn-dashed" (click)="modal.dismissAll()">Insert Media</a>
+        </div>
+    </div>
+</div>

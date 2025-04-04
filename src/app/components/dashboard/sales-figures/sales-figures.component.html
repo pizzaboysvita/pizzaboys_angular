@@ -1,0 +1,28 @@
+<app-card [cardHeaderClass]="'mb-0'" [header]="true" [body]="true">
+    <h5 header>Sales Figures</h5>
+    <div id="earning-average" body>
+          <apx-chart
+             [series]="optionsEarning.series" 
+             [chart]="optionsEarning.chart" 
+             [grid]="optionsEarning.grid" 
+             [stroke]="optionsEarning.stroke" 
+             [dataLabels]="optionsEarning.dataLabels" 
+             [xaxis]="optionsEarning.xaxis" 
+             [yaxis]="optionsEarning.yaxis" 
+             [markers]="optionsEarning.markers" 
+             [colors]="optionsEarning.colors" 
+             [responsive]="optionsEarning.responsive">
+          </apx-chart>
+    </div>
+    <div class="special-items-box" body>
+        <h5>Today's Special Dish</h5>
+        <div class="dish-img"> </div>
+        <h6>Spicy Burger with Extra Cheese</h6>
+        <ul>
+            <li>$10.53</li>
+            <li>
+                <i class="ri-heart-fill"></i>
+                200k</li>
+        </ul>
+    </div>
+</app-card>

@@ -1,0 +1,82 @@
+<app-card [header]="true" [body]="true" [cardClass]="'o-hidden'" [cardHeaderClass]="'border-0 pb-1'" [cardBodyClass]="'user-continent'">
+    <div class="card-header-title" header>
+        <h4>Sales / Purchase Return</h4>
+    </div>
+    <div class="row" body>
+        <div class="col-md-2 box-col-2 share-icon">
+            <div class="contries-sale d-flex gap-4">
+                <div class="map-value">
+                    <ul>
+                        <li>
+                            <div class="d-flex gap-2">
+                                <div class="flex-shrink-0">
+                                    <span class="bg-primary"></span>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6>United States</h6>
+                                </div>
+                            </div> 
+                        </li>
+                        <li>
+                            <div class="d-flex gap-2">
+                                <div class="flex-shrink-0">
+                                    <span class="bg-secondary"></span>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6>Russia</h6>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex gap-2">
+                                <div class="flex-shrink-0">
+                                    <span class="bg-warning"></span>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6>Australia</h6>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex gap-2">
+                                <div class="flex-shrink-0">
+                                    <span class="bg-info"></span>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6>Germany</h6>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex gap-2">
+                                <div class="flex-shrink-0">
+                                   <span class="bg-success"></span>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6>Africa</h6>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex gap-2">
+                                <div class="flex-shrink-0">
+                                    <span class="bg-danger"></span>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6>Europe</h6>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-10 box-col-10">
+            <div class="custom-data-label" id="userPosition">
+                <apx-chart [series]="userPosition.series" [chart]="userPosition.chart" [colors]="userPosition.colors" [fill]="userPosition.fill"
+            [plotOptions]="userPosition.plotOptions" [dataLabels]="userPosition.dataLabels" [legend]="userPosition.legend" [grid]="userPosition.grid"
+            [yaxis]="userPosition.yaxis" [xaxis]="userPosition.xaxis" [responsive]="userPosition.responsive"></apx-chart>
+            </div>
+        </div>
+    </div>
+</app-card>

@@ -1,0 +1,16 @@
+<app-card [cardClass]="'widgets-card'" [body]="true">
+    <div class="row align-items-center" body>
+        <div class="col-lg-5 d-flex d-lg-block justify-content-between align-items-center">
+            <h5>{{data.heading}}</h5>
+            <h2>{{data.price}}</h2>
+        </div>
+        <div class="col-lg-7 col-12 p-0">
+            <div [id]="data.id">
+                <apx-chart [series]="data.series" [chart]="data.chart" [stroke]="data.title" [grid]="data.grid"
+                    [fill]="data.fill" [dataLabels]="data.dataLabels" [colors]="data.colors" [xaxis]="data.xaxis"
+                    [yaxis]="data.yaxis" [legend]="data.legend">
+                </apx-chart>
+            </div>
+        </div>
+    </div>
+</app-card>

@@ -1,0 +1,12 @@
+<app-card [header]="true" [body]="true" [cardClass]="'pb-0'" [cardHeaderClass]="'border-0 pb-1'" [cardBodyClass]="'p-0'">
+    <div class="card-header-title" header>
+        <h4>Sales / Purchase</h4>
+    </div>
+    <div id="sales-purchase-chart" body>
+        <apx-chart [series]="salesPurchase.series" [chart]="salesPurchase.chart" [stroke]="salesPurchase.stroke"
+            [plotOptions]="salesPurchase.plotOptions" [colors]="salesPurchase.colors" [fill]="salesPurchase.fill"
+            [grid]="salesPurchase.grid" [fill]="salesPurchase.fill" [xaxis]="salesPurchase.xaxis"
+            [dataLabels]="salesPurchase.dataLabels" [yaxis]="salesPurchase.yaxis"
+            [legend]="salesPurchase.legend"></apx-chart>
+    </div>
+</app-card>

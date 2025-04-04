@@ -1,0 +1,168 @@
+export interface product {
+    id:number
+    product_image: string,
+    product_name: string,
+    category: string,
+    current_qty: number,
+    price: string,
+    status: string,
+    status_class: string,
+}
+
+export const ProductsList : product[] = [
+    {
+        id: 1,
+        product_image: "assets/images/product/1.png",
+        product_name: "Aata Buscuit",
+        category: "Buscuit",
+        current_qty: 12,
+        price: "$95.97",
+        status: "Pending",
+        status_class: 'status-danger',
+    },
+    {
+        id: 2,
+        product_image: "assets/images/product/2.png",
+        product_name: "Cold Brew Coffee",
+        category: "Drinks",
+        current_qty: 10,
+        price: "$95.97",
+        status: "Approved",
+        status_class: 'status-close',
+    },
+    {
+        id: 3,
+        product_image: "assets/images/product/3.png",
+        product_name: "Peanut Butter Cookies",
+        category: "Cookies",
+        current_qty: 9,
+        price: "$86.35",
+        status: "Approved",
+        status_class: 'status-close',
+    },
+    {
+        id: 4,
+        product_image: "assets/images/product/4.png",
+        product_name: "Wheet Flakes",
+        category: "Flakes",
+        current_qty: 8,
+        price: "$95.97",
+        status: "Pending",
+        status_class: 'status-danger',
+    },
+    {
+        id: 5,
+        product_image: "assets/images/product/5.png",
+        product_name: "Potato Chips",
+        category: "Chips",
+        current_qty: 23,
+        price: "$95.97",
+        status: "Approved",
+        status_class: 'status-close',
+    },
+    {
+        id: 6,
+        product_image: "assets/images/product/6.png",
+        product_name: "Tuwer Dal",
+        category: "Dals",
+        current_qty: 50,
+        price: "$95.97",
+        status: "Approved",
+        status_class: 'status-close',
+    },
+    {
+        id: 7,
+        product_image: "assets/images/product/7.png",
+        product_name: "Almond Milk",
+        category: "Milk",
+        current_qty: 25,
+        price: "$121.43",
+        status: "Approved",
+        status_class: 'status-close',
+    },
+    {
+        id: 8,
+        product_image: "assets/images/product/11.png",
+        product_name: "Wheat Bread",
+        category: "Breads",
+        current_qty: 6,
+        price: "$95.97",
+        status: "Pending",
+        status_class: 'status-danger',
+    },
+    {
+        id: 9,
+        product_image: "assets/images/product/8.png",
+        product_name: "Dog Food",
+        category: "Pet Food",
+        current_qty: 11,
+        price: "$95.97",
+        status: "Approved",
+        status_class: 'status-close',
+    },
+    {
+        id: 10,
+        product_image: "assets/images/product/9.png",
+        product_name: "Fresh Meat",
+        category: "Meats",
+        current_qty: 18,
+        price: "$95.97",
+        status: "Approved",
+        status_class: 'status-close',
+    },
+    {
+        id: 11,
+        product_image: "assets/images/product/10.png",
+        product_name: "Classic Coffee",
+        category: "Coffee",
+        current_qty: 25,
+        price: "$86.35",
+        status: "Approved",
+        status_class: 'status-close',
+    }
+]
+
+export const CategoryList = [
+    {
+        id: 1,
+        product_image: "assets/images/product/1.png",
+        product_name: "Poultry Palace",
+        date: "26-12-2021",
+        foods: 4
+    },
+    {
+        id: 2,
+        product_image: "assets/images/product/2.png",
+        product_name: "Latte Lounge",
+        date: "12-1-2021",
+        foods: 2
+    },
+    {
+        id: 3,
+        product_image: "assets/images/product/3.png",
+        product_name: "Ribeye Junction",
+        date: "20-6-2021",
+        foods: 6
+    },
+    {
+        id: 4,
+        product_image: "assets/images/product/4.png",
+        product_name: "Wing Master",
+        date: "25-12-2021",
+        foods: 4
+    },
+    {
+        id: 5,
+        product_image: "assets/images/product/5.png",
+        product_name: "Mocha Magic Cafe",
+        date: "20-11-2021",
+        foods: 8
+    },
+    {
+        id: 6,
+        product_image: "assets/images/product/6.png",
+        product_name: "The Burger Barn",
+        date: "22-12-2021",
+        foods: 4
+    }
+]

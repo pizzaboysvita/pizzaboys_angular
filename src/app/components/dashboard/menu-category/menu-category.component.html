@@ -1,0 +1,29 @@
+
+<div class="card">
+    <div class="card-header">
+        <h5>Menu category</h5>
+    </div>
+    <div class="card-body">
+        <div class="categories-section">
+            <div class="theme-arrow">
+                <div class="swiper categories-slider categories-style">
+                    <div class="swiper-wrapper">
+                        <owl-carousel-o [options]="customOptions">
+                            @for (item of MenuCategory; track item) {
+                            <ng-template carouselSlide>
+                                <div class="swiper-slide">
+                                    <a [routerLink]="['/category/category-list']" class="food-categories">
+                                        <img class="img-fluid categories-img" [src]="item.image_url"
+                                            alt="p-1">
+                                        <h4 class="dark-text">{{item.category}}</h4>
+                                    </a>
+                                </div>
+                            </ng-template>
+                            }
+                        </owl-carousel-o>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

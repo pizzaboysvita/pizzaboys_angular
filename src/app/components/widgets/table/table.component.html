@@ -1,0 +1,76 @@
+<div class="table-responsive theme-scrollbar">
+    <div class="dataTables_wrapper no-footer">
+        @if (search) {
+        <label>Search:<input type="search" [(ngModel)]="searchText"></label>
+        }
+        <table [ngClass]="tableClass ? tableClass:'table category-table dataTable no-footer'">
+            <thead>
+                <tr>
+                    @if (hasCheckbox) {
+                    <th>
+                        <input class="custom-checkbox" type="checkbox" name="text" (change)="checkUncheckAll($event)">
+                    </th>
+                    }
+                    @for (columnHead of tableConfig.columns; track columnHead) {
+                    <th>{{columnHead.title}}</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @for (columnData of filterData(searchText); track columnData;let ind = $index) {
+                <tr>
+                    @if (hasCheckbox) {
+                    <td>
+                        <input class="custom-checkbox" type="checkbox" name="text" (change)="onItemChecked($event)"
+                            [checked]="selected.length && selected.includes(columnData?.id)">
+                    </td>
+                    }
+                    @for (columnHead of tableConfig.columns; track columnHead) {
+                    @if (columnHead?.type &&columnHead?.type == 'image') {
+                    <td>
+                        <div class="table-image">
+                            <img [src]="columnData[columnHead.dataField]" class="img-fluid" [class]="columnHead.class"
+                                alt="">
+                        </div>
+                    </td>
+                    } @else if(columnHead?.type && columnHead?.type == 'rating') {
+                    <td>
+                        <ngb-rating class="font-primary" [rate]="columnData[columnHead?.dataField]"></ngb-rating>
+                    </td>
+                    } @else if (columnHead.title === 'Tracking'){
+                    <td>
+                        <a  [routerLink]="columnData.trackingRoute"
+                            class="btn btn-sm btn-dashed text-white">
+                            {{ columnData[columnHead?.dataField] }}
+                        </a>
+                    </td>
+                    }
+                    @else if (tableConfig.rowActions?.length && columnHead?.type && columnHead?.type == 'option') {
+                    <td>
+                        <ul>
+                            @for (action of tableConfig.rowActions; track action) {
+                            <li>
+                                <a href="javascript:void(0)" (click)="performAction(action)">
+                                    <i [class]="action.icon"></i>
+                                </a>
+                            </li>
+                            }
+                        </ul>
+                    </td>
+                    }
+                    @else {
+                    <td [class]="columnHead.class" [innerHTML]="columnData[columnHead.dataField]"></td>
+                    }
+                    }
+                </tr>
+                } @empty {
+                <tr>
+                    <td [attr.colspan]="tableConfig.columns.length + 1">
+                        No matching records found
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

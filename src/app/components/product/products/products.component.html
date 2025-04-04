@@ -1,0 +1,25 @@
+<div class="row">
+    <div class="col-sm-12">
+        <app-card [cardClass]="'card-table'" [body]="true">
+            <div class="title-header option-title d-sm-flex d-block" body>
+                <h5>Products List</h5>
+                <div class="right-options">
+                    <ul>
+                        <li>
+                            <a href="javascript:void(0)" class="product-btn-1"><i class="ri-download-2-fill me-1"></i>import</a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)" class="product-btn-1"><i class="ri-upload-2-fill me-1"></i>Export</a>
+                        </li>
+                        <li>
+                            <a class="btn btn-dashed" [routerLink]="['/product/add-new-products']">Add Product</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div body>
+                <app-table [search]="true" [hasCheckbox]="true" [tableConfig]="tableConfig"></app-table>
+            </div>
+        </app-card>
+    </div>
+</div>

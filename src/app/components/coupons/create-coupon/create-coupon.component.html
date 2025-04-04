@@ -1,0 +1,32 @@
+ <app-card [header]="true" [body]="true">
+     <h5 header>Create Coupon</h5>
+     <div class="row" body>
+         <div class="col-12">
+             <ul ngbNav #nav="ngbNav" [(activeId)]="active"
+                 class="nav setting-main-box driver-main-box sticky theme-scrollbar">
+                 <li [ngbNavItem]="1">
+                     <button ngbNavLink class="nav-link"><i class="ri-settings-line"></i>General</button>
+                     <ng-template ngbNavContent>
+                         <app-general></app-general>
+                     </ng-template>
+                 </li>
+                 <li [ngbNavItem]="2">
+                     <button ngbNavLink class="nav-link"><i class="ri-information-2-line"></i>Restriction</button>
+                     <ng-template ngbNavContent>
+                         <app-restriction></app-restriction>
+                     </ng-template>
+                 </li>
+                 <li [ngbNavItem]="3">
+                     <button ngbNavLink class="nav-link"><i class="ri-timer-2-line"></i>Usage Limits</button>
+                     <ng-template ngbNavContent>
+                         <app-usage-limits></app-usage-limits>
+                     </ng-template>
+                 </li>
+             </ul>
+         </div>
+         <div class="col-12">
+             <div class="restaurant-tab" [ngbNavOutlet]="nav"></div>
+         </div>
+     </div>
+     <button body class="btn save-button mt-2" type="submit">Save</button>
+ </app-card>

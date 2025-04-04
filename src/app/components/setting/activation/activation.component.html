@@ -1,0 +1,15 @@
+<ul class="activation">
+    @for (item of Activation; track item) {
+    <li>
+        <div class="icon-state">
+            <label class="switch-xsm mb-0">
+                <input type="checkbox" id="{{item.id}}" [checked]="item.active"><span class="slider round"></span>
+            </label>
+            <label class="form-check-label" for="{{item.id}}">{{item.title}}</label>
+        </div>
+        <p>
+            <i class="ri-information-line"></i> {{item.description}}
+        </p>
+    </li>
+    }
+</ul>

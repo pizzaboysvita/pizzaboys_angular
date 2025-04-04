@@ -1,0 +1,51 @@
+<div class="row">
+    <div class="col-12">
+        <div class="row">
+            <div class="col-12">
+                <app-card [header]="true" [body]="true">
+                    <h5 header>Category Information</h5>
+                    <div class="input-items" body>
+                        <div class="row gy-3">
+                            <div class="col-12">
+                                <div class="input-box">
+                                    <h6>Name</h6>
+                                    <input type="text" name="text" placeholder="Enter Your Name">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="input-box">
+                                    <h6>Category Image</h6>
+                                    <form class="">
+                                        <dropzone [config]="imageConfig" (error)="onUploadError($event)"
+                                            (success)="onUploadSuccess($event)" [message]="text" class="custom-dropzone"></dropzone>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="input-box">
+                                    <h6>Description</h6>
+                                    <textarea name="text" rows="4"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="input-box d-flex align-items-center gap-2">
+                                    <input class="custom-checkbox" type="checkbox" id="c-1">
+                                    <label for="c-1" class="mb-0">Publish</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="input-box d-flex align-items-center gap-2">
+                                    <input class="custom-checkbox" type="checkbox" id="c-2">
+                                    <label for="c-2" class="mb-0">Show in Homepage?</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <a href="javascript:void(0)" class="btn restaurant-button">Save</a>
+                            </div>
+                        </div>
+                    </div>
+                </app-card>
+            </div>
+        </div>
+    </div>
+</div>
