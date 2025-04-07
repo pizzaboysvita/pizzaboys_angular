@@ -32,6 +32,22 @@ export class LoginComponent {
         name: "test user",
       };
       localStorage.setItem("user", JSON.stringify(user));
+      this.router.navigate(["/product/products"]);
+    }else if(this.loginForm.value["email"] == "customer@gmail.com" && this.loginForm.value["password"] == "test123") {
+      let user = {
+        email: "customer@gmail.com",
+        password: "test123",
+        name: "customer",
+      };
+      localStorage.setItem("user", JSON.stringify(user));
+      this.router.navigate(["/dashboard"]);
+    }else if(this.loginForm.value["email"] == "pos@gmail.com" && this.loginForm.value["password"] == "test123") {
+      let user = {
+        email: "pos@gmail.com",
+        password: "test123",
+        name: "pos",
+      };
+      localStorage.setItem("user", JSON.stringify(user));
       this.router.navigate(["/dashboard"]);
     }
   }

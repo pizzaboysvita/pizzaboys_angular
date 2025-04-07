@@ -1,19 +1,37 @@
 <div class="row">
-    <div class="col-xl-7">
-        <app-card [card]="true">
-            <div class="delivery-root" card>
-                <google-map height="500px" width="100%" [zoom]="zoom">
-                    @for (item of markers; track item) {
-                    <map-marker #markerElem [position]="item.position" [label]="item.label"
-                        [options]="item.options">
-                    </map-marker>
-                    }
-                </google-map>
-            </div>
-        </app-card>
+    <div class="col-xl-8">
+       <app-media></app-media>
     </div>
-    <div class="col-xl-5">
-        <app-card [body]="true">
+    <div class="col-xl-4
+    
+    ">
+<div class="card">
+    <div class="row" body>
+        <div class="col-12">
+            <ul class="nav setting-main-box driver-main-box sticky theme-scrollbar" ngbNav #nav="ngbNav"
+                [(activeId)]="active">
+                <li [ngbNavItem]="1">
+                    <button ngbNavLink class="nav-link"><i class="ri-settings-line"></i>Order
+                        Status</button>
+                    <ng-template ngbNavContent>
+                        <app-order-status></app-order-status>
+                    </ng-template>
+                </li>
+                <li [ngbNavItem]="2">
+                    <button ngbNavLink class="nav-link"><i class="ri-information-2-line"></i>Order
+                        Details</button>
+                    <ng-template ngbNavContent>
+                        <app-details></app-details>
+                    </ng-template>
+                </li>
+            </ul>
+        </div>
+        <div class="col-12">
+            <div class="restaurant-tab" [ngbNavOutlet]="nav"></div>
+        </div>
+    </div>
+</div>
+        <!-- <app-card [body]="true">
             <div class="row" body>
                 <div class="col-12">
                     <ul class="nav setting-main-box driver-main-box sticky theme-scrollbar" ngbNav #nav="ngbNav"
@@ -38,6 +56,6 @@
                     <div class="restaurant-tab" [ngbNavOutlet]="nav"></div>
                 </div>
             </div>
-        </app-card>
+        </app-card> -->
     </div>
 </div>

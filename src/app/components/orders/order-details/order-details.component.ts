@@ -4,13 +4,14 @@ import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { CardComponent } from "../../../shared/components/card/card.component";
 import { DetailsComponent } from "./details/details.component";
 import { OrderStatusComponent } from "./order-status/order-status.component";
+import { MediaComponent } from '../../media/media.component';
 
 @Component({
     selector: 'app-order-details',
     templateUrl: './order-details.component.html',
     styleUrl: './order-details.component.scss',
-    imports: [NgbNavModule, OrderStatusComponent, DetailsComponent,
-        CardComponent, GoogleMapsModule]
+    imports: [NgbNavModule, OrderStatusComponent, DetailsComponent,MediaComponent,
+         GoogleMapsModule]
 })
 
 export class OrderDetailsComponent {

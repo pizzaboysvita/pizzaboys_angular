@@ -96,7 +96,7 @@ body {
 				.ng-select-container {
 					background-color: $dark-card-background;
 					color: $white !important; 
-					border: 1px dashed rgba($white, 0.1);
+					border: 1px solid rgba($white, 0.1) !important;
 					input {
 						color: $white !important;
 					}
@@ -206,7 +206,7 @@ body {
 			}
 		}
 		input {
-			border: 1px dashed rgba($white, 0.1);
+			border: 1px solid rgba($white, 0.1);
 			color: rgba($white, 0.8);
 			&:focus {
 				outline: none;
@@ -650,7 +650,7 @@ body {
 					}
 
 					td {
-						border-bottom: 1px dashed rgb(51, 54, 62) !important;
+						border-bottom: 1px solid rgb(51, 54, 62) !important;
 
 						&:nth-child(odd) {
 							h6 {
@@ -918,7 +918,7 @@ body {
 		}
 
 		.ecommerce-widget {
-			border: 1px dashed $dark-card-border !important;
+			border: 1px solid $dark-card-border !important;
 		}
 
 		.btn-light {
@@ -935,7 +935,7 @@ body {
 
 		.form-select {
 			background-color: $dark-body-background;
-			border: 1px dashed $dark-border-color;
+			border: 1px solid $dark-border-color;
 		}
 
 		.box-layout {
@@ -945,7 +945,7 @@ body {
 			&.page-wrapper {
 				.page-header {
 					.header-wrapper {
-						border: 1px dashed $dark-border-color;
+						border: 1px solid $dark-border-color;
 					}
 				}
 			}
@@ -1095,14 +1095,14 @@ body {
 								.flip-back-content {
 									input {
 										background-color: $dark-body-background;
-										border: 1px dashed $dark-card-border;
+										border: 1px solid $dark-card-border;
 										color: $dark-all-font-color;
 									}
 								}
 
 								li {
 									&:last-child {
-										border-top: 1px dashed $dark-card-border;
+										border-top: 1px solid $dark-card-border;
 									}
 								}
 							}
@@ -1186,11 +1186,11 @@ body {
 
 		.note-editor.note-frame {
 			.note-status-output {
-				border-top: 1px dashed $dark-card-background;
+				border-top: 1px solid $dark-card-background;
 			}
 
 			.note-statusbar {
-				border-top: 1px dashed $dark-card-background;
+				border-top: 1px solid $dark-card-background;
 
 				.note-resizebar {
 					background-color: $dark-card-background;
@@ -1204,24 +1204,24 @@ body {
 
 		.page-link {
 			background-color: $dark-body-background;
-			border: 1px dashed $dark-card-border;
+			border: 1px solid $dark-card-border;
 		}
 
 		.b-r-light {
-			border-right: 1px dashed $dark-card-border !important;
+			border-right: 1px solid $dark-card-border !important;
 		}
 
 		.modal-header {
-			border-bottom: 1px dashed $dark-card-border;
+			border-bottom: 1px solid $dark-card-border;
 		}
 
 		.translate_wrapper.active .more_lang {
 			&:before {
-				border-bottom: 7px dashed $dark-card-background;
+				border-bottom: 7px solid $dark-card-background;
 			}
 
 			.lang {
-				border-bottom: 1px dashed $dark-body-background;
+				border-bottom: 1px solid $dark-body-background;
 			}
 		}
 
@@ -1412,11 +1412,11 @@ body {
 		.left-header {
 			.mega-menu-container {
 				background-color: $dark-card-background;
-				border-top: 1px dashed $dark-card-background;
+				border-top: 1px solid $dark-card-background;
 
 				.mega-box {
 					+.mega-box {
-						border-left: 1px dashed $dark-card-border;
+						border-left: 1px solid $dark-card-border;
 					}
 				}
 			}
@@ -1447,12 +1447,12 @@ body {
 		}
 
 		#lnb {
-			border-right: 1px dashed $dark-card-border;
+			border-right: 1px solid $dark-card-border;
 		}
 
 		.lnb-new-schedule,
 		.lnb-calendars>div {
-			border-bottom: 1px dashed $dark-card-border;
+			border-bottom: 1px solid $dark-card-border;
 		}
 
 		#menu .sidebar-list .btn-default {
@@ -1465,7 +1465,7 @@ body {
 		}
 
 		.tui-full-calendar-timegrid-gridline {
-			border-bottom: 1px dashed $dark-card-border !important;
+			border-bottom: 1px solid $dark-card-border !important;
 		}
 
 		.tui-full-calendar-time-date,
@@ -1509,7 +1509,7 @@ body {
 
 		// index page css end
 		.blockquote {
-			border-left: 4px dashed $dark-card-border;
+			border-left: 4px solid $dark-card-border;
 		}
 
 		.figure {
@@ -1557,7 +1557,7 @@ body {
 					}
 
 					.earning-content {
-						border-right: 1px dashed $dark-card-border;
+						border-right: 1px solid $dark-card-border;
 					}
 
 					.inner-top-left,
@@ -1582,7 +1582,7 @@ body {
 					}
 
 					.border-top {
-						border-top: 1px dashed $dark-card-border !important;
+						border-top: 1px solid $dark-card-border !important;
 					}
 				}
 			}
@@ -1593,7 +1593,7 @@ body {
 			.card-body {
 				.chart-main {
 					.media {
-						border-right: 1px dashed $dark-card-border;
+						border-right: 1px solid $dark-card-border;
 
 						&.border-none {
 							border-right: none;
@@ -1634,7 +1634,7 @@ body {
 					line-height: 24px;
 				}
 
-				border-bottom: 1px dashed $dark-card-border;
+				border-bottom: 1px solid $dark-card-border;
 			}
 
 			.appointment {
@@ -1729,7 +1729,7 @@ body {
 					.profile-dropdown {
 						li {
 							&:last-child {
-								border-top: 1px dashed $dark-card-border !important;
+								border-top: 1px solid $dark-card-border !important;
 							}
 						}
 					}
@@ -1803,7 +1803,7 @@ body {
 
 		.options {
 			>div {
-				border: 1px dashed $dark-card-border;
+				border: 1px solid $dark-card-border;
 			}
 		}
 
@@ -1828,7 +1828,7 @@ body {
 				&.search-info {
 					li {
 						+li {
-							border-left: 1px dashed $dark-body-background;
+							border-left: 1px solid $dark-body-background;
 						}
 					}
 				}
@@ -1966,7 +1966,7 @@ body {
 		}
 
 		.ecommerce-widget {
-			border: 1px dashed $dark-border-color;
+			border: 1px solid $dark-border-color;
 		}
 
 		.bookmark {
@@ -1976,7 +1976,7 @@ body {
 						.form-control-search {
 							input {
 								background-color: $dark-body-background;
-								border: 1px dashed $dark-border-color;
+								border: 1px solid $dark-border-color;
 								color: $dark-all-font-color;
 							}
 
@@ -2006,13 +2006,13 @@ body {
 		.checkout {
 			.checkout-details {
 				background-color: $dark-body-background;
-				border: 1px dashed $dark-border-color;
+				border: 1px solid $dark-border-color;
 				padding: 40px;
 
 				.animate-chk {
 					.radio_animated {
 						&:after {
-							border: 2px dashed $dark-card-background;
+							border: 2px solid $dark-card-background;
 						}
 					}
 				}
@@ -2343,7 +2343,7 @@ body {
 		.animate-chk {
 			.radio_animated {
 				&:after {
-					border: 2px dashed $dark-border-color;
+					border: 2px solid $dark-border-color;
 				}
 			}
 		}
@@ -2367,7 +2367,7 @@ body {
 		}
 
 		.nav-pills {
-			border-bottom: 1px dashed rgba(74, 74, 74, .6);
+			border-bottom: 1px solid rgba(74, 74, 74, .6);
 
 			.nav-item {
 				.nav-link {
@@ -2472,7 +2472,7 @@ body {
 				tbody {
 					tr {
 						td {
-							border-bottom: 1px dashed $dark-border-color;
+							border-bottom: 1px solid $dark-border-color;
 						}
 
 						&:last-child {
@@ -2490,7 +2490,7 @@ body {
 				.pricing-inner {
 					ul {
 						li {
-							border-bottom: 1px dashed $dark-border-color;
+							border-bottom: 1px solid $dark-border-color;
 						}
 					}
 				}
@@ -2600,11 +2600,11 @@ body {
 									}
 
 									&:before {
-										border-bottom: 7px dashed $dark-body-background;
+										border-bottom: 7px solid $dark-body-background;
 									}
 
 									&:after {
-										border-bottom: 7px dashed $dark-body-background;
+										border-bottom: 7px solid $dark-body-background;
 									}
 								}
 
@@ -2668,11 +2668,11 @@ body {
 									box-shadow: 0 0 2px 2px $dark-card-background;
 
 									&:before {
-										border-bottom: 7px dashed $dark-body-background;
+										border-bottom: 7px solid $dark-body-background;
 									}
 
 									&:after {
-										border-bottom: 7px dashed $dark-body-background;
+										border-bottom: 7px solid $dark-body-background;
 									}
 								}
 
@@ -2826,7 +2826,7 @@ body {
 								tr {
 									td {
 										border-top: none !important;
-										border-bottom: 1px dashed $dark-card-border;
+										border-bottom: 1px solid $dark-card-border;
 									}
 
 									&:last-child {
@@ -2843,7 +2843,7 @@ body {
 						.media {
 							.media-body {
 								.circle-left {
-									border: 5px dashed #334154;
+									border: 5px solid #334154;
 								}
 							}
 						}
@@ -2851,7 +2851,7 @@ body {
 
 					.upcoming-event {
 						.upcoming-innner {
-							border-bottom: 1px dashed $dark-border-color;
+							border-bottom: 1px solid $dark-border-color;
 
 							&:last-child {
 								border-bottom: none;
@@ -2991,7 +2991,7 @@ body {
 
 						.card-header {
 							background-color: $transparent-color;
-							border-bottom: 1px dashed $dark-card-border;
+							border-bottom: 1px solid $dark-card-border;
 
 							>span {
 								color: $dark-all-font-color;
@@ -3044,7 +3044,7 @@ body {
 						.grid-item {
 							img {
 								background-color: $dark-card-background;
-								border: 1px dashed $dark-card-border;
+								border: 1px solid $dark-card-border;
 							}
 						}
 
@@ -3054,7 +3054,7 @@ body {
 
 						.card-footer {
 							background-color: $dark-card-background;
-							border-top: 1px dashed $dark-card-border;
+							border-top: 1px solid $dark-card-border;
 						}
 
 						.switch {
@@ -3072,7 +3072,7 @@ body {
 						}
 
 						.b-l-light {
-							border-left: 1px dashed $dark-border-color !important;
+							border-left: 1px solid $dark-border-color !important;
 						}
 
 						.ct-grid {
@@ -3084,7 +3084,7 @@ body {
 						}
 
 						hr {
-							border-top: 1px dashed $dark-border-color;
+							border-top: 1px solid $dark-border-color;
 						}
 
 						.text-muted {
@@ -3094,17 +3094,17 @@ body {
 						.calender-widget {
 							.cal-date {
 								background-color: $dark-card-background;
-								border: 1px dashed $dark-border-color;
+								border: 1px solid $dark-border-color;
 							}
 						}
 
 						.contact-form {
 							.theme-form {
-								border: 1px dashed $dark-card-border;
+								border: 1px solid $dark-card-border;
 
 								.form-icon {
 									background-color: $dark-card-background;
-									border: 1px dashed $dark-card-border;
+									border: 1px solid $dark-card-border;
 									color: $dark-all-font-color;
 								}
 							}
@@ -3114,7 +3114,7 @@ body {
 						.btn-outline-dark,
 						.btn-outline-light-2x {
 							color: $white !important;
-							border: 1px dashed $dark-card-border;
+							border: 1px solid $dark-card-border;
 						}
 
 						.btn-outline-light {
@@ -3124,7 +3124,7 @@ body {
 						}
 
 						.border-right {
-							border-right: 1px dashed $dark-border-color !important;
+							border-right: 1px solid $dark-border-color !important;
 						}
 
 						.flot-chart-placeholder {
@@ -3207,7 +3207,7 @@ body {
 						}
 
 						.b-r-light {
-							border-right: 1px dashed $dark-card-border !important;
+							border-right: 1px solid $dark-card-border !important;
 						}
 
 						.chart-container {
@@ -3255,13 +3255,13 @@ body {
 							.form-control {
 								background-color: $dark-body-background;
 								color: $dark-small-font-color;
-								border: 1px dashed $dark-border-color;
+								border: 1px solid $dark-border-color;
 							}
 						}
 
 						.img-thumbnail {
 							background-color: $dark-body-background;
-							border: 1px dashed $dark-card-border;
+							border: 1px solid $dark-card-border;
 						}
 
 						.dataTables_wrapper {
@@ -3271,7 +3271,7 @@ body {
 
 							&.no-footer {
 								.dataTables_scrollBody {
-									border-bottom: 1px dashed $dark-body-background;
+									border-bottom: 1px solid $dark-body-background;
 								}
 							}
 
@@ -3285,7 +3285,7 @@ body {
 								select {
 									background-color: $dark-body-background;
 									color: $dark-all-font-color;
-									border: 1px dashed $dark-border-color;
+									border: 1px solid $dark-border-color;
 								}
 							}
 
@@ -3298,13 +3298,13 @@ body {
 							}
 
 							.dataTables_paginate {
-								border: 1px dashed $dark-border-color;
+								border: 1px solid $dark-border-color;
 							}
 
 							.dataTables_filter {
 								input[type="search"] {
 									background-color: $dark-body-background;
-									border: 1px dashed $dark-border-color;
+									border: 1px solid $dark-border-color;
 									color: $dark-all-font-color;
 								}
 							}
@@ -3335,7 +3335,7 @@ body {
 
 									th,
 									td {
-										border-top: 1px dashed $dark-border-color;
+										border-top: 1px solid $dark-border-color;
 									}
 								}
 							}
@@ -3368,11 +3368,11 @@ body {
 
 								th,
 								td {
-									border-top: 1px dashed $dark-border-color;
-									border-right: 1px dashed $dark-border-color;
+									border-top: 1px solid $dark-border-color;
+									border-right: 1px solid $dark-border-color;
 
 									&:first-child {
-										border-left: 1px dashed $dark-border-color;
+										border-left: 1px solid $dark-border-color;
 									}
 								}
 							}
@@ -3395,13 +3395,13 @@ body {
 						#example-style-3_wrapper {
 							#example-style-3 {
 								tfoot {
-									border-top: 2px dashed $dark-border-color;
+									border-top: 2px solid $dark-border-color;
 								}
 							}
 						}
 
 						.page-link {
-							border: 1px dashed $dark-card-border;
+							border: 1px solid $dark-card-border;
 						}
 
 						.page-item.disabled {
@@ -3450,7 +3450,7 @@ body {
 
 						.flot-chart-container-small {
 							background-color: $dark-card-background;
-							border-top: 1px dashed $dark-border-color;
+							border-top: 1px solid $dark-border-color;
 						}
 
 						.product-table {
@@ -3474,7 +3474,7 @@ body {
 						}
 
 						.border-tab.nav-tabs {
-							border-bottom: 1px dashed $dark-border-color;
+							border-bottom: 1px solid $dark-border-color;
 
 							.nav-item {
 								.nav-link {
@@ -3512,13 +3512,13 @@ body {
 						.br-theme-bars-square {
 							.br-widget {
 								a {
-									border: 2px dashed $dark-border-color;
+									border: 2px solid $dark-border-color;
 									background-color: $dark-card-background;
 									color: $dark-all-font-color;
 
 									&.br-active,
 									&.br-selected {
-										border: 2px dashed var(--theme-color);
+										border: 2px solid var(--theme-color);
 										color: var(--theme-color);
 									}
 								}
@@ -3526,12 +3526,12 @@ body {
 						}
 
 						.scroll-demo {
-							border: 1px dashed $dark-card-border;
+							border: 1px solid $dark-card-border;
 						}
 
 						.search-form {
 							input {
-								border: 1px dashed $dark-border-color;
+								border: 1px solid $dark-border-color;
 								color: $dark-all-font-color;
 								background-color: $dark-body-background;
 							}
@@ -3547,7 +3547,7 @@ body {
 							background-color: $dark-border-color;
 
 							&::before {
-								border-left: 7px dashed $dark-border-color;
+								border-left: 7px solid $dark-border-color;
 							}
 						}
 
@@ -3612,7 +3612,7 @@ body {
 
 						.drag-box {
 							fieldset {
-								border: 1px dashed $dark-border-color;
+								border: 1px solid $dark-border-color;
 							}
 						}
 
@@ -3631,7 +3631,7 @@ body {
 
 					.jsgrid-grid-header {
 						background-color: $dark-card-background;
-						border: 1px dashed $dark-border-color;
+						border: 1px solid $dark-border-color;
 					}
 
 					.jsgrid-row {
@@ -3648,7 +3648,7 @@ body {
 
 					.jsgrid-cell,
 					.jsgrid-grid-body {
-						border: 1px dashed $dark-border-color;
+						border: 1px solid $dark-border-color;
 					}
 
 					.jsgrid-selected-row {
@@ -3660,7 +3660,7 @@ body {
 					.jsgrid {
 						.jsgrid-pager {
 							[class*="jsgrid-pager"] {
-								border: 1px dashed $dark-border-color;
+								border: 1px solid $dark-border-color;
 							}
 
 							.jsgrid-pager-page {
@@ -3677,7 +3677,7 @@ body {
 					}
 
 					.sub-title {
-						border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+						border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 					}
 
 					.navs-icon {
@@ -3692,7 +3692,7 @@ body {
 						}
 
 						.separator {
-							border-bottom: 1px dashed $dark-card-border;
+							border-bottom: 1px solid $dark-card-border;
 						}
 					}
 
@@ -3777,7 +3777,7 @@ body {
 						&:hover {
 							.onhover-show-div {
 								&:before {
-									border-bottom: 7px dashed $dark-body-background;
+									border-bottom: 7px solid $dark-body-background;
 								}
 							}
 						}
@@ -3794,14 +3794,14 @@ body {
 							}
 
 							.card-body {
-								border: 1px dashed $dark-card-border;
+								border: 1px solid $dark-card-border;
 								border-top: none;
 							}
 						}
 					}
 
 					.border {
-						border: 1px dashed $dark-card-border !important;
+						border: 1px solid $dark-card-border !important;
 					}
 
 					ul {
@@ -3827,7 +3827,7 @@ body {
 					.button-builder-wrap {
 						.box {
 							background-color: $dark-card-background;
-							border: 1px dashed $dark-border-color;
+							border: 1px solid $dark-border-color;
 						}
 
 						.button-preview {
@@ -3844,7 +3844,7 @@ body {
 					.crm-activity {
 						>li {
 							+li {
-								border-top: 1px dashed $dark-border-color;
+								border-top: 1px solid $dark-border-color;
 							}
 
 							h6 {
@@ -3896,7 +3896,7 @@ body {
 								}
 
 								+div {
-									border-left: 1px dashed $dark-card-inbox;
+									border-left: 1px solid $dark-card-inbox;
 								}
 							}
 						}
@@ -3905,7 +3905,7 @@ body {
 					.form-control {
 						background-color: $dark-body-background;
 						color: rgba($dark-all-font-color, 0.3);
-						border: 1px dashed $dark-border-color;
+						border: 1px solid $dark-border-color;
 					}
 
 					.checkbox,
@@ -3913,7 +3913,7 @@ body {
 						label {
 							&::before {
 								background-color: $dark-body-background;
-								border: 1px dashed $dark-border-color;
+								border: 1px solid $dark-border-color;
 								color: $dark-all-font-color;
 							}
 						}
@@ -3939,7 +3939,7 @@ body {
 								}
 
 								.dropdown-divider {
-									border: 1px dashed $dark-border-color;
+									border: 1px solid $dark-border-color;
 								}
 							}
 						}
@@ -3986,7 +3986,7 @@ body {
 
 					.browser-widget {
 						.media-body {
-							column-rule: 1px dashed $dark-card-border;
+							column-rule: 1px solid $dark-card-border;
 
 							h4 {
 								color: $dark-all-font-color;
@@ -4004,7 +4004,7 @@ body {
 
 					.dropdown-menu {
 						background-color: $dark-body-background;
-						border: 1px dashed $dark-card-background;
+						border: 1px solid $dark-card-background;
 
 						a {
 							color: $dark-all-font-color;
@@ -4026,7 +4026,7 @@ body {
 							}
 
 							.details {
-								border-left: 1px dashed $dark-card-border;
+								border-left: 1px solid $dark-card-border;
 							}
 						}
 
@@ -4055,11 +4055,11 @@ body {
 					}
 
 					.b-b-light {
-						border-bottom: 1px dashed $dark-card-border !important;
+						border-bottom: 1px solid $dark-card-border !important;
 					}
 
 					.b-r-dark {
-						border-right: 1px dashed $white !important;
+						border-right: 1px solid $white !important;
 					}
 
 					.testimonial {
@@ -4083,14 +4083,14 @@ body {
 					.grid-showcase {
 						span {
 							background-color: $dark-card-background;
-							border: 1px dashed $dark-card-border;
+							border: 1px solid $dark-card-border;
 						}
 					}
 
 					.grid-align {
 						.row {
 							background-color: $dark-border-color;
-							border: 1px dashed $dark-border-color;
+							border: 1px solid $dark-border-color;
 						}
 					}
 
@@ -4098,20 +4098,20 @@ body {
 						.ge-html-output {
 							background-color: $dark-body-background;
 							color: $dark-small-font-color;
-							border: 1px dashed $dark-card-border;
+							border: 1px solid $dark-card-border;
 						}
 
 						.btn-grid {
 							background-color: $dark-card-background;
 							color: $dark-small-font-color !important;
-							border-right: 1px dashed $dark-border-color;
+							border-right: 1px solid $dark-border-color;
 						}
 
 						.ge-mainControls {
 							.ge-addRowGroup {
 								.ge-row-icon {
 									.column {
-										border-left: 3px dashed $dark-card-background;
+										border-left: 3px solid $dark-card-background;
 									}
 								}
 							}
@@ -4120,7 +4120,7 @@ body {
 						.btn-code,
 						.btn-screen {
 							color: $dark-small-font-color;
-							border-right: 1px dashed $dark-border-color;
+							border-right: 1px solid $dark-border-color;
 						}
 
 						.ge-canvas.ge-editing {
@@ -4129,7 +4129,7 @@ body {
 							}
 
 							.column {
-								border: 1px dashed $dark-border-color;
+								border: 1px solid $dark-border-color;
 								background-color: $dark-card-background;
 							}
 
@@ -4157,7 +4157,7 @@ body {
 
 					.search-page {
 						.info-block {
-							border: 1px dashed $dark-border-color;
+							border: 1px solid $dark-border-color;
 						}
 					}
 
@@ -4189,7 +4189,7 @@ body {
 
 				.footer-fix {
 					background-color: $dark-card-background;
-					border-top: 1px dashed $dark-border-color;
+					border-top: 1px solid $dark-border-color;
 				}
 			}
 
@@ -4201,7 +4201,7 @@ body {
 
 			.dt-button-info {
 				background-color: $dark-card-background;
-				border: 1px dashed $dark-small-font-color;
+				border: 1px solid $dark-small-font-color;
 
 				h2 {
 					background-color: $dark-card-background;
@@ -4223,7 +4223,7 @@ body {
 
 			.input-group-text {
 				background-color: $dark-card-background;
-				border: 1px dashed $dark-body-background;
+				border: 1px solid $dark-body-background;
 				color: rgba(255, 255, 255, 0.6);
 
 				i {
@@ -4231,12 +4231,12 @@ body {
 				}
 			}
 
-			.input-group-dashed {
+			.input-group-solid {
 
 				.input-group-text,
 				.form-control {
 					background: $dark-body-background;
-					border: 1px dashed $dark-border-color;
+					border: 1px solid $dark-border-color;
 					color: $dark-all-font-color;
 				}
 			}
@@ -4248,7 +4248,7 @@ body {
 
 			.list-group-item {
 				background-color: $dark-card-background;
-				border: 1px dashed rgba(255, 255, 255, 0.3);
+				border: 1px solid rgba(255, 255, 255, 0.3);
 				color: $dark-all-font-color;
 
 				+.list-group-item {
@@ -4337,7 +4337,7 @@ body {
 								input {
 									color: $dark-all-font-color;
 									background-color: $dark-body-background;
-									border: 1px dashed $dark-border-color;
+									border: 1px solid $dark-border-color;
 								}
 
 								label {
@@ -4351,7 +4351,7 @@ body {
 
 									&::before {
 										background-color: $dark-body-background;
-										border: 1px dashed $dark-border-color;
+										border: 1px solid $dark-border-color;
 									}
 								}
 							}
@@ -4390,7 +4390,7 @@ body {
 								input[type="text"],
 								input[type="password"] {
 									background-color: $dark-body-background;
-									border: 1px dashed $dark-border-color;
+									border: 1px solid $dark-border-color;
 									color: $dark-all-font-color;
 								}
 							}
@@ -4399,7 +4399,7 @@ body {
 								label {
 									&::before {
 										background-color: $dark-body-background;
-										border: 1px dashed $dark-border-color;
+										border: 1px solid $dark-border-color;
 									}
 								}
 							}
@@ -4412,7 +4412,7 @@ body {
 				background-color: $dark-card-background;
 
 				.modal-header {
-					border-bottom: 1px dashed $dark-border-color;
+					border-bottom: 1px solid $dark-border-color;
 
 					.close {
 						color: $dark-small-font-color;
@@ -4420,13 +4420,13 @@ body {
 				}
 
 				.modal-footer {
-					border-top: 1px dashed $dark-border-color;
+					border-top: 1px solid $dark-border-color;
 				}
 			}
 
 			.theme-form {
 				.login-divider {
-					border-top: 1px dashed $dark-border-color;
+					border-top: 1px solid $dark-border-color;
 
 					&:before {
 						background: $dark-border-color;
@@ -4489,7 +4489,7 @@ body {
 									input[type="text"],
 									input[type="password"] {
 										background-color: $dark-body-background;
-										border: 1px dashed $dark-border-color;
+										border: 1px solid $dark-border-color;
 										color: $dark-all-font-color;
 									}
 								}
@@ -4498,7 +4498,7 @@ body {
 									label {
 										&::before {
 											background-color: $dark-body-background;
-											border: 1px dashed $dark-border-color;
+											border: 1px solid $dark-border-color;
 										}
 									}
 								}
@@ -4515,7 +4515,7 @@ body {
 			.mega-menu {
 				.title {
 					color: $dark-all-font-color;
-					border-bottom: 1px dashed $dark-border-color;
+					border-bottom: 1px solid $dark-border-color;
 				}
 
 				.list-unstyled {
@@ -4535,7 +4535,7 @@ body {
 
 					.btn-link {
 						background-color: $dark-card-background;
-						border: 1px dashed $dark-card-border;
+						border: 1px solid $dark-card-border;
 						border-bottom: none;
 						color: $white;
 					}
@@ -4548,14 +4548,14 @@ body {
 				.bg-primary {
 					.btn-link {
 						background-color: var(--theme-color);
-						border: 1px dashed var(--theme-color);
+						border: 1px solid var(--theme-color);
 					}
 				}
 
 				.bg-secondary {
 					.btn-link {
 						background-color: var(--theme-secondary);
-						border: 1px dashed var(--theme-secondary);
+						border: 1px solid var(--theme-secondary);
 					}
 				}
 			}
@@ -4578,7 +4578,7 @@ body {
 			@media only screen and (max-width: 1199.98px) {
 				.left-header {
 					.mega-menu-container {
-						border-left: 1px dashed $dark-card-border;
+						border-left: 1px solid $dark-card-border;
 
 						.mega-box {
 							+.mega-box {
@@ -4592,12 +4592,12 @@ body {
 			@media only screen and (max-width: 1199px) {
 				.mobile-title {
 					&.d-none {
-						border-bottom: 1px dashed $dark-card-border;
+						border-bottom: 1px solid $dark-card-border;
 					}
 				}
 
 				.chat-menu {
-					border-top: 1px dashed $dark-border-color;
+					border-top: 1px solid $dark-border-color;
 					background-color: $dark-card-background;
 				}
 			}
@@ -4607,8 +4607,8 @@ body {
 					.hovercard {
 						.info {
 							.user-designation {
-								border-top: 1px dashed $dark-border-color;
-								border-bottom: 1px dashed $dark-border-color;
+								border-top: 1px solid $dark-border-color;
+								border-bottom: 1px solid $dark-border-color;
 							}
 						}
 					}
@@ -4644,7 +4644,7 @@ body {
 						.page-header {
 							.header-wrapper {
 								.toggle-sidebar {
-									border-right: 1px dashed $dark-card-border;
+									border-right: 1px solid $dark-card-border;
 								}
 							}
 						}
@@ -4669,7 +4669,7 @@ body {
 
 				input {
 					background-color: $dark-body-background;
-					border: 1px dashed $dark-border-color;
+					border: 1px solid $dark-border-color;
 					color: $dark-all-font-color;
 				}
 
@@ -4684,7 +4684,7 @@ body {
 			input {
 				background-color: $dark-body-background;
 				color: $dark-all-font-color;
-				border: 1px dashed $dark-border-color;
+				border: 1px solid $dark-border-color;
 			}
 
 			p {
@@ -4694,7 +4694,7 @@ body {
 			select {
 				background-color: $dark-body-background;
 				color: $dark-all-font-color;
-				border: 1px dashed $dark-border-color;
+				border: 1px solid $dark-border-color;
 			}
 
 			.radio,
@@ -4702,7 +4702,7 @@ body {
 				label {
 					&::before {
 						background-color: $dark-body-background;
-						border: 1px dashed $dark-border-color;
+						border: 1px solid $dark-border-color;
 					}
 				}
 			}
@@ -4716,7 +4716,7 @@ body {
 			.select2-selection--multiple,
 			.select2-selection--single {
 				background-color: $dark-body-background;
-				border: 1px dashed $dark-border-color !important;
+				border: 1px solid $dark-border-color !important;
 			}
 
 			.select2-search--inline {
@@ -4736,7 +4736,7 @@ body {
 			.select2-search--dropdown {
 				.select2-search__field {
 					background-color: $dark-card-background;
-					border: 1px dashed $dark-border-color !important; 
+					border: 1px solid $dark-border-color !important; 
 					color: $dark-all-font-color;
 				}
 			}
@@ -4974,7 +4974,7 @@ body {
 			}
 
 			.form-divider {
-				border-top: 1px dashed $dark-border-color;
+				border-top: 1px solid $dark-border-color;
 
 				&::before {
 					background: $dark-card-background;
@@ -4985,7 +4985,7 @@ body {
 
 		.CodeMirror {
 			background: $dark-card-background;
-			border: 1px dashed $dark-small-font-color;
+			border: 1px solid $dark-small-font-color;
 			color: $dark-all-font-color;
 
 			.CodeMirror-code {
@@ -4996,9 +4996,9 @@ body {
 		}
 
 		.editor-toolbar {
-			border-top: 1px dashed $dark-small-font-color;
-			border-left: 1px dashed $dark-small-font-color;
-			border-right: 1px dashed $dark-small-font-color;
+			border-top: 1px solid $dark-small-font-color;
+			border-left: 1px solid $dark-small-font-color;
+			border-right: 1px solid $dark-small-font-color;
 
 			a {
 				color: $dark-all-font-color !important;
@@ -5010,8 +5010,8 @@ body {
 			}
 
 			i.separator {
-				border-left: 1px dashed $dark-small-font-color;
-				border-right: 1px dashed $dark-small-font-color;
+				border-left: 1px solid $dark-small-font-color;
+				border-right: 1px solid $dark-small-font-color;
 			}
 
 			&.fullscreen {
@@ -5040,7 +5040,7 @@ body {
 		.editor-toolbar.fullscreen,
 		.editor-preview-side {
 			background: $dark-card-background;
-			border: 1px dashed $dark-small-font-color;
+			border: 1px solid $dark-small-font-color;
 		}
 
 		.u-step {
@@ -5071,7 +5071,7 @@ body {
 		.u-pearl-number,
 		.u-pearl-icon {
 			background: $dark-body-background;
-			border: 2px dashed $dark-body-background;
+			border: 2px solid $dark-body-background;
 		}
 
 		.u-pearl.disabled {
@@ -5079,7 +5079,7 @@ body {
 			.u-pearl-icon,
 			.u-pearl-number {
 				background: $dark-border-color;
-				border: 2px dashed $dark-border-color;
+				border: 2px solid $dark-border-color;
 			}
 
 			&:after {
@@ -5122,7 +5122,7 @@ body {
 		}
 
 		.nav-tabs {
-			border-bottom: 1px dashed $dark-card-border;
+			border-bottom: 1px solid $dark-card-border;
 
 			.nav-link {
 				color: $dark-all-font-color;
@@ -5277,7 +5277,7 @@ body {
 		}
 
 		.dropdown-divider {
-			border-top: 1px dashed $dark-border-color;
+			border-top: 1px solid $dark-border-color;
 		}
 
 		code {
@@ -5292,8 +5292,8 @@ body {
 		}
 
 		.timeliny {
-			border-top: 1px dashed $dark-border-color;
-			border-bottom: 1px dashed $dark-border-color;
+			border-top: 1px solid $dark-border-color;
+			border-bottom: 1px solid $dark-border-color;
 
 			&::before {
 				background-color: $white;
@@ -5301,7 +5301,7 @@ body {
 
 			.timeliny-dot {
 				background-color: $dark-card-background;
-				border: 1px dashed $white;
+				border: 1px solid $white;
 
 				&::before {
 					color: $dark-all-font-color;
@@ -5340,7 +5340,7 @@ body {
 						&:hover {
 							&::after {
 								background-color: $dark-card-background;
-								border: 1px dashed $dark-border-color;
+								border: 1px solid $dark-border-color;
 								color: $dark-all-font-color;
 							}
 						}
@@ -5355,7 +5355,7 @@ body {
 					li {
 						.task-container {
 							background: $dark-card-background;
-							border-bottom: 1px dashed $dark-border-color;
+							border-bottom: 1px solid $dark-border-color;
 
 							.task-label {
 								color: $dark-all-font-color;
@@ -5371,7 +5371,7 @@ body {
 								.action-box {
 									&:hover:not(.active) {
 										background: $dark-card-background;
-										border: 1px dashed $dark-border-color;
+										border: 1px solid $dark-border-color;
 									}
 								}
 							}
@@ -5385,7 +5385,7 @@ body {
 
 								.complete-btn {
 									&:hover {
-										border: 1px dashed $success-color !important;
+										border: 1px solid $success-color !important;
 									}
 								}
 							}
@@ -5397,7 +5397,7 @@ body {
 					.new-task-wrapper {
 						textarea {
 							background-color: $dark-card-background;
-							border: 1px dashed $dark-border-color;
+							border: 1px solid $dark-border-color;
 							color: $dark-all-font-color;
 						}
 					}
@@ -5428,7 +5428,7 @@ body {
 				.user-image {
 					.avatar {
 						img {
-							border: 10px dashed $dark-card-background;
+							border: 10px solid $dark-card-background;
 						}
 					}
 
@@ -5478,7 +5478,7 @@ body {
 
 			.jstree-hovered {
 				background-color: $dark-body-background;
-				border: 1px dashed $dark-border-color;
+				border: 1px solid $dark-border-color;
 			}
 		}
 
@@ -5514,12 +5514,12 @@ body {
 			}
 
 			pre[class*="language-"] {
-				border: 1px dashed $dark-border-color;
+				border: 1px solid $dark-border-color;
 			}
 
 			.code-box-copy__btn {
 				background-color: $dark-body-background;
-				border: 1px dashed $dark-border-color;
+				border: 1px solid $dark-border-color;
 				color: $white;
 			}
 
@@ -5546,11 +5546,11 @@ body {
 
 		.dt-button-info {
 			background-color: $dark-card-background;
-			border: 1px dashed $dark-border-color;
+			border: 1px solid $dark-border-color;
 
 			h2 {
 				background-color: $dark-card-background;
-				border-bottom: 1px dashed $dark-border-color;
+				border-bottom: 1px solid $dark-border-color;
 			}
 		}
 
@@ -5600,14 +5600,14 @@ body {
 		}
 
 		.b-light {
-			border: 1px dashed $dark-border-color !important;
+			border: 1px solid $dark-border-color !important;
 		}
 
 		.modal-content {
 			background-color: $dark-card-background;
 
 			.modal-header {
-				border-bottom: 1px dashed $dark-card-border;
+				border-bottom: 1px solid $dark-card-border;
 
 				.close {
 					color: $dark-all-font-color;
@@ -5619,7 +5619,7 @@ body {
 				.form-control {
 					background-color: $dark-card-background;
 					color: $dark-all-font-color;
-					border: 1px dashed $dark-card-border;
+					border: 1px solid $dark-card-border;
 				}
 			}
 		}
@@ -5662,7 +5662,7 @@ body {
 			span {
 				+span {
 					+span {
-						border-left: 5px dashed var(--theme-color);
+						border-left: 5px solid var(--theme-color);
 						background-color: $dark-body-background;
 						border-radius: 4px;
 					}
@@ -5686,7 +5686,7 @@ body {
 			.card-footer {
 				>div {
 					&:first-child {
-						border-right: 1px dashed $dark-border-color;
+						border-right: 1px solid $dark-border-color;
 					}
 				}
 
@@ -5796,7 +5796,7 @@ body {
 		(light, $light-color),
 		(dark, $dark-color),
 		(warning, $warning-color) {
-			.checkbox-dashed-#{$btn-name} {
+			.checkbox-solid-#{$btn-name} {
 				label {
 					&:before {
 						background-color: $btn-color !important;
@@ -5827,7 +5827,7 @@ body {
 			ul {
 				li {
 					color: $dark-all-font-color;
-					border-bottom: 1px dashed $dark-border-color;
+					border-bottom: 1px solid $dark-border-color;
 				}
 			}
 
@@ -5975,7 +5975,7 @@ body {
 				&.card {
 					.card-body {
 						.earning-content {
-							border-bottom: 1px dashed $dark-card-border;
+							border-bottom: 1px solid $dark-card-border;
 						}
 					}
 				}
@@ -5984,7 +5984,7 @@ body {
 
 		@media only screen and (max-width: 991.98px) {
 			.page-wrapper.compact-wrapper .page-header .header-wrapper .toggle-sidebar {
-				border-right: 1px dashed $dark-card-border;
+				border-right: 1px solid $dark-card-border;
 			}
 
 			.page-wrapper {
@@ -6012,7 +6012,7 @@ body {
 							}
 
 							.nav-link {
-								border-left: 1px dashed $dark-card-border;
+								border-left: 1px solid $dark-card-border;
 							}
 						}
 					}
@@ -6024,11 +6024,11 @@ body {
 					.chart-main {
 						>div {
 							&:first-child {
-								border-right: 1px dashed $dark-card-border;
+								border-right: 1px solid $dark-card-border;
 							}
 
 							&:nth-child(3) {
-								border-right: 1px dashed $dark-card-border;
+								border-right: 1px solid $dark-card-border;
 							}
 						}
 					}
