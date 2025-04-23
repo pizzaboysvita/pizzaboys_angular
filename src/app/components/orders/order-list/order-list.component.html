@@ -1,13 +1,41 @@
-<div class="row">
-    <div class="col-sm-12">
-        <app-card [cardClass]="'card-table'" [body]="true">
-            <div class="title-header option-title" body>
-                <h5>Order List</h5>
-                <a href="javascript:void(0)" class="btn btn-dashed">Download all orders</a>
-            </div>
-            <div body>
-                <app-table [search]="true" [hasCheckbox]="false" [tableConfig]="tableConfig"></app-table>
-            </div>
-        </app-card>
+<div class="row g-3 mb-4">
+  @for (card of orderSummaryCards; track card) {
+  <div class="col-12 col-sm-6 col-md-3">
+    <div class="d-flex justify-content-between align-items-center p-3 bg-white rounded shadow-sm">
+      <div class="d-flex align-items-center">
+        <img [src]="card.icon" alt="icon" width="48" height="48" class="me-3">
+        <div>
+          <h4 class="mb-0 fw-bold text-dark" style="font-size: 1.75rem;">{{ card.count }}</h4>
+          <div class="text-uppercase text-secondary fw-semibold" style="font-size: 0.85rem;">{{ card.label }}</div>
+        </div>
+      </div>
+      <button class="btn btn-sm rounded-circle text-white d-flex align-items-center justify-content-center"
+        style="width: 36px; height: 36px;background-color: #f07452 !important;">
+        <i class="ri-eye-line align-middle fs-16 text-white"></i>
+      </button>
     </div>
+  </div>
+  }
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    <app-card [cardClass]="'card-table'" [body]="true">
+      <div class="title-header option-title" body>
+        <h5>Order List</h5>
+        <!-- <a href="javascript:void(0)" class="btn btn-dashed">Download all orders</a> -->
+        <div class="right-options">
+          <ul>
+            <li><span style="font-size: 14px;color: #787c8b;font-weight: 600;">No.of.Records:4</span></li>
+            <li>
+              <a class="export-btn"><i class="ri-upload-2-fill me-1"></i>Export</a>
+            </li>
+
+          </ul>
+        </div>
+      </div>
+      <div body>
+        <app-table [search]="true" [hasCheckbox]="false" [tableConfig]="tableConfig"></app-table>
+      </div>
+    </app-card>
+  </div>
 </div>
