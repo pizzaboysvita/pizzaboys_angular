@@ -70,14 +70,17 @@ export class TableComponent {
     }
   }
   sortColumn: string = '';
-sortDirection: 'asc' | 'desc' = 'asc';
-
-onSort(columnKey: string): void {
-  if (this.sortColumn === columnKey) {
-    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-  } else {
-    this.sortColumn = columnKey;
-    this.sortDirection = 'asc';
+  sortDirection: 'asc' | 'desc' = 'asc';
+  
+  onSort(columnKey: string): void {
+    if (this.sortColumn === columnKey) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortColumn = columnKey;
+      this.sortDirection = 'asc';
+    }
+  
+    // Optionally trigger actual sorting of data here
   }
-}
+  
 }

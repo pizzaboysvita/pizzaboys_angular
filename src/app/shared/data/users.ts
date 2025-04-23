@@ -1,7 +1,64 @@
 
 export const Permission = [
     {
-        title: 'Product Related Permition',
+        title: 'Restaurant Management',
+        data: [
+            {
+                title: 'Create',
+                subData: [
+                    {
+                        title: 'Allow',
+                        checked: true
+                    },
+                    {
+                        title: 'Deny',
+                        checked: false
+                    },
+                ]
+            },
+            {
+                title: 'Dashboard',
+                subData: [
+                    {
+                        title: 'Allow',
+                        checked: false
+                    },
+                    {
+                        title: 'Deny',
+                        checked: true
+                    },
+                ]
+            },
+            {
+                title: 'Delete ',
+                subData: [
+                    {
+                        title: 'Allow',
+                        checked: false
+                    },
+                    {
+                        title: 'Deny',
+                        checked: true
+                    },
+                ]
+            },
+            {
+                title: 'Apply Discount',
+                subData: [
+                    {
+                        title: 'Allow',
+                        checked: true
+                    },
+                    {
+                        title: 'Deny',
+                        checked: false
+                    },
+                ]
+            },
+        ]
+    },
+    {
+        title: 'POS Management',
         data: [
             {
                 title: 'Add Product',
@@ -58,7 +115,7 @@ export const Permission = [
         ]
     },
     {
-        title: 'Category Related Permition',
+        title: 'Website Management',
         data: [
             {
                 title: 'Add Product',
@@ -112,6 +169,25 @@ export const Permission = [
                     },
                 ]
             },
+        ]
+    },
+    {
+        title: 'Staff Management',
+        data: [
+            {
+                title: 'Add Product',
+                subData: [
+                    {
+                        title: 'Allow',
+                        checked: true
+                    },
+                    {
+                        title: 'Deny',
+                        checked: false
+                    },
+                ]
+            },
+            
         ]
     }
 ]
