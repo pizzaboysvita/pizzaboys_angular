@@ -872,7 +872,7 @@
                     @include pseudowh($width: 280px, $height: auto);
                     text-align: left;
                     box-shadow: 0 0 21px 0 rgba($semi-dark, 0.1);
-                    background-image: url(../../../assets/images/sidebanner.png);
+                    background-image: url(../../pizzaImg/sidebar.png);
                     background-position: bottom;
                     background-size: cover;
                     background-repeat: no-repeat;
@@ -1452,7 +1452,7 @@
                                         top: 0;
                                         left: 0;
                                         @include pseudowh;
-                                        background-color: rgba($primary-color, 1);
+                                        background-color: #ff9130;
                                         opacity: 0;
                                         z-index: -1;
                                     }
@@ -1481,12 +1481,12 @@
                                         color: $white;
 
                                         &:before {
-                                            opacity: 0.1;
+                                            opacity: 1;
                                         }
 
                                         .according-menu {
                                             i {
-                                                color: $primary-color;
+                                                color: #fff;
 
                                                 [dir="rtl"] & {
                                                     margin-left: unset;
@@ -1497,12 +1497,12 @@
 
                                         svg,
                                         i {
-                                            color: $primary-color;
+                                            color: #fff;
                                             transition: all 0.3s ease-in-out;
                                         }
 
                                         span {
-                                            color: $primary-color;
+                                            color: #fff;
                                             transition: all 0.3s ease-in-out;
                                         }
                                     }

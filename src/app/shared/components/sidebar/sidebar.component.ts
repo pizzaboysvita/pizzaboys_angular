@@ -13,14 +13,23 @@ import { FeatherIconsComponent } from '../feather-icons/feather-icons.component'
 
 export class SidebarComponent {
 
-  public menuItemsList = this.navService.menuItem;
+  public menuItemsList :any
 
   constructor(public navService: NavService,
     private router: Router,
   ) {
+  console.log(JSON.parse(localStorage.getItem('user') as any).name,'openn')
+  if(JSON.parse(localStorage.getItem('user') as any).name =='customer'){
+this.menuItemsList= this.navService.customer_menu_items;
+  }else  if(JSON.parse(localStorage.getItem('user') as any).name =='pos'){
+    this.menuItemsList= this.navService.pos_menu_items;
+  }else{
+    this.menuItemsList= this.navService.menuItem
+  }
     this.router.events.subscribe((event) => {
+
       if (event instanceof NavigationEnd) {
-        this.menuItemsList.filter((items: menuItem) => {
+        this.menuItemsList.filter((items: any) => {
           if (items.path === event.url) {
             this.setNavActive(items);
           }
@@ -41,7 +50,7 @@ export class SidebarComponent {
   }
 
   setNavActive(item: menuItem) {
-    this.menuItemsList.filter(menuItem => {
+    this.menuItemsList.filter((menuItem:any) => {
       if (menuItem !== item) {
         menuItem.active = false;
       }
@@ -49,7 +58,7 @@ export class SidebarComponent {
         menuItem.active = true;
       }
       if (menuItem.children) {
-        menuItem.children.filter(submenuItems => {
+        menuItem.children.filter((submenuItems:any) => {
           if (submenuItems === item) {
             menuItem.active = true;
             submenuItems.active = true;

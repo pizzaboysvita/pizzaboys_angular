@@ -214,31 +214,71 @@ export class NavService {
   // ]
   menuItem: menuItem[] = [
        
-       {
-      level: 1,
-      title: "Restaurants",
-      icon: "ri-shopping-bag-2-line",
-      type: "sub",
-      active: true,
-      children: [
-        { path: "/product/products", title: "Restaurants", type: "link", level: 2, },
+    //    {
+    //   level: 1,
+    //   title: "Restaurants",
+    //   icon: "ri-shopping-bag-2-line",
+    //   type: "sub",
+    //   active: true,
+    //   children: [
+    //     { path: "/restaurants/restaurants-list", title: "Restaurants", type: "link", level: 2, },
         
-          {  path: "/restaurants/admin-settings", title: "Add New Restaurants", type: "link", level: 2, },
-      ]
+    //       {  path: "/restaurants/add-restaurants", title: "Add New Restaurants", type: "link", level: 2, },
+    //   ]
 
       
-    },
-       {
+    // },
+    {
       level: 1,
-      title: "Users",
-      icon: "ri-user-3-line",
-      type: "sub",
+      title: "Dashboard",
+      path: "/reports",
+      icon: "ri-file-chart-line",
+      type: "link",
       active: false,
-      children: [
-        { path: "/users/all-users", title: "All users", type: "link", level: 2, },
-        { path: "/users/add-new-user", title: "Add new user", type: "link", level: 2, },
-      ]
     },
+    {
+      level: 1,
+      title: "Restaurants",
+      path: "/restaurants/restaurants-list",
+      icon: "ri-file-chart-line",
+      type: "link",
+      active: false,
+    },
+    {
+      level: 1,
+      title:  "Add New Restaurants",
+      path: "/restaurants/add-restaurants", 
+      icon: "ri-file-chart-line",
+      type: "link",
+      active: false,
+    },
+    {
+      level: 1,
+      title:  "Staff",
+      path: "/staff/staff-list", 
+      icon: "ri-file-chart-line",
+      type: "link",
+      active: false,
+    },
+    {
+      level: 1,
+      title:  "Add Staff",
+      path: "/staff/add-staff", 
+      icon: "ri-file-chart-line",
+      type: "link",
+      active: false,
+    },
+    //    {
+    //   level: 1,
+    //   title: "Users",
+    //   icon: "ri-user-3-line",
+    //   type: "sub",
+    //   active: false,
+    //   children: [
+    //     { path: "/users/all-users", title: "All users", type: "link", level: 2, },
+    //     { path: "/users/add-new-user", title: "Add new user", type: "link", level: 2, },
+    //   ]
+    // },
       {
       level: 1,
       title: "Reports",

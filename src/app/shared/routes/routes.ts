@@ -81,4 +81,8 @@ export const content: Routes = [
         path: 'list-page',
         loadChildren: () => import('../../components/list-page/list-page.routes'),
     },
+    {
+        path: 'staff',
+        loadChildren: () => import('../../components/staff/staff.routes'),
+    },
 ]

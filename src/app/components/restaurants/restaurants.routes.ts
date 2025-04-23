@@ -9,12 +9,15 @@ import { RestaurantInfoComponent } from "./restaurant-info/restaurant-info.compo
 import { RestaurantsComponent } from "./restaurants.component";
 import { ServiceComponent } from "./service/service.component";
 import { SpecialOfferComponent } from "./special-offer/special-offer.component";
+import { AddRestaurantsComponent } from "./add-restaurants/add-restaurants.component";
+import { RestaurantsListComponent } from "./restaurants-list/restaurants-list.component";
 
 export default [
     {
         path: '',
         component: RestaurantsComponent,
         children: [
+           
             {
                 path: 'admin-settings',
                 component: AdminSettingsComponent,
@@ -53,4 +56,12 @@ export default [
             },
         ]
     },
+    {
+        path:'add-restaurants',
+        component:AddRestaurantsComponent
+    },
+    {
+        path:'restaurants-list',
+        component:RestaurantsListComponent
+    }
 ] as Routes;

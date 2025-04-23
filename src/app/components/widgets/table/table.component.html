@@ -12,7 +12,16 @@
                     </th>
                     }
                     @for (columnHead of tableConfig.columns; track columnHead) {
-                    <th>{{columnHead.title}}</th>
+                    <th>{{columnHead.title}}
+                        <!-- <span *ngIf="sortColumn === columnHead.key"> -->
+                            <i  class="bi bi-caret-up-fill ms-1"></i>
+                            <!-- <i *ngIf="sortDirection === 'desc'" class="bi bi-caret-down-fill ms-1"></i> -->
+                          <!-- </span> -->
+                          <!-- <span *ngIf="sortColumn !== columnHead.key"> -->
+                            <!-- <i class="bi bi-caret-down ms-1 text-muted"></i> -->
+                          <!-- </span> -->
+                      
+                    </th>
                     }
                 </tr>
             </thead>

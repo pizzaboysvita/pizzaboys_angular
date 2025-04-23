@@ -117,7 +117,7 @@ h5 {
 }
 
 h6 {
-  @extend %heading;
+  
   @include font-size($h6-font-size);
 }
 

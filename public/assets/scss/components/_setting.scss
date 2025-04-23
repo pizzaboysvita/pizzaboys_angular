@@ -165,11 +165,43 @@
     color: $white;
     font-size: calc(15px + (16 - 15) * ((100vw - 320px) / (1920 - 320)));
     margin-top: 20px;
-
+    border: 1px solid #ff9130;
+    background: #ff9130;  
+    border-radius: 35px;
     &:hover {
-        color: $white;
+        color: #ff9130;;
+        border: 1px solid #ff9130;
+        background:$white;  
+        
     }
+    
 }
+.reset-button {
+    float: right;
+    background: $gradient-fill;
+    color: #ff9130;
+    font-size: calc(15px + (16 - 15) * ((100vw - 320px) / (1920 - 320)));
+    margin-top: 20px;
+    border: 1px solid #ff9130;
+    background: #fff;  
+    border-radius: 35px;
+    &:hover {
+        color: #fff;;
+        border: 1px solid #ff9130;
+        background:#ff9130;  
+        
+    }
+    
+}
+.export-btn {
+    padding: 8px 12px;
+    // background-color: rgba($light-background, 1);
+    // border: 1px solid $border-color;
+    color: #fff !important;
+    border-radius: 4px;
+    border: 1px solid #ff9130;
+    background: #ff9130;  
+  }
 
 .activation {
     display: flex;

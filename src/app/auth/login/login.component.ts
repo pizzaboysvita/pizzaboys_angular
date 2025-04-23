@@ -32,7 +32,7 @@ export class LoginComponent {
         name: "test user",
       };
       localStorage.setItem("user", JSON.stringify(user));
-      this.router.navigate(["/product/products"]);
+      this.router.navigate(["/dashboard"]);
     }else if(this.loginForm.value["email"] == "customer@gmail.com" && this.loginForm.value["password"] == "test123") {
       let user = {
         email: "customer@gmail.com",
@@ -48,7 +48,7 @@ export class LoginComponent {
         name: "pos",
       };
       localStorage.setItem("user", JSON.stringify(user));
-      this.router.navigate(["/dashboard"]);
+      this.router.navigate(["/orders/order-detail"]);
     }
   }
 }

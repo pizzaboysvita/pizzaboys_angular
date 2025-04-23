@@ -1,0 +1,91 @@
+<app-card [header]="true" [body]="true">
+    <h5 header>Add Restaurant</h5>
+    <div class="input-items" body>
+        <div class="row gy-3">
+            <div class="col-xl-6">
+                <div class="input-box">
+                    <h6>Store Name</h6>
+                    <input type="text" placeholder="Store Name">
+                </div>
+            </div>
+            <div class="col-xl-6">
+                <div class="input-box">
+                    <h6>E-Mail</h6>
+                    <input type="text" placeholder="E-Mail">
+                </div>
+            </div>
+            <div class="col-xl-6">
+                <div class="input-box">
+                    <h6>Phone Number</h6>
+                    <input type="text" placeholder="E-Mail">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="input-box">
+                    <h6>Password</h6>
+                    <input type="password" name="password" placeholder="Enter Your Password">
+                </div>
+            </div>
+            <div class="col-xl-6">
+                <div class="input-box">
+                    <h6>Street Address</h6>
+                    <input type="text" placeholder="Street Address">
+                </div>
+            </div>
+            <div class="col-xl-6">
+                <div class="input-box">
+                    <h6>City</h6>
+                    <input type="text" placeholder="Enter City">
+                </div>
+            </div>
+            <div class="col-xl-6">
+                <div class="input-box">
+                    <h6>State</h6>
+                    <input type="text" placeholder="Enter State">
+                </div>
+            </div>
+            <div class="col-xl-6">
+                <div class="input-box">
+                    <h6>Postal Code</h6>
+                    <input type="text" placeholder="Enter Postal Code">
+                </div>
+            </div>
+            <div class="col-xl-6">
+                <div class="input-box">
+                    <h6>Country</h6>
+                    <input type="text" placeholder="Enter Country">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="input-box">
+                    <h6>Status</h6>
+                    <div class="radio-section">
+                        <!-- <form > -->
+                            
+                                 <label>
+                                     <input type="radio" name="opinion" ><i></i>
+                                     <span>Active</span>
+                                 </label>
+                                 <label>
+                                    <input type="radio" name="opinion" ><i></i>
+                                    <span>InActive</span>
+                                </label>
+                        <!-- </form> -->
+                    </div>
+                </div>
+            </div>
+            <div class="input-items">
+                <div class="row gy-3">
+                    <div class="col-12">
+                        <div class="input-box">
+                            <h6>Hours of Working</h6>
+                            <span class="choose-img-box" (click)="addHour()" >
+                                <i class="ri-add-circle-line"></i>
+                                Add Working Hours </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-card>

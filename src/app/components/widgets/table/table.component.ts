@@ -69,4 +69,15 @@ export class TableComponent {
       this.selected = this.selected.filter(id => id != Number(value));
     }
   }
+  sortColumn: string = '';
+sortDirection: 'asc' | 'desc' = 'asc';
+
+onSort(columnKey: string): void {
+  if (this.sortColumn === columnKey) {
+    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    this.sortColumn = columnKey;
+    this.sortDirection = 'asc';
+  }
+}
 }
