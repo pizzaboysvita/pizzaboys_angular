@@ -204,16 +204,16 @@
 
 .card {
     margin-bottom: $card-margin-bottom;
-    border: none;
+    // border: none;
     letter-spacing: 0.5px;
     border-radius: 10px;
-    padding: 18px;
+    // padding: 18px;
     background: $white;
 
-    &-table {
+    // &-table {
         // padding: calc(14px + (25 - 14) * ((100vw - 320px) / (1920 - 320)));
-        padding:10px;
-    }
+        // padding:10px;
+    // }
 
     &.card-hover {
         transition: all 0.3s ease;
@@ -230,9 +230,9 @@
     }
 
     .card-header {
-        background-color: $card-header-bg-color;
-        padding: 0;
-        border-bottom: $card-border-color;
+        // background-color: $card-header-bg-color;
+        // padding: 0;
+        // border-bottom: $card-border-color;
         position: relative;
         margin-bottom: 16px;
         h5 {
@@ -240,6 +240,7 @@
             font-weight: 600;
             padding-bottom: 8px;
             color: $theme-font-color;
+            padding: 5px;
         }
 
         &.card-no-border {
@@ -248,7 +249,7 @@
     }
 
     .card-body {
-        padding: 0;
+        // padding: 0;
         background-color: $card-body-bg-color;
 
         &-2 {

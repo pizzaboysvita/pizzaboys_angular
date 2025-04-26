@@ -45,7 +45,7 @@
                 </div>
                 <div class="col-xl-3">
                     <div class="d-flex flex-wrap gap-2">
-                      <button class="btn save-button" type="button">Search</button>
+                      <button class="btn btn-animation  save-button" type="button">Search</button>
                       <button class="btn reset-button " type="button">Reset</button>
                     </div>
                   </div>
@@ -77,8 +77,19 @@
                     </ul>
                 </div>
             </div>
-            <div body>
-                <app-table [search]="false" [hasCheckbox]="false" [tableConfig]="tableConfig"></app-table>
+           
+            <div body style="padding: 0;">
+             
+                <div style="max-height: 400px; overflow: auto;">
+                    <ag-grid-angular
+                    class="ag-theme-alpine"
+                    [columnDefs]="columnDefs"
+                    [rowData]="rowData"
+                    [domLayout]="'autoHeight'"
+                    [defaultColDef]="{ flex: 1, minWidth: 100 }">
+                  </ag-grid-angular>
+                  </div>
+                <!-- <app-table [search]="false" [hasCheckbox]="false" [tableConfig]="tableConfig"></app-table> -->
             </div>
         </app-card>
     </div>

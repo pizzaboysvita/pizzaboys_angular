@@ -38,10 +38,13 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+               "node_modules/@ag-grid-community/styles/ag-grid.css",
+  "node_modules/@ag-grid-community/styles/ag-theme-alpine.css"
             ],
             "scripts": [
-                "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+                "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
+                
             ]
           },
           "configurations": {
@@ -99,12 +102,15 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.scss"
-            ],
-            "scripts": [
-                "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
-            ]
+          "styles": [
+  "src/styles.scss",
+  "node_modules/@ag-grid-community/styles/ag-grid.css",
+  "node_modules/@ag-grid-community/styles/ag-theme-alpine.css"
+],
+"scripts": [
+  "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+]
+
           }
         }
       }

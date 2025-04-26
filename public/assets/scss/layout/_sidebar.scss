@@ -872,7 +872,7 @@
                     @include pseudowh($width: 280px, $height: auto);
                     text-align: left;
                     box-shadow: 0 0 21px 0 rgba($semi-dark, 0.1);
-                    background-image: url(../../pizzaImg/sidebar.png);
+                    background-image: url(../../pizzaImg/main-bg-1.jpg);
                     background-position: bottom;
                     background-size: cover;
                     background-repeat: no-repeat;
@@ -900,7 +900,7 @@
                             display: block;
 
                             img {
-                                width: 58%;
+                                width: 85%;
 
                                 &.main-logo {
                                     width: 94%;
@@ -1452,7 +1452,7 @@
                                         top: 0;
                                         left: 0;
                                         @include pseudowh;
-                                        background-color: #ff9130;
+                                        background-color: #ff3030;
                                         opacity: 0;
                                         z-index: -1;
                                     }

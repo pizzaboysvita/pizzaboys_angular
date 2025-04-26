@@ -165,12 +165,12 @@
     color: $white;
     font-size: calc(15px + (16 - 15) * ((100vw - 320px) / (1920 - 320)));
     margin-top: 20px;
-    border: 1px solid #ff9130;
-    background: #ff9130;  
-    border-radius: 35px;
+    border: 1px solid #ff5454;
+    background: #ff5454;  
+    border-radius: 10px;
     &:hover {
-        color: #ff9130;;
-        border: 1px solid #ff9130;
+        color: #ff5454;;
+        border: 1px solid #ff5454;
         background:$white;  
         
     }
@@ -179,16 +179,16 @@
 .reset-button {
     float: right;
     background: $gradient-fill;
-    color: #ff9130;
+    color: #ff5454;
     font-size: calc(15px + (16 - 15) * ((100vw - 320px) / (1920 - 320)));
     margin-top: 20px;
-    border: 1px solid #ff9130;
+    border: 1px solid #ff5454;
     background: #fff;  
-    border-radius: 35px;
+    border-radius: 10px;
     &:hover {
         color: #fff;;
-        border: 1px solid #ff9130;
-        background:#ff9130;  
+        border: 1px solid #ff5454;
+        background:#ff5454;  
         
     }
     
