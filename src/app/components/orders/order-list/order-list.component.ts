@@ -19,7 +19,7 @@ export class OrderListComponent {
     { icon: 'https://foxpixel.vercel.app/metor/assets/images/food-icon/i-1.png', label: 'Confirm', count: 78 },
     { icon: 'https://foxpixel.vercel.app/metor/assets/images/food-icon/i-4.png', label: 'Preparing', count: 48 },
     { icon: 'https://foxpixel.vercel.app/metor/assets/images/food-icon/i-5.png', label: 'Ready For Delivery', count: 42 },
-    { icon: 'https://foxpixel.vercel.app/metor/assets/images/food-icon/i-6.png', label: 'Order On Its Way', count: 20 },
+    { icon: 'https://cdn-icons-png.freepik.com/512/7541/7541708.png', label: 'Order On Its Way', count: 20 },
     { icon: 'https://foxpixel.vercel.app/metor/assets/images/food-icon/i-8.png', label: 'Pending Orders', count: 30 },
     { icon: 'https://foxpixel.vercel.app/metor/assets/images/food-icon/i-9.png', label: 'Delivered Order', count: 25 },
   ];
@@ -74,24 +74,7 @@ export class OrderListComponent {
       delivery_status: 'Cancel',
     }
   ];
-  // public tableConfig: TableConfig = {
-  //   columns: [
-  //     { title: "Order Image", dataField: 'order_image', type: 'image' },
-  //     { title: "Order Code", dataField: 'order_code' },
-  //     { title: "Date", dataField: 'date' },
-  //     { title: "Payment Method", dataField: 'payment_method' },
-  //     { title: "Delivery Status", dataField: 'delivery_status' },
-  //     { title: "Amount", dataField: 'amount' },
-  //     { title: "Options", type: 'option', class: 'text-center' },
-  //     { title: "Tracking", dataField: 'tracking' },
-  //   ],
-  //   rowActions: [
-  //     { icon: "ri-eye-line", permission: "show" },
-  //     { icon: "ri-pencil-line", permission: "edit" },
-  //     { icon: "ri-delete-bin-line", permission: "delete" },
-  //   ],
-  //   data: this.orderList,
-  // };
+
   public tableConfig: TableConfig = {
     columns: [
       { title: "ORDER NO.", dataField: 'order_code' },
