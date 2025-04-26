@@ -38,12 +38,6 @@
                         </div>
                     </div>
                     <div class="col-xl-3">
-                        <div class="input-box">
-                            <h6>No of Orders</h6>
-                            <input type="number" placeholder="No of Orders">
-                        </div>
-                    </div>
-                    <div class="col-xl-3">
                         <!-- <div class="col-md-6"> -->
                         <div class="input-box">
                             <h6>Status</h6>
@@ -65,6 +59,7 @@
             </div>
         </div>
     </div>
+
 </div>
 <br>
 
@@ -72,13 +67,13 @@
     <div class="col-sm-12">
         <app-card [cardClass]="'card-table'" [body]="true">
             <div class="title-header option-title d-sm-flex d-block" body>
-                <h5>Users List</h5>
+                <h5>Bookings List</h5>
                 <div class="right-options">
                     <ul>
                         <li><span style="font-size: 14px;color: #787c8b;font-weight: 600;">No.of.Records:
-                                {{allUsers.length}}</span></li>
+                                {{bookings.length}}</span></li>
                         <li>
-                            <a [routerLink]="['/users/add-new-user']" class="align-items-center btn btn-theme d-flex">
+                            <a class="align-items-center btn btn-theme d-flex">
                                 <app-feather-icons [icons]="'plus-square'"></app-feather-icons> Add New
                             </a>
                         </li>
