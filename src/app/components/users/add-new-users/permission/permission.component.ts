@@ -79,14 +79,7 @@ export class PermissionComponent {
           staff: []
         });
         break;
-        case 'Front Staff & Kitchen':
-          this.setSectionPermissions({
-            restaurant: ['Dashboard','Orders - Delete','Bookings','Bookings - Delete'],
-            pos: [],
-            website: [],
-            staff: []
-          });
-          break;
+     
           case 'Menu Manager':
             this.setSectionPermissions({
               restaurant: ['Dashboard','Orders - Delete','Bookings','Bookings - Delete'],
