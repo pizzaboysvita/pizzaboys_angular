@@ -8,9 +8,11 @@ import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-mod
 import { ColDef, ModuleRegistry } from '@ag-grid-community/core';
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
-    make: string;
-    model: string;
-    price: number;
+  storename: string;
+  email: string;
+  phoneNumber: number;
+  storeAddress:string;
+  status:string
   }
 @Component({
   selector: 'app-restaurants-list',
@@ -23,15 +25,80 @@ export class RestaurantsListComponent {
     public products = ProductsList;
     stausList=['Active','In-Active']
     columnDefs: ColDef<RowData>[] = [    // <-- Important to give <RowData> here!
-        { field: 'make' },
-        { field: 'model' },
-        { field: 'price' }
+      { field: 'storename', headerName: 'Store Name', sortable: true,
+        suppressMenu: true,
+        unSortIcon: true },
+      { field: 'email', headerName: 'E-Mail',suppressMenu: true,
+        unSortIcon: true  },
+      { field: 'phoneNumber', headerName: 'Phone Number',suppressMenu: true,
+        unSortIcon: true  },
+      { field: 'storeAddress', headerName: 'Store Address',suppressMenu: true,
+        unSortIcon: true  },
+      {
+        headerName: 'Status',
+        field: 'status',
+        editable: true,
+        suppressMenu: true,
+        unSortIcon: true ,
+        cellEditor: 'agSelectCellEditor',
+        cellEditorParams: {
+          values: ['Active', 'Inactive', 'Pending']
+        },
+        cellStyle: (params: any) => {
+          // Return an object with valid style properties
+          const style: { [key: string]: string } = {}; // Create an object to store the styles
+          
+          if (params.value === 'Active') {
+            style['backgroundColor'] = '#6cbd7e0f';
+style['border'] ='2px solid rgba(108, 189, 126, .2)'
+            style['color'] = '#6cbd7e';
+          } else if (params.value === 'Inactive') {
+            style['backgroundColor'] = '#dc3545';
+            style['color'] = 'white';
+          } else if (params.value === 'Pending') {
+            style['backgroundColor'] = '#ffc107';
+            style['color'] = 'black';
+          }
+      
+          // Always return the style object, even if it doesn't match any condition
+          return style;
+        }
+      },
+      
+      
+      
+      {
+    headerName: 'Actions',
+    cellRenderer: (params: any) => {
+      return `
+        <div style="display: flex; align-items: center; gap:15px;">
+          <button class="btn btn-sm  p-0" data-action="view" title="View">
+         <span class="material-symbols-outlined text-primary">
+visibility
+</span>
+          </button>
+          <button class="btn btn-sm p-0" data-action="edit" title="Edit">
+         <span class="material-symbols-outlined text-success">
+edit
+</span>
+          </button>
+          <button class="btn btn-sm p-0" data-action="delete" title="Delete">
+        <span class="material-symbols-outlined text-danger">
+delete
+</span>
+          </button>
+        </div>
+      `;
+    },
+    minWidth: 150,
+    flex: 1
+  }
       ];
     
       rowData: RowData[] = [
-        { make: 'Toyota', model: 'Celica', price: 35000 },
-        { make: 'Ford', model: 'Mondeo', price: 32000 },
-        { make: 'Porsche', model: 'Boxster', price: 72000 }
+        { storename: 'Toyota', email: 'Celica', status: 'Active' ,phoneNumber: 35000 ,storeAddress:'Abc Address'},
+        { storename: 'Ford', email: 'Mondeo',status: 'Inactive', phoneNumber: 32000 ,storeAddress:'Abc Address'},
+        { storename: 'Porsche', email: 'Boxster',status: 'Pending', phoneNumber: 72000,storeAddress:'Abc Address' }
       ];
     public tableConfig: TableConfig = {
         columns: [
@@ -50,4 +117,19 @@ export class RestaurantsListComponent {
         ],
         data: this.products,
     };
+    onCellClicked(event: any) {
+      if (event.event.target && event.event.target.dataset.action) {
+        const action = event.event.target.dataset.action;
+        const rowData = event.data;
+    
+        if (action === 'view') {
+          console.log('Viewing', rowData);
+        } else if (action === 'edit') {
+          console.log('Editing', rowData);
+        } else if (action === 'delete') {
+          console.log('Deleting', rowData);
+        }
+      }
+    }
+    
 }

@@ -1,0 +1,17 @@
+/* Status color classes */
+.status-active {
+    background-color: #6cbd7e0f;
+    border: 2px solid rgba(108, 189, 126, .2);
+    color: #6cbd7e;
+  }
+  
+  .status-inactive {
+    background-color: #dc3545 !important;  /* Red for Inactive */
+    color: white !important;
+  }
+  
+  .status-pending {
+    background-color: #ffc107 !important;  /* Yellow for Pending */
+    color: black !important;
+  }
+ 

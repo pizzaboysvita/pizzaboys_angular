@@ -177,7 +177,7 @@
                 li {
                     &:last-child {
                         margin-left: auto;
-                        background: $gradient-fill;
+                        // background: $gradient-fill;
                         border-radius: 4px;
                         @media (max-width: 480px) {
                             margin-left: unset;

@@ -46,7 +46,7 @@
                 <div class="col-xl-3">
                     <div class="d-flex flex-wrap gap-2">
                       <button class="btn btn-animation  save-button" type="button">Search</button>
-                      <button class="btn reset-button " type="button">Reset</button>
+                      <button class="btn btn-animation  reset-button " type="button">Reset</button>
                     </div>
                   </div>
                   
@@ -71,14 +71,14 @@
                     <ul>
                         <li><span style="font-size: 14px;color: #787c8b;font-weight: 600;">No.of.Records:50</span></li>
                         <li>
-                            <a  class="export-btn"><i class="ri-upload-2-fill me-1"></i>Export</a>
+                            <a  class="export-btn"><i class="ri-upload-2-fill me-1"></i> Export</a>
                         </li>
                       
                     </ul>
                 </div>
             </div>
            
-            <div body style="padding: 0;">
+            <div body >
              
                 <div style="max-height: 400px; overflow: auto;">
                     <ag-grid-angular
@@ -86,7 +86,10 @@
                     [columnDefs]="columnDefs"
                     [rowData]="rowData"
                     [domLayout]="'autoHeight'"
-                    [defaultColDef]="{ flex: 1, minWidth: 100 }">
+                    [suppressColumnVirtualisation]="true"
+                    [defaultColDef]="{ flex: 1, minWidth: 100 ,sortable: true}"
+                    
+                    (cellClicked)="onCellClicked($event)">
                   </ag-grid-angular>
                   </div>
                 <!-- <app-table [search]="false" [hasCheckbox]="false" [tableConfig]="tableConfig"></app-table> -->

@@ -90,3 +90,23 @@
 @import "layout/box-layout";
 // public\assets\scss\vendors\bootstrap
 @import "../scss/vendors/bootstrap/accordion";
+.title-header h5:not(.mb-0), .title-header .h5:not(.mb-0), .title-header h5:not(.m-0), .title-header .h5:not(.m-0) {
+    font: 700 16px / 19px "Roboto", sans-serif;
+    margin-left: 10px;
+}
+.page-wrapper .page-header .header-wrapper .welcome-title h5, .page-wrapper .page-header .header-wrapper .welcome-title .h5 {
+    color: #ff3030;
+}
+.card-table.card .card-body {
+    padding: 0
+  }
+  .ag-theme-alpine .ag-header-cell-label {
+    
+    font: 600 13px / 18px "Roboto", sans-serif;
+  }
+
+  .ag-theme-alpine .ag-header-cell .ag-header-icon {
+    opacity: 1 !important;
+  }
+  
+  

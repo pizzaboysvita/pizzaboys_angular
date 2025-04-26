@@ -231,7 +231,7 @@ export class NavService {
     {
       level: 1,
       title: "Dashboard",
-      path: "/reports",
+      path: "/dashboard",
       icon: "ri-file-chart-line",
       type: "link",
       active: false,
