@@ -317,7 +317,7 @@ export class NavService {
     {
       level: 1,
       title: "Bookings",
-      path: "/reports",
+      path: "/bookings/bookings-list",
       icon: "ri-file-chart-line",
       type: "link",
       active: false,
