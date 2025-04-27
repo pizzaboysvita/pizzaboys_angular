@@ -334,7 +334,7 @@ export class NavService {
     {
       level: 1,
       title: "Menus",
-      path: "/drivers",
+      path: "/menus",
       icon: "ri-bowl-line",
       type: "link",
       active: false,

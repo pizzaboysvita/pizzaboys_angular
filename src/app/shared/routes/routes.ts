@@ -89,5 +89,9 @@ export const content: Routes = [
     {
         path: 'bookings',
         loadChildren: () => import('../../components/bookings/booings.routes'),
+    },
+    {
+        path: 'menus',
+        loadChildren: () => import('../../components/menus/menus.routes'),
     }
 ]

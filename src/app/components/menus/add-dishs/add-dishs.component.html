@@ -1,0 +1,191 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5>Create Dish</h5>
+        <button class="btn-close" type="button" (click)="modal.dismissAll()">
+            <i class="ri-close-line"></i>
+        </button>
+    </div>
+    <div class="modal-body pt-0">
+        <div class="col-12">
+            <ul class="nav nav-pills flex-nowrap mb-3" ngbNav #nav="ngbNav" [(activeId)]="active">
+                <li [ngbNavItem]="1" class="nav-item m-0">
+                    <button ngbNavLink class="nav-link" type="button">General</button>
+                    <ng-template ngbNavContent>
+                        <form [formGroup]="menuForm">
+                            <div class="input-items">
+                              <div class="row gy-3">
+                          
+                                <div class="col-12">
+                                  <div class="input-box">
+                                    <h6>Menu Type</h6>
+                                    <ng-select 
+                                      [items]="menuList" 
+                                      [searchable]="true" 
+                                      [multiple]="false"
+                                      bindLabel="name" 
+                                      bindValue="id"
+                                      placeholder="Select from the dropdown or type to search"
+                                      formControlName="menuType">
+                                    </ng-select>
+                                  </div>
+                                </div>
+                          
+                                <div class="col-12">
+                                  <div class="input-box">
+                                    <h6>Category Type</h6>
+                                    <ng-select 
+                                      [items]="categoryList" 
+                                      [searchable]="true" 
+                                      [multiple]="false"
+                                      bindLabel="name" 
+                                      bindValue="id"
+                                      placeholder="Select from the dropdown or type to search"
+                                      formControlName="categoryType">
+                                    </ng-select>
+                                  </div>
+                                </div>
+                          
+                                <div class="col-12">
+                                  <div class="input-box">
+                                    <h6>Dish Type</h6>
+                                    <div class="btn-group w-auto" role="group" aria-label="Dish Type" style="height: 44px;">
+                                      <input type="radio" class="btn-check" formControlName="dishType" value="standard" id="standard" autocomplete="off">
+                                      <label class="btn btn-style" for="standard">Standard</label>
+                          
+                                      <input type="radio" class="btn-check" formControlName="dishType" value="combo" id="combo" autocomplete="off">
+                                      <label class="btn btn-style" for="combo">Combo</label>
+                                    </div>
+                                  </div>
+                                  <span class="lableSubtext">A combo dishes allows customers to make several choices between selected standard dishes</span>
+                                </div>
+                          
+                                <div class="col-12">
+                                  <div class="input-box">
+                                    <h6>First Name</h6>
+                                    <input type="text" placeholder="Enter First Name" formControlName="firstName">
+                                  </div>
+                                  <span class="lableSubtext">A unique name for your dish</span>
+                                </div>
+                          
+                                <div class="col-12">
+                                  <div class="input-box">
+                                    <h6>Price ($)</h6>
+                                    <input type="text" placeholder="Enter Price" formControlName="price">
+                                  </div>
+                                  <span class="lableSubtext">This cost of this item. <a>Toggle advanced pricing</a></span>
+                                </div>
+                          
+                                <div class="col-12">
+                                  <div class="input-box">
+                                    <h6>Price Suffix</h6>
+                                    <input type="text" placeholder="Enter Price Suffix" formControlName="priceSuffix">
+                                  </div>
+                                  <span class="lableSubtext">Used to help clarify the price, for example you can say 'per kg' or 'per scoop'</span>
+                                </div>
+                          
+                                <div class="col-12">
+                                  <div class="input-box">
+                                    <h6>Display Name</h6>
+                                    <input type="text" placeholder="Enter Display Name" formControlName="displayName">
+                                  </div>
+                                  <span class="lableSubtext">Will override the unique name in your store</span>
+                                </div>
+                          
+                                <div class="col-12">
+                                  <div class="input-box">
+                                    <h6>Print Name</h6>
+                                    <input type="text" placeholder="Enter Print Name" formControlName="printName">
+                                  </div>
+                                  <span class="lableSubtext">Will override the unique name on your printed order receipts</span>
+                                </div>
+                          
+                                <div class="col-12">
+                                  <div class="input-box">
+                                    <h6>POS Name</h6>
+                                    <input type="text" placeholder="Enter POS Name" formControlName="posName">
+                                  </div>
+                                  <span class="lableSubtext">Use this field to set another name for this dish in your POS</span>
+                                </div>
+                          
+                                <div class="col-12">
+                                  <div class="input-box">
+                                    <h6>Description</h6>
+                                    <input type="text" placeholder="Enter Description" formControlName="description">
+                                  </div>
+                                  <span class="lableSubtext">Will be displayed in your menu and dish popup</span>
+                                </div>
+                          
+                                <div class="col-12">
+                                  <div class="input-box">
+                                    <h6>Subtitle</h6>
+                                    <input type="text" placeholder="Enter Subtitle" formControlName="subtitle">
+                                  </div>
+                                  <span class="lableSubtext">Will be displayed under your dish name in bold font. Keep it short and sweet</span>
+                                </div>
+                          
+                              </div>
+                            </div>
+                          </form>
+                          
+                    </ng-template>
+                </li>
+                @if(menuForm.value.dishType =='standard'){
+                <li [ngbNavItem]="2" class="nav-item m-0" >
+                    <button ngbNavLink class="nav-link" type="button">Options & ingeration</button>
+                    <ng-template ngbNavContent>
+                        <div class="input-items">
+                            <div class="row gy-3">
+                                <div class="col-12">
+                                    <div class="input-box">
+                                        <h6>Option Sets</h6>
+                                        <ng-select [items]="PlaceholderSubcategory" [searchable]="true"
+                                            [multiple]="true" bindLabel="name" bindValue="id"
+                                            placeholder="Select from the dropdown or type to search"></ng-select>
+                                    </div>
+                                    <span class="lableSubtext">Select option sets to be applied to the dish. Option sets
+                                        are ordered according to how they are listed on the option set page, not by the
+                                        order added here</span>
+                                </div>
+                                <div class="col-12">
+                                    <div class="input-box">
+                                        <h6>Primary Option Set</h6>
+                                        <ng-select [items]="PlaceholderSubcategory" [searchable]="true"
+                                            [multiple]="true" bindLabel="name" bindValue="id"
+                                            placeholder="Select from the dropdown or type to search"></ng-select>
+                                    </div>
+                                    <span class="lableSubtext">Designate a primary option set which is 'required' and
+                                        has 'multi-select' disabled. This will result in multiple prices showing on your
+                                        dish card. For example, if you have 2 pizza sizes, regular and large ($5+), the
+                                        dish will show your base dish price along with the price of the large
+                                        option</span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </ng-template>
+                </li>
+            }@else{
+                <li [ngbNavItem]="2" class="nav-item m-0" >
+                    <button ngbNavLink class="nav-link" type="button">Dish Choices</button>
+                    <ng-template ngbNavContent>
+                        <div class="input-items">
+                            <div class="row">
+                                <div class="col-12">
+                                    <button class="btn addChoice-button" type="button">Add Choice</button>
+                                </div>
+                              
+<span class="lableSubtext">Define choices that can contain a list of dishes a customer can select from. If a choice only has a single dish, then it will be preselect when ordering</span>
+                            </div>
+                        </div>
+                    </ng-template>
+                </li> 
+            }
+            </ul>
+        </div>
+        <div class="col-12" [ngbNavOutlet]="nav"></div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-cancel" type="button" (click)="modal.dismissAll()">Cancel</button>
+        <button class="btn btn-submit" type="submit" (click)="modal.dismissAll()">Upload Image</button>
+    </div>
+</div>

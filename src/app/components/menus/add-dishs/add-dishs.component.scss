@@ -1,0 +1,62 @@
+.lableSubtext{
+    font-style: italic;
+    font-size: 13px;
+    color: #A9A9A9;
+}
+
+.management-section {
+    margin-bottom: 24px;
+  
+    h4 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+  
+    .permissions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+  }
+  .btn-style {
+    border: 1px solid #ced4da;
+    padding: 8px 24px;
+    background-color: #ffffff;
+    color: #6c757d;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+
+  /* Active style for Standard */
+  #standard:checked + label {
+    background-color: #ff6600; /* gray */
+    color: #ffffff;
+    border: 1px solid #ff6600;
+  }
+
+  /* Active style for Combo */
+  #combo:checked + label {
+    background-color: #ff6600; /* orange */
+    color: #ffffff;
+    border: 1px solid #ff6600;
+  }
+
+  .addChoice-button {
+    /* float: right; */
+    background: linear-gradient(to right, #f2a93e, #f07054);
+    color: #ff5454;
+    font-size: calc(15px + 1 * (100vw - 320px) / 1600);
+    /* margin-top: 20px; */
+    border: 1px solid #ff5454;
+    background: #fff;
+    border-radius: 10px;
+    height: 35px;
+    &:hover {
+      color: #fff;
+      border: 1px solid #ff5454;
+      background:#ff5454;  
+      
+  }
+}

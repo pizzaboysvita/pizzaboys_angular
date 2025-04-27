@@ -1,0 +1,30 @@
+<app-card [header]="true" [body]="true">
+    <h5 header>Menus</h5>
+    <div class="row" body>
+        <div class="col-12">
+            <ul ngbNav #nav="ngbNav" [(activeId)]="active"
+                class="nav setting-main-box driver-main-box sticky theme-scrollbar">
+                <li [ngbNavItem]="1">
+                    <button class="nav-link" ngbNavLink><i class="ri-restaurant-fill"></i>Types of Menus</button>
+                    <ng-template ngbNavContent>
+                       <app-add-menus></app-add-menus>
+                    </ng-template>
+                </li>
+                <li [ngbNavItem]="2">
+                    <button class="nav-link" ngbNavLink><i class="ri-restaurant-2-fill"></i>Categorys</button>
+                    <ng-template ngbNavContent>
+                        <app-category></app-category>
+                    </ng-template>
+                </li>
+                <li [ngbNavItem]="3">
+                    <button class="nav-link" ngbNavLink><i class="ri-image-circle-fill"></i>Dish</button>
+                    <ng-template ngbNavContent>
+                        <app-dish></app-dish>
+                    </ng-template>
+                </li>
+            </ul>
+        </div>
+        <div class="col-12" [ngbNavOutlet]="nav"></div>
+    </div>
+    <!-- <button body class="btn save-button mt-2" type="submit">Save</button> -->
+</app-card>
