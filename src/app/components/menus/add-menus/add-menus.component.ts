@@ -6,6 +6,9 @@ import { ProductsList } from '../../../shared/data/products';
 import { AgGridAngular } from '@ag-grid-community/angular'; 
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { ColDef, ModuleRegistry } from '@ag-grid-community/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AddMenuModalComponent } from '../add-menu-modal/add-menu-modal.component';
+
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
   storename: string;
@@ -100,6 +103,8 @@ delete
         { storename: 'Ford', email: 'Mondeo',status: 'Inactive', phoneNumber: 32000 ,storeAddress:'Abc Address'},
         { storename: 'Porsche', email: 'Boxster',status: 'Pending', phoneNumber: 72000,storeAddress:'Abc Address' }
       ];
+  constructor(public modal: NgbModal) { }
+
     public tableConfig: TableConfig = {
         columns: [
             // { title: "Product Image", dataField: 'product_image', type: 'image' },
@@ -130,5 +135,8 @@ delete
           console.log('Deleting', rowData);
         }
       }
+    }
+    insertMenu(){
+          this.modal.open(AddMenuModalComponent, { windowClass: 'theme-modal', centered: true, size: 'lg' })
     }
   }
