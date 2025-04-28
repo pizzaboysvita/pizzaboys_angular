@@ -1,55 +1,175 @@
-<div class="row">
+<div class="row" >
     <div class="col-sm-12">
-         <app-card [body]="true">
-             <!-- <div body class="title-header option-title justify-content-start">
-                 <h5>Media Library</h5>
-                 <div class="selected-options">
-                     <ul>
-                         <li>selected(0)</li>
-                         <li><a href="javascript:void(0)"><i class="ri-download-2-line"></i></a></li>
-                         <li><a href="javascript:void(0)"><i class="ri-delete-bin-line"></i></a></li>
-                     </ul>
-                 </div>
-                 <div class="right-options ms-auto">
-                     <ul>
-                         <li>
-                             <a class="btn btn-dashed" (click)="addMedia()">Add Media</a>
-                         </li>
-                     </ul>
-                 </div>
-             </div> -->
-             <div body class="row row-cols-xl-12 row-cols-md-5 row-cols-sm-3 row-cols-2 g-sm-3 g-2 media-library-sec ratio_landscape">
-                 @for (item of MediaLibrary; track item) {
-                 <div>
-                     <div class="library-box">
-                         <input type="checkbox" [id]="item.id" />
-                         <label [for]="item.id">
-                             <div class="b_size_content bg-size" [style.background-image]="'url('+item.image_url+')'" style="background-size: cover;
-                             background-position: center center;
-                             background-repeat: no-repeat;
-                             display: block;">
-                                 <img [src]="item.image_url" class="img-fluid bg-img bg_size_content" alt="" style="display: none;">
-                             </div>
-                             <div class="dropdown" (click)="open(item)" (clickOutside)="item.active = false">
-                                 <a href="javascript:void(0)" [class.show]="item.active">
-                                     <i class="ri-more-fill"></i>
-                                 </a>
-                                 <ul class="dropdown-menu dropdown-menu-end" [class.show]="item.active" style="position: absolute;inset: 0px 0px auto auto; margin: 0px;transform: translate(-5px, 22px);">
-                                     <li>
-                                         <a class="dropdown-item d-flex align-items-center" href="javascript:void(0)">
-                                             <i class="ri-download-2-line me-2"></i>Download</a>
-                                     </li>
-                                     <li>
-                                         <a class="dropdown-item d-flex align-items-center" href="javascript:void(0)">
-                                             <i class="ri-delete-bin-line me-2"></i>Delete</a>
-                                     </li>
-                                 </ul>
-                             </div>
-                         </label>
-                     </div>
-                 </div>
-                 }
-             </div>
-         </app-card>
-    </div>
+      <app-card [body]="true">
+        <div body class="row row-cols-xl-12 row-cols-md-5 row-cols-sm-3 row-cols-2 g-sm-3 g-2 media-library-sec ratio_landscape">
+          <!-- <div> -->
+                <!-- <div class="d-flex justify-content-between align-items-center  w-100">
+                  <h5 class="fw-bold">Order Lists</h5>
+                  <a href="#" class="see-all">See All →</a>
+                </div> -->
+      
+                <!-- <div class="order-card-container">
+                  <div class="order-card-primary p-2 position-relative">
+                    <span class="badge bg-white border border-white text-success position-absolute top-0 end-0 m-2">Ready</span>
+                    <div class="d-flex align-items-center gap-2 mt-4">
+                      <div class="order-icon-primary">T6</div>
+                      <div class="d-flex flex-column">
+                        <span class="fw-bold text-white">James Hall</span>
+                        <small class="text-white-50">4 items → Ready to Serve</small>
+                      </div>
+                    </div>
+                  </div>
+      
+                  <div class="order-card p-2 position-relative">
+                    <span class="badge border border-warning text-warning position-absolute top-0 end-0 m-2">In Process</span>
+                    <div class="d-flex align-items-center gap-2 mt-4">
+                      <div class="order-icon-primary ">T7</div>
+                      <div class="d-flex flex-column">
+                        <h6>John Dukes</h6>
+                        <small>3 items → Kitchen</small>
+                      </div>
+                    </div>
+                  </div>
+      
+                  <div class="order-card p-2 position-relative">
+                    <span class="badge border border-warning text-warning position-absolute top-0 end-0 m-2">In Process</span>
+                    <div class="d-flex align-items-center gap-2 mt-4">
+                      <div class="order-icon-primary">T8</div>
+                      <div class="d-flex flex-column">
+                        <h6>Paula Mora</h6>
+                        <small>7 items → Kitchen</small>
+                      </div>
+                    </div>
+                  </div>
+      
+                </div>
+                <div class="d-flex justify-content-between align-items-center w-100">
+                    <h5 class="fw-bold">Choose Category</h5>
+                    <a href="#" class="see-all">See All →</a>
+                  </div> -->
+                 
+                  <!-- <div class="row" style="width: 100%;">
+                    @for (item of items; track item) {
+                      <div class="col-6 col-sm-4 col-md-2" style="flex: 0 0 20%; max-width: 20%;">
+                        <div class="card" style="min-width: 6rem; height: 8rem; display: flex; flex-direction: column;"> 
+                          <img class="card-img-top" [src]="item.img" alt="Card image cap" style="width: 4rem; margin: 0 auto;">
+                          <div class="card-body p-1" style="flex-grow: 1; display: flex; justify-content: center; align-items: center;"> 
+                            <h5 class="card-title" style="font-size: 0.9rem; text-align: center; margin: 0;">{{ item.name }}</h5> 
+                          </div>
+                        </div>
+                      </div>
+                    }
+                  </div> -->
+                 
+                  <!-- <div class="row" style="width: 100%;">
+                    @for (item of Bigitems; track item) {
+                        <div class="col-6 col-sm-4 col-md-4">
+                    <div class="card" style="width: 13rem;">
+                        <img class="img-fluid d-block w-120 h-100" [src]="item.img" alt="Card image cap" style="object-fit: cover;">
+
+                        <div class="card-body">
+                          <h5 class="card-title f-10">$20.36</h5>
+                            
+                          <p class="card-text" >Lorem Ipsum is simply dummy</p>
+                          <h5 class="card-title">$20.36</h5>
+
+                        </div>
+                      </div>
 </div>
+                    }
+                   
+                    </div> -->
+ <div class="d-flex justify-content-between align-items-center  w-100">
+                  <h5 class="fw-bold">Order Lists</h5>
+                  <!-- <a href="#" class="see-all">See All →</a> -->
+                </div>
+                    <div class="row" style="width: 100%;">
+                        @for (item of itemsList; track item) {
+                            <div class="col-md-4 mb-4" >
+                              <div class="card h-70 w-100 border-light shadow-sm" style="border-radius:5px;padding: 5px;" >
+                                <img [src]="item.img" class="card-img-top" alt="{{ item.name }}" style="height: 130px; object-fit: cover;border: none;border-radius: 0px;" (click)="openIngredientsPopup(item)">
+                                <div class="card-body text-center d-flex flex-column">
+                                  <h5 class="card-title mb-2" style="font-weight: 500;text-align: start;font-size: medium;">{{ item.name }}</h5>
+                                  <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <p class="card-text m-0" style="font-size: 16px; font-weight: 600;">${{ item.price.toFixed(2) }}</p>
+                                    <button class="btn btn-primary" style="border: 12px; padding: 2px 12px;" (click)="addItem(item)">
+                                      ADD <span class="fw-bold">+</span>
+                                    </button>
+                                  </div>
+                          
+                                  <!-- <small class="text-muted mt-1" style="display: flex;justify-content: end;">customisable</small> -->
+                                </div>
+                              </div>
+                            </div>
+                          
+                    }
+                
+                      
+  <!-- Modal -->
+
+ 
+  
+                    <!-- @for (item of Bigitems; track item) {
+                      <div class="col-6 col-sm-4 col-md-4"> 
+                        <div class="card" style="height: 14rem; display: flex; flex-direction: column;">
+                          
+                          <div class="card-body p-0" style="flex-grow: 1;">
+                            <img class="img-fluid d-block w-120 h-100" [src]="item.img" alt="Card image cap" style="object-fit: cover;">
+                          </div>
+                          <div>
+
+                          
+                          </div>
+
+                          <div class="card-footer text-center p-2">
+                            <h5 class="card-title" style="font-size: 1.3rem; margin: 0;">{{ item.name }}</h5>
+                          </div>
+                        </div>
+                      </div>
+                    } -->
+
+                  </div>
+                  
+                  </div>
+                  
+                  
+              
+      <!-- </div> -->
+      </app-card>
+     
+
+      
+    </div>
+  </div>
+
+  @if (showPopup && selectedItem.Ingredients!='' && selectedItem.Ingredients!=null) {
+    <div 
+      class="modal fade show d-block modal-overlay"
+      tabindex="-1" 
+      role="dialog"
+    >
+      <div class="modal-dialog" style="margin: 0; max-width: 500px; width: 100%;">
+        <div class="modal-content">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <h5 class="modal-title">{{ selectedItem?.name }} Ingredients</h5>
+                <button type="button-" class="close btn btn-primary button-border" aria-label="Close" (click)="closePopup()">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+          <div class="modal-body">
+            <!-- @if (selectedItem?.Ingredients?.length) { -->
+              <ul>
+                <!-- @for (ingredient of selectedItem.Ingredients; track ingredient) { -->
+                  <li>{{ selectedItem.Ingredients }}</li>
+                <!-- } -->
+              </ul>
+            <!-- } -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary button-border" (click)="closePopup()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+  

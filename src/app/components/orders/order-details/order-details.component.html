@@ -1,11 +1,9 @@
 <div class="row">
     <div class="col-xl-8">
-       <app-media></app-media>
+       <app-media (itemAdded)="addToCart($event)"></app-media>
     </div>
-    <div class="col-xl-4
-    
-    ">
-<div class="card">
+    <div class="col-xl-4">
+<!-- <div class="card">
     <div class="row" body>
         <div class="col-12">
             <ul class="nav setting-main-box driver-main-box sticky theme-scrollbar" ngbNav #nav="ngbNav"
@@ -30,8 +28,113 @@
             <div class="restaurant-tab" [ngbNavOutlet]="nav"></div>
         </div>
     </div>
-</div>
-        <!-- <app-card [body]="true">
+</div> -->
+       
+<div class="card p-3 shadow-sm gap-" style="border-radius: 8px;">
+
+    <!-- Table and Dine In / Take Away -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h6 class="mb-0">Order Status</h6>
+        <!-- <small class="text-muted">James Hall</small> -->
+      </div>
+      <!-- <button class="btn btn-link p-0"><i class="bi bi-pencil"></i></button> -->
+    </div>
+  
+    <!-- Dine In / Take Away Buttons -->
+    <!-- <div class="btn-group mb-4 w-100">
+        <button class="btn btn-primary w-50">Dine In</button>
+        <button class="btn btn-outline-primary w-50">Take Away</button>
+      </div>
+   -->
+   <div class="btn-group custom-btn-group mb-4 w-100">
+    <button type="button" 
+            class="btn w-50"
+            [class.active]="selected === 'dinein'"
+            (click)="selected = 'dinein'">
+      Dine In
+    </button>
+    <button type="button" 
+            class="btn w-50"
+            [class.active]="selected === 'takeaway'"
+            (click)="selected = 'takeaway'">
+      Take Away
+    </button>
+  </div>
+  
+    <!-- Cart Items -->
+    @for (item of cartItems; track item) {
+        <div class="d-flex align-items-center justify-content-between mb-3 p-2 border rounded" 
+             style="background: #f9f9f9; border-radius: 12px;">
+          
+          <!-- Image + Name + Price -->
+          <div class="d-flex align-items-center" style="flex: 1;">
+            <img [src]="item.img" alt="{{ item.name }}" width="50" height="50" 
+                 class="rounded me-2" style="object-fit: cover;">
+            <div>
+              <div class="fw-semibold">{{ item.name }}</div>
+              <div class="text-muted" style="font-size: 14px;">${{ item.price.toFixed(2) }}</div>
+            </div>
+          </div>
+        
+          <!-- Quantity Control -->
+          <div class="d-flex align-items-center" style="gap: 6px;">
+            <button class="btn btn-light btn-sm p-1" (click)="decreaseQuantity(item)" style="width: 30px; height: 30px;">-</button>
+            <span class="fw-semibold">{{ item.quantity }}</span>
+            <button class="btn btn-light btn-sm p-1" (click)="increaseQuantity(item)" style="width: 30px; height: 30px;">+</button>
+          </div>
+        
+          <!-- Delete Button -->
+          <div class="ms-2"><i class="fa fa-times edit" style="color: red; border-radius: 20%; 
+            border: 2px solid red; 
+            font-size: 18px; 
+            font-weight: 400;
+            background-color: white;cursor: pointer;" (click)="removeItem(item)"></i></div>
+        
+        
+        </div>
+        }
+        
+    <!-- Summary -->
+    <div class="mt-4">
+      <div class="d-flex justify-content-between">
+        <span>Subtotal</span>
+        <span>${{ subtotal.toFixed(2) }}</span>
+      </div>
+      <div class="d-flex justify-content-between">
+        <span>Tax 10%</span>
+        <span>${{ tax.toFixed(2) }}</span>
+      </div>
+      <div class="d-flex justify-content-between">
+        <span>Discount 20%</span>
+        <span>-${{ discount.toFixed(2) }}</span>
+      </div>
+      <hr>
+      <div class="d-flex justify-content-between fw-bold">
+        <span>Total</span>
+        <span>${{ total.toFixed(2) }}</span>
+      </div>
+    </div>
+  
+    <!-- Payment Method -->
+    <div class="mt-4">
+        <h6>Payment Method</h6>
+        <div class="payment-buttons w-100">
+          <button class="btn btn-primary button-border" style="background-color: #f6e9f2 !important;">Cash</button>
+          <button class="btn btn-primary button-border">Debit Card</button>
+          <button class="btn btn-primary button-border">E-Wallet</button>
+        </div>
+      </div>
+      
+    <!-- Pay Bills -->
+    <button class="btn btn-primary w-100 mt-4 button-border" style="border-radius: 12px; padding: 12px;">
+      Pay Bills
+    </button>
+  </div>
+  
+
+
+<!-- <app-card [body]="true">
             <div class="row" body>
                 <div class="col-12">
                     <ul class="nav setting-main-box driver-main-box sticky theme-scrollbar" ngbNav #nav="ngbNav"

@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { NavService, menuItem } from '../../services/nav.service';
 import { FeatherIconsComponent } from '../feather-icons/feather-icons.component';
+import { SessionStorageService } from '../../services/session-storage.service';
 
 @Component({
     selector: 'app-sidebar',
@@ -14,8 +15,7 @@ import { FeatherIconsComponent } from '../feather-icons/feather-icons.component'
 export class SidebarComponent {
 
   public menuItemsList :any
-
-  constructor(public navService: NavService,
+  constructor(public navService: NavService,private sessionStorageService:SessionStorageService,
     private router: Router,
   ) {
   console.log(JSON.parse(localStorage.getItem('user') as any).name,'openn')
@@ -85,7 +85,19 @@ this.menuItemsList= this.navService.customer_menu_items;
         return;
       });
     }
+   
+    if (item && item.title) {
+      this.sessionStorageService.setSelectedMenuTitle(item.title || '');
+      
+      // const storedTitle = this.sessionStorageService.getItem('selectedMenuTitle');
+      // console.log('Stored Title:', storedTitle);  //  Now it will work properly
+    } else {
+      console.error('Item has no title!');
+    }
+   
+
     item.active = !item.active;
+    
   }
 
 }

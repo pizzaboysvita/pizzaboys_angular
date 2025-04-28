@@ -28,6 +28,8 @@
     "@ng-select/ng-select": "^14.2.0",
     "@popperjs/core": "^2.11.8",
     "@types/feather-icons": "^4.29.4",
+    "ag-grid-angular": "^33.2.4",
+    "ag-grid-community": "^33.2.4",
     "apexcharts": "^4.5.0",
     "bootstrap": "^5.3.3",
     "feather-icons": "^4.29.2",
