@@ -238,7 +238,7 @@ export class NavService {
     },
     {
       level: 1,
-      title: "Restaurants",
+      title: "Stores",
       path: "/restaurants/restaurants-list",
       icon: "ri-shopping-bag-2-line",
       type: "link",
@@ -246,7 +246,7 @@ export class NavService {
     },
     {
       level: 1,
-      title:  "Add New Restaurants",
+      title:  "Add New Store",
       path: "/restaurants/add-restaurants", 
       icon: "ri-file-chart-line",
       type: "link",
