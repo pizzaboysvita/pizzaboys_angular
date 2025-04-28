@@ -1,0 +1,45 @@
+.custom-btn-group {
+    border: 0px solid linear-gradient(to right, #f6a700, #f75e5e);
+    border-radius: 15px;
+    overflow: hidden;
+  }
+  
+  .custom-btn-group .btn {
+    border: none;
+    border-radius: 0;
+    color: linear-gradient(to right, #f6a700, #f75e5e);
+    background-color: transparent;
+    font-weight: 500;
+  }
+  
+  .custom-btn-group .btn.active {
+    background: linear-gradient(to right, #f6a700, #f75e5e);
+    color: #fff;
+  }
+  
+  .custom-btn-group .btn:not(.active):hover {
+    background-color: rgba(0, 123, 255, 0.1);
+  }
+  
+  .custom-btn-group .btn:focus {
+    box-shadow: none;
+  }
+  .payment-buttons {
+    display: flex;
+    gap: 10px; /* Space between buttons */
+    margin-top: 10px;
+  }
+  
+  .payment-buttons .btn {
+    flex: 1; /* Make all buttons equal width */
+  }
+  .button-border{
+   border-color: #f6e9f2 !important;
+
+   
+  }
+  .button-color{
+    background-color: #f6e9f2 !important;
+
+   }
+  
