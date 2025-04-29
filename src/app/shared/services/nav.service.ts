@@ -341,6 +341,14 @@ export class NavService {
     },
     {
       level: 1,
+      title: "Menus 2",
+      path: "/menus/list",
+      icon: "ri-bowl-line",
+      type: "link",
+      active: false,
+    },
+    {
+      level: 1,
       title: "Settings",
       path: "/users/add-new-user",
       icon: "ri-settings-line",
