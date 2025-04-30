@@ -1,8 +1,11 @@
-<div class="page-wrapper compact-wrapper">
+<div class="page-wrapper compact-wrapper" style="overflow: hidden;">
     <!-- Page Header Start-->
+     @if (users.name !='pos') {
     <div class="page-header" [class.close_icon]="navService.collapseSidebar">
         <app-header></app-header>
     </div>
+}
+
     <!-- Page Header Ends-->
     <!-- Page Body Start Wrapper-->
     <div class="page-body-wrapper">
@@ -12,13 +15,13 @@
         </div>
         <!-- Page Sidebar Ends-->
         <!-- Page body start -->
-        <div class="page-body">
-            <div class="container-fluid">
+        <div class="page-body" style="min-height: fit-content;"> 
+            <div class="container-fluid" style="padding: 0px;">
                 <router-outlet></router-outlet>
             </div>
             <!-- Container-fluid End-->
             <!-- footer start-->
-            <div class="container-fluid">
+            <div class="container-fluid" >
                 <app-footer></app-footer>
             </div>
             <!-- footer End-->

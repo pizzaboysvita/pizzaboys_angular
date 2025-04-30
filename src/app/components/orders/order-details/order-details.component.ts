@@ -64,20 +64,21 @@ export class OrderDetailsComponent {
       this.cartItems.push({ ...item, quantity: 1 });
     }
   }
-  get subtotal() {
-    return this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  }
+  // get subtotal() {
+  //   return this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  // }
 
-  get tax() {
-    return this.subtotal * 0.10;  // 10% tax
-  }
+  // get tax() {
+  //   return this.subtotal * 0.10;  // 10% tax
+  // }
 
-  get discount() {
-    return this.subtotal * 0.20;  // 20% discount
-  }
+  // get discount() {
+  //   return this.subtotal * 0.20;  // 20% discount
+  // }
 
   get total() {
-    return this.subtotal + this.tax - this.discount;
+    return this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    // return this.subtotal + this.tax - this.discount;
   }
 
   increaseQuantity(item: CartItem) {

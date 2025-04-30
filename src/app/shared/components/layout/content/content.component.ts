@@ -15,12 +15,20 @@ import { CustomizerComponent } from '../../customizer/customizer.component';
 })
 
 export class ContentComponent {
-
+  users:any
     constructor(public navService: NavService) {
         if (window.innerWidth < 1185) {
             navService.collapseSidebar = true;
         }
+        const userData = localStorage.getItem("user");
+        if (userData !== null) {
+          this.users = JSON.parse(userData);
+        } else {
+          console.log("No user data found in localStorage.");
+        }
+        
     }
+
 
     @HostListener('window:resize', ['$event'])
 
