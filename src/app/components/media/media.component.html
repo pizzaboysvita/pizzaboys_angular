@@ -2,7 +2,15 @@
     <div class="col-sm-12">
       <app-card [body]="true">
         <div body class="row row-cols-xl-12 row-cols-md-5 row-cols-sm-3 row-cols-2 g-sm-3 g-2 media-library-sec ratio_landscape">
-          <!-- <div> -->
+            <div class="input-box search-icon" >
+                <i class="ri-search-line"></i>
+                <input class="search-box" type="search" placeholder="What are you looking for?" [(ngModel)]="searchText"
+                    name="search" (keyup)="searchTerm(searchText)" style="flex: 1; border: none; outline: none; background: transparent;">
+                <!-- <app-feather-icons [icons]="'x'" class="close-icon" (click)="isSearch = false"></app-feather-icons> -->
+            </div>
+            <!-- </div> -->
+         
+            <!-- <div> -->
                 <!-- <div class="d-flex justify-content-between align-items-center  w-100">
                   <h5 class="fw-bold">Order Lists</h5>
                   <a href="#" class="see-all">See All →</a>
@@ -142,34 +150,86 @@
     </div>
   </div>
 
-  @if (showPopup && selectedItem.Ingredients!='' && selectedItem.Ingredients!=null) {
-    <div 
-      class="modal fade show d-block modal-overlay"
-      tabindex="-1" 
-      role="dialog"
-    >
-      <div class="modal-dialog" style="margin: 0; max-width: 500px; width: 100%;">
-        <div class="modal-content">
-            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center;">
-                <h5 class="modal-title">{{ selectedItem?.name }} Ingredients</h5>
-                <button type="button-" class="close btn btn-primary button-border" aria-label="Close" (click)="closePopup()">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-          <div class="modal-body">
-            <!-- @if (selectedItem?.Ingredients?.length) { -->
-              <ul>
-                <!-- @for (ingredient of selectedItem.Ingredients; track ingredient) { -->
-                  <li>{{ selectedItem.Ingredients }}</li>
-                <!-- } -->
-              </ul>
-            <!-- } -->
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary button-border" (click)="closePopup()">Close</button>
-          </div>
+  <div
+  *ngIf="showPopup && selectedItem?.Ingredients"
+  class="modal fade show d-block modal-overlay"
+  tabindex="-1"
+  role="dialog"
+
+>
+  <div class="modal-dialog" style="margin: 0 auto; max-width: 500px; width: 100%;">
+    <div class="modal-content shadow-sm rounded-3 border-0">
+      
+      <!-- Header -->
+      <div class="modal-header d-flex justify-content-between align-items-center border-0" style="color: black;font-size: x-large !important;">
+        <h5 class="modal-title mb-0 fw-bold " style="font-size: x-large;">{{ selectedItem.name }}</h5>
+        <div class="d-flex align-items-center gap-3">
+          <span class="text-dark fw-bold ">${{ selectedItem.price }}</span>
+          <!-- <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="closePopup()"
+          ></button> -->
         </div>
       </div>
+
+      <!-- Pizza Items -->
+      <div class="modal-body pb-0">
+        <div *ngFor="let pizza of selectedItem.pizzas; let i = index" class="border-bottom py-2">
+            <div
+              class="d-flex justify-content-between align-items-center"
+              (click)="toggleExpand(i)"
+              style="cursor: pointer;"
+            >
+              <span class="fw-bold" style="font-size: medium;color: black;">{{ pizza.name }}</span>
+              <span class="material-symbols-outlined text-muted">
+                {{ expandedIndex === i ? 'expand_less' : 'chevron_right' }}
+              </span>
+            </div>
+          
+            <!-- Collapsible content -->
+            <div *ngIf="expandedIndex === i" class="mt-2 ps-3  fw-bold" style="font-size: large;">
+              <!-- You can replace this with real options like toppings, size, etc. -->
+              <div>• Size: Large</div>
+              <div>• Crust: Thin</div>
+              <div>• Extra Cheese: Yes</div>
+            </div>
+          </div>
+
+        <!-- Notes Input -->
+        <div class="mt-3">
+          <label class="form-label fw-semibold mb-1" style="font-size: medium;color: black;"> Notes</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="selectedItem.notes"
+            placeholder="Add a note..." style="min-height: 100px;"
+          />
+        </div>
+      </div>
+
+      <!-- Footer with quantity and add button -->
+      <div class="modal-footer d-flex justify-content-between align-items-center border-0 mt-3">
+        <div class="input-group w-auto">
+          <button class="btn btn-outline-warning " (click)="decreaseQty()" style="font-size: large;">−</button>
+          <input
+            type="text"
+            class="form-control text-center"
+            style="width: 50px"
+            [value]="quantity"
+            readonly
+          />
+          <button class="btn btn-outline-warning" (click)="increaseQty()" style="font-size: large;">+</button>
+        </div>
+        <button class="btn btn-warning text-white fw-bold px-5" (click)="addDish()">Close</button>
+
+        <button class="btn btn-warning text-white fw-bold px-7" (click)="addDish()">ADD DISH</button>
+      </div>
+
     </div>
-  }
+  </div>
+</div>
+
+
   

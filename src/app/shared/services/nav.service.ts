@@ -377,10 +377,13 @@ export class NavService {
       type: "sub",
       active: true,
       children: [
-        { path: "/orders/order-detail", title: "Coupon List", type: "link", level: 2, },
+        // { path: "/orders/order-detail", title: "Coupon List", type: "link", level: 2, },
         { path: "/orders/order-detail", title: "Classic Range Pizzas", type: "link", level: 2 },
         { path: "/orders/order-detail", title: "Non Vegetarian", type: "link", level: 2 },
-        { path: "/coupons/create-coupon", title: "Lunch", type: "link", level: 2, },
+        { path: "/orders/order-detail", title: "Pasta", type: "link", level: 2 },
+        { path: "/orders/order-detail", title: "Drinks", type: "link", level: 2 },
+        // { path: "/coupons/create-coupon", title: "Lunch", type: "link", level: 2, },
+
       ]
     },
 

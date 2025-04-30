@@ -2,6 +2,7 @@
     border: 0px solid linear-gradient(to right, #f6a700, #f75e5e);
     border-radius: 15px;
     overflow: hidden;
+    background-color: #d5e6fd;
   }
   
   .custom-btn-group .btn {
@@ -42,4 +43,15 @@
     background-color: #f6e9f2 !important;
 
    }
+   .full-height {
+    height: 95vh !important; /* Full height of the viewport */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .scrollable-card {
+    flex: 1;
+    overflow-y: auto;
+  }
+  
   
