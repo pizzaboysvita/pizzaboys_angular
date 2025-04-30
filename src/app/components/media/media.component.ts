@@ -15,7 +15,7 @@ import { FormsModule } from '@angular/forms';
     selector: 'app-media',
     templateUrl: './media.component.html',
     styleUrl: './media.component.scss',
-    imports: [CardComponent, FeatherIconsComponent,CommonModule,FormsModule]
+    imports: [CardComponent,CommonModule,FormsModule]
 })
 
 export class MediaComponent{
