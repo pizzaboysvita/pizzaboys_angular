@@ -1,0 +1,40 @@
+<div class="row">
+        <div class="container my-3">
+            <div class="card shadow-sm rounded-4 px-3 py-3">
+              <div class="row align-items-center">
+                <div class="col-md-8">
+                  <strong class="text-dark">Search Range</strong>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="input-group justify-content-end">
+                      <input
+                        type="month"
+                        class="form-control border-0 shadow-none text-end bg-transparent"
+                        [(ngModel)]="toDate"
+                      />
+                      <span class="input-group-text bg-transparent border-0">
+                        <i class="bi bi-calendar2-week-fill text-primary"></i>
+                      </span>
+                    </div>
+                  </div>
+              </div>
+            </div>
+        </div>
+        <div class="col-xl-4 ">
+            <app-top-chart [data]="TotalSale"></app-top-chart>
+        </div>
+        <div class="col-xl-4">
+            <app-top-chart [data]="TotalProfit"></app-top-chart>
+        </div>
+        <div class="col-xl-4">
+            <app-top-chart [data]="CustomerRate"></app-top-chart>
+        </div>
+</div>
+<div class="row">
+    <div class="col-xl-6">
+        <app-sales-summary-chart> </app-sales-summary-chart>
+    </div>
+    <div class="col-xl-6">
+        <app-sales-purchase-chart> </app-sales-purchase-chart>
+    </div>
+</div>

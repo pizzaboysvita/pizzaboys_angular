@@ -32,7 +32,8 @@ export class LoginComponent {
         name: "test user",
       };
       localStorage.setItem("user", JSON.stringify(user));
-      this.router.navigate(["/dashboard"]);
+      // this.router.navigate(["/dashboard"]);
+      this.router.navigate(["/store-dashboard"]);
     }else if(this.loginForm.value["email"] == "store@pizzaboys.com" && this.loginForm.value["password"] == "test123") {
       let user = {
         email: "store@pizzaboys.com",
@@ -40,7 +41,8 @@ export class LoginComponent {
         name: "customer",
       };
       localStorage.setItem("user", JSON.stringify(user));
-      this.router.navigate(["/dashboard"]);
+      this.router.navigate(["/store-dashboard"]);
+      // this.router.navigate(["/dashboard"]);
     }else if(this.loginForm.value["email"] =="pos@pizzaboys.com" && this.loginForm.value["password"] == "test123") {
       let user = {
         email: "pos@pizzaboys.com",
