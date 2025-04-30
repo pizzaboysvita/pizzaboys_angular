@@ -1,38 +1,36 @@
 <div [formGroup]="permissionForm">
-    <h3>Restriction Presets</h3>
-    <div class="presets mt-3 mb-3 nav-pills">
-      @for (preset of presetList; track preset) {
-        <button
-          type="button"
-          class="mb-3"
-          (click)="applyPreset(preset)"
-          [class.active]="selectedPreset === preset">
-          {{ preset }}
-        </button>
-      }
-    </div>
-  
-    @for (section of managementSections; track section) {
-      <div class="management-section nav-pills">
-        <h4  >{{ section.title }}</h4>
-        <div [formGroupName]="section.key" class="permissions">
-              <div class="row gy-3 mb-4">
+  <h3>Restriction Presets</h3>
+  <div class="presets mt-3 mb-3 nav-pills">
+    @for (preset of presetList; track preset) {
+    <button type="button" class="mb-3" (click)="applyPreset(preset)" [class.active]="selectedPreset === preset">
+      {{ preset }}
+    </button>
+    }
+  </div>
+
+  @for (section of managementSections; track section) {
+  <div class="management-section nav-pills">
+    <h4>{{ section.title }}</h4>
+    <div class="section">
+      <div [formGroupName]="section.key" class="permissions">
+        <div class="row gy-3 mb-4">
           @for (permission of section.permissions; track permission) {
-            <div class="switch-wrapper col-sm-3">
-              <label class="switch">
-                <input type="checkbox" [formControlName]="permission" />
-                <span class="slider round"></span>
-              </label>
-              <span class="label-text">{{ permission }}</span>
-            </div>
+          <div class="switch-wrapper col-sm-3">
+            <label class="switch">
+              <input type="checkbox" [formControlName]="permission" />
+              <span class="slider round"></span>
+            </label>
+            <span class="label-text">{{ permission }}</span>
+          </div>
 
           }
         </div>
 
       </div>
-      <div class="description" ><p>{{ section.description }}</p></div>
+      <div class="description">
+        <p>{{ section.description }}</p>
+      </div>
+    </div>
   </div>
-}
+  }
 </div>
-
-  
