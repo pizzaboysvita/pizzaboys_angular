@@ -25,25 +25,25 @@ export class LoginComponent {
   }
 
   login() {
-    if (this.loginForm.value["email"] == "Test@gmail.com" && this.loginForm.value["password"] == "test123") {
+    if (this.loginForm.value["email"] == "admin@pizzaboys.com" && this.loginForm.value["password"] == "test123") {
       let user = {
-        email: "Test@gmail.com",
+        email: "admin@pizzaboys.com",
         password: "test123",
         name: "test user",
       };
       localStorage.setItem("user", JSON.stringify(user));
       this.router.navigate(["/dashboard"]);
-    }else if(this.loginForm.value["email"] == "customer@gmail.com" && this.loginForm.value["password"] == "test123") {
+    }else if(this.loginForm.value["email"] == "store@pizzaboys.com" && this.loginForm.value["password"] == "test123") {
       let user = {
-        email: "customer@gmail.com",
+        email: "store@pizzaboys.com",
         password: "test123",
         name: "customer",
       };
       localStorage.setItem("user", JSON.stringify(user));
       this.router.navigate(["/dashboard"]);
-    }else if(this.loginForm.value["email"] == "pos@gmail.com" && this.loginForm.value["password"] == "test123") {
+    }else if(this.loginForm.value["email"] =="pos@pizzaboys.com" && this.loginForm.value["password"] == "test123") {
       let user = {
-        email: "pos@gmail.com",
+        email: "pos@pizzaboys.com",
         password: "test123",
         name: "pos",
       };
