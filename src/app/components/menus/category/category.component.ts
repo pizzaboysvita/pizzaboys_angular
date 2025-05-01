@@ -8,6 +8,9 @@ import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-mod
 import { ColDef, ModuleRegistry } from '@ag-grid-community/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddCategoryComponent } from '../add-category/add-category.component';
+import { NgSelectModule } from "@ng-select/ng-select";
+
+
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
   menutype: string;
@@ -20,7 +23,7 @@ interface RowData {
 }
 @Component({
   selector: 'app-category',
-  imports: [CardComponent, AgGridAngular],
+  imports: [CardComponent, AgGridAngular,NgSelectModule],
   templateUrl: './category.component.html',
   styleUrl: './category.component.scss'
 })
@@ -181,7 +184,14 @@ delete
     { menutype: 'Seasonal menu', categoryType: 'Limited Time Deal', status: 'No Stock', dishName: 'Pizza chicken', price: '90', pos: '',misc:'' },
     { menutype: 'Seasonal menu', categoryType: 'Lunch', status: 'Hide', dishName: 'Pizza chicken', price: '15', pos: 'Hide in POS',misc:'Cancel' }
   ];
-
+  public categoryList = [
+    { id: 1, name: "Valentines Day Promotion" },
+    { id: 2, name: "Limited Time Deal" },
+    { id: 3, name: "Specials" },
+    { id: 4, name: "Lunch" },
+    { id: 5, name: "Chicken Pizza" },
+    { id: 6, name: "Meat Pizza" },
+  ];
   constructor(public modal: NgbModal) { }
   onCellClicked(event: any) {
     if (event.event.target && event.event.target.dataset.action) {
