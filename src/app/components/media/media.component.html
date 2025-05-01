@@ -177,16 +177,19 @@
       <!-- Pizza Items -->
       <div class="modal-body pb-0">
         <div *ngFor="let pizza of selectedItem.pizzas; let i = index" class="border-bottom py-2">
+            <!-- (click)="toggleExpand(i)" -->
             <div
-              class="d-flex justify-content-between align-items-center"
-              (click)="toggleExpand(i)"
-              style="cursor: pointer;"
-            >
-              <span class="fw-bold" style="font-size: medium;color: black;">{{ pizza.name }}</span>
-              <span class="material-symbols-outlined text-muted">
-                {{ expandedIndex === i ? 'expand_less' : 'chevron_right' }}
-              </span>
-            </div>
+            class="d-flex justify-content-between align-items-center"
+            (click)="pizza.type ? toggleExpand(i) : dishSelector(i)"
+            style="cursor: pointer;"
+          >
+            <span class="fw-bold" style="font-size: medium; color: black;">
+              {{ pizza.name }} {{ selectedDishes[i] || '' }}
+            </span>
+            <span class="material-symbols-outlined text-muted">
+              {{ expandedIndex === i ? 'expand_less' : 'chevron_right' }}
+            </span>
+          </div>
           
             <!-- Collapsible content -->
             <div *ngIf="expandedIndex === i" class="mt-2 ps-3  fw-bold" style="font-size: large;">
@@ -230,6 +233,10 @@
     </div>
   </div>
 </div>
+<!-- <app-dish-selector
+  *ngIf="showModal"
+  (dishSelected)="onDishSelected($event)">
+</app-dish-selector> -->
 
 
   

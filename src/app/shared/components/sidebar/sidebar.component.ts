@@ -4,6 +4,7 @@ import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { NavService, menuItem } from '../../services/nav.service';
 import { FeatherIconsComponent } from '../feather-icons/feather-icons.component';
 import { SessionStorageService } from '../../services/session-storage.service';
+import { filter } from 'rxjs';
 
 @Component({
     selector: 'app-sidebar',
@@ -67,30 +68,33 @@ this.menuItemsList= this.navService.customer_menu_items;
       }
     });
   }
-
   toggleNavActive(item: menuItem) {
-    if (!item.active) {
-      this.menuItemsList.forEach((a: menuItem) => {
-        if (this.menuItemsList.includes(item)) {
-          a.active = false; 
-        }
-        if (!a.children) {
-          return false;
-        }
-        a.children.forEach((b: menuItem) => {
-          if (a.children?.includes(item)) {
-            b.active = false;
-          }
-        });
-        return;
-      });
+    if (item.type === 'method' && item.methodName) {
+      this.navService.logOut(); // ✅ dynamically call the method in NavService
     }
+    else{
+      if (!item.active) {
+        this.menuItemsList.forEach((a: menuItem) => {
+          if (this.menuItemsList.includes(item)) {
+            a.active = false; 
+          }
+          if (!a.children) {
+            return false;
+          }
+          a.children.forEach((b: menuItem) => {
+            if (a.children?.includes(item)) {
+              b.active = false;
+            }
+          });
+          return;
+        });
+      }
+    }
+  
    
     if (item && item.title) {
       this.sessionStorageService.setSelectedMenuTitle(item.title || '');
       
-      // const storedTitle = this.sessionStorageService.getItem('selectedMenuTitle');
-      // console.log('Stored Title:', storedTitle);  //  Now it will work properly
     } else {
       console.error('Item has no title!');
     }
@@ -98,6 +102,20 @@ this.menuItemsList= this.navService.customer_menu_items;
 
     item.active = !item.active;
     
+  }
+  setActiveOnNavigation(url: string) {
+    this.menuItemsList.forEach((item: any) => {
+      if (item.path === url) {
+        this.setNavActive(item);
+      }
+      if (item.children) {
+        item.children.forEach((subItem: menuItem) => {
+          if (subItem.path === url) {
+            this.setNavActive(subItem);
+          }
+        });
+      }
+    });
   }
 
 }

@@ -50,7 +50,8 @@ export class LoginComponent {
         name: "pos",
       };
       localStorage.setItem("user", JSON.stringify(user));
-      this.router.navigate(["/orders/order-detail"]);
+      this.router.navigate(['/orders/order-detail'], { state: { title: 'Drinks' } });
+      // this.router.navigate(["/orders/order-detail"]);
     }
   }
 }

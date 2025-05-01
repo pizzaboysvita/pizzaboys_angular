@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject } from 'rxjs';
+import { LoggingOutComponent } from '../components/widgets/logging-out/logging-out.component';
 
 export interface menuItem {
   level?: number;
@@ -8,6 +10,7 @@ export interface menuItem {
   type?: string;
   icon?: string;
   active?: boolean;
+  methodName?: string;
   children?: menuItem[];
 }
 
@@ -18,7 +21,7 @@ export interface menuItem {
 export class NavService {
 
   public collapseSidebar: boolean = window.innerWidth < 1200 ? true : false;
-  constructor() { }
+  constructor(public modal: NgbModal) { }
 
   // menuItem: menuItem[] = [
   //   {
@@ -386,11 +389,26 @@ export class NavService {
 
       ]
     },
+    {
+      level: 1,
+      title: "Logout",
+      type: 'method',
+      methodName: 'logOut',  
+      icon: "ri-logout-box-r-line",  // Logout icon
+      active: false,
+    }
+    
 
     
    
    
   ]
+  
   items = new BehaviorSubject<menuItem[]>(this.menuItem);
+   logOut() {
+          this.modal.open(LoggingOutComponent,{
+              windowClass:'theme-modal',centered:true
+          })
+      }
 
 }

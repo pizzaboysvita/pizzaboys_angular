@@ -10,6 +10,7 @@ import { SessionStorageService } from '../../shared/services/session-storage.ser
 import { FeatherIconsComponent } from "../../shared/components/feather-icons/feather-icons.component";
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DishSelectorComponent } from './dish-selector/dish-selector.component';
 
 @Component({
     selector: 'app-media',
@@ -50,6 +51,10 @@ export class MediaComponent{
     { name: 'Fancy Pizza', price: 25.36, quantity: 1, img: '/assets/food/default-pizza.avif', Ingredients: 'dough base, pizza sauce, mozzarella cheese, and a variety of toppings. The dough base is made from flour, water, yeast, and sometimes oil or sugar. The', title: 'Classic Range Pizzas' },
     { name: 'Salami Pizza', price: 25.36, quantity: 1, img: '/assets/food/Salami-pizza.jpg', Ingredients: 'dough base, pizza sauce, mozzarella cheese, and a variety of toppings. The dough base is made from flour, water, yeast, and sometimes oil or sugar. The', title: 'Classic Range Pizzas' },
   ];
+  selectedDish: string;
+  showModal: boolean;
+  selectedDishes: string[] = [];
+
   
   constructor(public modal: NgbModal,private commonService:SessionStorageService,private cdr: ChangeDetectorRef) { 
  
@@ -107,18 +112,41 @@ export class MediaComponent{
   //   }
   
   loadItemsBySelectedTitle() {
-    this.commonService.selectedMenuTitle$.subscribe(title => {
-      this.selectedTitle1 = title;
-      this.itemsList = this.items.filter(item => item.title.trim() === title.trim());
-    });
-  
-    // In case page refresh
+    const navigationState = history.state;
     const savedTitle = this.commonService.getSelectedMenuTitle();
-    if (savedTitle) {
+  
+    // Case 1: First login or navigation with title in router.navigate({ state: { title: '...' } })
+    if (navigationState && navigationState.title) {
+      this.selectedTitle1 = navigationState.title;
+      this.itemsList = this.items.filter(item => item.title.trim() === navigationState.title.trim());
+  
+      // Save to service for future refreshes or page reloads
+      this.commonService.setSelectedMenuTitle(navigationState.title);
+  
+      // Clear the title in state to avoid reloading on refresh
+      history.replaceState({}, '');
+    } 
+    // Case 2: Already saved in service (page refresh or later use)
+    else if (savedTitle) {
       this.selectedTitle1 = savedTitle;
       this.itemsList = this.items.filter(item => item.title.trim() === savedTitle.trim());
+    } 
+    // Optional: fallback to a default category
+    else {
+      this.selectedTitle1 = 'Classic Range Pizzas'; // or any default
+      this.itemsList = this.items.filter(item => item.title.trim() === this.selectedTitle1);
+      this.commonService.setSelectedMenuTitle(this.selectedTitle1);
     }
   
+    // Subscribe to future changes
+    this.commonService.selectedMenuTitle$.subscribe(title => {
+      if (title && title.trim()) {
+        this.selectedTitle1 = title;
+        this.itemsList = this.items.filter(item => item.title.trim() === title.trim());
+      }
+    });
+  
+    console.log('Selected Title:', this.selectedTitle1);
   }
   
   
@@ -135,7 +163,7 @@ export class MediaComponent{
   selectedItem = {
     name: 'Pizza',
     price: 32.0,
-    pizzas: [{name:'Pizza1'}, {name:'Pizza2'} ],
+    pizzas: [{name:'Pizza1',type:''}, {name:'Pizza2',type:'Pizza2'} ],
     Ingredients: ['Cheese', 'Tomato'], // optional
     notes: ''
   };
@@ -171,6 +199,33 @@ export class MediaComponent{
 toggleExpand(index: number) {
   this.expandedIndex = this.expandedIndex === index ? null : index;
 }
+dishSelector(i: number) {
+  //   this.modal.open(DishSelectorComponent,{
+//     windowClass:'theme-modal',centered:true
+// })
+// }
+  const modalRef = this.modal.open(DishSelectorComponent, {
+    windowClass: 'theme-modal',
+    centered: true
+  });
+
+  modalRef.result.then(
+    (dish: string) => {
+      this.selectedDishes[i] = dish;
+    },
+    (reason) => {}
+  );
+
+}
+
+// onDishSelected(dish: string) {
+//   this.selectedDish = dish;
+//   console.log(this.selectedDish);
+  
+//   this.showModal = false; // close modal
+//   // Optionally add dish to cart or form
+// }
+
 }
 export interface CartItem {
   name: string;
