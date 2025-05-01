@@ -53,5 +53,44 @@
     flex: 1;
     overflow-y: auto;
   }
+  .custom-outline {
+    border: 2px solid transparent;
+    color: white;
+    font-weight: 600;
+    background-image: linear-gradient(to right, #f9a825, #f06292); /* gradient border */
+    padding: 10px;
+    border-radius: 10px;
+    background-clip: padding-box, border-box;
+    background-origin: border-box;
+    background-repeat: no-repeat;
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+    color: black;
+
+  }
+
+  
+  .custom-outline::before {
+    content: "";
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    bottom: 2px;
+    left: 2px;
+    background-color: white;
+    border-radius: 8px;
+    z-index: -1;
+    color: black;
+  }
+  
+  .custom-outline:hover {
+    color: white;
+    background-image: linear-gradient(to right, #f9a825, #f06292);
+  }
+  
+  .custom-outline:hover::before {
+    background-color: transparent;
+  }
   
   
