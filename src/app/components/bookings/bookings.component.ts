@@ -10,7 +10,7 @@ import { TableComponent } from '../widgets/table/table.component';
   selector: 'app-bookings',
   templateUrl: './bookings.component.html',
   styleUrl: './bookings.component.scss',
-  imports: [FormsModule, RouterModule, FeatherIconsComponent, TableComponent, CardComponent]
+  imports: [FormsModule, RouterModule, TableComponent, CardComponent]
 })
 export class BookingsComponent {
 

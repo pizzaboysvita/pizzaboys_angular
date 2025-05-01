@@ -37,37 +37,47 @@ modules = [ClientSideRowModelModule];
         unSortIcon: true  },
       { field: 'storeAddress', headerName: 'Store Address',suppressMenu: true,
         unSortIcon: true  },
-      {
-        headerName: 'Status',
-        field: 'status',
-        editable: true,
-        suppressMenu: true,
-        unSortIcon: true ,
-        cellEditor: 'agSelectCellEditor',
-        cellEditorParams: {
-          values: ['Active', 'Inactive', 'Pending']
-        },
-        cellStyle: (params: any) => {
-          // Return an object with valid style properties
-          const style: { [key: string]: string } = {}; // Create an object to store the styles
-          
-          if (params.value === 'Active') {
-            style['backgroundColor'] = '#6cbd7e0f';
-style['border'] ='2px solid rgba(108, 189, 126, .2)'
-            style['color'] = '#6cbd7e';
-          } else if (params.value === 'Inactive') {
-            style['backgroundColor'] = '#dc3545';
-            style['color'] = 'white';
-          } else if (params.value === 'Pending') {
-            style['backgroundColor'] = '#ffc107';
-            style['color'] = 'black';
+        {
+          headerName: 'Status',
+          field: 'status',
+          editable: true,
+          suppressMenu: true,
+          unSortIcon: true,
+          cellEditor: 'agSelectCellEditor',
+          cellEditorParams: {
+            values: ['Active', 'No Stock', 'Hide']
+          },
+          cellRenderer: (params: any) => {
+            let statusClass = '';
+            switch (params.value) {
+              case 'Active':
+                statusClass = 'status-active';
+                break;
+              case 'Pending':
+                statusClass = 'status-Pending';
+                break;
+              case 'Inactive':
+                statusClass = 'status-Inactive';
+                break;
+              default:
+                statusClass = '';
+            }
+        
+            if (!params.value) {
+              return `
+                <select class="status-dropdown">
+                  <option value="">Select Status</option>
+                  <option value="Active">Active</option>
+                  <option value="No Stock">No Stock</option>
+                  <option value="Hide">Hide</option>
+                </select>
+              `;
+            }
+        
+            return `<div class="status-badge ${statusClass}">${params.value}</div>`;
           }
-      
-          // Always return the style object, even if it doesn't match any condition
-          return style;
-        }
-      },
-      
+        },
+        
       
       
       {

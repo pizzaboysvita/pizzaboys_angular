@@ -11,7 +11,7 @@ import { TableComponent } from "../../widgets/table/table.component";
     selector: 'app-category-list',
     templateUrl: './category-list.component.html',
     styleUrl: './category-list.component.scss',
-    imports: [FeatherIconsComponent, CardComponent, RouterModule, FormsModule, TableComponent]
+    imports: [ CardComponent, RouterModule, FormsModule, TableComponent]
 })
 
 export class CategoryListComponent {

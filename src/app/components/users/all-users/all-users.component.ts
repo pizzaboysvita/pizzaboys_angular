@@ -11,7 +11,7 @@ import { CardComponent } from "../../../shared/components/card/card.component";
     selector: 'app-all-users',
     templateUrl: './all-users.component.html',
     styleUrl: './all-users.component.scss',
-    imports: [FormsModule, RouterModule, FeatherIconsComponent, TableComponent, CardComponent]
+    imports: [FormsModule, RouterModule, TableComponent, CardComponent]
 })
 
 export class AllUsersComponent {
