@@ -6,6 +6,10 @@ export const content: Routes = [
         loadChildren: () => import('../../components/dashboard/dashboard.routes'),
     },
     {
+        path: 'store-dashboard',
+        loadChildren: () => import('../../components/store-dashboard/store-dashboard.routes'),
+    },
+    {
         path: 'product',
         loadChildren: () => import('../../components/product/product.routes'),
     },

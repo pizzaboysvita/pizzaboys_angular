@@ -231,7 +231,7 @@ export class NavService {
     {
       level: 1,
       title: "Dashboard",
-      path: "/dashboard",
+      path: "/store-dashboard",
       icon: "ri-file-chart-line",
       type: "link",
       active: false,
@@ -279,14 +279,14 @@ export class NavService {
     //     { path: "/users/add-new-user", title: "Add new user", type: "link", level: 2, },
     //   ]
     // },
-      {
-      level: 1,
-      title: "Reports",
-      path: "/reports",
-      icon: "ri-file-chart-line",
-      type: "link",
-      active: false,
-    },
+    //   {
+    //   level: 1,
+    //   title: "Reports",
+    //   path: "/reports",
+    //   icon: "ri-file-chart-line",
+    //   type: "link",
+    //   active: false,
+    // },
    
   ]
   customer_menu_items:menuItem[] =[
