@@ -1,4 +1,19 @@
 <div [formGroup]="permissionForm">
+  
+  <div class="col-12">
+    <div class="input-box">
+      <h6>Store List</h6>
+      <ng-select 
+        [items]="categoryList" 
+        [searchable]="true" 
+        [multiple]="true"
+        bindLabel="name" 
+        bindValue="id"
+        placeholder="Select from the dropdown or type to search"
+        >
+      </ng-select>
+    </div>
+  </div>
   <h3>Restriction Presets</h3>
   <div class="presets mt-3 mb-3 nav-pills">
     @for (preset of presetList; track preset) {

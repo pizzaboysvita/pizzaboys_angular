@@ -34,36 +34,38 @@ export class RestaurantsListComponent {
         unSortIcon: true  },
       { field: 'storeAddress', headerName: 'Store Address',suppressMenu: true,
         unSortIcon: true  },
-      {
-        headerName: 'Status',
-        field: 'status',
-        editable: true,
-        suppressMenu: true,
-        unSortIcon: true ,
-        cellEditor: 'agSelectCellEditor',
-        cellEditorParams: {
-          values: ['Active', 'Inactive', 'Pending']
+        {
+          headerName: 'Status',
+          field: 'status',
+          cellRenderer: (params: any) => {
+            let statusClass = '';
+            if (params.value === 'Active') {
+              statusClass = 'status-active';
+            } else if (params.value === 'Inactive') {
+              statusClass = 'status-no-stock';
+            } else if (params.value === 'Pending') {
+              statusClass = 'status-hide';
+            }
+            if (params.value === '') {
+              return `
+                <select class="status-dropdown" onchange="updateStatus(event, ${params.rowIndex})">
+                    <option value="">Select Status</option>
+                  <option value="Active">Active</option>
+                  <option value="No Stock">No Stock</option>
+                  <option value="Hide">Hide</option>
+                </select>
+              `;
+            }
+            return `<div class="status-badge ${statusClass}">${params.value}</div>`;
+          },
+          editable: true, // Make the cell editable
+          cellEditor: 'agSelectCellEditor', // Use the ag-Grid built-in select editor
+          cellEditorParams: {
+            values: ['Active', 'Inactive', 'Pending'], // List of values for the dropdown
+          },
+          suppressMenu: true,
+          unSortIcon: true
         },
-        cellStyle: (params: any) => {
-          // Return an object with valid style properties
-          const style: { [key: string]: string } = {}; // Create an object to store the styles
-          
-          if (params.value === 'Active') {
-            style['backgroundColor'] = '#6cbd7e0f';
-style['border'] ='2px solid rgba(108, 189, 126, .2)'
-            style['color'] = '#6cbd7e';
-          } else if (params.value === 'Inactive') {
-            style['backgroundColor'] = '#dc3545';
-            style['color'] = 'white';
-          } else if (params.value === 'Pending') {
-            style['backgroundColor'] = '#ffc107';
-            style['color'] = 'black';
-          }
-      
-          // Always return the style object, even if it doesn't match any condition
-          return style;
-        }
-      },
       
       
       

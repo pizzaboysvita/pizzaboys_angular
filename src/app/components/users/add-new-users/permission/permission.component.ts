@@ -1,19 +1,27 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
   selector: 'app-permission',
   templateUrl: './permission.component.html',
   styleUrls: ['./permission.component.scss'],
   imports: [
-    ReactiveFormsModule
+    ReactiveFormsModule,NgSelectModule
   ]
 })
 export class PermissionComponent {
   permissionForm: FormGroup;
   presetList = [ 'Manager','Front Staff & Kitchen', 'Driver' , 'Menu Manager'];
   selectedPreset: string | null = null;
-
+  public categoryList=[
+    { id: 1, name: 'Valentines Day Promotion' },
+    { id: 2, name: 'Limited Time Deal' },
+    { id: 3, name: 'Specials' },
+    { id: 4, name: 'Lunch' },
+     { id: 5, name: 'Chicken Pizza' },
+     { id: 6, name: 'Meat Pizza' },
+  ]
   managementSections = [
     {
       title: 'Restaurant Management',
