@@ -19,9 +19,9 @@ export class MenuListComponent {
   constructor(public modal: NgbModal) { }
   public MediaLibrary = MediaLibrary;
   tabs = [
-    { label: 'General', icon: 'ri-settings-line' },
-    { label: 'Activation', icon: 'ri-radio-button-line' },
-    { label: 'Wallet Points', icon: 'ri-wallet-line' }
+    { label: 'Lunch', icon: 'ri-settings-line' },
+    { label: 'Chicken Pizzas', icon: 'ri-radio-button-line' },
+    { label: 'Seafood Pizzas ', icon: 'ri-wallet-line' }
   ];
   public menuList =[
     { id: 1, name: 'TakeWay Menu' },
