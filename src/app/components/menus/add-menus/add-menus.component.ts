@@ -138,7 +138,7 @@ delete
     {
       storename: "Ford",
       email: "Mondeo",
-      status: "Inactive",
+      status: "In-Active",
       phoneNumber: 32000,
       storeAddress: "Abc Address",
     },

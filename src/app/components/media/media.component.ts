@@ -33,24 +33,25 @@ export class MediaComponent{
   expandedIndex: any;
   @Output() itemAdded = new EventEmitter<CartItem>();
   itemsList:CartItem[] = [];
-  items = [
-    { name: 'Chicken Tacos', price: 20.36, quantity: 1, img: '/assets/food/chicken-tacos.jpg', Ingredients: '', title: 'Non Vegetarian' },
-    { name: 'Chicken Tacos', price: 20.36, quantity: 1, img: '/assets/food/chicken-Roll.jpg', Ingredients: '', title: 'Non Vegetarian' },
-    { name: 'Chicken Tacos', price: 20.36, quantity: 1, img: '/assets/food/chicken-cutlet.jpg', Ingredients: '', title: 'Non Vegetarian' },
-    { name: 'Italian Pasta', price: 18.30, quantity: 1, img: '/assets/food/italian-pasta.jpg', Ingredients: 'wheat flour or semolina, eggs (sometimes), and sometimes olive oil. Other ingredients, like tomatoes, garlic, herbs (basil, oregano), and cheese,', title: 'Pasta' },
-    { name: 'Beetroot', price: 30.36, quantity: 1, img: '/assets/food/beetroot_juice.avif', Ingredients: '', title: 'Drinks' },
-    { name: 'Salad', price: 80.36, quantity: 1, img: '/assets/food/salads.png', Ingredients: '', title: 'Non Vegetarian' },
-    { name: 'Soft Drinks', price: 30.36, quantity: 1, img: '/assets/food/cool-drinks.jpg', Ingredients: '', title: 'Drinks' },
-    { name: 'Juice', price: 80.36, quantity: 1, img: '/assets/food/cool-drinks3.jpg', Ingredients: '', title: 'Drinks' },
-    { name: 'Juice', price: 80.36, quantity: 1, img: '/assets/food/cool-drinks2.jpeg', Ingredients: '', title: 'Drinks' },
-    { name: 'Pasta Spaghetti', price: 30.36, quantity: 1, img: '/assets/food/pasta-img.avif', Ingredients: '', title: 'Pasta' },
-    { name: 'panne Pasta Stock', price: 80.36, quantity: 1, img: '/assets/food/istock-Pasta.jpg', Ingredients: '', title: 'Pasta' },
-    { name: 'Spicy Penne Pasta', price: 80.36, quantity: 1, img: '/assets/food/Spicy-Penne-Pasta.png', Ingredients: '', title: 'Pasta' },
-    { name: 'Tomato Pasta', price: 80.36, quantity: 1, img: '/assets/food/tomato-pasta.jpeg', Ingredients: '', title: 'Pasta' },
-    { name: 'Classic Cheese Pizza', price: 25.36, quantity: 1, img: '/assets/food/classic-cheese-pizza.avif', Ingredients: 'dough base, pizza sauce, mozzarella cheese, and a variety of toppings. The dough base is made from flour, water, yeast, and sometimes oil or sugar. The', title: 'Classic Range Pizzas' },
-    { name: 'Fancy Pizza', price: 25.36, quantity: 1, img: '/assets/food/default-pizza.avif', Ingredients: 'dough base, pizza sauce, mozzarella cheese, and a variety of toppings. The dough base is made from flour, water, yeast, and sometimes oil or sugar. The', title: 'Classic Range Pizzas' },
-    { name: 'Salami Pizza', price: 25.36, quantity: 1, img: '/assets/food/Salami-pizza.jpg', Ingredients: 'dough base, pizza sauce, mozzarella cheese, and a variety of toppings. The dough base is made from flour, water, yeast, and sometimes oil or sugar. The', title: 'Classic Range Pizzas' },
+   items = [
+    { name: 'Chicken Tacos', price: 20.36, quantity: 1, img: '/assets/food/chicken-tacos.jpg', Ingredients: '', title: 'Non Vegetarian', status: 'Available' },
+    { name: 'Chicken Tacos', price: 20.36, quantity: 1, img: '/assets/food/chicken-Roll.jpg', Ingredients: '', title: 'Non Vegetarian', status: 'Not Available' },
+    { name: 'Chicken Tacos', price: 20.36, quantity: 1, img: '/assets/food/chicken-cutlet.jpg', Ingredients: '', title: 'Non Vegetarian', status: 'Available' },
+    { name: 'Italian Pasta', price: 18.30, quantity: 1, img: '/assets/food/italian-pasta.jpg', Ingredients: 'wheat flour or semolina, eggs (sometimes), and sometimes olive oil. Other ingredients, like tomatoes, garlic, herbs (basil, oregano), and cheese,', title: 'Pasta', status: 'Not Available' },
+    { name: 'Beetroot', price: 30.36, quantity: 1, img: '/assets/food/beetroot_juice.avif', Ingredients: '', title: 'Drinks', status: 'Available' },
+    { name: 'Salad', price: 80.36, quantity: 1, img: '/assets/food/salads.png', Ingredients: '', title: 'Non Vegetarian', status: 'Not Available' },
+    { name: 'Soft Drinks', price: 30.36, quantity: 1, img: '/assets/food/cool-drinks.jpg', Ingredients: '', title: 'Drinks', status: 'Available' },
+    { name: 'Juice', price: 80.36, quantity: 1, img: '/assets/food/cool-drinks3.jpg', Ingredients: '', title: 'Drinks', status: 'Not Available' },
+    { name: 'Juice', price: 80.36, quantity: 1, img: '/assets/food/cool-drinks2.jpeg', Ingredients: '', title: 'Drinks', status: 'Available' },
+    { name: 'Pasta Spaghetti', price: 30.36, quantity: 1, img: '/assets/food/pasta-img.avif', Ingredients: '', title: 'Pasta', status: 'Not Available' },
+    { name: 'panne Pasta Stock', price: 80.36, quantity: 1, img: '/assets/food/istock-Pasta.jpg', Ingredients: '', title: 'Pasta', status: 'Available' },
+    { name: 'Spicy Penne Pasta', price: 80.36, quantity: 1, img: '/assets/food/Spicy-Penne-Pasta.png', Ingredients: '', title: 'Pasta', status: 'Not Available' },
+    { name: 'Tomato Pasta', price: 80.36, quantity: 1, img: '/assets/food/tomato-pasta.jpeg', Ingredients: '', title: 'Pasta', status: 'Available' },
+    { name: 'Classic Cheese Pizza', price: 25.36, quantity: 1, img: '/assets/food/classic-cheese-pizza.avif', Ingredients: 'dough base, pizza sauce, mozzarella cheese, and a variety of toppings. The dough base is made from flour, water, yeast, and sometimes oil or sugar. The', title: 'Classic Range Pizzas', status: 'Not Available' },
+    { name: 'Fancy Pizza', price: 25.36, quantity: 1, img: '/assets/food/default-pizza.avif', Ingredients: 'dough base, pizza sauce, mozzarella cheese, and a variety of toppings. The dough base is made from flour, water, yeast, and sometimes oil or sugar. The', title: 'Classic Range Pizzas', status: 'Available' },
+    { name: 'Salami Pizza', price: 25.36, quantity: 1, img: '/assets/food/Salami-pizza.jpg', Ingredients: 'dough base, pizza sauce, mozzarella cheese, and a variety of toppings. The dough base is made from flour, water, yeast, and sometimes oil or sugar. The', title: 'Classic Range Pizzas', status: 'Not Available' },
   ];
+  
   selectedDish: string;
   showModal: boolean;
   selectedDishes: string[] = [];
@@ -233,7 +234,8 @@ export interface CartItem {
   quantity: number;
   img?: string;
   Ingredients:string;
-  title:string
+  title:string;
+  status:string;
 }
 
 

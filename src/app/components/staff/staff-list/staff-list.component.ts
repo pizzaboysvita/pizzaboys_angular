@@ -3,6 +3,7 @@ import { TableConfig } from '../../../shared/interface/table.interface';
 import { staffList } from '../../../shared/data/products';
 import { CardComponent } from '../../../shared/components/card/card.component';
 import { TableComponent } from '../../widgets/table/table.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-staff-list',
@@ -11,6 +12,7 @@ import { TableComponent } from '../../widgets/table/table.component';
   styleUrl: './staff-list.component.scss'
 })
 export class StaffListComponent {
+  constructor(private router:Router){}
     public products = staffList;
     stausList=['Active','In-Active']
     public tableConfig: TableConfig = {
@@ -32,4 +34,8 @@ export class StaffListComponent {
         ],
         data: this.products,
     };
+    openNew(){
+      this.router.navigate(["/staff/add-staff"]);
+
+    }
 }

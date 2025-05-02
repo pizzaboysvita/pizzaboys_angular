@@ -24,7 +24,13 @@ export class OrderDetailsComponent {
     this.markers = [];
     this.zoom = 3;
   }
-
+  filterOptions = ['Cash', 'Card', 'E-Wallet'];
+  selectedOption = 'Cash';
+  
+  selectOption(option: string) {
+    this.selectedOption = option;
+  }
+  
   ngOnInit() {
     this.markers.push({
       position: {
