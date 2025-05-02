@@ -20,7 +20,7 @@ import { ProfileComponent } from "./profile/profile.component";
 })
 
 export class HeaderComponent {
-
+  notificationsEnabled = true;
   public searchText: string = '';
   public isSearch: boolean = false;
 
@@ -29,11 +29,18 @@ export class HeaderComponent {
 
   public searchResult: boolean = false;
   public searchResultEmpty: boolean = false;
+  users: any;
 
   constructor(public navService: NavService) { 
     this.navService.items.subscribe(
       (menuItems) => (this.items = menuItems)
     );
+    const userData = localStorage.getItem("user");
+        if (userData !== null) {
+          this.users = JSON.parse(userData);
+        } else {
+          console.log("No user data found in localStorage.");
+        }
   }
 
   searchTerm(term: string) {
