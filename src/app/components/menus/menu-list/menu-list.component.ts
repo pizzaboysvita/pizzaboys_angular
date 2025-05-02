@@ -9,6 +9,7 @@ import { AddCategoryComponent } from '../add-category/add-category.component';
 import { AddMenuModalComponent } from '../add-menu-modal/add-menu-modal.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ActionStatusComponent } from './action-status/action-status.component';
 
 @Component({
   selector: 'app-menu-list',
@@ -66,4 +67,23 @@ export class MenuListComponent {
      insertMenu(){
               this.modal.open(AddMenuModalComponent, { windowClass: 'theme-modal', centered: true, size: 'lg' })
         }
+        openPopup(): void {
+          // Remove focus from dropdown item (important!)
+          // (document.activeElement as HTMLElement)?.blur();
+      
+          const modalRef = this.modal.open(ActionStatusComponent, {
+            centered: true,
+          
+          });
+      
+          modalRef.result.then(
+            (result) => {
+              console.log('Modal closed with:', result);
+            },
+            () => {
+              console.log('Modal dismissed');
+            }
+          );
+        }
+      
 }

@@ -31,6 +31,14 @@
                     <i class="ri-search-line"></i>
                 </span>
             </li> -->
+            @if (users.name=='customer') {
+            <li class="d-flex align-items-center me-2">
+                <label class="custom-switch">
+                  <input type="checkbox" [(ngModel)]="notificationsEnabled">
+                  <span class="slider"></span>
+                </label>
+              </li>
+            }
             <li class="onhover-dropdown">
                 <app-notifications></app-notifications>
             </li>
