@@ -17,15 +17,20 @@ export class StaffListComponent {
     stausList=['Active','In-Active']
     public tableConfig: TableConfig = {
         columns: [
-           
-            { title: "Sno", dataField: 'id' },
-             { title: "Staff Image", dataField: 'product_image', type: 'image' },
-            { title: "Name", dataField: 'product_name' },
-            { title: "Email", dataField: 'category' },
-            { title: "Phone", dataField: 'current_qty', class: 'f-w-500' },
-            // { title: "Address", dataField: 'price', class: 'td-price' },
-            // { title: "Status", dataField: 'status' },
-            { title: "Options", type: "option" },
+          { title: "No", dataField: 'id', class: 'f-w-600' },
+          { title: "User Photo", dataField: 'user_image', type: 'image', class: 'rounded' },
+          { title: "Type", dataField: 'type' },
+          { title: "Name", dataField: 'name' },
+          { title: "Email", dataField: 'email', class: 'f-w-600' },
+          { title: "Phone", dataField: 'phone' },
+            // { title: "Sno", dataField: 'id' },
+            //  { title: "Staff Image", dataField: 'product_image', type: 'image' },
+            // { title: "Name", dataField: 'product_name' },
+            // { title: "Email", dataField: 'category' },
+            // { title: "Phone", dataField: 'current_qty', class: 'f-w-500' },
+            // // { title: "Address", dataField: 'price', class: 'td-price' },
+            // // { title: "Status", dataField: 'status' },
+            // { title: "Options", type: "option" },
         ],
         rowActions: [
             { icon: "ri-eye-line", permission: "show" },

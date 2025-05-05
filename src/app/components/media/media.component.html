@@ -91,7 +91,7 @@
                   <h5 class="fw-bold">Order Lists</h5>
                   <!-- <a href="#" class="see-all">See All →</a> -->
                 </div>
-                    <div class="row" style="width: 100%;min-height: 550px; max-height: 550px; overflow-y: auto;" >
+                    <div class="row" style="width: 100%;min-height: 450px; max-height: 450px; overflow-y: auto;" >
                         @for (item of itemsList; track item) {
                             <div class="col-md-4 mb-4" >
                               <div class="card h-70 w-100 border-light shadow-sm" style="border-radius:5px;padding: 5px;" >
@@ -137,7 +137,6 @@
                         </div>
                       </div>
                     } -->
-
                   </div>
                   
                   </div>
@@ -151,9 +150,9 @@
       
     </div>
   </div>
-
+@if (showPopup) {
   <div
-  *ngIf="showPopup && selectedItem?.Ingredients"
+ 
   class="modal fade show d-block modal-overlay"
   tabindex="-1"
   role="dialog"
@@ -173,6 +172,8 @@
             aria-label="Close"
             (click)="closePopup()"
           ></button> -->
+      <button type="button" class="btn-close" aria-label="Close" (click)="closePopup()"></button>
+
         </div>
       </div>
 
@@ -235,10 +236,7 @@
     </div>
   </div>
 </div>
-<!-- <app-dish-selector
-  *ngIf="showModal"
-  (dishSelected)="onDishSelected($event)">
-</app-dish-selector> -->
+}
 
 
   

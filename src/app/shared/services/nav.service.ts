@@ -377,9 +377,9 @@ export class NavService {
         { path: "", title: "Close POS", type: "link", level: 2 },
       
         // New items
-        { path: "/localization/translation", title: "Limited Time Deal", type: "link", level: 2 },
-        { path: "/localization/currency-rates", title: "Specials", type: "link", level: 2 },
-        { path: "/coupons/create-coupon", title: "Lunch", type: "link", level: 2 },
+        // { path: "/localization/translation", title: "Limited Time Deal", type: "link", level: 2 },
+        // { path: "/localization/currency-rates", title: "Specials", type: "link", level: 2 },
+        // { path: "/coupons/create-coupon", title: "Lunch", type: "link", level: 2 },
         
         // { path: "/localization/translation", title: "Limited Time Deal", type: "link", level: 2, },
         // { path: "/localization/currency-rates", title: "Specials", type: "link", level: 2, },

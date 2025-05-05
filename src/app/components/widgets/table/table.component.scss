@@ -9,4 +9,15 @@
     vertical-align: middle;
     color: #555; /* optional: customize as needed */
   }
+  .table-scroll-container::-webkit-scrollbar {
+    height: 12px !important; /* Height of the horizontal scrollbar */
+  }
+  
+  .table-scroll-container::-webkit-scrollbar-thumb {
+    background-color: #888 !important;
+    border-radius: 10px !important;
+    border: 2px solid #f0f0f0 !important;
+  }
+  
+  
   

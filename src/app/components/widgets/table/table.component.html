@@ -1,9 +1,9 @@
-<div class="table-responsive theme-scrollbar">
+<div class="table-responsive theme-scrollbar table-scroll-container">
     <div class="dataTables_wrapper no-footer">
         @if (search) {
         <label>Search:<input type="search" [(ngModel)]="searchText"></label>
         }
-        <table [ngClass]="tableClass ? tableClass:'table category-table dataTable no-footer'">
+        <table class="table-scroll-container" [ngClass]="tableClass ? tableClass:'table category-table dataTable no-footer'">
             <thead>
                 <tr>
                   @if (hasCheckbox) {

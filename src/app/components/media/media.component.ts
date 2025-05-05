@@ -111,7 +111,6 @@ export class MediaComponent{
   //     this.searchText = "";
   //     this.searchResult = false;
   //   }
-  
   loadItemsBySelectedTitle() {
     const navigationState = history.state;
     const savedTitle = this.commonService.getSelectedMenuTitle();
@@ -177,8 +176,15 @@ export class MediaComponent{
 
   openIngredientsPopup(item: any) {
     // this.selectedItem = item;
-
+  if(item.status=='Available'){
     this.showPopup = true;
+
+  }
+else{
+  this.showPopup = false;
+
+}
+
   }
   closePopup() {
     this.showPopup = false;
@@ -195,7 +201,6 @@ export class MediaComponent{
     // logic to add dish to order/cart
     this.closePopup();
   }
-  
 
 toggleExpand(index: number) {
   this.expandedIndex = this.expandedIndex === index ? null : index;
