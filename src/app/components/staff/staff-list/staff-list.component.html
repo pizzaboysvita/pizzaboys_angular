@@ -15,26 +15,26 @@
             <div class="row gy-3">
                 <div class="col-xl-3">
                     <div class="input-box">
-                        <h6>Store Name</h6>
+                        <h6 class="fw-bold p-1">Store Name</h6>
                         <input type="text" placeholder="Store Name">
                     </div>
                 </div>
                 <div class="col-xl-3">
                     <div class="input-box">
-                        <h6>E-Mail</h6>
+                        <h6 class="fw-bold p-1">E-Mail</h6>
                         <input type="text" placeholder="E-Mail">
                     </div>
                 </div>
                 <div class="col-xl-3">
                     <div class="input-box">
-                        <h6>Address</h6>
+                        <h6 class="fw-bold p-1">Address</h6>
                         <input type="text" placeholder="Address">
                     </div>
                 </div>
                 <div class="col-xl-3">
                     <!-- <div class="col-md-6"> -->
                         <div class="input-box">
-                            <h6>Status</h6>
+                            <h6 class="fw-bold p-1">Status</h6>
                             <select class="form-select" name="carlist">
                                 @for (item of stausList; track item) {
                                 <option value="">{{item}}</option>
@@ -71,6 +71,11 @@
                 <div class="right-options">
                     <ul>
                         <li><span style="font-size: 14px;color: #787c8b;font-weight: 600;">No.of.Records:50</span></li>
+                        <li>
+                            <a class="export-btn" (click)="openNew()">
+                                <i class="ri-add-box-fill" ></i> Add New
+                            </a>
+                        </li>
                         <li>
                             <a  class="export-btn"><i class="ri-export-fill"></i>   Export</a>
                         </li>

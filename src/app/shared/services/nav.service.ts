@@ -301,14 +301,14 @@ export class NavService {
       type: "link",
       active: false,
     },
-    {
-      level: 1,
-      title: "Reports",
-      path: "/reports",
-      icon: "ri-file-chart-line",
-      type: "link",
-      active: false,
-    },
+    // {
+    //   level: 1,
+    //   title: "Reports",
+    //   path: "/reports",
+    //   icon: "ri-file-chart-line",
+    //   type: "link",
+    //   active: false,
+    // },
     {
       level: 1,
       title: "Orders",
@@ -350,14 +350,14 @@ export class NavService {
       type: "link",
       active: false,
     },
-    {
-      level: 1,
-      title: "Settings",
-      path: "/users/add-new-user",
-      icon: "ri-settings-line",
-      type: "link",
-      active: false,
-    },
+    // {
+    //   level: 1,
+    //   title: "Settings",
+    //   path: "/users/add-new-user",
+    //   icon: "ri-settings-line",
+    //   type: "link",
+    //   active: false,
+    // },
   ]
   pos_menu_items:menuItem[]  =[
 
@@ -368,9 +368,22 @@ export class NavService {
       type: "sub",
       active: false,
       children: [
-        { path: "/localization/translation", title: "Limited Time Deal", type: "link", level: 2, },
-        { path: "/localization/currency-rates", title: "Specials", type: "link", level: 2, },
-        { path: "/coupons/create-coupon", title: "Lunch", type: "link", level: 2, },
+        { path: "", title: "Change Staff", type: "link", level: 2 },
+        { path: "", title: "Float Adjustment", type: "link", level: 2 },
+        { path: "", title: "Takings / Cash up", type: "link", level: 2 },
+        { path: "", title: "Open Cash Draw", type: "link", level: 2 },
+        { path: "", title: "Settings", type: "link", level: 2 },
+        { path: "", title: "Sync Data", type: "link", level: 2 },
+        { path: "", title: "Close POS", type: "link", level: 2 },
+      
+        // New items
+        // { path: "/localization/translation", title: "Limited Time Deal", type: "link", level: 2 },
+        // { path: "/localization/currency-rates", title: "Specials", type: "link", level: 2 },
+        // { path: "/coupons/create-coupon", title: "Lunch", type: "link", level: 2 },
+        
+        // { path: "/localization/translation", title: "Limited Time Deal", type: "link", level: 2, },
+        // { path: "/localization/currency-rates", title: "Specials", type: "link", level: 2, },
+        // { path: "/coupons/create-coupon", title: "Lunch", type: "link", level: 2, },
       ]
     },
     {

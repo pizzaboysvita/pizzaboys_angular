@@ -108,7 +108,7 @@ export class OrderListComponent {
       return {
         ...element,
         customer: `<a href="#" class="text-primary fw-semibold">${element.customer}</a>`,
-        items: element.items.map((item: string, index: number) => `<div><strong>${index + 1}.</strong> ${item}</div>`).join(''),
+        items: element.items.map((item: string, index: number) => `<div> ${item}</div>`).join(''),
         delivery_status: element.delivery_status
           ? `<span class="${statusClassMap[element.delivery_status] || 'badge bg-secondary'}">${element.delivery_status}</span>`
           : '-',

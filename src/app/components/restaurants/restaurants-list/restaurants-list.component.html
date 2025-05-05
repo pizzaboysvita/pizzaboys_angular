@@ -1,4 +1,4 @@
-<div class="accordion" id="accordionExample">
+<div class="accordion font-family" id="accordionExample">
 
     <div class="accordion-item">
       <h2 class="accordion-header" id="headingOne">
@@ -63,7 +63,7 @@
 <br>
 
 
-<div class="row">
+<div class="row font-family">
     <div class="col-sm-12">
         <app-card [cardClass]="'card-table'" [body]="true">
             <div class="title-header option-title d-sm-flex d-block" body>
@@ -71,6 +71,11 @@
                 <div class="right-options">
                     <ul>
                         <li><span style="font-size: 14px;color: #787c8b;font-weight: 600;">No.of.Records:50</span></li>
+                        <li>
+                            <a class="export-btn" (click)="openNew()">
+                                <i class="ri-add-box-fill" ></i> Add New
+                            </a>
+                        </li>
                         <li>
                             <a  class="export-btn"><i class="ri-export-fill"></i> Export</a>
                         </li>
@@ -83,13 +88,12 @@
              
                 <div style="max-height: 400px; overflow: auto;">
                     <ag-grid-angular
-                    class="ag-theme-alpine"
+                    class="ag-theme-alpine font-family"
                     [columnDefs]="columnDefs"
                     [rowData]="rowData"
                     [domLayout]="'autoHeight'"
                     [suppressColumnVirtualisation]="true"
                     [defaultColDef]="{ flex: 1, minWidth: 100 ,sortable: true}"
-                    
                     (cellClicked)="onCellClicked($event)">
                   </ag-grid-angular>
                   </div>

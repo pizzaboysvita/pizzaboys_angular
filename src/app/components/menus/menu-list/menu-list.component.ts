@@ -7,10 +7,13 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { AddDishsComponent } from '../add-dishs/add-dishs.component';
 import { AddCategoryComponent } from '../add-category/add-category.component';
 import { AddMenuModalComponent } from '../add-menu-modal/add-menu-modal.component';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ActionStatusComponent } from './action-status/action-status.component';
 
 @Component({
   selector: 'app-menu-list',
-  imports: [CardComponent,NgSelectModule],
+  imports: [CardComponent,NgSelectModule,CommonModule,ReactiveFormsModule,FormsModule],
   templateUrl: './menu-list.component.html',
   styleUrl: './menu-list.component.scss'
 })
@@ -18,18 +21,32 @@ export class MenuListComponent {
   selectedTabIndex = 0;
   constructor(public modal: NgbModal) { }
   public MediaLibrary = MediaLibrary;
-  tabs = [
-    { label: 'Lunch', icon: 'ri-settings-line' },
-    { label: 'Chicken Pizzas', icon: 'ri-radio-button-line' },
-    { label: 'Seafood Pizzas ', icon: 'ri-wallet-line' }
-  ];
-  public menuList =[
+  selectedMenuId = 1; // Default selected menu
+  menuList = [
     { id: 1, name: 'TakeWay Menu' },
     { id: 2, name: 'Seasonal menu' },
-    {
-      id:3, name:'Cycle menu'
-    }
-   ]
+    { id: 3, name: 'Cycle menu' }
+  ];
+  
+  // Tab data grouped by menu ID
+  tabsData: { [key: string]: { label: string; icon: string }[] } = {
+    '1': [
+      { label: 'Lunch', icon: 'ri-settings-line' },
+      { label: 'Chicken Pizzas', icon: 'ri-radio-button-line' },
+    ],
+    '2': [
+      { label: 'Seafood Pizzas', icon: 'ri-wallet-line' },
+      { label: 'Vegan Pizzas', icon: 'ri-plant-line' },
+    ],
+    '3': [
+      { label: 'Weekly Special', icon: 'ri-calendar-line' }
+    ]
+  }
+  
+  get tabs() {
+    return this.tabsData[this.selectedMenuId.toString()] || [];
+  }
+ 
   open(data: media) {
     this.MediaLibrary.forEach(item => {
       if (data.id === item.id) {
@@ -50,4 +67,23 @@ export class MenuListComponent {
      insertMenu(){
               this.modal.open(AddMenuModalComponent, { windowClass: 'theme-modal', centered: true, size: 'lg' })
         }
+        openPopup(): void {
+          // Remove focus from dropdown item (important!)
+          // (document.activeElement as HTMLElement)?.blur();
+      
+          const modalRef = this.modal.open(ActionStatusComponent, {
+            centered: true,
+          
+          });
+      
+          modalRef.result.then(
+            (result) => {
+              console.log('Modal closed with:', result);
+            },
+            () => {
+              console.log('Modal dismissed');
+            }
+          );
+        }
+      
 }

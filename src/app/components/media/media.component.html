@@ -91,7 +91,7 @@
                   <h5 class="fw-bold">Order Lists</h5>
                   <!-- <a href="#" class="see-all">See All →</a> -->
                 </div>
-                    <div class="row" style="width: 100%;">
+                    <div class="row" style="width: 100%;min-height: 450px; max-height: 450px; overflow-y: auto;" >
                         @for (item of itemsList; track item) {
                             <div class="col-md-4 mb-4" >
                               <div class="card h-70 w-100 border-light shadow-sm" style="border-radius:5px;padding: 5px;" >
@@ -100,10 +100,12 @@
                                   <h5 class="card-title mb-2" style="font-weight: 500;text-align: start;font-size: medium;">{{ item.name }}</h5>
                                   <div class="d-flex justify-content-between align-items-center mb-2">
                                     <p class="card-text m-0" style="font-size: 16px; font-weight: 600;">${{ item.price.toFixed(2) }}</p>
-                                    <button class="btn btn-primary" style="border: 12px; padding: 2px 12px;" (click)="addItem(item)">
+                                    <button class="btn btn-primary" style="border: 12px; padding: 2px 12px;" (click)="addItem(item)"  [disabled]="item.status !== 'Available'">
                                       ADD <span class="fw-bold">+</span>
                                     </button>
+
                                   </div>
+                                  <p class="card-text m-0" style="font-size: 12px; font-weight: 600;text-align: left;">({{item.status}})</p>
                           
                                   <!-- <small class="text-muted mt-1" style="display: flex;justify-content: end;">customisable</small> -->
                                 </div>
@@ -135,7 +137,6 @@
                         </div>
                       </div>
                     } -->
-
                   </div>
                   
                   </div>
@@ -149,9 +150,9 @@
       
     </div>
   </div>
-
+@if (showPopup) {
   <div
-  *ngIf="showPopup && selectedItem?.Ingredients"
+ 
   class="modal fade show d-block modal-overlay"
   tabindex="-1"
   role="dialog"
@@ -171,6 +172,8 @@
             aria-label="Close"
             (click)="closePopup()"
           ></button> -->
+      <button type="button" class="btn-close" aria-label="Close" (click)="closePopup()"></button>
+
         </div>
       </div>
 
@@ -233,10 +236,7 @@
     </div>
   </div>
 </div>
-<!-- <app-dish-selector
-  *ngIf="showModal"
-  (dishSelected)="onDishSelected($event)">
-</app-dish-selector> -->
+}
 
 
   

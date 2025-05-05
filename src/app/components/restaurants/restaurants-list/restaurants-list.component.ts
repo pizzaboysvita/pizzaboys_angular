@@ -6,6 +6,7 @@ import { ProductsList } from '../../../shared/data/products';
 import { AgGridAngular } from '@ag-grid-community/angular'; 
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { ColDef, ModuleRegistry } from '@ag-grid-community/core';
+import { Router } from '@angular/router';
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
   storename: string;
@@ -21,6 +22,7 @@ interface RowData {
   styleUrl: './restaurants-list.component.scss'
 })
 export class RestaurantsListComponent {
+  constructor(private router:Router){}
     modules = [ClientSideRowModelModule];
     public products = ProductsList;
     stausList=['Active','In-Active']
@@ -133,5 +135,8 @@ delete
         }
       }
     }
-    
+    openNew(){
+      this.router.navigate(["/restaurants/add-restaurants"]);
+
+    }
 }

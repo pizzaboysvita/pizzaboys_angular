@@ -15,32 +15,32 @@
                 <div class="row gy-3">
                     <div class="col-xl-3">
                         <div class="input-box">
-                            <h6>Name</h6>
+                            <h6 class="fw-bold p-1">Name</h6>
                             <input type="text" placeholder="Name">
                         </div>
                     </div>
                     <div class="col-xl-3">
                         <div class="input-box">
-                            <h6>E-Mail</h6>
+                            <h6 class="fw-bold p-1">E-Mail</h6>
                             <input type="text" placeholder="E-Mail">
                         </div>
                     </div>
                     <div class="col-xl-3">
                         <div class="input-box">
-                            <h6>Phone</h6>
+                            <h6 class="fw-bold p-1">Phone</h6>
                             <input type="number" placeholder="Phone">
                         </div>
                     </div>
                     <div class="col-xl-3">
                         <div class="input-box">
-                            <h6>Created Date</h6>
+                            <h6 class="fw-bold p-1">Created Date</h6>
                             <input type="date" placeholder="Created Date">
                         </div>
                     </div>
                     <div class="col-xl-3">
                         <!-- <div class="col-md-6"> -->
                         <div class="input-box">
-                            <h6>Status</h6>
+                            <h6 class="fw-bold p-1">Status</h6>
                             <select class="form-select" name="carlist">
                                 @for (item of stausList; track item) {
                                 <option value="">{{item}}</option>
@@ -76,11 +76,7 @@
                     <ul>
                         <li><span style="font-size: 14px;color: #787c8b;font-weight: 600;">No.of.Records:
                                 {{bookings.length}}</span></li>
-                        <li>
-                            <a class="export-btn">
-                                <i class="ri-add-box-fill"></i> Add New
-                            </a>
-                        </li>
+                      
                         <li>
                             <a class="export-btn"><i class="ri-export-fill"></i>
                                 Export</a>

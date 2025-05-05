@@ -71,26 +71,53 @@
   }
 
   
-  .custom-outline::before {
-    content: "";
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    bottom: 2px;
-    left: 2px;
-    background-color: white;
-    border-radius: 8px;
-    z-index: -1;
-    color: black;
+  // .custom-outline::before {
+  //   content: "";
+  //   position: absolute;
+  //   top: 2px;
+  //   right: 2px;
+  //   bottom: 2px;
+  //   left: 2px;
+  //   background-color: white;
+  //   border-radius: 8px;
+  //   z-index: -1;
+  //   color: black;
+  // }
+  
+  // .custom-outline:hover {
+  //   color: white;
+  //   background-image: linear-gradient(to right, #f9a825, #f06292);
+  // }
+  
+  // .custom-outline:hover::before {
+  //   background-color: transparent;
+  // }
+  
+  .filter-buttons {
+    padding: 10px 0;
   }
   
-  .custom-outline:hover {
-    color: white;
-    background-image: linear-gradient(to right, #f9a825, #f06292);
+  .filter-btn:hover {
+    background-color: #e2e8f0 !important;
+  }
+  .filter-buttons {
+    flex-wrap: nowrap;
   }
   
-  .custom-outline:hover::before {
-    background-color: transparent;
+  .filter-btn {
+    border-radius: 999px;
+    background-color: #f1f3f5;
+    color: #1e293b;
+    padding: 10px 28px;   /* increased padding */
+    font-size: 1rem; 
+    font-weight: 600;
+    border: none;
   }
+  
+  .filter-btn.active {
+    background-color: #d1fae5; /* light green */
+    color: #047857;
+  }
+  
   
   
