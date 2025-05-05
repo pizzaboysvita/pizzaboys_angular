@@ -1,40 +1,83 @@
 <div class="row">
-        <div class="container my-3">
-            <div class="card shadow-sm rounded-4 px-3 py-3">
-              <div class="row align-items-center">
-                <div class="col-md-8">
-                  <strong class="text-dark">Search Range</strong>
+  <div class="container my-3">
+    <div class="card shadow-sm rounded-4 px-3 py-3">
+      <div class="row align-items-center">
+        <div class="col-md-2">
+          <strong class="text-dark">Search Range</strong>
+        </div>
+        <div class="col-md-3">
+          <div class="">
+            <strong
+              >
+              <span>
+                <div *ngIf="fromDate && toDate">
+                  Selected Range: &nbsp;&nbsp;
+                  {{ fromDate | date : "mediumDate" }} -
+                  {{ toDate | date : "mediumDate" }}
                 </div>
-                <div class="col-md-4 text-end">
-                    <div class="input-group justify-content-end">
-                      <input
-                        type="month"
-                        class="form-control border-0 shadow-none text-end bg-transparent"
-                        [(ngModel)]="toDate"
-                      />
-                      <span class="input-group-text bg-transparent border-0">
-                        <i class="bi bi-calendar2-week-fill text-primary"></i>
-                      </span>
-                    </div>
-                  </div>
-              </div>
+              </span>
+            </strong>
+          </div>
+        </div>
+        <div class="col-md-7">
+          <div class="input-group d-flex justify-content-end">
+            <div class="me-4">
+              <mat-form-field appearance="fill">
+                <mat-label>From Date</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="fromPicker"
+                  [(ngModel)]="fromDate"
+                />
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="fromPicker"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #fromPicker></mat-datepicker>
+              </mat-form-field>
             </div>
+            <div>
+              <mat-form-field appearance="fill">
+                <mat-label>To Date</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="toPicker"
+                  [(ngModel)]="toDate"
+                />
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="toPicker"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #toPicker></mat-datepicker>
+              </mat-form-field>
+            </div>
+            <div class="ms-3 mt-1">
+              <button mat-raised-button color="primary" (click)="submit()">
+                Submit
+              </button>
+            </div>
+          </div>
         </div>
-        <div class="col-xl-4 ">
-            <app-top-chart [data]="TotalSale"></app-top-chart>
-        </div>
-        <div class="col-xl-4">
-            <app-top-chart [data]="TotalProfit"></app-top-chart>
-        </div>
-        <div class="col-xl-4">
-            <app-top-chart [data]="CustomerRate"></app-top-chart>
-        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<div class="col-xl-4">
+  <app-top-chart [data]="TotalSale"></app-top-chart>
+</div>
+<div class="col-xl-4">
+  <app-top-chart [data]="TotalProfit"></app-top-chart>
+</div>
+<div class="col-xl-4">
+  <app-top-chart [data]="CustomerRate"></app-top-chart>
+</div>
+
 <div class="row">
-    <div class="col-xl-6">
-        <app-sales-summary-chart> </app-sales-summary-chart>
-    </div>
-    <div class="col-xl-6">
-        <app-sales-purchase-chart> </app-sales-purchase-chart>
-    </div>
+  <div class="col-xl-6">
+    <app-sales-summary-chart> </app-sales-summary-chart>
+  </div>
+  <div class="col-xl-6">
+    <app-sales-purchase-chart> </app-sales-purchase-chart>
+  </div>
 </div>
