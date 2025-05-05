@@ -7,11 +7,10 @@
         </div>
         <div class="col-md-3">
           <div class="">
-            <strong
-              >
+            <strong>
+              Selected Range: &nbsp;&nbsp;
               <span>
                 <div *ngIf="fromDate && toDate">
-                  Selected Range: &nbsp;&nbsp;
                   {{ fromDate | date : "mediumDate" }} -
                   {{ toDate | date : "mediumDate" }}
                 </div>
@@ -21,40 +20,10 @@
         </div>
         <div class="col-md-7">
           <div class="input-group d-flex justify-content-end">
-            <div class="me-4">
-              <mat-form-field appearance="fill">
-                <mat-label>From Date</mat-label>
-                <input
-                  matInput
-                  [matDatepicker]="fromPicker"
-                  [(ngModel)]="fromDate"
-                />
-                <mat-datepicker-toggle
-                  matSuffix
-                  [for]="fromPicker"
-                ></mat-datepicker-toggle>
-                <mat-datepicker #fromPicker></mat-datepicker>
-              </mat-form-field>
-            </div>
-            <div>
-              <mat-form-field appearance="fill">
-                <mat-label>To Date</mat-label>
-                <input
-                  matInput
-                  [matDatepicker]="toPicker"
-                  [(ngModel)]="toDate"
-                />
-                <mat-datepicker-toggle
-                  matSuffix
-                  [for]="toPicker"
-                ></mat-datepicker-toggle>
-                <mat-datepicker #toPicker></mat-datepicker>
-              </mat-form-field>
-            </div>
+            <div class="me-4">from date</div>
+            <div>to date</div>
             <div class="ms-3 mt-1">
-              <button mat-raised-button color="primary" (click)="submit()">
-                Submit
-              </button>
+              <button class="btn btn-warning" (click)="submit()">Submit</button>
             </div>
           </div>
         </div>
