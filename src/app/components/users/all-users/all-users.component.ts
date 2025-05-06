@@ -21,7 +21,7 @@ export class AllUsersComponent {
     public tableConfig: TableConfig = {
         columns: [
             { title: "No", dataField: 'id', class: 'f-w-600' },
-            { title: "User Photo", dataField: 'user_image', type: 'image', class: 'rounded' },
+            { title: "Customer Photo", dataField: 'user_image', type: 'image', class: 'rounded' },
             { title: "Type", dataField: 'type' },
             { title: "Name", dataField: 'name' },
             { title: "Email", dataField: 'email', class: 'f-w-600' },
@@ -38,8 +38,15 @@ export class AllUsersComponent {
             { icon: "ri-pencil-line", permission: "edit" },
             { icon: "ri-delete-bin-line", permission: "delete" },
         ],
-        data: this.allUsers,
-    };
+        // data: this.allUsers,
+        data: this.allUsers.map(user => {
+            return {
+              ...user,
+              initial: !user.user_image && user.name ? user.name.trim().charAt(0).toUpperCase() : ''
+            };
+          })
+        }
+    
     ngOnInit() {
         const statusClassMap: Record<string, string> = {
             'Ready To Pick': 'badge rounded border border-warning text-warning px-2 py-1',

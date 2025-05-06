@@ -2,7 +2,7 @@
   
   <div class="col-12">
     <div class="input-box">
-      <h6>Store List</h6>
+      <h6 class="f-w-600 p-1">Store List</h6>
       <ng-select 
         [items]="categoryList" 
         [searchable]="true" 
@@ -14,8 +14,8 @@
       </ng-select>
     </div>
   </div>
-  <h3>Restriction Presets</h3>
-  <div class="presets mt-3 mb-3 nav-pills">
+  <h3 class="p-1" style="padding-top: 9px !important;padding-bottom: 9px !important;">Restriction Presets</h3>
+  <div class="presets mb-3 nav-pills">
     @for (preset of presetList; track preset) {
     <button type="button" class="mb-3" (click)="applyPreset(preset)" [class.active]="selectedPreset === preset">
       {{ preset }}
@@ -25,7 +25,7 @@
 
   @for (section of managementSections; track section) {
   <div class="management-section nav-pills">
-    <h4>{{ section.title }}</h4>
+    <h3 class="p-1" >{{ section.title }}</h3>
     <div class="section">
       <div [formGroupName]="section.key" class="permissions">
         <div class="row gy-3 mb-4">

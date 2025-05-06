@@ -195,7 +195,7 @@ export const Permission = [
 export const AllUsers = [
     {
         id: '01.',
-        user_image: "assets/images/users/user-1.jpg",
+        user_image: "",
         type: 'Customer',
         name: "Everett C. Green Essex Court",
         phone: "+ 802 - 370 - 2430",
@@ -260,7 +260,7 @@ export const AllUsers = [
     },
     {
         id: '06.',
-        user_image: "assets/images/users/user-6.jpg",
+        user_image: "",
         type: 'Support Agent',
         name: "Scott T. Thomas Kotzebue",
         phone: "+ 907 - 442 - 8122",
