@@ -297,7 +297,7 @@ export class NavService {
       level: 1,
       title: "Dashboard",
         icon: "ri-home-line",
-      path: "/dashboard",
+      path: "/store-dashboard",
       type: "link",
       active: false,
     },

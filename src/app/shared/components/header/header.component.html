@@ -32,12 +32,19 @@
                 </span>
             </li> -->
             @if (users.name=='customer') {
-            <li class="d-flex align-items-center me-2">
-                <label class="custom-switch">
+            <!-- <li class="d-flex align-items-center me-2"> -->
+                <div class="toggle-container" (click)="onToggle()">
+                    <div class="toggle-switch" [class.active]="isOn">
+                      <div class="label off-label" [class.active]="!isOn">{{ offLabel }}</div>
+                      <div class="slider"></div>
+                      <div class="label on-label" [class.active]="isOn">{{ onLabel }}</div>
+                    </div>
+                  </div>
+                <!-- <label class="custom-switch">
                   <input type="checkbox" [(ngModel)]="notificationsEnabled">
                   <span class="slider"></span>
-                </label>
-              </li>
+                </label> -->
+              <!-- </li> -->
             }
             <li class="onhover-dropdown">
                 <app-notifications></app-notifications>

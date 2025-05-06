@@ -7,15 +7,17 @@
     </div>
     <div class="modal-body pt-0">
         <div class="row">
-            <div class="col-12">
+            <div class="col-4">
+                <label class="f-w-600 text-black">Select Day</label>
+
                 <app-dropdown [data]="day"></app-dropdown>
             </div>
-            <div class="col-6">
-                <label>Form</label>
+            <div class="col-4">
+                <label class="f-w-600 text-black">Form</label>
                 <input type="time" name="time">
             </div>
-            <div class="col-6">
-                <label>To</label>
+            <div class="col-4">
+                <label class="f-w-600 text-black">To</label>
                 <input type="time" name="time">
             </div>
         </div>
@@ -23,5 +25,19 @@
     <div class="modal-footer">
         <button class="btn btn-cancel" type="button" (click)="modal.dismissAll()">Cancel</button>
         <button class="btn btn-submit" type="submit" (click)="modal.dismissAll()">Save</button>
+
     </div>
+    
+<div class="row p-1">
+    <div class="col-sm-12">
+        <app-card [cardClass]="'card-table'" [body]="true">
+            <div class="title-header option-title d-sm-flex d-block" body>
+                <h5>Available Timings</h5>
+            </div>
+            <div body>
+                <app-table [search]="false" [hasCheckbox]="false" [tableConfig]="tableConfig"></app-table>
+            </div>
+        </app-card>
+    </div>
+</div>
 </div>

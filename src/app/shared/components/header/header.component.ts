@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ClickOutsideDirective } from '../../directive/click-outside.directive';
@@ -20,6 +20,10 @@ import { ProfileComponent } from "./profile/profile.component";
 })
 
 export class HeaderComponent {
+  @Input() isOn = false;
+  @Input() onLabel = 'ON';
+  @Input() offLabel = 'OFF';
+  @Output() toggle = new EventEmitter<boolean>();
   notificationsEnabled = true;
   public searchText: string = '';
   public isSearch: boolean = false;
@@ -43,6 +47,11 @@ export class HeaderComponent {
         }
   }
 
+
+  onToggle() {
+    this.isOn = !this.isOn;
+    this.toggle.emit(this.isOn);
+  }
   searchTerm(term: string) {
     term ? this.addFix() : this.removeFix();
     if (!term) return (this.menuItems = []);

@@ -82,5 +82,18 @@ export class TableComponent {
   
     // Optionally trigger actual sorting of data here
   }
+  getColorForName(name: string): string {
+    if (!name) return '#6c757d'; // default fallback
+  
+    // Hash the name to get a consistent color
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+  
+    // Convert hash to HSL color
+    const hue = hash % 360;
+    return `hsl(${hue}, 60%, 50%)`; // You can tweak saturation/lightness as needed
+  }
   
 }
