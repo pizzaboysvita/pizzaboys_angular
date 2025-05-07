@@ -97,16 +97,21 @@ table {
 	border: 1px solid $border-color;
 	border-radius: 4px;
 	overflow: hidden;
+	
+
 	// padding: 8px;
 	thead{
-		background-color: $light-background;
+		background-color: #fff2cd;
+
+		// background-color: $light-background;
 		tr {
 			th {
 
 				padding: 14px !important;
 				font-size: 14px;
 				border-bottom: none !important;
-				color: #0d233e;
+				// color: #0d233e;
+				color:#33080f;
 				font-weight: 600 !important;
 				text-transform: capitalize;
 				white-space: nowrap;
@@ -256,7 +261,9 @@ table.dataTable{
 
 table.dataTable.no-footer{
 	border-bottom-style: solid;
-	border-bottom-color: $border-color;
+	// border-bottom-color: $border-color;
+	border-top-color: rgba(224, 224,224,1)!important;
+	border-bottom-color: rgba(224, 224,224,1) !important;
 }
 .category-table{
 	tbody{

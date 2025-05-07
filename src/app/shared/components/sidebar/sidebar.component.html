@@ -35,9 +35,19 @@
                             }
                             @if (item.level == 1) {
                             <span>{{item.title}}</span>
-                            } @else {
+                            } 
+                            @else if(item.icon=="" && item.level == 2){
+                                <ng-container *ngIf="item.type === 'method' && item.title === 'Logout'">
+                                    <button class="btn btn-danger">
+                                        <i class="ri-logout-box-r-line"></i>
+                                      {{ item.title }}
+                                    </button>
+                                  </ng-container>
+                            }
+                            @else {
                             {{item.title }}
                             }
+                            
                             @if(item.type == 'sub' && item.level == 1){
                             <div class="according-menu">
                                 <i [ngClass]="item.active ? 'ri-arrow-down-s-line':'ri-arrow-right-s-line'"></i>
@@ -50,6 +60,7 @@
                                 *ngTemplateOutlet="recursiveMenu; context: { $implicit: item.children }"></ng-container>
                         </ul>
                         }
+                        
                     </li>
                     }
                 </ng-template>

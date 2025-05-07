@@ -403,11 +403,11 @@ export class NavService {
       ]
     },
     {
-      level: 1,
+      level: 2,
       title: "Logout",
       type: 'method',
       methodName: 'logOut',  
-      icon: "ri-logout-box-r-line",  // Logout icon
+      icon: "",  // Logout icon
       active: false,
     }
     
