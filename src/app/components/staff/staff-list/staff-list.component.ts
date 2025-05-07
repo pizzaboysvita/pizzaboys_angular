@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
 })
 export class StaffListComponent {
   constructor(private router:Router){}
-    public products = staffList;
+    public staffList = staffList;
     stausList=['Active','In-Active']
     public tableConfig: TableConfig = {
         columns: [
@@ -37,7 +37,7 @@ export class StaffListComponent {
             { icon: "ri-pencil-line", permission: "edit" },
             { icon: "ri-delete-bin-line", permission: "delete" },
         ],
-        data: this.products.map(user => {
+        data: this.staffList.map(user => {
           return {
             ...user,
             initial: !user.user_image && user.name ? user.name.trim().charAt(0).toUpperCase() : ''

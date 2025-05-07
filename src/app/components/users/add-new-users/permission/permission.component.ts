@@ -14,14 +14,13 @@ export class PermissionComponent {
   permissionForm: FormGroup;
   presetList = [ 'Manager','Front Staff & Kitchen', 'Driver' , 'Menu Manager'];
   selectedPreset: string | null = null;
-  public categoryList=[
-    { id: 1, name: 'Valentines Day Promotion' },
-    { id: 2, name: 'Limited Time Deal' },
-    { id: 3, name: 'Specials' },
-    { id: 4, name: 'Lunch' },
-     { id: 5, name: 'Chicken Pizza' },
-     { id: 6, name: 'Meat Pizza' },
-  ]
+  public categoryList = [
+    { id: 1, name: 'Ellerslie' },
+    { id: 2, name: 'Flat Bush' },
+    { id: 3, name: 'Glen Eden' },
+    { id: 4, name: 'Hillsborough'},
+    { id: 5, name: 'Sandringham'},
+  ];
   managementSections = [
     {
       title: 'Restaurant Management',
