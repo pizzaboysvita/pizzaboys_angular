@@ -1,95 +1,127 @@
-<app-card [header]="true" [body]="true">
+<form [formGroup]="storeForm">
+  <app-card [header]="true" [body]="true">
     <h5 header class="font-family">Add Store</h5>
     <div class="input-items font-family" body>
-        <div class="row gy-3">
-            <div class="col-xl-6">
-                <div class="input-box">
-                    <h6 class="f-w-600 p-1">Store Name</h6>
-                    <input type="text" placeholder="Enter Store Name">
-                </div>
-            </div>
-            <div class="col-xl-6">
-                <div class="input-box">
-                    <h6 class="f-w-600 p-1">E-Mail</h6>
-                    <input type="text" placeholder="Enter E-Mail">
-                </div>
-            </div>
-            <div class="col-xl-6">
-                <div class="input-box">
-                    <h6 class="f-w-600 p-1">Phone Number</h6>
-                    <input type="text" placeholder=" Enter Phone Number">
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="input-box">
-                    <h6 class="f-w-600 p-1">Password</h6>
-                    <input type="password" name="password" placeholder="Enter Password">
-                </div>
-            </div>
-            <div class="col-xl-6">
-                <div class="input-box">
-                    <h6 class="f-w-600 p-1">Street Address</h6>
-                    <input type="text" placeholder="Enter Street Address">
-                </div>
-            </div>
-            <div class="col-xl-6">
-                <div class="input-box">
-                    <h6 class="f-w-600 p-1">City</h6>
-                    <input type="text" placeholder="Enter City">
-                </div>
-            </div>
-            <div class="col-xl-6">
-                <div class="input-box">
-                    <h6 class="f-w-600 p-1">State</h6>
-                    <input type="text" placeholder="Enter State">
-                </div>
-            </div>
-            <div class="col-xl-6">
-                <div class="input-box">
-                    <h6 class="f-w-600 p-1">Postal Code</h6>
-                    <input type="text" placeholder="Enter Postal Code">
-                </div>
-            </div>
-            <div class="col-xl-6">
-                <div class="input-box">
-                    <h6 class="f-w-600 p-1">Country</h6>
-                    <input type="text" placeholder="Enter Country">
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="input-box">
-                    <h6 class="f-w-600 p-1">Status</h6>
-                    <div class="radio-section">
-                        <!-- <form > -->
-                            
-                                 <label>
-                                     <input type="radio" name="opinion" ><i></i>
-                                     <span>Active</span>
-                                 </label>
-                                 <label>
-                                    <input type="radio" name="opinion" ><i></i>
-                                    <span>InActive</span>
-                                </label>
-                        <!-- </form> -->
-                    </div>
-                </div>
-            </div>
-            <div class="input-items">
-                <div class="row gy-3">
-                    <div class="col-12">
-                        <div class="input-box">
-                            <h6 class="font-family">Hours of Working</h6>
-                            <span class="choose-img-box font-family" (click)="addHour()" >
-                                <i class="ri-add-circle-line"></i>
-                                Add Working Hours </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
+      <div class="row gy-3">
+
+        <!-- Store Name -->
+        <div class="col-xl-6">
+          <div class="input-box">
+            <h6 class="f-w-600 p-1">Store Name</h6>
+            <input type="text" formControlName="storeName" placeholder="Enter Store Name" />
+            @if (storeForm.get('storeName')?.touched && storeForm.get('storeName')?.invalid) {
+              <div class="text-danger">Store Name is required</div>
+            }
+          </div>
         </div>
-        <button body class="btn btn-animation  save-button font-family" style="margin-left: 10px;" type="button"><i class="ri-add-circle-line"></i>&nbsp; Add Store</button>&nbsp;
-        <button body class="btn btn-animation  reset-button font-family" type="button"><i class="ri-loop-right-line"></i>&nbsp; Reset</button>
-     
+
+        <!-- Email -->
+        <div class="col-xl-6">
+          <div class="input-box">
+            <h6 class="f-w-600 p-1">E-Mail</h6>
+            <input type="email" formControlName="email" placeholder="Enter E-Mail" />
+            @if (storeForm.get('email')?.touched && storeForm.get('email')?.invalid) {
+              <div class="text-danger">Valid email is required</div>
+            }
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="col-xl-6">
+          <div class="input-box">
+            <h6 class="f-w-600 p-1">Phone Number</h6>
+            <input type="text" formControlName="phoneNumber" placeholder="Enter Phone Number" />
+            @if (storeForm.get('phoneNumber')?.touched && storeForm.get('phoneNumber')?.invalid) {
+              <div class="text-danger">Valid 10-digit phone number is required</div>
+            }
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="col-md-6">
+          <div class="input-box">
+            <h6 class="f-w-600 p-1">Password</h6>
+            <input type="password" formControlName="password" placeholder="Enter Password" />
+            @if (storeForm.get('password')?.touched && storeForm.get('password')?.invalid) {
+              <div class="text-danger">Minimum 6 characters required</div>
+            }
+          </div>
+        </div>
+
+        <!-- Address Fields -->
+        <div class="col-xl-6">
+          <div class="input-box">
+            <h6 class="f-w-600 p-1">Street Address</h6>
+            <input type="text" formControlName="address" placeholder="Enter Street Address" />
+          </div>
+        </div>
+
+        <div class="col-xl-6">
+          <div class="input-box">
+            <h6 class="f-w-600 p-1">City</h6>
+            <input type="text" formControlName="city" placeholder="Enter City" />
+          </div>
+        </div>
+
+        <div class="col-xl-6">
+          <div class="input-box">
+            <h6 class="f-w-600 p-1">State</h6>
+            <input type="text" formControlName="state" placeholder="Enter State" />
+          </div>
+        </div>
+
+        <div class="col-xl-6">
+          <div class="input-box">
+            <h6 class="f-w-600 p-1">Postal Code</h6>
+            <input type="text" formControlName="postalCode" placeholder="Enter Postal Code" />
+          </div>
+        </div>
+
+        <div class="col-xl-6">
+          <div class="input-box">
+            <h6 class="f-w-600 p-1">Country</h6>
+            <input type="text" formControlName="country" placeholder="Enter Country" />
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div class="col-md-6">
+          <div class="input-box">
+            <h6 class="f-w-600 p-1">Status</h6>
+            <div class="radio-section">
+              <label>
+                <input type="radio" value="Active" formControlName="status" />
+                <i></i>
+                <span>Active</span>
+              </label>
+              <label>
+                <input type="radio" value="Inactive" formControlName="status" />
+                <i></i>
+                <span>Inactive</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Working Hours -->
+        <div class="col-12">
+          <div class="input-box">
+            <h6 class="font-family">Hours of Working</h6>
+            <span class="choose-img-box font-family" (click)="addHour()">
+              <i class="ri-add-circle-line"></i>
+              Add Working Hours
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <button type="submit" class="btn btn-animation save-button font-family" style="margin-left: 10px;" (click)="addStore()">
+        <i class="ri-add-circle-line"></i>&nbsp; Add Store
+      </button>
+      <button type="button" class="btn btn-animation reset-button font-family" (click)="storeForm.reset()">
+        <i class="ri-loop-right-line"></i>&nbsp; Reset
+      </button>
     </div>
-</app-card>
+  </app-card>
+</form>
