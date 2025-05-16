@@ -1,37 +1,43 @@
-<div class="row">
+<form [formGroup]="staffForm" >
+    
+  <div class="row">
     <div class="col-12">
-        <div class="row">
-            <div class="col-12">
-                <app-card [header]="true" [body]="true">
-                    <h5 header>Create New Staff</h5>
-                    <div class="row" body>
-                        <div class="col-12">
-                            <ul class="nav nav-pills flex-nowrap mb-3" ngbNav #nav="ngbNav" [(activeId)]="active">
-                                <li [ngbNavItem]="1" class="nav-item m-0">
-                                    <button ngbNavLink class="nav-link" type="button">Staff Details</button>
-                                    <ng-template ngbNavContent>
-                                        <app-account></app-account>
-                                    </ng-template>
-                                </li>
-                                <li [ngbNavItem]="2" class="nav-item m-0">
-                                    <button ngbNavLink class="nav-link" type="button">Permission</button>
-                                    <ng-template ngbNavContent>
-                                        <app-permission></app-permission>
-                                    </ng-template>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-12" [ngbNavOutlet]="nav"></div>
-                    </div>
-                    <button body class="btn btn-animation  new-save-button" style="margin-left: 10px;" type="button"><i class="ri-add-circle-line"></i>&nbsp; Add Staff</button>&nbsp;
-                    <button body class="btn btn-animation  new-reset-button " type="button"><i class="ri-loop-right-line"></i>&nbsp; Reset</button>
-                 
-                    <!-- <button body class="btn save-button mt-2" type="submit"><i class="ri-add-circle-line"></i> &nbsp; Add Staff</button>
-                    <button body class="btn btn-animation  reset-button mt-2" type="submit"><i class="ri-loop-right-line"></i>&nbsp; Reset</button>&nbsp;
-                      -->
-                </app-card>
-                
+      <div class="row">
+        <div class="col-12">
+          <app-card [header]="true" [body]="true">
+            <h5 header>Create New Staff</h5>
+            <div class="row" body>
+              <div class="col-12">
+                <ul class="nav nav-pills flex-nowrap mb-3" ngbNav #nav="ngbNav" [(activeId)]="active">
+                  <li [ngbNavItem]="1" class="nav-item m-0">
+                    <button ngbNavLink class="nav-link" type="button">Staff Details</button>
+                    <ng-template ngbNavContent>
+                      <app-account [form]="staffForm"></app-account>
+                    </ng-template>
+                  </li>
+                  <li [ngbNavItem]="2" class="nav-item m-0">
+                    <button ngbNavLink class="nav-link" type="button">Permission</button>
+                    <ng-template ngbNavContent>
+                      <app-permission></app-permission>
+                    </ng-template>
+                  </li>
+                </ul>
+              </div>
+              <div class="col-12" [ngbNavOutlet]="nav"></div>
             </div>
+
+            <!-- <div class="pt-3"> -->
+              <button body class="btn btn-animation new-save-button" style="margin-left: 10px;" (click)="onSubmit()" type="submit">
+                <i class="ri-add-circle-line"></i>&nbsp; Add Staff
+              </button>
+              <button body class="btn btn-animation new-reset-button" type="button" (click)="staffForm.reset()">
+                <i class="ri-loop-right-line"></i>&nbsp; Reset
+              </button>
+            <!-- </div> -->
+
+          </app-card>
         </div>
+      </div>
     </div>
-</div>
+  </div>
+</form>
