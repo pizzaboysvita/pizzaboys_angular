@@ -1,6 +1,10 @@
 <form [formGroup]="storeForm">
   <app-card [header]="true" [body]="true">
-    <h5 header class="font-family">Add Store</h5>
+      @if(this.session.getsessionStorage('storeType') =='view'){
+    <h5 header class="font-family">View Store</h5>
+      } @else{
+          <h5 header class="font-family">Edit Store</h5>
+      }
     <div class="input-items font-family" body>
       <div class="row gy-3">
 
@@ -90,12 +94,12 @@
             <h6 class="f-w-600 p-1">Status</h6>
             <div class="radio-section">
               <label>
-                <input type="radio" value="1" formControlName="status" />
+                <input type="radio" value="Active" formControlName="status" />
                 <i></i>
                 <span>Active</span>
               </label>
               <label>
-                <input type="radio" value="0" formControlName="status" />
+                <input type="radio" value="Inactive" formControlName="status" />
                 <i></i>
                 <span>Inactive</span>
               </label>
@@ -116,12 +120,14 @@
       </div>
 
       <!-- Buttons -->
-      <button type="submit" class="btn btn-animation save-button font-family" style="margin-left: 10px;" (click)="addStore()">
-        <i class="ri-add-circle-line"></i>&nbsp; Add Store
+       @if(session.getsessionStorage('storeType') !='view'){
+      <button type="submit"  class="btn btn-animation save-button font-family" style="margin-left: 10px;" (click)="addStore()">
+        <i class="ri-add-circle-line"></i>&nbsp; Update Store
       </button>
       <button type="button" class="btn btn-animation reset-button font-family" (click)="storeForm.reset()">
         <i class="ri-loop-right-line"></i>&nbsp; Reset
       </button>
+    }
     </div>
   </app-card>
 </form>

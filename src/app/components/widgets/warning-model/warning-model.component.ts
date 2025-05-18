@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DoneModalComponent } from '../done-modal/done-modal.component';
 
@@ -10,8 +10,11 @@ import { DoneModalComponent } from '../done-modal/done-modal.component';
 })
 
 export class WarningModelComponent {
-  
-  constructor(public modal: NgbModal) { }
+    @Input() headerText!: string;
+  @Input() bodyText!: string;
+  constructor(public modal: NgbModal) { 
+    console.log(this.bodyText)
+  }
 
   doneModal() {
     this.modal.dismissAll();

@@ -30,4 +30,10 @@ export class SessionStorageService {
   clear(): void {
     sessionStorage.clear();
   }
+  setsessionStorage(key:any,value:any){
+        sessionStorage.setItem(key, value);
+  }
+  getsessionStorage(key:any) {
+    return sessionStorage.getItem(key)
+  }
 }

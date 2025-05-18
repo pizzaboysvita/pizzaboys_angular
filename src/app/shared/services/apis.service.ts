@@ -1,0 +1,26 @@
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ApisService {
+basesurl='http://78.142.47.247:3001'
+  constructor() { }
+ private http = inject(HttpClient);
+
+   getApi(endpoint: string) {
+    console.log('GET request URL -->', 'http://78.142.47.247:3001'+endpoint);
+ return this.http.get(this.basesurl+endpoint);
+  }
+ postApi(endpoint:any,req_body:any){
+   return this.http.post(this.basesurl+endpoint,req_body);
+ }
+  putApi(endpoint:any,req_body:any){
+   return this.http.put(this.basesurl+endpoint,req_body);
+ }
+
+  deleteApi(endpoint:any,req_body:any){
+   return this.http.delete(this.basesurl+endpoint,{ body: req_body });
+ }
+}

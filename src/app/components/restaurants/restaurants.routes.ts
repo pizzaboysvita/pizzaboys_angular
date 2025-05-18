@@ -11,6 +11,7 @@ import { ServiceComponent } from "./service/service.component";
 import { SpecialOfferComponent } from "./special-offer/special-offer.component";
 import { AddRestaurantsComponent } from "./add-restaurants/add-restaurants.component";
 import { RestaurantsListComponent } from "./restaurants-list/restaurants-list.component";
+import { ViewRestaurantsComponent } from "./view-restaurants/view-restaurants.component";
 
 export default [
     {
@@ -63,5 +64,9 @@ export default [
     {
         path:'restaurants-list',
         component:RestaurantsListComponent
+    },
+    {
+        path:'restaurants-view',
+        component:ViewRestaurantsComponent
     }
 ] as Routes;

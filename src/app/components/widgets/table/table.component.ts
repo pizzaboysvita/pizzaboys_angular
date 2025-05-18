@@ -43,10 +43,11 @@ export class TableComponent {
   }
 
   performAction(action: { icon: string, permission: string }) {
+    console.log(action,'Deletion Staff')
     if (action.permission === 'show') {
       this.router.navigate(['/orders/order-detail']);
     } else if (action.permission === 'delete') {
-      this.commonService.warningModel()
+      this.commonService.warningModel(action)
     }
   }
 

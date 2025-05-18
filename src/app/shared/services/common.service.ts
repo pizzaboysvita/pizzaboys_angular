@@ -15,11 +15,13 @@ export class CommonService {
     this.modal.open(InsertMediaComponent, { windowClass: 'theme-modal', centered: true, size: 'lg' })
   }
 
-  warningModel() {
-    this.modal.open(WarningModelComponent, {
+  warningModel(data:any) {
+  const modalRef =  this.modal.open(WarningModelComponent, {
       windowClass: 'theme-modal remove-coupon',
       centered: true
     })
+    modalRef.componentInstance.headerText = data.headertext;
+modalRef.componentInstance.bodyText = data.modelbodytext
   }
 
 }
