@@ -5,13 +5,14 @@ import { CardComponent } from "../../../shared/components/card/card.component";
 import { DetailsComponent } from "./details/details.component";
 import { OrderStatusComponent } from "./order-status/order-status.component";
 import { MediaComponent } from '../../media/media.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-order-details',
     templateUrl: './order-details.component.html',
     styleUrl: './order-details.component.scss',
     imports: [NgbNavModule,MediaComponent,
-         GoogleMapsModule]
+         GoogleMapsModule,CommonModule]
 })
 
 export class OrderDetailsComponent {
@@ -70,6 +71,18 @@ export class OrderDetailsComponent {
       this.cartItems.push({ ...item, quantity: 1 });
     }
   }
+  decreaseFromCart(item: CartItem) {
+  const existingItem = this.cartItems.find(cartItem => cartItem.name === item.name);
+
+  if (existingItem) {
+    if (existingItem.quantity > 1) {
+      existingItem.quantity--;
+    } else {
+      // Remove from cart if quantity is 0 or 1
+      this.cartItems = this.cartItems.filter(cartItem => cartItem.name !== item.name);
+    }
+  }
+}
   // get subtotal() {
   //   return this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   // }
@@ -81,7 +94,17 @@ export class OrderDetailsComponent {
   // get discount() {
   //   return this.subtotal * 0.20;  // 20% discount
   // }
+get subtotal(): number {
+  return this.cartItems.reduce((sum, item) => sum + item.quantity * item.price, 0);
+}
 
+get tax(): number {
+  return +(this.subtotal * 0.10).toFixed(2); // 10% Tax
+}
+
+// get total(): number {
+//   return +(this.subtotal + this.tax).toFixed(2);
+// }
   get total() {
     return this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     // return this.subtotal + this.tax - this.discount;

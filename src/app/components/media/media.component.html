@@ -6,157 +6,169 @@
                 <i class="ri-search-line"></i>
                 <input class="search-box" type="search" placeholder="What are you looking for?" [(ngModel)]="searchText"
                     name="search" (keyup)="searchTerm(searchText)" style="flex: 1; border: none; outline: none; background: transparent;">
-                <!-- <app-feather-icons [icons]="'x'" class="close-icon" (click)="isSearch = false"></app-feather-icons> -->
             </div>
-            <!-- </div> -->
-         
-            <!-- <div> -->
-                <!-- <div class="d-flex justify-content-between align-items-center  w-100">
-                  <h5 class="fw-bold">Order Lists</h5>
-                  <a href="#" class="see-all">See All →</a>
-                </div> -->
-      
-                <!-- <div class="order-card-container">
-                  <div class="order-card-primary p-2 position-relative">
-                    <span class="badge bg-white border border-white text-success position-absolute top-0 end-0 m-2">Ready</span>
-                    <div class="d-flex align-items-center gap-2 mt-4">
-                      <div class="order-icon-primary">T6</div>
-                      <div class="d-flex flex-column">
-                        <span class="fw-bold text-white">James Hall</span>
-                        <small class="text-white-50">4 items → Ready to Serve</small>
-                      </div>
-                    </div>
-                  </div>
-      
-                  <div class="order-card p-2 position-relative">
-                    <span class="badge border border-warning text-warning position-absolute top-0 end-0 m-2">In Process</span>
-                    <div class="d-flex align-items-center gap-2 mt-4">
-                      <div class="order-icon-primary ">T7</div>
-                      <div class="d-flex flex-column">
-                        <h6>John Dukes</h6>
-                        <small>3 items → Kitchen</small>
-                      </div>
-                    </div>
-                  </div>
-      
-                  <div class="order-card p-2 position-relative">
-                    <span class="badge border border-warning text-warning position-absolute top-0 end-0 m-2">In Process</span>
-                    <div class="d-flex align-items-center gap-2 mt-4">
-                      <div class="order-icon-primary">T8</div>
-                      <div class="d-flex flex-column">
-                        <h6>Paula Mora</h6>
-                        <small>7 items → Kitchen</small>
-                      </div>
-                    </div>
-                  </div>
-      
-                </div>
-                <div class="d-flex justify-content-between align-items-center w-100">
-                    <h5 class="fw-bold">Choose Category</h5>
-                    <a href="#" class="see-all">See All →</a>
-                  </div> -->
-                 
-                  <!-- <div class="row" style="width: 100%;">
-                    @for (item of items; track item) {
-                      <div class="col-6 col-sm-4 col-md-2" style="flex: 0 0 20%; max-width: 20%;">
-                        <div class="card" style="min-width: 6rem; height: 8rem; display: flex; flex-direction: column;"> 
-                          <img class="card-img-top" [src]="item.img" alt="Card image cap" style="width: 4rem; margin: 0 auto;">
-                          <div class="card-body p-1" style="flex-grow: 1; display: flex; justify-content: center; align-items: center;"> 
-                            <h5 class="card-title" style="font-size: 0.9rem; text-align: center; margin: 0;">{{ item.name }}</h5> 
-                          </div>
-                        </div>
-                      </div>
-                    }
-                  </div> -->
-                 
-                  <!-- <div class="row" style="width: 100%;">
-                    @for (item of Bigitems; track item) {
-                        <div class="col-6 col-sm-4 col-md-4">
-                    <div class="card" style="width: 13rem;">
-                        <img class="img-fluid d-block w-120 h-100" [src]="item.img" alt="Card image cap" style="object-fit: cover;">
+       <!-- categories -->
+        <div class=" w-100">
+<div class="mb-4 position-relative">
+  <h5 class="mb-3 fw-bold">Categories</h5>
+  <!-- Scroll arrows -->
+  <button class="scroll-btn start" (click)="scrollLeft()">
+    ‹
+  </button>
+  <button class="scroll-btn end" (click)="scrollRight()">
+    ›
+  </button>
 
-                        <div class="card-body">
-                          <h5 class="card-title f-10">$20.36</h5>
-                            
-                          <p class="card-text" >Lorem Ipsum is simply dummy</p>
-                          <h5 class="card-title">$20.36</h5>
-
-                        </div>
-                      </div>
+  <!-- Scrollable category container -->
+  <div #scrollContainer class="d-flex gap-3 pb-2 px-3" style="scroll-behavior: smooth; overflow: hidden;">
+      @for (category of categories; track category) {
+    <div class="d-flex align-items-center px-3 py-2 bg-white shadow-sm rounded-4 flex-shrink-0 "  [ngClass]="{ 'border-primary border-2': selectedCategory === category }" style="min-width: 120px;" (click)="selectCategory(category)">
+      <img [src]="category.image" alt="{{ category.name }}"   style="width: 25px; height: 25px;border-radius: 50%;" class="me-3">
+      <div>
+        <div class="fw-semibold">{{ category.name }}</div>
+        <div class="text-muted small">{{ category.count }} items</div>
+      </div>
+    </div>
+  }
+  </div>
 </div>
-                    }
-                   
-                    </div> -->
- <div class="d-flex justify-content-between align-items-center  w-100">
-                  <h5 class="fw-bold">Order Lists</h5>
-                  <!-- <a href="#" class="see-all">See All →</a> -->
-                </div>
-                    <div class="row" style="width: 100%;min-height: 450px; max-height: 450px; overflow-y: auto;" >
-                        @for (item of itemsList; track item) {
-                            <div class="col-md-4 mb-4" >
-                              <div class="card h-70 w-100 border-light shadow-sm" style="border-radius:5px;padding: 5px;" >
-                                <img [src]="item.img" class="card-img-top" alt="{{ item.name }}" style="height: 130px; object-fit: cover;border: none;border-radius: 0px;" (click)="openIngredientsPopup(item)">
-                                <div class="card-body text-center d-flex flex-column">
-                                  <h5 class="card-title mb-2" style="font-weight: 500;text-align: start;font-size: medium;">{{ item.name }}</h5>
-                                  <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <p class="card-text m-0" style="font-size: 16px; font-weight: 600;">${{ item.price.toFixed(2) }}</p>
-                                    <button class="btn btn-primary" style="border: 12px; padding: 2px 12px;" (click)="addItem(item)"  [disabled]="item.status !== 'Available'">
-                                      ADD <span class="fw-bold">+</span>
-                                    </button>
 
-                                  </div>
-                                  <p class="card-text m-0" style="font-size: 12px; font-weight: 600;text-align: left;">({{item.status}})</p>
-                          
-                                  <!-- <small class="text-muted mt-1" style="display: flex;justify-content: end;">customisable</small> -->
-                                </div>
-                              </div>
-                            </div>
-                          
-                    }
-                
-                      
-  <!-- Modal -->
+<!-- Most Ordered -->
+<!-- <h5 class="mb-4 fw-bold">Most Ordered</h5>
+<div class="row gx-2 gy-0">
+  @for (item of itemsList; track item) {
+    <div class="col-md-4" style="margin-top: -15px !important;">
+      <div class="card flex-row align-items-center shadow-sm h-100"  style="height: 100px !important;">
+        
+        <img [src]="item.img" alt="{{ item.name }}" 
+             class="img-thumbnail me-3" 
+             style="width: 95px; height: 95px; object-fit: cover; border-radius: 5px;">
+        
+        <div class="flex-grow-1">
+          <h6 class="mb-1">{{ item.name }}</h6>
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="fw-bold">${{ item.price }}</span>
+            <div class="d-flex align-items-center gap-1">
+              <button class="btn btn-sm btn-outline-secondary">-</button>
+              <span>1</span>
+              <button class="btn btn-sm btn-outline-secondary">+</button>
+            </div>
+          </div>
+        </div>
 
- 
-  
-                    <!-- @for (item of Bigitems; track item) {
-                      <div class="col-6 col-sm-4 col-md-4"> 
-                        <div class="card" style="height: 14rem; display: flex; flex-direction: column;">
-                          
-                          <div class="card-body p-0" style="flex-grow: 1;">
-                            <img class="img-fluid d-block w-120 h-100" [src]="item.img" alt="Card image cap" style="object-fit: cover;">
-                          </div>
-                          <div>
+      </div>
+    </div>
+  }
+</div> -->
+<h5 class="mb-4 fw-bold">Most Ordered</h5>
+<div class="row gx-2 gy-0">
+  @for (item of itemsList; track item) {
+    <div class="col-md-4" style="margin-top: -15px !important;">
+      <div class="card flex-row align-items-center p-2 shadow-sm h-100"  style="height: 110px !important;" (click)="openIngredientsPopup(item)">
+        
+        <!-- Left Side: Image -->
+        <img [src]="item.img" alt="{{ item.name }}" 
+             class="img-thumbnail me-3" 
+             style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+        
+        <!-- Right Side: Text and Actions -->
+        <div class="flex-grow-1">
+          <h6 class="mb-1">{{ item.name }}</h6>
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="fw-bold">${{ item.price }}</span>
 
-                          
-                          </div>
+            <!-- Quantity -->
+             <div class="d-flex align-items-center gap-1">
+              <!-- Show only + if quantity is 0 or undefined -->
+              <button 
+                *ngIf="!item.quantity || item.quantity === 0" 
+                class="btn btn-sm btn-outline-secondary btn-size"
+                (click)="addItem(item)" [disabled]="item.status !== 'Available'">
+                +
+              </button>
+              <!-- Show - qty + when quantity > 0 -->
+              <ng-container *ngIf="item.quantity > 0">
+                <button class="btn btn-sm btn-outline-secondary btn-size" (click)="decreaseItem(item)">-</button>
+                <span>{{ item.quantity }}</span>
+                <button class="btn btn-sm btn-outline-secondary btn-size" (click)="increaseItem(item)">+</button>
+              </ng-container>
 
-                          <div class="card-footer text-center p-2">
-                            <h5 class="card-title" style="font-size: 1.3rem; margin: 0;">{{ item.name }}</h5>
-                          </div>
-                        </div>
-                      </div>
-                    } -->
-                  </div>
-                  
-                  </div>
-                  
-                  
-              
-      <!-- </div> -->
-      </app-card>
-     
+            </div>
+          </div>
+        </div>
 
-      
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Popular Dishes -->
+<h5 class="mb-4 fw-bold">Popular Dishes</h5>
+<div class="row gx-2 gy-0">
+  @for (item of itemsList; track item) {
+    <div class="col-md-4" style="margin-top: -15px !important;">
+      <div class="card flex-row align-items-center p-2 shadow-sm h-100"  style="height: 110px !important;">
+        
+        <!-- Left Side: Image -->
+        <img [src]="item.img" alt="{{ item.name }}" 
+             class="img-thumbnail me-3" 
+             style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+        
+        <!-- Right Side: Text and Actions -->
+        <div class="flex-grow-1">
+          <h6 class="mb-1">{{ item.name }}</h6>
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="fw-bold">${{ item.price }}</span>
+
+            <!-- Quantity -->
+             <!-- <div class="d-flex align-items-center gap-1 maerail-btn-icons">
+              <button 
+                *ngIf="!item.quantity || item.quantity === 0" 
+                class="btn btn-sm btn-outline-secondary btn-size"
+                (click)="addItem(item)">
+                +
+              </button>
+              <ng-container *ngIf="item.quantity > 0">
+                <button class="btn btn-sm btn-outline-secondary btn-size" (click)="decreaseItem(item)">-</button>
+                <span>{{ item.quantity }}</span>
+                <button class="btn btn-sm btn-outline-secondary btn-size" (click)="increaseItem(item)">+</button>
+              </ng-container>
+
+            </div> -->
+            <div class="d-flex align-items-center gap-1 quantity-controls">
+  <!-- Show only + if quantity is 0 or undefined -->
+  <button 
+    *ngIf="!item.quantity || item.quantity === 0" 
+    class="qty-btn"
+    (click)="addItem(item)">
+    +
+  </button>
+
+  <!-- Show - qty + when quantity > 0 -->
+  <ng-container *ngIf="item.quantity > 0">
+    <button class="qty-btn" (click)="decreaseItem(item)">-</button>
+    <span class="qty-count">{{ item.quantity }}</span>
+    <button class="qty-btn" (click)="increaseItem(item)">+</button>
+  </ng-container>
+</div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  }
+</div>
+</div>
+</div>   
+ </app-card>  
     </div>
   </div>
 @if (showPopup) {
   <div
- 
   class="modal fade show d-block modal-overlay"
   tabindex="-1"
   role="dialog"
-
 >
   <div class="modal-dialog" style="margin: 0 auto; max-width: 500px; width: 100%;">
     <div class="modal-content shadow-sm rounded-3 border-0">

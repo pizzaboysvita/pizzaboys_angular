@@ -106,3 +106,83 @@
     background-color: #e0a800;
   }
   
+.shadow-sm:hover {
+ background-color: #f6e9f2 !important; /* Light grey when hovered */
+    transition: background-color 0.3s ease !important; /* Smooth transition */
+    cursor: pointer !important; /* Shows hand cursor */
+    border-color: #f393d6 !important;
+}
+.scroll-btn {
+  position: absolute;
+  top: 60%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: white;
+  border: none;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.scroll-btn.start {
+  left: 0;
+}
+
+.scroll-btn.end {
+  right: 0;
+}
+
+/* Optional: hide scrollbars completely in some browsers */
+::-webkit-scrollbar {
+  display: none;
+}
+.img-thumbnail {
+  padding: 0px !important;
+}
+.btn-size{
+  width: 30px; 
+  height: 30px; 
+  font-size: 18px
+}
+.quantity-controls {
+  //  border: 1px solid #ccc;
+  //   border-radius: 5px;
+
+  .qty-btn {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    font-size: 18px;
+    line-height: 1;
+    border: 1px solid #ccc;
+    background-color: white;
+    border-radius: 6px;
+    color: #333;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .qty-btn:hover {
+    background-color: #f2f2f2;
+  }
+
+  .qty-count {
+    display: inline-block;
+    min-width: 20px;
+    text-align: center;
+    font-weight: 600;
+
+  }
+}
+
+.border-primary {
+  border: 2px solid #f393d6 !important;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+  
