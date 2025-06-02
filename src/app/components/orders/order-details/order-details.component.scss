@@ -118,6 +118,60 @@
     background-color: #d1fae5; /* light green */
     color: #047857;
   }
-  
+  .maerail-btn-icons{
+    // #f5c6cb
+     width: 30px !important;
+       height: 30px !important;
+       display: flex !important;
+       align-items: center !important;
+       justify-content: center !important;
+       border: 1px solid #fff !important;
+       border-radius: 8px;
+       background-color: #fff !important;
+       cursor: pointer !important;
+       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important; /* soft shadow */
+  }
+  .custom-toggle {
+  border: none;
+  background-color: transparent;
+  font-weight: 500;
+  color: #888;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.custom-toggle.active {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #000;
+}
+  .order-type-toggle {
+  display: flex;
+  height: 40px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+
+  .toggle-btn {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: #f8f8f8;
+    color: #aaa;
+    font-weight: 500;
+    transition: background 0.2s ease, color 0.2s ease;
+    height: 100%;
+  }
+
+  .toggle-btn.active {
+    background: #fff;
+    color: #000;
+    font-weight: 600;
+  }
+
+  .toggle-btn:not(:last-child) {
+    border-right: 1px solid #ddd;
+  }
+}
+
   
   

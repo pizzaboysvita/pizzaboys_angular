@@ -23,6 +23,8 @@ export class ContentComponent {
         const userData = localStorage.getItem("user");
         if (userData !== null) {
           this.users = JSON.parse(userData);
+          console.log(this.users,"No user data found in localStorage.");
+
         } else {
           console.log("No user data found in localStorage.");
         }

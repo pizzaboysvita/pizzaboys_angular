@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CardComponent } from "../../shared/components/card/card.component";
 import { MediaLibrary, media } from '../../shared/data/media';
@@ -32,24 +32,52 @@ export class MediaComponent{
   quantity=1;
   expandedIndex: any;
   @Output() itemAdded = new EventEmitter<CartItem>();
+  @Output() itemDecreased = new EventEmitter<CartItem>();
+
   itemsList:CartItem[] = [];
+  @ViewChild('scrollContainer', { static: false }) scrollContainer!: ElementRef;
+  selectedCategory: any;
+
+scrollLeft() {
+  this.scrollContainer.nativeElement.scrollBy({ left: -150, behavior: 'smooth' });
+}
+
+scrollRight() {
+  this.scrollContainer.nativeElement.scrollBy({ left: 150, behavior: 'smooth' });
+}
+
+ categories = [
+  { name: 'Breakfast', count: 72, image: '/assets/food/chicken-tacos.jpg' },
+  { name: 'Beverages', count: 35, image: '/assets/food/chicken-tacos.jpg' },
+  { name: 'Classic Range Pizzas', count: 24, image: '/assets/food/chicken-tacos.jpg' },
+  { name: 'Non Vegetarian', count: 20, image: '/assets/food/chicken-tacos.jpg' },
+  { name: 'Pasta', count: 24, image: '/assets/food/chicken-tacos.jpg' },
+  { name: 'Drinks', count: 32, image: '/assets/food/chicken-tacos.jpg' },
+];
+ 
    items = [
-    { name: 'Chicken Tacos', price: 20.36, quantity: 1, img: '/assets/food/chicken-tacos.jpg', Ingredients: '', title: 'Non Vegetarian', status: 'Available' },
-    { name: 'Chicken Tacos', price: 20.36, quantity: 1, img: '/assets/food/chicken-Roll.jpg', Ingredients: '', title: 'Non Vegetarian', status: 'Not Available' },
-    { name: 'Chicken Tacos', price: 20.36, quantity: 1, img: '/assets/food/chicken-cutlet.jpg', Ingredients: '', title: 'Non Vegetarian', status: 'Available' },
-    { name: 'Italian Pasta', price: 18.30, quantity: 1, img: '/assets/food/italian-pasta.jpg', Ingredients: 'wheat flour or semolina, eggs (sometimes), and sometimes olive oil. Other ingredients, like tomatoes, garlic, herbs (basil, oregano), and cheese,', title: 'Pasta', status: 'Not Available' },
-    { name: 'Beetroot', price: 30.36, quantity: 1, img: '/assets/food/beetroot_juice.avif', Ingredients: '', title: 'Drinks', status: 'Available' },
-    { name: 'Salad', price: 80.36, quantity: 1, img: '/assets/food/salads.png', Ingredients: '', title: 'Non Vegetarian', status: 'Not Available' },
-    { name: 'Soft Drinks', price: 30.36, quantity: 1, img: '/assets/food/cool-drinks.jpg', Ingredients: '', title: 'Drinks', status: 'Available' },
-    { name: 'Juice', price: 80.36, quantity: 1, img: '/assets/food/cool-drinks3.jpg', Ingredients: '', title: 'Drinks', status: 'Not Available' },
-    { name: 'Juice', price: 80.36, quantity: 1, img: '/assets/food/cool-drinks2.jpeg', Ingredients: '', title: 'Drinks', status: 'Available' },
-    { name: 'Pasta Spaghetti', price: 30.36, quantity: 1, img: '/assets/food/pasta-img.avif', Ingredients: '', title: 'Pasta', status: 'Not Available' },
-    { name: 'panne Pasta Stock', price: 80.36, quantity: 1, img: '/assets/food/istock-Pasta.jpg', Ingredients: '', title: 'Pasta', status: 'Available' },
-    { name: 'Spicy Penne Pasta', price: 80.36, quantity: 1, img: '/assets/food/Spicy-Penne-Pasta.png', Ingredients: '', title: 'Pasta', status: 'Not Available' },
-    { name: 'Tomato Pasta', price: 80.36, quantity: 1, img: '/assets/food/tomato-pasta.jpeg', Ingredients: '', title: 'Pasta', status: 'Available' },
-    { name: 'Classic Cheese Pizza', price: 25.36, quantity: 1, img: '/assets/food/classic-cheese-pizza.avif', Ingredients: 'dough base, pizza sauce, mozzarella cheese, and a variety of toppings. The dough base is made from flour, water, yeast, and sometimes oil or sugar. The', title: 'Classic Range Pizzas', status: 'Not Available' },
-    { name: 'Fancy Pizza', price: 25.36, quantity: 1, img: '/assets/food/default-pizza.avif', Ingredients: 'dough base, pizza sauce, mozzarella cheese, and a variety of toppings. The dough base is made from flour, water, yeast, and sometimes oil or sugar. The', title: 'Classic Range Pizzas', status: 'Available' },
-    { name: 'Salami Pizza', price: 25.36, quantity: 1, img: '/assets/food/Salami-pizza.jpg', Ingredients: 'dough base, pizza sauce, mozzarella cheese, and a variety of toppings. The dough base is made from flour, water, yeast, and sometimes oil or sugar. The', title: 'Classic Range Pizzas', status: 'Not Available' },
+         { name: 'Chicken Tacos', price: 20.36, quantity: 0, img: '/assets/food/chicken-tacos.jpg', Ingredients: '', title: 'Beverages', status: 'Available' },
+    { name: 'Chicken Tacos', price: 20.36,quantity: 0, img: '/assets/food/chicken-Roll.jpg', Ingredients: '', title: 'Beverages', status: 'Not Available' },
+    { name: 'Chicken Tacos', price: 20.36,quantity: 0, img: '/assets/food/chicken-cutlet.jpg', Ingredients: '', title: 'Beverages', status: 'Available' },
+     { name: 'Egg Bhurji', price: 20.36, quantity: 0, img: '/assets/food/egg-bhurji.jpg', Ingredients: '', title: 'Breakfast', status: 'Available' },
+    { name: 'Poori Masala', price: 20.36,quantity: 0, img: '/assets/food/Poori-Masala.jpg', Ingredients: '', title: 'Breakfast', status: 'Not Available' },
+    { name: 'Butter Bread', price: 20.36,quantity: 0, img: '/assets/food/butterbread.webp', Ingredients: '', title: 'Breakfast', status: 'Available' },
+    { name: 'Chicken Tacos', price: 20.36, quantity: 0, img: '/assets/food/chicken-tacos.jpg', Ingredients: '', title: 'Non Vegetarian', status: 'Available' },
+    { name: 'Chicken Tacos', price: 20.36,quantity: 0, img: '/assets/food/chicken-Roll.jpg', Ingredients: '', title: 'Non Vegetarian', status: 'Not Available' },
+    { name: 'Chicken Tacos', price: 20.36,quantity: 0, img: '/assets/food/chicken-cutlet.jpg', Ingredients: '', title: 'Non Vegetarian', status: 'Available' },
+    { name: 'Italian Pasta', price: 18.30,quantity: 0, img: '/assets/food/italian-pasta.jpg', Ingredients: 'wheat flour or semolina, eggs (sometimes), and sometimes olive oil. Other ingredients, like tomatoes, garlic, herbs (basil, oregano), and cheese,', title: 'Pasta', status: 'Not Available' },
+    { name: 'Beetroot', price: 30.36,quantity: 0, img: '/assets/food/beetroot_juice.avif', Ingredients: '', title: 'Drinks', status: 'Available' },
+    { name: 'Salad', price: 80.36,quantity: 0, img: '/assets/food/salads.png', Ingredients: '', title: 'Non Vegetarian', status: 'Not Available' },
+    { name: 'Soft Drinks', price: 30.36,quantity: 0, img: '/assets/food/cool-drinks.jpg', Ingredients: '', title: 'Drinks', status: 'Available' },
+    { name: 'Juice', price: 80.36,quantity: 0, img: '/assets/food/cool-drinks3.jpg', Ingredients: '', title: 'Drinks', status: 'Not Available' },
+    { name: 'Juice', price: 80.36,quantity: 0, img: '/assets/food/cool-drinks2.jpeg', Ingredients: '', title: 'Drinks', status: 'Available' },
+    { name: 'Pasta Spaghetti', price: 30.36,quantity: 0, img: '/assets/food/pasta-img.avif', Ingredients: '', title: 'Pasta', status: 'Not Available' },
+    { name: 'panne Pasta Stock', price: 80.36,quantity: 0, img: '/assets/food/istock-Pasta.jpg', Ingredients: '', title: 'Pasta', status: 'Available' },
+    { name: 'Spicy Penne Pasta', price: 80.36,quantity: 0, img: '/assets/food/Spicy-Penne-Pasta.png', Ingredients: '', title: 'Pasta', status: 'Not Available' },
+    { name: 'Tomato Pasta', price: 80.36,quantity: 0, img: '/assets/food/tomato-pasta.jpeg', Ingredients: '', title: 'Pasta', status: 'Available' },
+    { name: 'Classic Cheese Pizza', price: 25.36,quantity: 0, img: '/assets/food/classic-cheese-pizza.avif', Ingredients: 'dough base, pizza sauce, mozzarella cheese, and a variety of toppings. The dough base is made from flour, water, yeast, and sometimes oil or sugar. The', title: 'Classic Range Pizzas', status: 'Not Available' },
+    { name: 'Fancy Pizza', price: 25.36,quantity: 0, img: '/assets/food/default-pizza.avif', Ingredients: 'dough base, pizza sauce, mozzarella cheese, and a variety of toppings. The dough base is made from flour, water, yeast, and sometimes oil or sugar. The', title: 'Classic Range Pizzas', status: 'Available' },
+    { name: 'Salami Pizza', price: 25.36,quantity: 0, img: '/assets/food/Salami-pizza.jpg', Ingredients: 'dough base, pizza sauce, mozzarella cheese, and a variety of toppings. The dough base is made from flour, water, yeast, and sometimes oil or sugar. The', title: 'Classic Range Pizzas', status: 'Not Available' },
   ];
   
   selectedDish: string;
@@ -62,55 +90,16 @@ export class MediaComponent{
   }
 
   ngOnInit() {
-   this.loadItemsBySelectedTitle();
+  //  this.loadItemsBySelectedTitle();
+  this.selectCategory(this.categories[0])
   }
 
+
+
+
   searchTerm(term: string) {
-    // term ? this.addFix() : this.removeFix();
-    // if (!term) return (this.menuItems = []);
-    // let itemsData: menuItem[] = [];
-    // term = term.toLowerCase();
-    // this.items.forEach((data) => {
-    //   if (!data?.title) return false;
-    //   if (data.title.toLowerCase().includes(term) && data.type === "link") {
-    //     itemsData.push(data);
-    //   }
-    //   if (!data.children) return false;
-    //   data.children.filter((subItems: menuItem) => {
-    //     if (
-    //       subItems.title?.toLowerCase().includes(term) &&
-    //       subItems.type === "link"
-    //     ) {
-    //       subItems.icon = data.icon;
-    //       itemsData.push(subItems);
-    //     }
-    //     return;
-    //   });
-    //   this.checkSearchResultEmpty(itemsData);
-    //   this.menuItems = itemsData;
-    //   return;
-    // });
-    // return;
+   
   }
-  //  checkSearchResultEmpty(items: menuItem[]) {
-  //     if (!items.length) this.searchResultEmpty = true;
-  //     else this.searchResultEmpty = false;
-  //   }
-  
-  //   addFix() {
-  //     this.searchResult = true;
-  //   }
-  
-  //   clickOutside(): void {
-  //     this.searchText = "";
-  //     this.searchResult = false;
-  //     this.searchResultEmpty = false;
-  //   }
-  
-  //   removeFix() {
-  //     this.searchText = "";
-  //     this.searchResult = false;
-  //   }
   loadItemsBySelectedTitle() {
     const navigationState = history.state;
     const savedTitle = this.commonService.getSelectedMenuTitle();
@@ -171,9 +160,30 @@ export class MediaComponent{
     this.modal.open(AddMediaComponent, { windowClass: 'media-modal theme-modal', size: 'xl' })
   }
   addItem(item: CartItem) {
+   item.quantity = 1;
     this.itemAdded.emit(item);  // Emit the selected item
   }
 
+decreaseItem(item: CartItem) {
+  if (item.quantity && item.quantity > 1) {
+    item.quantity--;
+    this.itemDecreased.emit(item);
+  } else {
+    // Optional: emit item with quantity 0 to remove
+    item.quantity = 0;
+    this.itemDecreased.emit(item);
+  }
+}
+increaseItem(item: any) {
+  item.quantity++;
+     this.itemAdded.emit(item);  // Emit the selected item
+
+}
+
+selectCategory(category:any){
+  this.itemsList = this.items.filter(item => item.title.trim() === category.name.trim());
+   this.selectedCategory=category
+}
   openIngredientsPopup(item: any) {
     // this.selectedItem = item;
   if(item.status=='Available'){

@@ -1,6 +1,6 @@
-<div class="row" style="margin-top: -9%;">
+<div class="row">
     <div class="col-xl-8">
-       <app-media (itemAdded)="addToCart($event)"></app-media>
+       <app-media (itemAdded)="addToCart($event)" (itemDecreased)="decreaseFromCart($event)"></app-media>
     </div>
     <div class="col-xl-4">
 <!-- <div class="card">
@@ -31,154 +31,103 @@
 </div> -->
        
 <div class="card p-3 shadow-sm d-flex flex-column" style="border-radius: 8px; height: 90vh; overflow: hidden !important;">
-  
-    <!-- Header -->
-    <div class="mb-3">
-      <!-- <h6 class="mb-0">Order Status</h6>        -->
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h6 class="fw-bold  mb-1">Order Details</h6>
+      <div class="text-muted" style="font-size: 12px;">#ORD-3291</div>
     </div>
-    <div class="d-flex justify-content-center align-items-center mb-3">
-        <div class="fw-bold text-uppercase mr-3">ORDERS</div>
-        <div class="position-relative">
-          <span class="material-symbols-outlined" style="font-size: 20px;">
-            receipt
-          </span>
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-circle"
-                style="background-color: orange; color: white; font-size: 12px; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">
-            1
-          </span>
-        </div>
-      </div>
-      
-      
-      
-  
-    <!-- Dine In / Take Away Buttons -->
-    <div class="btn-group custom-btn-group mb-3 w-100" style="height: 65px;" >
-      <button type="button" 
-              class="btn w-50"
-              [class.active]="selected === 'dinein'"
-              (click)="selected = 'dinein'">
-        Dine In
-      </button>
-      <button type="button" 
-              class="btn w-50"
-              [class.active]="selected === 'takeaway'"
-              (click)="selected = 'takeaway'">
-        Take Away
-      </button>
-    </div>
-  
-    <!-- Cart Items -->
-   <!-- Cart Items -->
-<!-- <div class="flex-grow-1 overflow-auto mb-3" style="min-height: 5rem;"> -->
-  <div class="flex-grow-1 overflow-auto mb-3" style="height: 500px; overflow-y: auto;">
-    <!-- Header Row -->
-   <!-- Header Row -->
-<div class="d-flex align-items-center justify-content-between px-2 mb-2 text-muted fw-semibold" style="font-size: 14px;">
-    <div class="d-flex align-items-center" style="flex: 1;">
-      Item
-    </div>
-    <div class="text-lest" style="width: 100px;">
-      Qty
-    </div>
-    <div class="text-left" style="width: 70px;">
-      Price
-    </div>
-
+    <div class="maerail-btn-icons">
+    <span class="material-symbols-outlined"  style="font-size: 18px;">more_vert</span>
+</div>
   </div>
-  
-  @for (item of cartItems; track item) {
-    <div class="d-flex align-items-center justify-content-between mb-3 p-2 border rounded" 
-         style="background: #f9f9f9; border-radius: 12px;">
-      
-      <!-- Image + Name -->
+
+  <!-- Dine In / Take Away / Delivery Buttons -->
+  <!-- <div class="btn-group custom-btn-group mb-3 w-100" style="height: 50px;">
+    <button type="button" class="btn w-33" [class.active]="selected === 'dinein'" (click)="selected = 'dinein'">Dine In</button>
+    <button type="button" class="btn w-33" [class.active]="selected === 'takeaway'" (click)="selected = 'takeaway'">Take away</button>
+    <button type="button" class="btn w-33" [class.active]="selected === 'delivery'" (click)="selected = 'delivery'">Delivery</button>
+  </div> -->
+  <!-- Dine In / Take Away / Delivery Buttons -->
+<div class="btn-group w-100 mb-3 order-type-toggle">
+  <button type="button" 
+          class="toggle-btn" 
+          [class.active]="selected === 'dinein'" 
+          (click)="selected = 'dinein'">
+    Dine in
+  </button>
+  <button type="button" 
+          class="toggle-btn" 
+          [class.active]="selected === 'takeaway'" 
+          (click)="selected = 'takeaway'">
+    Take away
+  </button>
+  <button type="button" 
+          class="toggle-btn" 
+          [class.active]="selected === 'delivery'" 
+          (click)="selected = 'delivery'">
+    Delivery
+  </button>
+</div>
+
+
+  <!-- Customer Info -->
+  <!-- <div class="d-flex justify-content-between align-items-center mb-2">
+    <div>
+      <div style="font-size: 13px; color: #666;">Customer Name</div>
+      <div class="fw-semibold">Jhonatan Andrew</div>
+    </div>
+    <div>
+      <div style="font-size: 13px; color: #666;">Table Number</div>
+      <div class="fw-semibold">17</div>
+    </div>
+  </div> -->
+
+  <!-- Order Items List -->
+  <div class="flex-grow-1 overflow-auto mb-3" style="height: 340px; overflow-y: auto;">
+    @for (item of cartItems; track item) {
+    <div  class="d-flex align-items-center justify-content-between mb-3">
       <div class="d-flex align-items-center" style="flex: 1;">
-        <img [src]="item.img" alt="{{ item.name }}" width="50" height="50" 
-             class="rounded me-2" style="object-fit: cover;">
+        <img [src]="item.img" alt="{{ item.name }}" width="50" height="50" class="rounded me-2" style="object-fit: cover;">
         <div>
           <div class="fw-semibold">{{ item.name }}</div>
-          <div class="text-muted" style="font-size: 14px;">${{ item.price.toFixed(2) }}</div>
+         <div style="font-size: 14px;">
+        <span class="fw-bold">${{ item.price.toFixed(2) }}</span> &nbsp; x {{ item.quantity }}
+      </div>
         </div>
       </div>
-  
-      <!-- Quantity Control -->
-      <div class="d-flex align-items-center justify-content-center" style="width: 100px; gap: 6px;">
-        <button class="btn btn-light btn-sm p-1" (click)="decreaseQuantity(item)" style="width: 30px; height: 30px;">-</button>
-        <span class="fw-semibold">{{ item.quantity }}</span>
-        <button class="btn btn-light btn-sm p-1" (click)="increaseQuantity(item)" style="width: 30px; height: 30px;">+</button>
-      </div>
-  
-      <!-- Item Total Price -->
-      <div class="text-end" style="width: 70px;">
-        ${{ (item.quantity * item.price).toFixed(2) }}
-      </div>
-  
-      <!-- Delete Button -->
-      <div class="ms-2">
-        <span class="material-symbols-outlined" (click)="removeItem(item)" style="cursor: pointer;">
-            cancel
-            </span>
-        <!-- <i class="fa fa-times edit" style="color: red; border-radius: 20%; 
-          border: 2px solid red; font-size: 18px; font-weight: 400;
-          background-color: white; cursor: pointer;" (click)="removeItem(item)">
-        </i> -->
-      </div>
+      <!-- <div class="fw-semibold">x {{ item.quantity }}</div> -->
+<div (click)="removeItem(item)"
+     class="maerail-btn-icons">
+  <span class="material-symbols-outlined text-danger" style="font-size: 18px;">delete</span>
+</div>
+
+      <!-- <span class="material-symbols-outlined text-danger"  (click)="removeItem(item)" style="cursor: pointer;font-size: 18px !important;">delete</span> -->
     </div>
   }
-  
   </div>
-  
-    <!-- Bottom Sticky Section: Summary + Payment -->
-    <div class="mt-auto pt-3" style="background: white;">
-      <hr class="my-2">
-      <div class="d-flex justify-content-between fw-bold">
-        <span>Total</span>
-        <span>${{ total.toFixed(2) }}</span>
-      </div>
-      <!-- <div class="d-flex justify-content-end fw-bold" style="gap: 1rem;">
-        <span>Total : </span>
-        <span>${{ total.toFixed(2) }}</span>
-      </div> -->
-      
-  
-      <div class="mt-3">
-        <!-- <h6>Payment Method</h6> -->
-        <!-- <div class="payment-buttons w-100 mb-3 d-flex flex-wrap gap-2">
-          <button class="btn btn-primary flex-fill button-border" style="background-color: #f6e9f2 !important;">Cash</button>
-          <button class="btn btn-primary flex-fill button-border">Debit Card</button>
-          <button class="btn btn-primary flex-fill button-border">E-Wallet</button>
-        </div> -->
 
-        <div class="payment-method mb-3">
-          <label class="form-label fw-medium mb-2">Payment Method</label>
-          <div class="filter-buttons d-flex gap-4">
-            @for (options of filterOptions; track options) {
-              <button
-                class="btn filter-btn"
-                [class.active]="selectedOption === options"
-                (click)="selectOption(options)"
-              >
-                {{ options }}
-              </button>
-            }
-          </div>
-        </div>
-        
-        
-        <!-- <div class="payment-buttons w-100 mb-3 d-flex flex-wrap gap-2">
-          <button class="btn payment-option">Cash</button>
-          <button class="btn payment-option">Debit Card</button>
-          <button class="btn payment-option">E-Wallet</button>
-          </div> -->
-          
-        <button class="btn btn-primary w-100 button-border" style="border-radius: 12px; padding: 12px;">
-          Pay Bills
-        </button>
-      </div>
+  <!-- Summary -->
+  <div class="pt-3">
+    <div class="d-flex justify-content-between mb-1">
+      <span class="text-muted">Subtotal</span>
+      <span class="fw-semibold">${{ subtotal.toFixed(2) }}</span>
     </div>
-  
+    <div class="d-flex justify-content-between mb-2">
+      <span class="text-muted">Tax 10%</span>
+      <span class="fw-semibold">${{ tax.toFixed(2) }}</span>
+    </div>
+    <div class="d-flex justify-content-between fw-bold mb-3">
+      <span>Total</span>
+      <span>${{ total.toFixed(2) }}</span>
+    </div>
+
+    <button class="btn btn-primary w-100 fw-bold" style="border-radius: 10px; padding: 12px;">
+      Pay ${{ total.toFixed(2) }}
+    </button>
   </div>
-  
+</div>
+
   
 
 
