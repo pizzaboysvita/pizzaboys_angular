@@ -1,38 +1,38 @@
 <div class="accordion" id="accordionExample">
 
     <div class="accordion-item">
-      <h2 class="accordion-header" id="headingOne">
-        <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-          <strong>Search Criteria
-        </strong>
-        </button>
-      </h2>
-      <div id="collapseOne" class="accordion-collapse collapse show"
-           aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-        <div class="accordion-body">
-         
-            <div class="row gy-3">
-                <div class="col-xl-3">
-                    <div class="input-box">
-                        <h6 class="fw-bold p-1"> Staff Name</h6>
-                        <input type="text" placeholder="Search Staff Name">
+        <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                aria-expanded="true" aria-controls="collapseOne">
+                <strong>Search Criteria
+                </strong>
+            </button>
+        </h2>
+        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+            data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+
+                <div class="row gy-3">
+                    <div class="col-xl-3">
+                        <div class="input-box">
+                            <h6 class="fw-bold p-1"> Staff Name</h6>
+                            <input type="text" placeholder="Search Staff Name">
+                        </div>
                     </div>
-                </div>
-                <div class="col-xl-3">
-                    <div class="input-box">
-                        <h6 class="fw-bold p-1">E-Mail</h6>
-                        <input type="text" placeholder="Search E-Mail">
+                    <div class="col-xl-3">
+                        <div class="input-box">
+                            <h6 class="fw-bold p-1">E-Mail</h6>
+                            <input type="text" placeholder="Search E-Mail">
+                        </div>
                     </div>
-                </div>
-                <div class="col-xl-3">
-                    <div class="input-box">
-                        <h6 class="fw-bold p-1">Address</h6>
-                        <input type="text" placeholder="Search Address">
+                    <div class="col-xl-3">
+                        <div class="input-box">
+                            <h6 class="fw-bold p-1">Address</h6>
+                            <input type="text" placeholder="Search Address">
+                        </div>
                     </div>
-                </div>
-                <div class="col-xl-3">
-                    <!-- <div class="col-md-6"> -->
+                    <div class="col-xl-3">
+                        <!-- <div class="col-md-6"> -->
                         <div class="input-box">
                             <h6 class="fw-bold p-1">Status</h6>
                             <select class="form-select" name="carlist">
@@ -40,26 +40,28 @@
                                 <option value="">{{item}}</option>
                                 }
                             </select>
-                        <!-- </div> -->
+                            <!-- </div> -->
+                        </div>
                     </div>
+                    <div class="col-xl-4">
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-animation  new-save-button" type="button"><i
+                                    class="ri-search-line"></i>&nbsp; Search</button>
+                            <button class="btn btn-animation  new-reset-button " type="button"><i
+                                    class="ri-loop-right-line"></i>&nbsp; Reset</button>
+
+                        </div>
+                    </div>
+
                 </div>
-                <div class="col-xl-4">
-                    <div class="d-flex flex-wrap gap-2">
-                        <button class="btn btn-animation  new-save-button" type="button"><i class="ri-search-line"></i>&nbsp; Search</button>
-                        <button class="btn btn-animation  new-reset-button " type="button"><i class="ri-loop-right-line"></i>&nbsp; Reset</button>
-                     
-                    </div>
-                  </div>
-                  
+
+
+
             </div>
-
-          
-
         </div>
-      </div>
     </div>
 
-  </div>
+</div>
 <br>
 
 
@@ -70,22 +72,141 @@
                 <h5>Staff List</h5>
                 <div class="right-options">
                     <ul>
-                        <li><span style="font-size: 14px;color: #787c8b;font-weight: 600;">No.of.Records:50</span></li>
+                        <li><span
+                                style="font-size: 14px;color: #787c8b;font-weight: 600;">No.of.Records:{{this.staff_list.length}}</span>
+                        </li>
                         <li>
                             <a class="new-export-btn" (click)="openNew()">
-                                <i class="ri-add-box-fill" ></i> Add New
+                                <i class="ri-add-box-fill"></i> Add New
                             </a>
                         </li>
                         <li>
-                            <a  class="new-export-btn"><i class="ri-export-fill"></i>   Export</a>
+                            <a class="new-export-btn"><i class="ri-export-fill"></i> Export</a>
                         </li>
-                      
+
                     </ul>
                 </div>
             </div>
             <div body>
-                <app-table [search]="false" [hasCheckbox]="false" [tableConfig]="tableConfig"></app-table>
+                <!-- <app-table [search]="false" [hasCheckbox]="false" [tableConfig]="tableConfig"></app-table> -->
+                <div class="table-responsive theme-scrollbar table-scroll-container">
+                    <div class="dataTables_wrapper no-footer">
+
+                        <table class="table-scroll-container" style="width: 100%;">
+                            <thead>
+                                <tr>
+
+                                    @for (columnHead of tableConfig; track columnHead) {
+                                    <th style="cursor: pointer;">
+                                        <span class="header-content">
+                                            {{ columnHead.title }}
+                                            <img src="assets/images/up_down_arrow.svg" alt="Steam" class="steam">
+                                            <!-- @if (sortColumn === columnHead.key) {
+                              @if (sortDirection === 'asc') {
+                                <span class="material-symbols-outlined">arrow_upward</span>
+                              }
+                              @else if (sortDirection === 'desc') {
+                                <span class="material-symbols-outlined">arrow_downward</span>
+                              }
+                            }
+                            @else {
+                        <img src="assets/images/up_down_arrow.svg" alt="Steam" class="steam">
+                            } -->
+                                        </span>
+                                    </th>
+
+                                    }
+                                    <th style="cursor: pointer;">
+                                        <span class="header-content">
+                                            option
+                                        </span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for(rowdata of staff_list;track rowdata ){
+                                <tr>
+
+
+                                    @for (columnHead of tableConfig; track columnHead) {
+                                    @if (columnHead?.type &&columnHead?.type == 'image') {
+                                    <td>
+                                        @if(rowdata[columnHead.dataField] !=null){
+                                        <ng-container class="table-image">
+                                            <img [src]="rowdata[columnHead.dataField]" class="img-fluid rounded-circle"
+                                                [class]="columnHead.class" alt="User" width="40" height="40" />
+                                        </ng-container>
+                                        }@else{
+                                        <!-- <ng-template> -->
+                                        <div class="avatar-placeholder rounded-circle text-white d-flex align-items-center justify-content-center"
+                                            style="width: 55px; height:55px; font-weight: bold; font-size: 1rem;"
+                                            [ngStyle]="{ 'background-color': getColorForName(rowdata.first_name) }">
+                                            {{ (rowdata.first_name ? rowdata.first_name.charAt(0).toUpperCase() : '?')
+                                            }}
+                                        </div>
+                                        <!-- </ng-template> -->
+                                        }
+                                    </td>
+                                    } @else {
+
+                                    <td>
+                                        {{rowdata[columnHead.dataField]}}
+                                    </td>
+                                    }
+                                    }
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap:15px;">
+                                            <button class="btn btn-sm  p-0" data-action="view" title="View">
+                                                <span class="material-symbols-outlined  text-warning">
+                                                    visibility
+                                                </span>
+                                            </button>
+                                            <button class="btn btn-sm p-0" data-action="edit" title="Edit">
+                                                <span class="material-symbols-outlined text-success">
+                                                    edit
+                                                </span>
+                                            </button>
+                                            <button class="btn btn-sm p-0" data-action="delete" title="Delete" (click)="delete(rowdata)">
+                                                <span class="material-symbols-outlined text-danger">
+                                                    delete
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+
+
             </div>
         </app-card>
     </div>
 </div>
+
+<ng-template #confirmModal let-modal>
+    
+  <div class="modal-content">
+    <div class="modal-header d-block text-center">
+      <h5 class="modal-title w-100" style="font-size: 20px;font-weight: 600;">Confirm Staff Deletion</h5>
+      <button type="button" class="btn-close" (click)="modal.dismiss()">
+        <!-- <i class="fa fa-times"></i> -->
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="text-center">
+         <span style="font-size: 16px;">
+    Are you sure you want to delete this staff member? 
+    </span>
+    <span class="text-danger fw-bold">This action cannot be undone.</span>  </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-sm fw-bold btn-animation" (click)="modal.dismiss()">No</button>
+      <button type="button" class="btn btn-sm fw-bold btn-animation" (click)="onConfirm(modal)">Yes</button>
+    </div>
+  </div>
+</ng-template>

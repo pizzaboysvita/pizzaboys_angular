@@ -39,7 +39,9 @@ export class AccountComponent {
   }
    public validateAndSubmit() {
     if (this.accountForm.invalid) {
-      this.accountForm.markAllAsTouched();
+        Object.keys(this.accountForm.controls).forEach(key => {
+        this.accountForm.get(key)?.markAsTouched();
+      });
       return false; // ❌ Form invalid
     }
 

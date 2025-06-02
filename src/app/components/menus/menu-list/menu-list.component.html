@@ -26,22 +26,26 @@
                     
                     <ul class="nav setting-main-box sticky theme-scrollbar" style="background-color: rgb(240 240 240);" >
                         <li style="font-weight: 500;"> Menu Type:</li>
-                        <li class="position-relative d-flex align-items-center">
-                            <!-- <select class="form-select me-2">
-                              @for(item of menuList; track item; ) {
-                                <option>{{ item.name }}</option>
-                              }
-                            </select>
-                           -->
-                           <select class="form-select me-2" [(ngModel)]="selectedMenuId" (change)="selectedTabIndex = 0">
-                            @for(item of menuList; track item) {
-                              <option [value]="item.id">{{ item.name }}</option>
-                            }
-                          </select>
-                            <!-- Icons -->
-                            <i class="ri-edit-line me-2 cursor-pointer"></i>
-                            <i class="ri-delete-bin-line cursor-pointer"></i>
-                          </li>
+                <li class="position-relative d-flex align-items-center">
+  <select class="form-select" [(ngModel)]="selectedMenuId" (change)="selectedTabIndex = 0">
+    @for(item of menuList; track item) {
+      <option [value]="item.id">{{ item.name }}</option>
+    }
+  </select>
+
+  <!-- Icon container pushed to right -->
+  <div class="d-flex ms-auto" style="position: relative; left: 20px;
+    ">
+    <div class="icon-box d-flex align-items-center justify-content-center me-2">
+      <i class="ri-edit-line cursor-pointer" style="margin-right: 0px;"></i>
+    </div>
+
+    <div class="icon-box d-flex align-items-center justify-content-center">
+      <i class="ri-delete-bin-line cursor-pointer" style="margin-right: 0px;"></i>
+    </div>
+  </div>
+</li>
+
                           @for (item of tabs; track item; let i = $index) {
                             <li>
                               <button class="nav-link" 
