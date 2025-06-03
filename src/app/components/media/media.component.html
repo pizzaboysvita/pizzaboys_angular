@@ -63,7 +63,7 @@
 <h5 class="mb-4 fw-bold">Most Ordered</h5>
 <div class="row gx-2 gy-0">
   @for (item of itemsList; track item) {
-    <div class="col-md-4" style="margin-top: -15px !important;">
+    <div class="col-md-3" style="margin-top: -15px !important;">
       <div class="card flex-row align-items-center p-2 shadow-sm h-100"  style="height: 110px !important;" (click)="openIngredientsPopup(item)">
         
         <!-- Left Side: Image -->
@@ -106,7 +106,7 @@
 <h5 class="mb-4 fw-bold">Popular Dishes</h5>
 <div class="row gx-2 gy-0">
   @for (item of itemsList; track item) {
-    <div class="col-md-4" style="margin-top: -15px !important;">
+    <div class="col-md-3" style="margin-top: -15px !important;">
       <div class="card flex-row align-items-center p-2 shadow-sm h-100"  style="height: 110px !important;">
         
         <!-- Left Side: Image -->
@@ -117,7 +117,7 @@
         <!-- Right Side: Text and Actions -->
         <div class="flex-grow-1">
           <h6 class="mb-1">{{ item.name }}</h6>
-          <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex justify-content-between align-items-center mb-1">
             <span class="fw-bold">${{ item.price }}</span>
 
             <!-- Quantity -->
@@ -135,7 +135,10 @@
               </ng-container>
 
             </div> -->
-            <div class="d-flex align-items-center gap-1 quantity-controls">
+           
+
+          </div>
+           <div class="d-flex align-items-end gap-1 quantity-controls" style="justify-content: end;">
   <!-- Show only + if quantity is 0 or undefined -->
   <button 
     *ngIf="!item.quantity || item.quantity === 0" 
@@ -151,8 +154,6 @@
     <button class="qty-btn" (click)="increaseItem(item)">+</button>
   </ng-container>
 </div>
-
-          </div>
         </div>
 
       </div>
@@ -177,6 +178,8 @@
       <div class="modal-header d-flex justify-content-between align-items-center border-0" style="color: black;font-size: x-large !important;">
         <h5 class="modal-title mb-0 fw-bold " style="font-size: x-large;">{{ selectedItem.name }}</h5>
         <div class="d-flex align-items-center gap-3">
+      <button type="button" class="btn-close" style="top: 5px !important; font-size: 16px !important;" aria-label="Close" (click)="closePopup()"></button>
+
           <span class="text-dark fw-bold ">${{ selectedItem.price }}</span>
           <!-- <button
             type="button"
@@ -184,7 +187,6 @@
             aria-label="Close"
             (click)="closePopup()"
           ></button> -->
-      <button type="button" class="btn-close" aria-label="Close" (click)="closePopup()"></button>
 
         </div>
       </div>
