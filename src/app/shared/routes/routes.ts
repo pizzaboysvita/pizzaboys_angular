@@ -13,10 +13,7 @@ export const content: Routes = [
         path: 'product',
         loadChildren: () => import('../../components/product/product.routes'),
     },
-    {
-        path: 'category',
-        loadChildren: () => import('../../components/category/category.routes'),
-    },
+   
    
     {
         path: 'restaurants',
