@@ -19,19 +19,13 @@ export const content: Routes = [
         path: 'restaurants',
         loadChildren: () => import('../../components/restaurants/restaurants.routes'),
     },
-    {
-        path: 'drivers',
-        loadChildren: () => import('../../components/drivers/drivers.routes'),
-    },
+   
    
     {
         path: 'users',
         loadChildren: () => import('../../components/users/users.routes'),
     },
-    {
-        path: 'roles',
-        loadChildren: () => import('../../components/roles/roles.routes'),
-    },
+   
     {
         path: 'media',
         loadChildren: () => import('../../components/media/media.routes'),
