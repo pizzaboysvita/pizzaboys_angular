@@ -46,11 +46,7 @@ export const content: Routes = [
     },
    
    
-    {
-        path: 'product-review',
-        loadChildren: () => import('../../components/product-review/product-review.routes'),
-    },
-
+   
     {
         path: 'settings/profile-setting',
         loadChildren: () => import('../../components/setting/setting.routes'),
