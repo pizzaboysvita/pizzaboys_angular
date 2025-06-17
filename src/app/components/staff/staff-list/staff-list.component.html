@@ -88,99 +88,23 @@
                 </div>
             </div>
             <div body>
-                <!-- <app-table [search]="false" [hasCheckbox]="false" [tableConfig]="tableConfig"></app-table> -->
-                <div class="table-responsive theme-scrollbar table-scroll-container">
-                    <div class="dataTables_wrapper no-footer">
+              <div style="overflow: auto;">
+                   
 
-                        <table class="table-scroll-container" style="width: 100%;">
-                            <thead>
-                                <tr>
+                 <ag-grid-angular
+  class="ag-theme-alpine font-family my-grid"
+    style="width: 100%;" 
+  [columnDefs]="tableConfig"
+  [rowData]="staff_list"
+  [domLayout]="'autoHeight'"
+  [pagination]="true"
+  [paginationPageSize]="10"[gridOptions]="gridOptions"
+  [suppressColumnVirtualisation]="true"
+  [defaultColDef]="{ flex: 1, minWidth: 100, sortable: true }"
+>
+</ag-grid-angular>
 
-                                    @for (columnHead of tableConfig; track columnHead) {
-                                    <th style="cursor: pointer;">
-                                        <span class="header-content">
-                                            {{ columnHead.title }}
-                                            <img src="assets/images/up_down_arrow.svg" alt="Steam" class="steam">
-                                            <!-- @if (sortColumn === columnHead.key) {
-                              @if (sortDirection === 'asc') {
-                                <span class="material-symbols-outlined">arrow_upward</span>
-                              }
-                              @else if (sortDirection === 'desc') {
-                                <span class="material-symbols-outlined">arrow_downward</span>
-                              }
-                            }
-                            @else {
-                        <img src="assets/images/up_down_arrow.svg" alt="Steam" class="steam">
-                            } -->
-                                        </span>
-                                    </th>
-
-                                    }
-                                    <th style="cursor: pointer;">
-                                        <span class="header-content">
-                                            option
-                                        </span>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for(rowdata of staff_list;track rowdata ){
-                                <tr>
-
-
-                                    @for (columnHead of tableConfig; track columnHead) {
-                                    @if (columnHead?.type &&columnHead?.type == 'image') {
-                                    <td>
-                                        @if(rowdata[columnHead.dataField] !=null){
-                                        <ng-container class="table-image">
-                                            <img [src]="rowdata[columnHead.dataField]" class="img-fluid rounded-circle"
-                                                [class]="columnHead.class" alt="User" width="40" height="40" />
-                                        </ng-container>
-                                        }@else{
-                                        <!-- <ng-template> -->
-                                        <div class="avatar-placeholder rounded-circle text-white d-flex align-items-center justify-content-center"
-                                            style="width: 55px; height:55px; font-weight: bold; font-size: 1rem;"
-                                            [ngStyle]="{ 'background-color': getColorForName(rowdata.first_name) }">
-                                            {{ (rowdata.first_name ? rowdata.first_name.charAt(0).toUpperCase() : '?')
-                                            }}
-                                        </div>
-                                        <!-- </ng-template> -->
-                                        }
-                                    </td>
-                                    } @else {
-
-                                    <td>
-                                        {{rowdata[columnHead.dataField]}}
-                                    </td>
-                                    }
-                                    }
-                                    <td>
-                                        <div style="display: flex; align-items: center; gap:15px;">
-                                            <button class="btn btn-sm  p-0" data-action="view" title="View">
-                                                <span class="material-symbols-outlined  text-warning">
-                                                    visibility
-                                                </span>
-                                            </button>
-                                            <button class="btn btn-sm p-0" data-action="edit" title="Edit">
-                                                <span class="material-symbols-outlined text-success">
-                                                    edit
-                                                </span>
-                                            </button>
-                                            <button class="btn btn-sm p-0" data-action="delete" title="Delete" (click)="delete(rowdata)">
-                                                <span class="material-symbols-outlined text-danger">
-                                                    delete
-                                                </span>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                }
-
-                            </tbody>
-
-                        </table>
-                    </div>
-                </div>
+                  </div>
 
 
             </div>

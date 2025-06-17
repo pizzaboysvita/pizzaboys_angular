@@ -5,6 +5,7 @@ import { FooterComponent } from '../../footer/footer.component';
 import { RouterModule } from '@angular/router';
 import { NavService } from '../../../services/nav.service';
 import { CustomizerComponent } from '../../customizer/customizer.component';
+import { SessionStorageService } from '../../../services/session-storage.service';
 
 @Component({
     selector: 'app-content',
@@ -16,11 +17,11 @@ import { CustomizerComponent } from '../../customizer/customizer.component';
 
 export class ContentComponent {
   users:any
-    constructor(public navService: NavService) {
+    constructor(public navService: NavService,private sessionDetails:SessionStorageService) {
         if (window.innerWidth < 1185) {
             navService.collapseSidebar = true;
         }
-        const userData = localStorage.getItem("user");
+        const userData = this.sessionDetails.getsessionStorage('loginDetails');
         if (userData !== null) {
           this.users = JSON.parse(userData);
           console.log(this.users,"No user data found in localStorage.");

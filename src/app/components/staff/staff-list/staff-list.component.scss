@@ -42,3 +42,9 @@
     background: #b1743c !important;  
     cursor: pointer !important;
   }
+
+.ag-row .ag-cell {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+}

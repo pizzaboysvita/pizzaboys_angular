@@ -13,7 +13,7 @@ export const routes: Routes = [
         pathMatch: 'full'
     },
     {
-        path: 'auth/login',
+        path: 'login',
         component: LoginComponent,
     },
     {

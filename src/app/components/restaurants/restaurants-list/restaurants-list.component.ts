@@ -38,9 +38,9 @@ export class RestaurantsListComponent {
   storeData: any;
   constructor(private router: Router, private apis: ApisService, private modalService: NgbModal, private session: SessionStorageService) { }
   modules = [ClientSideRowModelModule];
-  public products = ProductsList;
+
   stausList = ['Active', 'In-Active']
-  columnDefs: ColDef<RowData>[] = [    // <-- Important to give <RowData> here!
+  columnDefs: ColDef<RowData>[] = [   
     {
       field: 'store_name', headerName: 'Store Name', sortable: true,
       suppressMenu: true,
