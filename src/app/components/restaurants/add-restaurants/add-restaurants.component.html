@@ -9,7 +9,7 @@
           <div class="input-box">
             <h6 class="f-w-600 p-1">Store Name</h6>
             <input type="text" formControlName="storeName" placeholder="Enter Store Name" />
-            @if (storeForm.get('storeName')?.touched && storeForm.get('storeName')?.invalid) {
+            @if (storeForm.get('storeName')?.touched && storeForm.get('storeName')?.errors?.['required']) {
               <div class="text-danger">Store Name is required</div>
             }
           </div>

@@ -45,12 +45,12 @@ this.apis.postApi(AppConstants.api_end_points.log_api,reqboy).subscribe((data:an
     console.log(data.staff_id )
     this.sessionStorage.setsessionStorage('loginDetails',JSON.stringify(data))
      this.sessionStorage.setsessionStorage('islogin',true)
-    if(data.staff_id =='-1'){
+    // if(data.staff_id =='-1'){
       console.log("innnnnnnn")
       // this.router.navigate(["store-dashboard"]);
       
       this.router.navigate(["/store-dashboard"]);
-    }
+    // }
   }
 })
 

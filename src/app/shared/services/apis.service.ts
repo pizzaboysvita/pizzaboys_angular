@@ -6,7 +6,7 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class ApisService {
-basesurl='http://78.142.47.247:3002'
+basesurl='http://localhost:3002'
   constructor() { }
  private http = inject(HttpClient);
  isLoading = new BehaviorSubject<boolean>(false);

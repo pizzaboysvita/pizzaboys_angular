@@ -15,8 +15,8 @@ import { ColDef, ModuleRegistry } from '@ag-grid-community/core';
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
-  staff_id: string;
-  user_image: string;
+  user_id: string;
+  profiles: string;
   phone_number: number;
   fullname: string;
   status: string
@@ -39,28 +39,17 @@ export class StaffListComponent {
 rowHeight: 60 
   };
       modules = [ClientSideRowModelModule];
-    // public tableConfig= [
-     
-    //       { title: "Staff Id", dataField: 'staff_id', class: 'f-w-600' },
-    //       { title: "Staff Photo", dataField: 'user_image', type: 'image', class: 'rounded' },
-    //       { title: "Name", dataField: 'fullname' },
-    //       { title: "Email", dataField: 'email', class: 'f-w-600' },
-    //       { title: "Phone", dataField: 'phone_number' },
-    //        { title: "Address", dataField: 'address' },
-    //        { title: "Status", dataField: 'status' },
-    //         // { title: "Options", type: "status" },
-       
-    //   ]
+ 
       tableConfig: ColDef<RowData>[] = [
   {
-    field: 'staff_id',
+    field: 'user_id',
     headerName: 'Staff Id',
     sortable: true,
     suppressMenu: true,
     unSortIcon: true,
   },
   {
-    field: 'user_image',
+    field: 'profiles',
     headerName: 'Staff Photo',
     sortable: true,
     suppressMenu: true,
@@ -72,7 +61,7 @@ rowHeight: 60
 
       if (image) {
         return `
-          <img src="${image}" class="img-fluid rounded-circle" width="40" height="40" alt="${firstName}" />
+          <img src="${image}" class="img-fluid rounded-circle" style="width: 40px; height:40px;" width="40" height="40" alt="${firstName}" />
         `;
       } else {
         // fallback to initials
