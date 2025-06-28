@@ -1,0 +1,240 @@
+<app-card [header]="true" [body]="true">
+  <h3 header>{{ isViewMode ? "View Staff" : "Edit Staff" }}</h3>
+
+  <div body>
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-3">
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          [ngClass]="{ active: activeTab === 'details' }"
+          (click)="activeTab = 'details'"
+        >
+          Staff Details
+        </a>
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          [ngClass]="{ active: activeTab === 'permissions' }"
+          (click)="activeTab = 'permissions'"
+        >
+          Permissions
+        </a>
+      </li>
+    </ul>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="!formReady" class="text-center my-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
+    <form
+      *ngIf="activeTab === 'details' && formReady"
+      [formGroup]="staffForm"
+      autocomplete="off"
+    >
+      <div class="row">
+        <div class="col-md-3 d-flex justify-content-center">
+          <img
+            [src]="profileImage || defaultImage"
+            class="img-thumbnail"
+            style="width: 220px; height: 220px;"
+            alt="Profile"
+
+          />
+        </div>
+
+        <!-- Form Fields -->
+        <div class="col-md-9">
+          <div class="row gy-3">
+            <div class="col-md-6">
+              <label for="firstName">First Name*</label>
+              <input
+                type="text"
+                id="firstName"
+                class="form-control"
+                formControlName="firstName"
+                [readonly]="isViewMode"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label for="lastName">Last Name</label>
+              <input
+                type="text"
+                id="lastName"
+                class="form-control"
+                formControlName="lastName"
+                [readonly]="isViewMode"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label for="phone">Phone Number*</label>
+              <input
+                type="text"
+                id="phone"
+                class="form-control"
+                formControlName="phone"
+                [readonly]="isViewMode"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label for="email">Email*</label>
+              <input
+                type="email"
+                id="email"
+                class="form-control"
+                formControlName="email"
+                [readonly]="isViewMode"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label for="address">Address</label>
+              <input
+                type="text"
+                id="address"
+                class="form-control"
+                formControlName="address"
+                [readonly]="isViewMode"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label for="country">Country</label>
+              <input
+                type="text"
+                id="country"
+                class="form-control"
+                formControlName="country"
+                [readonly]="isViewMode"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label for="state">State</label>
+              <input
+                type="text"
+                id="state"
+                class="form-control"
+                formControlName="state"
+                [readonly]="isViewMode"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label for="city">City</label>
+              <input
+                type="text"
+                id="city"
+                class="form-control"
+                formControlName="city"
+                [readonly]="isViewMode"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label for="pos_pin">POS Pin Number</label>
+              <input
+                type="text"
+                id="pos_pin"
+                class="form-control"
+                formControlName="pos_pin"
+                [readonly]="isViewMode"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label>Status</label><br />
+              <label class="form-switch">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  [checked]="staffForm.get('status')?.value === true"
+                  (change)="onStatusToggle($event)"
+                  [disabled]="isViewMode"
+                />
+                <span class="form-check-label">
+                  {{ staffForm.get("status")?.value ? "Active" : "Inactive" }}
+                </span>
+              </label>
+            </div>
+
+            <div class="col-md-6">
+              <label for="role">Role*</label>
+              <select
+                id="role"
+                class="form-select"
+                formControlName="role"
+                [disabled]="isViewMode"
+              >
+                <option value="" disabled>Select Role</option>
+                <option *ngFor="let role of rolesList" [value]="role.id">
+                  {{ role.name }}
+                </option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label for="store">Store*</label>
+              <select
+                id="store"
+                class="form-select"
+                formControlName="store"
+                [disabled]="isViewMode"
+              >
+                <option value="" disabled>Select Store</option>
+                <option *ngFor="let store of storesList" [value]="store.id">
+                  {{ store.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="mt-4 text-end" *ngIf="!isViewMode">
+        <button type="button" class="btn btn-warning me-2" (click)="onReset()">
+          <i class="ri-loop-right-line"></i> Reset
+        </button>
+        <button type="button" class="btn btn-primary" (click)="onUpdate()">
+          <i class="ri-save-3-line"></i> Update
+        </button>
+      </div>
+    </form>
+
+    <!-- Permissions Form -->
+    <form
+      *ngIf="activeTab === 'permissions' && formReady"
+      [formGroup]="permissionForm"
+    >
+      <div
+        *ngFor="let section of managementSections"
+        class="mb-4 border rounded p-3"
+      >
+        <h5>{{ section.title }}</h5>
+        <small class="text-muted">{{ section.description }}</small>
+        <div class="row mt-3">
+          <div class="col-md-3" *ngFor="let permission of section.permissions">
+            <div class="form-check">
+              <input
+                type="checkbox"
+                class="form-check-input"
+                [formControlName]="permission"
+                [formGroup]="getPermissionGroup(section.key)"
+                [disabled]="isViewMode"
+              />
+              <label class="form-check-label">{{ permission }}</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</app-card>

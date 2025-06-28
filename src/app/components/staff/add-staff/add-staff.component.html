@@ -1,5 +1,4 @@
 <form [formGroup]="staffForm">
-
   <div class="row">
     <div class="col-12">
       <div class="row">
@@ -8,126 +7,208 @@
             <h5 header>Create New Staff</h5>
             <div class="row" body>
               <div class="col-12">
-                <ul class="nav nav-pills flex-nowrap mb-3" ngbNav #nav="ngbNav" [(activeId)]="active">
+                <ul
+                  class="nav nav-pills flex-nowrap mb-3"
+                  ngbNav
+                  #nav="ngbNav"
+                  [(activeId)]="active"
+                >
                   <li [ngbNavItem]="1" class="nav-item m-0">
-                    <button ngbNavLink class="nav-link" type="button">Staff Details</button>
+                    <button ngbNavLink class="nav-link" type="button">
+                      Staff Details
+                    </button>
                     <ng-template ngbNavContent>
                       <div class="input-items" [formGroup]="staffForm">
                         <div class="row gy-3">
+                          <div class="col-xxl-3 col-xl-4 col-md-4 col-12">
+                            <label class="hoverable" for="fileInput">
+                              <img
+                                class="img1"
+                                width="100%"
+                                [src]="
+                                  uploadImagUrl
+                                    ? uploadImagUrl
+                                    : 'https://www.w3schools.com/howto/img_avatar.png'
+                                "
+                              />
 
-                       <div class="col-xxl-3 col-xl-4 col-md-4 col-12">
-  <label class="hoverable" for="fileInput">
-    <img class="img1" width="100%"
-         [src]="uploadImagUrl ? uploadImagUrl : 'https://www.w3schools.com/howto/img_avatar.png'">
-
-    <!-- <div class="hover-text" style="display: none;">
+                              <!-- <div class="hover-text" style="display: none;">
       Choose file
     </div> -->
 
-    <div class="background"></div>
-  </label>
-  <br />
-  <input autocomplete="off" id="fileInput" type="file" accept="image/*"style="display: none;"
-         (change)="onSelectFile($event)">
-</div>
+                              <div class="background"></div>
+                            </label>
+                            <br />
+                            <input
+                              autocomplete="off"
+                              id="fileInput"
+                              type="file"
+                              accept="image/*"
+                              style="display: none"
+                              (change)="onSelectFile($event)"
+                            />
+                          </div>
 
                           <div class="col-xxl-9 col-xl-8 col-md-8 col-12">
+                            <div class="row">
+                              <!-- First Name -->
+                              <div class="col-xxl-6 col-xl-4 col-md-6 col-12">
+                                <div class="input-box">
+                                  <h6>
+                                    First Name<span class="text-danger">*</span>
+                                  </h6>
+                                  <input
+                                    type="text"
+                                    formControlName="firstName"
+                                    placeholder="Enter First Name"
+                                    (input)="capitalizeWords_firstName($event)"
+                                  />
+                                  @if (staffForm.get('firstName')?.touched &&
+                                  staffForm.get('firstName')?.invalid) {
+                                  <div class="text-danger">
+                                    First name is required.
+                                  </div>
+                                  } @if
+                                  ((staffForm.get('firstName')?.touched||staffForm.get('firstName')?.dirty)
+                                  &&
+                                  staffForm.get('firstName')?.hasError('pattern'))
+                                  {
+                                  <div class="text-danger">
+                                    Only alphabets are allowed.
+                                  </div>
+                                  }
+                                </div>
+                              </div>
 
-                        <div class="row">
+                              <!-- Last Name -->
+                              <div class="col-xxl-6 col-xl-4 col-md-6 col-12">
+                                <div class="input-box">
+                                  <h6>Last Name</h6>
+                                  <input
+                                    type="text"
+                                    formControlName="lastName"
+                                    placeholder="Enter Last Name"
+                                    (input)="capitalizeWords_lastName($event)"
+                                  />
+                                  @if ((staffForm.get('lastName')?.touched
+                                  ||staffForm.get('lastName')?.dirty) &&
+                                  staffForm.get('lastName')?.hasError('pattern'))
+                                  {
+                                  <div class="text-danger">
+                                    Only alphabets are allowed.
+                                  </div>
+                                  }
+                                </div>
+                              </div>
 
-                       
-                          <!-- First Name -->
-                          <div class="col-xxl-6 col-xl-4 col-md-6 col-12">
-                            <div class="input-box">
-                              <h6>First Name<span class="text-danger">*</span></h6>
-                              <input type="text" formControlName="firstName" placeholder="Enter First Name"
-                                (input)="capitalizeWords_firstName($event)" />
-                              @if (staffForm.get('firstName')?.touched && staffForm.get('firstName')?.invalid) {
-                              <div class="text-danger">First name is required.</div>
-                              }
-                              @if ((staffForm.get('firstName')?.touched||staffForm.get('firstName')?.dirty) &&
-                              staffForm.get('firstName')?.hasError('pattern')) {
-                              <div class="text-danger">Only alphabets are allowed.</div>
-                              }
-                            </div>
-                          </div>
-
-                          <!-- Last Name -->
-                          <div class="col-xxl-6 col-xl-4 col-md-6 col-12">
-                            <div class="input-box">
-                              <h6>Last Name</h6>
-                              <input type="text" formControlName="lastName" placeholder="Enter Last Name"
-                                (input)="capitalizeWords_lastName($event)" />
-                              @if ((staffForm.get('lastName')?.touched ||staffForm.get('lastName')?.dirty) &&
-                              staffForm.get('lastName')?.hasError('pattern')) {
-                              <div class="text-danger">Only alphabets are allowed.</div>
-                              }
-                            </div>
-                          </div>
-
-                          <!-- Phone Number -->
-                          <div class="col-xxl-6 col-xl-4 col-md-6 col-12">
-                            <div class="input-box">
-                              <h6>Phone Number<span class="text-danger">*</span></h6>
-                              <input type="text" formControlName="phone" placeholder="Enter Phone Number" />
-                              <!-- @if (staffForm.get('phone')?.touched && staffForm.get('phone')?.invalid) {
+                              <!-- Phone Number -->
+                              <div class="col-xxl-6 col-xl-4 col-md-6 col-12">
+                                <div class="input-box">
+                                  <h6>
+                                    Phone Number<span class="text-danger"
+                                      >*</span
+                                    >
+                                  </h6>
+                                  <input
+                                    type="text"
+                                    formControlName="phone"
+                                    placeholder="Enter Phone Number"
+                                  />
+                                  <!-- @if (staffForm.get('phone')?.touched && staffForm.get('phone')?.invalid) {
           <div class="text-danger">Valid 10-digit phone is required</div>
         } -->
-                              @if (staffForm.get('phone')?.touched && staffForm.get('phone')?.hasError('required')) {
-                              <div class="text-danger">Phone Nuber is required</div>
-                              }
-                            </div>
-                          </div>
+                                  @if (staffForm.get('phone')?.touched &&
+                                  staffForm.get('phone')?.hasError('required'))
+                                  {
+                                  <div class="text-danger">
+                                    Phone Nuber is required
+                                  </div>
+                                  }
+                                </div>
+                              </div>
 
-                          <!-- Email -->
-                          <div class="col-xxl-6 col-xl-4 col-md-6 col-12">
-                            <div class="input-box">
-                              <h6>Email<span class="text-danger">*</span></h6>
-                              <input type="email" formControlName="email" placeholder="Enter Email" />
-                              @if (staffForm.get('email')?.touched && staffForm.get('email')?.hasError('required')) {
-                              <div class="text-danger">Email is required</div>
-                              }
-                              @if ((staffForm.get('email')?.touched ||staffForm.get('email')?.dirty) &&
-                              staffForm.get('email')?.hasError('pattern')) {
-                              <div class="text-danger">Enter valid email is required</div>
-                              }
-                            </div>
-                          </div>
-                          
-                          <!-- Password -->
-                          <div class="col-xxl-6 col-xl-4 col-md-6 col-12">
-                            <div class="input-box">
-                              <h6>Password<span class="text-danger">*</span></h6>
-                              <input type="password" formControlName="password" placeholder="Enter Password" />
-                              @if (staffForm.get('password')?.touched && staffForm.get('password')?.invalid) {
-                              <div class="text-danger">Min 6 characters required</div>
-                              }
-                            </div>
-                          </div>
+                              <!-- Email -->
+                              <div class="col-xxl-6 col-xl-4 col-md-6 col-12">
+                                <div class="input-box">
+                                  <h6>
+                                    Email<span class="text-danger">*</span>
+                                  </h6>
+                                  <input
+                                    type="email"
+                                    formControlName="email"
+                                    placeholder="Enter Email"
+                                  />
+                                  @if (staffForm.get('email')?.touched &&
+                                  staffForm.get('email')?.hasError('required'))
+                                  {
+                                  <div class="text-danger">
+                                    Email is required
+                                  </div>
+                                  } @if ((staffForm.get('email')?.touched
+                                  ||staffForm.get('email')?.dirty) &&
+                                  staffForm.get('email')?.hasError('pattern')) {
+                                  <div class="text-danger">
+                                    Enter valid email is required
+                                  </div>
+                                  }
+                                </div>
+                              </div>
 
-                          <!-- Confirm Password -->
-                          <div class="col-xxl-6 col-xl-4 col-md-6 col-12">
-                            <div class="input-box">
-                              <h6>Confirm Password<span class="text-danger">*</span></h6>
-                              <input type="password" formControlName="confirmPassword"
-                                placeholder="Enter Confirm Password" />
-                              @if (staffForm.get('confirmPassword')?.touched &&
-                              staffForm.get('confirmPassword')?.invalid) {
-                              <div class="text-danger">Passwords must match</div>
-                              }
+                              <!-- Password -->
+                              <div class="col-xxl-6 col-xl-4 col-md-6 col-12">
+                                <div class="input-box">
+                                  <h6>
+                                    Password<span class="text-danger">*</span>
+                                  </h6>
+                                  <input
+                                    type="password"
+                                    formControlName="password"
+                                    placeholder="Enter Password"
+                                  />
+                                  @if (staffForm.get('password')?.touched &&
+                                  staffForm.get('password')?.invalid) {
+                                  <div class="text-danger">
+                                    Min 6 characters required
+                                  </div>
+                                  }
+                                </div>
+                              </div>
+
+                              <!-- Confirm Password -->
+                              <div class="col-xxl-6 col-xl-4 col-md-6 col-12">
+                                <div class="input-box">
+                                  <h6>
+                                    Confirm Password<span class="text-danger"
+                                      >*</span
+                                    >
+                                  </h6>
+                                  <input
+                                    type="password"
+                                    formControlName="confirmPassword"
+                                    placeholder="Enter Confirm Password"
+                                  />
+                                  @if (staffForm.get('confirmPassword')?.touched
+                                  && staffForm.get('confirmPassword')?.invalid)
+                                  {
+                                  <div class="text-danger">
+                                    Passwords must match
+                                  </div>
+                                  }
+                                </div>
+                              </div>
                             </div>
                           </div>
-                           </div>
-                           
-  </div>
                         </div>
                         <div class="row">
-
                           <!-- Address -->
                           <div class="col-xxl-6 col-xl-4 col-md-6 col-12">
                             <div class="input-box">
                               <h6>Address</h6>
-                              <input type="text" formControlName="address" placeholder="Enter Address" />
+                              <input
+                                type="text"
+                                formControlName="address"
+                                placeholder="Enter Address"
+                              />
                             </div>
                           </div>
 
@@ -135,7 +216,11 @@
                           <div class="col-xxl-6 col-xl-4 col-md-6 col-12">
                             <div class="input-box">
                               <h6>Country</h6>
-                              <input type="text" formControlName="country" placeholder="Enter Country" />
+                              <input
+                                type="text"
+                                formControlName="country"
+                                placeholder="Enter Country"
+                              />
                             </div>
                           </div>
 
@@ -143,7 +228,11 @@
                           <div class="col-xxl-6 col-xl-4 col-md-6 col-12">
                             <div class="input-box">
                               <h6>State</h6>
-                              <input type="text" formControlName="state" placeholder="Enter State" />
+                              <input
+                                type="text"
+                                formControlName="state"
+                                placeholder="Enter State"
+                              />
                             </div>
                           </div>
 
@@ -151,7 +240,11 @@
                           <div class="col-xxl-6 col-xl-4 col-md-6 col-12">
                             <div class="input-box">
                               <h6>City</h6>
-                              <input type="text" formControlName="city" placeholder="Enter City" />
+                              <input
+                                type="text"
+                                formControlName="city"
+                                placeholder="Enter City"
+                              />
                             </div>
                           </div>
 
@@ -159,77 +252,106 @@
                           <div class="col-xxl-6 col-xl-4 col-md-6 col-12">
                             <div class="input-box">
                               <h6>POS Pin Number</h6>
-                              <input type="password" formControlName="posPin" placeholder="Enter POS Pin Number" />
+                              <input
+                                type="password"
+                                formControlName="posPin"
+                                placeholder="Enter POS Pin Number"
+                              />
                             </div>
                           </div>
-                            <div class="col-xxl-6 col-xl-4 col-md-6 col-12">
+                          <div class="col-xxl-6 col-xl-4 col-md-6 col-12">
                             <div class="input-box">
                               <h6>status</h6>
-                             <label class="switch">
-              <input type="checkbox" formControlName="status"/>
-              <span class="slider round"></span>
-            </label>
+                              <label class="switch">
+                                <input
+                                  type="checkbox"
+                                  formControlName="status"
+                                />
+                                <span class="slider round"></span>
+                              </label>
                             </div>
                           </div>
                         </div>
                       </div>
-
                     </ng-template>
                   </li>
                   <li [ngbNavItem]="2" class="nav-item m-0">
-                    <button ngbNavLink class="nav-link" type="button">Permission</button>
+                    <button ngbNavLink class="nav-link" type="button">
+                      Permission
+                    </button>
                     <ng-template ngbNavContent>
-<div [formGroup]="permissionForm">
-  
-  <div class="col-12">
-    <div class="input-box">
-      <h6 class="f-w-600 p-1">Store List</h6>
-      <ng-select 
-        [items]="storesList" 
-        [searchable]="true" 
-        [multiple]="false" formControlName="store"
-        bindLabel="store_name" 
-        bindValue="store_id"
-        placeholder="Select from the dropdown or type to search"
-        >
-      </ng-select>
-    </div>
-  </div>
-  <h3 class="p-1" style="padding-top: 9px !important;padding-bottom: 9px !important;">Restriction Presets</h3>
-  <div class="presets mb-3 nav-pills">
-    @for (role of rolesList; track role) {
-    <button type="button" class="mb-3" (click)="applyPreset(role)" [class.active]="selectedPreset === role.role_name">
-      {{ role.role_name }}
-    </button>
-    }
-  </div>
+                      <div [formGroup]="permissionForm">
+                        <div class="col-12">
+                          <div class="input-box">
+                            <h6 class="f-w-600 p-1">Store List</h6>
+                            <ng-select
+                              [items]="storesList"
+                              [searchable]="true"
+                              [multiple]="false"
+                              formControlName="store"
+                              bindLabel="store_name"
+                              bindValue="store_id"
+                              placeholder="Select from the dropdown or type to search"
+                            >
+                            </ng-select>
+                          </div>
+                        </div>
+                        <h3
+                          class="p-1"
+                          style="
+                            padding-top: 9px !important;
+                            padding-bottom: 9px !important;
+                          "
+                        >
+                          Restriction Presets
+                        </h3>
+                        <div class="presets mb-3 nav-pills">
+                          @for (role of rolesList; track role) {
+                          <button
+                            type="button"
+                            class="mb-3"
+                            (click)="applyPreset(role)"
+                            [class.active]="selectedPreset === role.role_name"
+                          >
+                            {{ role.role_name }}
+                          </button>
+                          }
+                        </div>
 
-  @for (section of managementSections; track section) {
-  <div class="management-section nav-pills">
-    <h3 class="p-1" >{{ section.title }}</h3>
-    <div class="section">
-      <div [formGroupName]="section.key" class="permissions">
-        <div class="row gy-3 mb-4">
-          @for (permission of section.permissions; track permission) {
-          <div class="switch-wrapper col-sm-3">
-            <label class="switch">
-              <input type="checkbox" [formControlName]="permission" />
-              <span class="slider round"></span>
-            </label>
-            <span class="label-text">{{ permission }}</span>
-          </div>
+                        @for (section of managementSections; track section) {
+                        <div class="management-section nav-pills">
+                          <h3 class="p-1">{{ section.title }}</h3>
+                          <div class="section">
+                            <div
+                              [formGroupName]="section.key"
+                              class="permissions"
+                            >
+                              <div class="row gy-3 mb-4">
+                                @for (permission of section.permissions; track
+                                permission) {
+                                <div class="switch-wrapper col-sm-3">
+                                  <label class="switch">
+                                    <input
+                                      type="checkbox"
+                                      [formControlName]="permission"
+                                    />
+                                    <span class="slider round"></span>
+                                  </label>
+                                  <span class="label-text">{{
+                                    permission
+                                  }}</span>
+                                </div>
 
-          }
-        </div>
-
-      </div>
-      <div class="description">
-        <p>{{ section.description }}</p>
-      </div>
-    </div>
-  </div>
-  }
-</div>
+                                }
+                              </div>
+                            </div>
+                            <div class="description">
+                              <p>{{ section.description }}</p>
+                            </div>
+                          </div>
+                        </div>
+                        }
+                      </div>
                     </ng-template>
                   </li>
                 </ul>
@@ -238,15 +360,24 @@
             </div>
 
             <!-- <div class="pt-3"> -->
-            <button body class="btn btn-animation new-save-button" style="margin-left: 10px;" (click)="onSubmit()"
-              type="submit">
+            <button
+              body
+              class="btn btn-animation new-save-button"
+              style="margin-left: 10px"
+              (click)="onSubmit()"
+              type="submit"
+            >
               <i class="ri-add-circle-line"></i>&nbsp; Add Staff
             </button>
-            <button body class="btn btn-animation new-reset-button" type="button" (click)="staffForm.reset()">
+            <button
+              body
+              class="btn btn-animation new-reset-button"
+              type="button"
+              (click)="staffForm.reset()"
+            >
               <i class="ri-loop-right-line"></i>&nbsp; Reset
             </button>
             <!-- </div> -->
-
           </app-card>
         </div>
       </div>
