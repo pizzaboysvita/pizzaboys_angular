@@ -143,7 +143,7 @@ export class ViewEditStaffComponent implements OnInit {
   }
 
   getStaffDetails() {
-    this.apis.getApi(`${AppConstants.api_end_points.staff}/${this.staffId}`).subscribe({
+    this.apis.getApi(`${AppConstants.api_end_points.staff}?user_id=${this.staffId}`).subscribe({
       next: (res: any) => {
         if (res) {
           this.staffForm.patchValue({

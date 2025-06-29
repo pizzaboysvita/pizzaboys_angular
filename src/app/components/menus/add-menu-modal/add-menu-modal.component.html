@@ -107,6 +107,27 @@
               <form [formGroup]="conditionForm">
                   <div class="input-items">
                     <div class="row gy-3">
+                         <!-- Order Times -->
+                      <div class="col-12">
+                        <div class="input-box position-relative">
+                          <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h6>Store</h6>
+                            <span class="optional-tag">OPTIONAL</span>
+                          </div>
+                          <ng-select
+                            [items]="storeList"
+                            [searchable]="true"
+                            [multiple]="true"
+                            bindLabel="store_name"
+                            bindValue="store_id"
+                            placeholder="Select from the dropdown or type to search..."
+                            formControlName="store">
+                          </ng-select>
+                          <span class="lableSubtext">
+                            Select which Store this menu will be available for. Leave empty for all times.
+                          </span>
+                        </div>
+                      </div>
                       <!-- Order Times -->
                       <div class="col-12">
                         <div class="input-box position-relative">
@@ -307,7 +328,7 @@
           <li [ngbNavItem]="3" class="nav-item m-0">
             <button ngbNavLink class="nav-link" type="button">POS</button>
             <ng-template ngbNavContent>
-                <form [formGroup]="menuForm">
+                <form [formGroup]="posForm">
                     <div class="input-items">
                       <div class="row gy-3">
       
@@ -317,7 +338,7 @@
                                 <h6>POS Display Name</h6>
                                 <span class="optional-tag">OPTIONAL</span>
                              </div>
-                            <input type="text" placeholder="Enter Name" formControlName="name">
+                            <input type="text" placeholder="Enter Name" formControlName="posDispalyname">
                             <span class="lableSubtext">Will override the unique name in your POS</span>
                           </div>
                         </div>
@@ -349,6 +370,7 @@
             <button ngbNavLink class="nav-link" type="button">Surcharge</button>
             <ng-template ngbNavContent>
               <div class="input-items">
+                    <form [formGroup]="surchargeForm">
                 <div class="row gy-4">
           
                     @for (surcharge of surchargeFields; track surcharge) {
@@ -358,12 +380,13 @@
                               <h6>{{ surcharge.label }}</h6>
                               <span class="optional-tag">OPTIONAL</span>
                             </div>
-                            <input type="number" placeholder="%" >
+                            <input type="number" [formControlName]="surcharge.controlName" placeholder="%" >
                             <span class="lableSubtext">{{ surcharge.subtext }}</span>
                           </div>
                         </div>
                       }
                 </div>
+                </form>
               </div>
             </ng-template>
           </li>

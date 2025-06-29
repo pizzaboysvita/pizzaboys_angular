@@ -5,6 +5,7 @@ export const AppConstants = {
         store_list:'/api/store',
         add_store:'/api/user',
         staff:'/api/user',
-        roles:'/api/role'
+        roles:'/api/role',
+       menu :'/api/menu'
     }
     }
