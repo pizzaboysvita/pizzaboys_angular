@@ -271,6 +271,14 @@ export class NavService {
       type: "link",
       active: false,
     },
+     {
+      level: 1,
+      title: "Menus",
+      path: "/menus/list",
+      icon: "ri-bowl-line",
+      type: "link",
+      active: false,
+    }
     //    {
     //   level: 1,
     //   title: "Users",

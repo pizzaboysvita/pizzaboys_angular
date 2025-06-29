@@ -21,8 +21,8 @@ basesurl='http://localhost:3002'
    return this.http.put(this.basesurl+endpoint,req_body);
  }
 
-  deleteApi(endpoint:any,req_body:any){
-   return this.http.delete(this.basesurl+endpoint,{ body: req_body });
+  deleteApi(endpoint:any){
+   return this.http.delete(this.basesurl+endpoint);
  }
    show(): void {
     this.isLoading.next(true);

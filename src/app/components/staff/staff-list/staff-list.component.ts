@@ -15,118 +15,136 @@ import { ColDef, ModuleRegistry } from '@ag-grid-community/core';
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
-  user_id: string;
+  email: string;
   profiles: string;
   phone_number: number;
   fullname: string;
   status: string
-  address:string
+  address: string
 }
 @Component({
   selector: 'app-staff-list',
-    imports: [CardComponent,CommonModule,AgGridAngular],
+  imports: [CardComponent, CommonModule, AgGridAngular],
   templateUrl: './staff-list.component.html',
   styleUrl: './staff-list.component.scss',
-   encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None
 })
 export class StaffListComponent {
-   @ViewChild('confirmModal') confirmModalRef!: TemplateRef<any>;
+  @ViewChild('confirmModal') confirmModalRef!: TemplateRef<any>;
   staff_list: any;
   sortColumn: string = '';
   sortDirection: 'asc' | 'desc' = 'asc';
   gridOptions = {
     pagination: true,
-rowHeight: 60 
+    rowHeight: 60
   };
-      modules = [ClientSideRowModelModule];
- 
-      tableConfig: ColDef<RowData>[] = [
-  {
-    field: 'user_id',
-    headerName: 'Staff Id',
-    sortable: true,
-    suppressMenu: true,
-    unSortIcon: true,
-  },
-  {
-    field: 'profiles',
-    headerName: 'Staff Photo',
-    sortable: true,
-    suppressMenu: true,
-    unSortIcon: true,
-    cellRenderer: (params: any) => {
-      // Fallback to initials if no image
-      const image = params.value;
-      const firstName = params.data?.first_name;
+  modules = [ClientSideRowModelModule];
 
-      if (image) {
-        return `
-          <img src="${image}" class="img-fluid rounded-circle" style="width: 40px; height:40px;" width="40" height="40" alt="${firstName}" />
-        `;
-      } else {
-        // fallback to initials
-        return `
+  tableConfig: ColDef<RowData>[] = [
+    // {
+    //   field: 'user_id',
+    //   headerName: 'Staff Id',
+    //   sortable: true,
+    //   suppressMenu: true,
+    //   unSortIcon: true,
+    // },
+    
+   {
+  field: 'fullname',
+  headerName: 'Name',
+  suppressHeaderMenuButton: true, // updated from deprecated `suppressMenu`
+  unSortIcon: true,
+  cellRenderer: (params: any) => {
+    const firstName = params.value;
+    const image = params.data?.profiles;
+    const initials = firstName ? firstName.charAt(0).toUpperCase() : '?';
+    const backgroundColor = getColorForName(firstName);
+
+    if (image) {
+      return `
+        <div class="d-flex align-items-center gap-2">
+          <img src="${image}" class="img-fluid rounded-circle" 
+            style="width: 40px; height: 40px;" alt="${firstName}" />
+          <span>${firstName}</span>
+        </div>
+      `;
+    } else {
+      return `
+        <div class="d-flex align-items-center gap-2">
           <div class="avatar-placeholder rounded-circle text-white d-flex align-items-center justify-content-center"
-            style="width: 40px; height:40px; font-weight: bold; font-size: 1rem; background-color:${this.getColorForName(firstName)}">
-            ${firstName ? firstName.charAt(0).toUpperCase() : '?'}
+            style="width: 40px; height: 40px; font-weight: bold; font-size: 1rem; background-color: ${backgroundColor}">
+            ${initials}
           </div>
-        `;
+          <span>${firstName}</span>
+        </div>
+      `;
+    }
+
+    // Helper function for fallback color
+    function getColorForName(name: string): string {
+      const colors = ['#6c5ce7', '#00b894', '#fd79a8', '#e17055', '#0984e3'];
+      let index = 0;
+      if (name) {
+        index = name.charCodeAt(0) % colors.length;
       }
+      return colors[index];
+    }
+  }
+}
+,
+{
+      field: 'email',
+      headerName: 'Email-Id',
+      suppressMenu: true,
+      unSortIcon: true,
     },
-  },
-  {
-    field: 'fullname',
-    headerName: 'Name',
-    suppressMenu: true,
-    unSortIcon: true,
-  },
-  {
-    field: 'phone_number',
-    headerName: 'Phone Number',
-    suppressMenu: true,
-    unSortIcon: true,
-  },
-  {
-    field: 'address',
-    headerName: 'Address',
-    suppressMenu: true,
-    unSortIcon: true,
-  },
-  {
-    headerName: 'Status',
-    field: 'status',
-    cellRenderer: (params: any) => {
-      let statusClass = '';
-      if (params.value === 'Active') {
-        statusClass = 'status-active';
-      } else if (params.value === 'Inactive') {
-        statusClass = 'status-no-stock';
-      } else if (params.value === 'Pending') {
-        statusClass = 'status-hide';
-      }
-      if (params.value === '') {
-        return `
+    {
+      field: 'phone_number',
+      headerName: 'Phone Number',
+      suppressMenu: true,
+      unSortIcon: true,
+    },
+    {
+      field: 'address',
+      headerName: 'Address',
+      suppressMenu: true,
+      unSortIcon: true,
+    },
+    {
+      headerName: 'Status',
+      field: 'status',
+      cellRenderer: (params: any) => {
+        let statusClass = '';
+        if (params.value === 'Active') {
+          statusClass = 'status-active';
+        } else if (params.value === 'Inactive') {
+          statusClass = 'status-no-stock';
+        } else if (params.value === 'Pending') {
+          statusClass = 'status-hide';
+        }
+        if (params.value === '') {
+          return `
               <select class="status-dropdown" onchange="updateStatus(event, ${params.rowIndex})">
                  <option value="">Select Status</option>
                  <option value="Active">Active</option>
                  <option value="Inactive">Inactive</option>
                  <option value="Pending">Pending</option>
               </select>`;
-      }
-      return `<div class="status-badge ${statusClass}">${params.value}</div>`;
+        }
+        return `<div class="status-badge ${statusClass}">${params.value}</div>`;
+      },
+      editable: true,
+      cellEditor: 'agSelectCellEditor',
+      cellEditorParams: {
+        values: ['Active', 'Inactive', 'Pending'], // List of values for the dropdown
+      },
+      suppressMenu: true,
+      unSortIcon: true,
     },
-    editable: true,
-    cellEditor: 'agSelectCellEditor',
-    cellEditorParams: {
-      values: ['Active', 'Inactive', 'Pending'], // List of values for the dropdown
-    },
-    suppressMenu: true,
-    unSortIcon: true,
-  },
-  {
-    headerName: 'Actions',
-    cellRenderer: (params: any) => {
-      return `
+    {
+      headerName: 'Actions',
+      cellRenderer: (params: any) => {
+        return `
         <div style="display: flex; align-items: center; gap:15px">
           <button class="btn btn-sm p-0" data-action="view" title="View">
             <span class="material-symbols-outlined text-warning">
@@ -144,101 +162,101 @@ rowHeight: 60
             </span>
           </button>
         </div>`;
+      },
+      minWidth: 150,
+      flex: 1,
     },
-    minWidth: 150,
-    flex: 1,
-  },
-];
+  ];
 
   staffData: any;
-  constructor(private router:Router,private apis:ApisService,private modalService: NgbModal,private session: SessionStorageService){
+  constructor(private router: Router, private apis: ApisService, private modalService: NgbModal, private session: SessionStorageService) {
 
     this.getStaffList()
   }
-  
-    stausList=['Active','In-Active']
-  
-    getStaffList(){
-    
-      this.apis.getApi(AppConstants.api_end_points.staff).subscribe((data:any)=>{
-        if(data){
-data.forEach((element:any)=>{
-  // element.option=''
-  element.user_image= null,
-  element.fullname=element.first_name+' '+element.last_name
-  element.status=element.status ==1?'Active':element.status ==0?'Inactive':''
-})
-          this.staff_list=data
-        
-        }
-      })
-    }
-    openNew(){
-      this.router.navigate(["/staff/add-staff"]);
 
-    }
-      getColorForName(name: string): string {
+  stausList = ['Active', 'In-Active']
+
+  getStaffList() {
+
+    this.apis.getApi(AppConstants.api_end_points.staff).subscribe((data: any) => {
+      if (data) {
+        data.forEach((element: any) => {
+          // element.option=''
+          element.user_image = null,
+            element.fullname = element.first_name + ' ' + element.last_name
+          element.status = element.status == 1 ? 'Active' : element.status == 0 ? 'Inactive' : ''
+        })
+        this.staff_list = data
+
+      }
+    })
+  }
+  openNew() {
+    this.router.navigate(["/staff/add-staff"]);
+
+  }
+  getColorForName(name: string): string {
     if (!name) return '#6c757d'; // default fallback
-  
+
     // Hash the name to get a consistent color
     let hash = 0;
     for (let i = 0; i < name.length; i++) {
       hash = name.charCodeAt(i) + ((hash << 5) - hash);
     }
-  
+
     // Convert hash to HSL color
     const hue = hash % 360;
     return `hsl(${hue}, 60%, 50%)`; // You can tweak saturation/lightness as needed
   }
-  performAction(data:any){
+  performAction(data: any) {
 
     console.log(data)
   }
-      onSort(columnKey: any): void {
+  onSort(columnKey: any): void {
     if (columnKey) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
       this.sortColumn = columnKey;
       this.sortDirection = 'asc';
     }
-  
+
     // Optionally trigger actual sorting of data here
-  } 
-  delete(data:any){
-    this.staffData=data
-      this.openConfirmPopup()
+  }
+  delete(data: any) {
+    this.staffData = data
+    this.openConfirmPopup()
 
   }
-    openConfirmPopup() {
-  this.modalService.open(this.confirmModalRef, {
-    centered: true,
-    backdrop: 'static'
-  });
-}
- onConfirm(modal: any) {
-   // modal.close();
-   // Perform your confirm logic here
-   const req_body={
-     "staff_id": this.staffData.staff_id
- }
-  this.apis.deleteApi(AppConstants.api_end_points.staff,req_body).subscribe((data:any)=>{
-  
-   if(data){
-  console.log(data)
-  modal.close();
- Swal.fire({
-   title: 'Success!',
-   text: data.message,
-   icon: 'success',
-   width: '350px',  // customize width (default ~ 600px)
- }).then((result) => {
-   if (result.isConfirmed) {
-     console.log('User clicked OK');
-     this.getStaffList();
-   }
- });
- 
-   }
-  })
- }
+  openConfirmPopup() {
+    this.modalService.open(this.confirmModalRef, {
+      centered: true,
+      backdrop: 'static'
+    });
+  }
+  onConfirm(modal: any) {
+    // modal.close();
+    // Perform your confirm logic here
+    const req_body = {
+      "staff_id": this.staffData.staff_id
+    }
+    this.apis.deleteApi(AppConstants.api_end_points.staff).subscribe((data: any) => {
+
+      if (data) {
+        console.log(data)
+        modal.close();
+        Swal.fire({
+          title: 'Success!',
+          text: data.message,
+          icon: 'success',
+          width: '350px',  // customize width (default ~ 600px)
+        }).then((result) => {
+          if (result.isConfirmed) {
+            console.log('User clicked OK');
+            this.getStaffList();
+          }
+        });
+
+      }
+    })
+  }
 }

@@ -12,27 +12,36 @@
                 <label class="f-w-600 text-black">Select Day</label>
 
                <select class="form-select" name="carlist" formControlName="day">
-             
+              <option value="-1">Select Day</option>
     @for (item of day; track item) {
-        
+       
     <option [value]="item.day">{{item.day}}</option>
     }
 </select>
+  @if (addWorkingForm.get('day')?.touched && addWorkingForm.get('day')?.errors?.['required']) {
+              <div class="text-danger">Day is required</div>
+            }
             </div>
             <div class="col-4">
                 <label class="f-w-600 text-black">Form</label>
                 <input type="time" name="time" formControlName="formtime">
+                  @if (addWorkingForm.get('formtime')?.touched && addWorkingForm.get('formtime')?.errors?.['required']) {
+              <div class="text-danger">Form Time is required</div>
+            }
             </div>
             <div class="col-4">
                 <label class="f-w-600 text-black">To</label>
                 <input type="time" name="time" formControlName="to">
+                  @if (addWorkingForm.get('to')?.touched && addWorkingForm.get('to')?.errors?.['required']) {
+              <div class="text-danger">To Time is required</div>
+            }
             </div>
         </div>
         </form>
     </div>
     <div class="modal-footer">
         <button class="btn btn-cancel" type="button" (click)="Cancel()">Cancel</button>
-        <button class="btn btn-submit" type="submit" (click)="save()">Save</button>
+        <button class="btn btn-submit" type="submit" (click)="save()" [disabled]="!addWorkingForm.valid">Save</button>
 
     </div>
     
@@ -43,7 +52,39 @@
                 <h5>Available Timings</h5>
             </div>
             <div body>
-                <app-table [search]="false" [hasCheckbox]="false" [tableConfig]="tableConfig"></app-table>
+                <div class="table-responsive theme-scrollbar table-scroll-container">
+                <table class="table-scroll-container table category-table dataTable no-footer">
+  <thead>
+    <tr>
+        @for(col of columns;track col){
+      <th >{{ col.title }}</th>
+        }
+        <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for(row of workingHours;track row){
+    <tr >
+        @for(col of columns;track col){
+      <td >{{ row[col.dataField] }}</td>
+        }
+       <td>
+           <ul>
+                            @for (action of rowActions; track action) {
+                            <li>
+                                <a href="javascript:void(0)" (click)="performAction(action,row)">
+                                    <i [class]="action.icon"></i>
+                                </a>
+                            </li>
+                            }
+                        </ul>
+       </td>
+    </tr>
+}
+  </tbody>
+</table>
+                </div>
+                <!-- <app-table [search]="false" [hasCheckbox]="false" [tableConfig]="tableConfig"></app-table> -->
             </div>
         </app-card>
     </div>
