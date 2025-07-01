@@ -12,11 +12,18 @@ import { AppConstants } from "../../../app.constants";
 import Swal from "sweetalert2";
 import { CommonModule } from "@angular/common";
 import { CardComponent } from "../../../shared/components/card/card.component";
+import { NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: "app-view-edit-staff",
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, CardComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NgbNavModule,
+    CardComponent,
+  ],
   templateUrl: "./view-edit-staff.component.html",
   styleUrls: ["./view-edit-staff.component.scss"],
 })
@@ -32,6 +39,7 @@ export class ViewEditStaffComponent implements OnInit {
   profileImage = "";
   activeTab = "details";
   formReady = false;
+  file: File | null = null;
 
   managementSections = [
     {
@@ -89,18 +97,26 @@ export class ViewEditStaffComponent implements OnInit {
     const mode = this.route.snapshot.paramMap.get("mode");
     this.staffId = this.route.snapshot.paramMap.get("id") || "";
     this.isViewMode = mode === "view";
-
     this.initForms();
     this.loadRoles();
     this.loadStores();
     this.getStaffDetails();
+
+    console.log("Mode:", mode);
+    console.log("isViewMode:", this.isViewMode);
   }
 
   initForms(): void {
     this.staffForm = this.fb.group({
-      firstName: [{ value: "", disabled: this.isViewMode }, Validators.required],
+      firstName: [
+        { value: "", disabled: this.isViewMode },
+        Validators.required,
+      ],
       lastName: [{ value: "", disabled: this.isViewMode }],
-      email: [{ value: "", disabled: this.isViewMode }, [Validators.required, Validators.email]],
+      email: [
+        { value: "", disabled: this.isViewMode },
+        [Validators.required, Validators.email],
+      ],
       phone: [{ value: "", disabled: this.isViewMode }],
       address: [{ value: "", disabled: this.isViewMode }],
       country: [{ value: "", disabled: this.isViewMode }],
@@ -123,15 +139,19 @@ export class ViewEditStaffComponent implements OnInit {
   }
 
   loadRoles() {
-    this.apis.getApi(AppConstants.api_end_points.roles).subscribe((res: any) => {
-      this.rolesList = res;
-    });
+    this.apis
+      .getApi(AppConstants.api_end_points.roles)
+      .subscribe((res: any) => {
+        this.rolesList = res;
+      });
   }
 
   loadStores() {
-    this.apis.getApi(AppConstants.api_end_points.store_list).subscribe((res: any) => {
-      this.storesList = res;
-    });
+    this.apis
+      .getApi(AppConstants.api_end_points.store_list)
+      .subscribe((res: any) => {
+        this.storesList = res;
+      });
   }
 
   onStatusToggle(event: any) {
@@ -141,47 +161,89 @@ export class ViewEditStaffComponent implements OnInit {
   onReset() {
     this.getStaffDetails();
   }
+  applyPreset(role: any) {
+    this.selectedPreset = role.role_name;
+
+    // Clear all permissions first
+    for (const section of this.managementSections) {
+      const sectionGroup = this.getPermissionGroup(section.key);
+      for (const permission of section.permissions) {
+        sectionGroup.get(permission)?.setValue(false);
+      }
+    }
+
+    // Apply preset permissions from the role object
+    if (role.permissions) {
+      for (const key in role.permissions) {
+        if (role.permissions[key]) {
+          for (const section of this.managementSections) {
+            const sectionGroup = this.getPermissionGroup(section.key);
+            for (const permission of section.permissions) {
+              const snakeKey = permission.toLowerCase().replace(/[\s-_]/g, "_");
+              if (key === snakeKey) {
+                sectionGroup.get(permission)?.setValue(true);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 
   getStaffDetails() {
-    this.apis.getApi(`${AppConstants.api_end_points.staff}?user_id=${this.staffId}`).subscribe({
-      next: (res: any) => {
-        if (res) {
-          this.staffForm.patchValue({
-            firstName: res.first_name || "",
-            lastName: res.last_name || "",
-            email: res.email || "",
-            phone: res.phone_number || "",
-            address: res.address || "",
-            country: res.country || "",
-            state: res.state || "",
-            city: res.city || "",
-            pos_pin: res.pos_pin || "",
-            status: res.status == 1,
-            store: res.store_id || "",
-            role: res.role_id || "",
-          });
+    this.apis
+      .getApi(`${AppConstants.api_end_points.staff}?user_id=${this.staffId}`)
+      .subscribe({
+        next: (res: any) => {
+          if (res && res.length > 0) {
+            const staff = res[0];
 
-          if (res.permissions) {
-            this.patchPermissions(res.permissions);
+            this.staffForm.patchValue({
+              firstName: staff.first_name || "",
+              lastName: staff.last_name || "",
+              email: staff.email || "",
+              phone: staff.phone_number || "",
+              address: staff.address || "",
+              country: staff.country || "",
+              state: staff.state || "",
+              city: staff.city || "",
+              pos_pin: staff.pos_pin || "",
+              status: staff.status === 1,
+              store: staff.store_id || "",
+              role: staff.role_id || "",
+            });
+
+            const parsedPermissions =
+              typeof staff.permissions === "string"
+                ? JSON.parse(staff.permissions)
+                : staff.permissions;
+
+            this.patchPermissions(parsedPermissions);
+            this.profileImage = staff.profiles || this.defaultImage;
           }
 
-          this.profileImage = res.profiles || this.defaultImage;
-        }
-        this.formReady = true;
-      },
-      error: () => {
-        this.formReady = true;
-      },
-    });
+          this.formReady = true;
+        },
+        error: (err) => {
+          console.error("Failed to fetch staff details", err);
+          this.formReady = true;
+        },
+      });
   }
 
   patchPermissions(permissions: any) {
+    if (!permissions) return;
+
     for (const section of this.managementSections) {
       const group = this.permissionForm.get(section.key) as FormGroup;
+      if (!group) continue;
+
       for (const permission of section.permissions) {
-        const key = permission.toLowerCase().replace(/[\s-_]/g, "_");
-        if (permissions && key in permissions) {
-          group.get(permission)?.setValue(!!permissions[key]);
+        const key = permission.toLowerCase().replace(/[\s\-]/g, "_");
+        const value = permissions[key];
+
+        if (group.get(permission)) {
+          group.get(permission)?.setValue(!!value);
         }
       }
     }
@@ -189,6 +251,21 @@ export class ViewEditStaffComponent implements OnInit {
 
   getPermissionGroup(key: string): FormGroup {
     return this.permissionForm.get(key) as FormGroup;
+  }
+
+  onSelectFile(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    if (input.files && input.files[0]) {
+      this.file = input.files[0];
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        this.profileImage = reader.result as string;
+      };
+
+      reader.readAsDataURL(this.file);
+    }
   }
 
   onUpdate() {
@@ -206,8 +283,9 @@ export class ViewEditStaffComponent implements OnInit {
       }
     }
 
-    const payload = {
-      staff_id: this.staffId,
+    const reqBody: any = {
+      type: "update",
+      user_id: this.staffId,
       role_id: formValues.role,
       store_id: formValues.store,
       first_name: formValues.firstName,
@@ -220,15 +298,30 @@ export class ViewEditStaffComponent implements OnInit {
       city: formValues.city,
       pos_pin: formValues.pos_pin,
       status: formValues.status ? 1 : 0,
+      created_by: 1,
+      updated_by: 1,
+      refresh_token: "",
       permissions,
     };
 
-    this.apis.putApi(AppConstants.api_end_points.staff, payload).subscribe((res: any) => {
-      if (res.code === 1) {
-        Swal.fire("Success", res.message, "success").then(() => {
-          this.router.navigate(["/staff/staff-list"]);
-        });
-      }
+    const formData = new FormData();
+    if (this.file) {
+      formData.append("image", this.file);
+    }
+    formData.append("body", JSON.stringify(reqBody));
+
+    this.apis.postApi(AppConstants.api_end_points.staff, formData).subscribe({
+      next: (res: any) => {
+        if (res.code === 1) {
+          Swal.fire("Success", res.message, "success").then(() => {
+            this.router.navigate(["/staff/staff-list"]);
+          });
+        }
+      },
+      error: (err) => {
+        Swal.fire("Error", "Failed to update staff", "error");
+        console.error(err);
+      },
     });
   }
 }

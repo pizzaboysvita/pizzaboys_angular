@@ -1,0 +1,239 @@
+.switch-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 34px;
+
+    &::before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+  }
+
+  input:checked + .slider {
+    background-color: #ffa500;
+
+    &::before {
+      transform: translateX(18px);
+    }
+  }
+}
+
+.label-text {
+  font-size: 15px;
+  color: #222;
+  margin-bottom: 7px;
+}
+
+.description {
+  margin: -13px 0px 21px 0px;
+}
+
+.section {
+  background-color: #f9f9f6;
+  padding: 1rem;
+}
+
+.management-section {
+  margin-bottom: 24px;
+}
+.new-save-button {
+    float: right;
+    background: linear-gradient(to right, rgba(#F2A93E, 1),rgba(#F07054, 1) );;
+    color: #fff;
+    font-size: calc(15px + (16 - 15) * ((100vw - 320px) / (1920 - 320)));
+    margin-top: 20px;
+    border: 1px solid #b1743c;
+    background: #b1743c;  
+    border-radius: 10px;
+    &:hover {
+        color: #b1743c;;
+        border: 1px solid #b1743c;
+        background:#fff;  
+        
+    }
+    
+}
+.new-reset-button {
+    float: right;
+    background: linear-gradient(to right, rgba(#F2A93E, 1),rgba(#F07054, 1) );;
+    color: #b1743c;
+    font-size: calc(15px + (16 - 15) * ((100vw - 320px) / (1920 - 320)));
+    margin-top: 20px;
+    border: 1px solid #b1743c;
+    background: #fff2cd;  
+    border-radius: 10px;
+    &:hover {
+        color: #000;;
+        border: 1px solid #b1743c;
+        background-color:#fff2cd;  
+        
+    }
+    
+}
+
+.presets {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+
+  button {
+    padding: 6px 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: white;
+    color: #333;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: #ffa500;
+      color: #ffa500;
+    }
+
+    &.active {
+      background-color: #ffa500;
+      color: white;
+      border-color: #ffa500;
+
+      &:hover {
+        background-color: #e69500; // Slightly darker orange
+        box-shadow: 0 0 5px rgba(255, 165, 0, 0.5); // Subtle glow
+      }
+    }
+  }
+}
+
+
+.management-section {
+  margin-bottom: 24px;
+
+  h4 {
+    margin-bottom: 12px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .permissions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+  }
+}
+
+.section {
+  background-color: #f9f9f6 !important;
+  padding: 1rem !important;
+}
+
+.switch-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 34px;
+
+    &::before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+  }
+
+  input:checked+.slider {
+    background-color: #ffa500; // Orange toggle
+
+    &::before {
+      transform: translateX(18px);
+    }
+  }
+}
+
+.label-text {
+  font-size: 15px;
+  color: #222;
+  margin-bottom: 7px;
+}
+
+.description {
+  margin: -13px 0px 21px 0px;
+}
+h3{
+  font-size: 15px !important;
+}
+.hover-text {
+  display: none !important;
+}
+.img1 {
+  width: 170px;       /* Fixed width */
+  height: 170px;      /* Fixed height */
+  object-fit: cover;  /* Crops and centers image */
+  border-radius: 8px; /* Optional: makes corners rounded */
+  border: 1px solid #ccc;
+}
+.imageItems{
+  position: relative;
+  display: flex;
+  left: 5%;
+  margin-top: 3%;
+}
