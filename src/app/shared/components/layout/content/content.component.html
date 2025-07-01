@@ -1,5 +1,5 @@
 
-          @if (users.name !='pos') {
+          @if (pos !='true') {
 <div class="page-wrapper compact-wrapper" style="overflow: hidden;">
     <!-- Page Header Start-->
     <div class="page-header" [class.close_icon]="navService.collapseSidebar" >
@@ -32,7 +32,7 @@
     <!-- Page Body End -->
 </div>
           }
-          @if (users.name =='pos') {
+          @if (pos =='true') {
 <div class="page-wrapper compact-wrapper" style="overflow: hidden;">
     <!-- Page Header Start-->
     <div class="page-header" [class.close_icon]="navService.collapseSidebar" style="width: 100% !important;margin-left: 0px;">

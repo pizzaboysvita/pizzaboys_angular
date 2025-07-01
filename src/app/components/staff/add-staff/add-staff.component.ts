@@ -307,6 +307,13 @@ export class AddStaffComponent {
   onSubmit() {
     // if (isValid) {
 
+// const restaurantControls = this.permissionForm.get('restaurant')['controls'];
+const restaurantGroup = this.permissionForm.get('restaurant') as FormGroup;
+const posGroup = this.permissionForm.get('pos') as FormGroup;
+const staffGroup = this.permissionForm.get('staff') as FormGroup;
+const websiteGroup = this.permissionForm.get('website') as FormGroup;
+const storeGroup = this.permissionForm.get('store') as FormGroup;
+
     const req_body: any = {
       type: "insert",
       role_id: this.rolesId,
@@ -326,23 +333,32 @@ export class AddStaffComponent {
       updated_by: 1,
       refresh_token: "",
       permissions: {
-        create: this.permissionForm.value.restaurant.Create,
-        dashboard: this.permissionForm.value.restaurant.Create,
-        orders_board_view: this.permissionForm.value.restaurant.Create,
-        orders_list_view: this.permissionForm.value.restaurant.Create,
-        orders_delete: this.permissionForm.value.restaurant.Create,
-        bookings: this.permissionForm.value.restaurant.Create,
-        bookings_delete: this.permissionForm.value.restaurant.Create,
-        customers: this.permissionForm.value.restaurant.Create,
-        menus: this.permissionForm.value.restaurant.Create,
-        menus_images: this.permissionForm.value.restaurant.Create,
-        settings_systems: this.permissionForm.value.restaurant.Create,
-        settings_services: this.permissionForm.value.restaurant.Create,
-        settings_payments: this.permissionForm.value.restaurant.Create,
-        settings_website: this.permissionForm.value.restaurant.Create,
-        settings_integrations: this.permissionForm.value.restaurant.Create,
-        billing: this.permissionForm.value.restaurant.Create,
-        reports: this.permissionForm.value.restaurant.Create,
+        create: restaurantGroup.value.Create,
+        dashboard: restaurantGroup.value.Dashboard,
+        orders_board_view: restaurantGroup.value.Create,
+        orders_list_view:restaurantGroup.value['Orders - List View'],
+        orders_delete: restaurantGroup.value['Orders - Delete'],
+        bookings: restaurantGroup.value['Bookings'],
+        bookings_delete: restaurantGroup.value['Bookings - Delete'],
+        customers:restaurantGroup.value['Customers'],
+        menus:restaurantGroup.value.Menus,
+        menus_images:restaurantGroup.value['Menus - Images'],
+        settings_systems:restaurantGroup.value['Settings - Systems'],
+        settings_services: restaurantGroup.value['Settings - Services'],
+        settings_payments: restaurantGroup.value['Settings - Payments'],
+        settings_website: restaurantGroup.value['Settings - Website'],
+        settings_integrations: restaurantGroup.value['Settings - Integrations'],
+        billing: restaurantGroup.value.Billing,
+        reports: restaurantGroup.value.Reports,
+
+        pos_orders:posGroup.value.Orders,
+        pos_takings:posGroup.value.Takings,
+        website_create:websiteGroup.value.Create,
+        website_edit:websiteGroup.value.Edit,
+        staff_management_create:staffGroup.value.Create,
+        staff_management_edit:staffGroup.value.Edit,
+        staff_management_Delete:staffGroup.value.Delete,
+
       },
     };
     console.log(this.file, req_body);
