@@ -1,3 +1,4 @@
+// view-edit-staff.component.ts
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
@@ -13,6 +14,7 @@ import Swal from "sweetalert2";
 import { CommonModule } from "@angular/common";
 import { CardComponent } from "../../../shared/components/card/card.component";
 import { NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
+import { NgSelectModule } from "@ng-select/ng-select";
 
 @Component({
   selector: "app-view-edit-staff",
@@ -23,6 +25,7 @@ import { NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
     ReactiveFormsModule,
     NgbNavModule,
     CardComponent,
+    NgSelectModule,
   ],
   templateUrl: "./view-edit-staff.component.html",
   styleUrls: ["./view-edit-staff.component.scss"],
@@ -91,7 +94,7 @@ export class ViewEditStaffComponent implements OnInit {
     private route: ActivatedRoute,
     private apis: ApisService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const mode = this.route.snapshot.paramMap.get("mode");
@@ -101,22 +104,13 @@ export class ViewEditStaffComponent implements OnInit {
     this.loadRoles();
     this.loadStores();
     this.getStaffDetails();
-
-    console.log("Mode:", mode);
-    console.log("isViewMode:", this.isViewMode);
   }
 
   initForms(): void {
     this.staffForm = this.fb.group({
-      firstName: [
-        { value: "", disabled: this.isViewMode },
-        Validators.required,
-      ],
+      firstName: [{ value: "", disabled: this.isViewMode }, Validators.required],
       lastName: [{ value: "", disabled: this.isViewMode }],
-      email: [
-        { value: "", disabled: this.isViewMode },
-        [Validators.required, Validators.email],
-      ],
+      email: [{ value: "", disabled: this.isViewMode }, [Validators.required, Validators.email]],
       phone: [{ value: "", disabled: this.isViewMode }],
       address: [{ value: "", disabled: this.isViewMode }],
       country: [{ value: "", disabled: this.isViewMode }],
@@ -124,11 +118,12 @@ export class ViewEditStaffComponent implements OnInit {
       city: [{ value: "", disabled: this.isViewMode }],
       pos_pin: [{ value: "", disabled: this.isViewMode }],
       status: [{ value: false, disabled: this.isViewMode }],
-      store: [{ value: "", disabled: this.isViewMode }],
       role: [{ value: "", disabled: this.isViewMode }, Validators.required],
     });
 
-    this.permissionForm = this.fb.group({});
+    this.permissionForm = this.fb.group({
+      store: [{ value: "", disabled: this.isViewMode }],
+    });
     for (const section of this.managementSections) {
       const group: any = {};
       for (const permission of section.permissions) {
@@ -139,32 +134,73 @@ export class ViewEditStaffComponent implements OnInit {
   }
 
   loadRoles() {
-    this.apis
-      .getApi(AppConstants.api_end_points.roles)
-      .subscribe((res: any) => {
-        this.rolesList = res;
-      });
+    this.apis.getApi(AppConstants.api_end_points.roles).subscribe((res: any) => {
+      this.rolesList = res;
+    });
   }
 
   loadStores() {
-    this.apis
-      .getApi(AppConstants.api_end_points.store_list)
-      .subscribe((res: any) => {
-        this.storesList = res;
-      });
+    this.apis.getApi(AppConstants.api_end_points.store_list).subscribe((res: any) => {
+      this.storesList = res;
+    });
   }
 
-  onStatusToggle(event: any) {
-    this.staffForm.patchValue({ status: event.target.checked });
+  getStaffDetails() {
+    this.apis.getApi(`${AppConstants.api_end_points.staff}?user_id=${this.staffId}`).subscribe({
+      next: (res: any) => {
+        if (res && res.length > 0) {
+          const staff = res[0];
+          this.staffForm.patchValue({
+            firstName: staff.first_name || "",
+            lastName: staff.last_name || "",
+            email: staff.email || "",
+            phone: staff.phone_number || "",
+            address: staff.address || "",
+            country: staff.country || "",
+            state: staff.state || "",
+            city: staff.city || "",
+            pos_pin: staff.pos_pin || "",
+            status: staff.status === 1,
+            role: staff.role_id || "",
+          });
+
+          // ✅ Patch store into permissionForm
+          this.permissionForm.patchValue({
+            store: staff.store_id || "",
+          });
+
+          const parsedPermissions =
+            typeof staff.permissions === "string" ? JSON.parse(staff.permissions) : staff.permissions;
+          this.patchPermissions(parsedPermissions);
+          this.profileImage = staff.profiles || this.defaultImage;
+        }
+        this.formReady = true;
+      },
+      error: (err) => {
+        console.error("Failed to fetch staff details", err);
+        this.formReady = true;
+      },
+    });
   }
 
-  onReset() {
-    this.getStaffDetails();
+
+  patchPermissions(permissions: any) {
+    if (!permissions) return;
+    for (const section of this.managementSections) {
+      const group = this.permissionForm.get(section.key) as FormGroup;
+      if (!group) continue;
+      for (const permission of section.permissions) {
+        const key = permission.toLowerCase().replace(/[\s\-]/g, "_");
+        const value = permissions[key];
+        if (group.get(permission)) {
+          group.get(permission)?.setValue(!!value);
+        }
+      }
+    }
   }
+
   applyPreset(role: any) {
     this.selectedPreset = role.role_name;
-
-    // Clear all permissions first
     for (const section of this.managementSections) {
       const sectionGroup = this.getPermissionGroup(section.key);
       for (const permission of section.permissions) {
@@ -172,7 +208,6 @@ export class ViewEditStaffComponent implements OnInit {
       }
     }
 
-    // Apply preset permissions from the role object
     if (role.permissions) {
       for (const key in role.permissions) {
         if (role.permissions[key]) {
@@ -190,82 +225,28 @@ export class ViewEditStaffComponent implements OnInit {
     }
   }
 
-  getStaffDetails() {
-    this.apis
-      .getApi(`${AppConstants.api_end_points.staff}?user_id=${this.staffId}`)
-      .subscribe({
-        next: (res: any) => {
-          if (res && res.length > 0) {
-            const staff = res[0];
-
-            this.staffForm.patchValue({
-              firstName: staff.first_name || "",
-              lastName: staff.last_name || "",
-              email: staff.email || "",
-              phone: staff.phone_number || "",
-              address: staff.address || "",
-              country: staff.country || "",
-              state: staff.state || "",
-              city: staff.city || "",
-              pos_pin: staff.pos_pin || "",
-              status: staff.status === 1,
-              store: staff.store_id || "",
-              role: staff.role_id || "",
-            });
-
-            const parsedPermissions =
-              typeof staff.permissions === "string"
-                ? JSON.parse(staff.permissions)
-                : staff.permissions;
-
-            this.patchPermissions(parsedPermissions);
-            this.profileImage = staff.profiles || this.defaultImage;
-          }
-
-          this.formReady = true;
-        },
-        error: (err) => {
-          console.error("Failed to fetch staff details", err);
-          this.formReady = true;
-        },
-      });
-  }
-
-  patchPermissions(permissions: any) {
-    if (!permissions) return;
-
-    for (const section of this.managementSections) {
-      const group = this.permissionForm.get(section.key) as FormGroup;
-      if (!group) continue;
-
-      for (const permission of section.permissions) {
-        const key = permission.toLowerCase().replace(/[\s\-]/g, "_");
-        const value = permissions[key];
-
-        if (group.get(permission)) {
-          group.get(permission)?.setValue(!!value);
-        }
-      }
-    }
-  }
-
   getPermissionGroup(key: string): FormGroup {
     return this.permissionForm.get(key) as FormGroup;
   }
 
   onSelectFile(event: Event): void {
     const input = event.target as HTMLInputElement;
-
     if (input.files && input.files[0]) {
       this.file = input.files[0];
       const reader = new FileReader();
-
       reader.onload = () => {
         this.profileImage = reader.result as string;
       };
-
       reader.readAsDataURL(this.file);
     }
+  }
+
+  onStatusToggle(event: any) {
+    this.staffForm.patchValue({ status: event.target.checked });
+  }
+
+  onReset() {
+    this.getStaffDetails();
   }
 
   onUpdate() {
@@ -273,6 +254,16 @@ export class ViewEditStaffComponent implements OnInit {
 
     const formValues = this.staffForm.getRawValue();
     const permissionValues = this.permissionForm.getRawValue();
+
+    if (!permissionValues.store) {
+      Swal.fire("Error", "Please select a store", "error");
+      return;
+    }
+
+    if (!this.file && (!this.profileImage || this.profileImage === this.defaultImage)) {
+      Swal.fire("Error", "Please upload a profile image", "error");
+      return;
+    }
 
     const permissions: any = {};
     for (const sectionKey in permissionValues) {
@@ -287,7 +278,6 @@ export class ViewEditStaffComponent implements OnInit {
       type: "update",
       user_id: this.staffId,
       role_id: formValues.role,
-      store_id: formValues.store,
       first_name: formValues.firstName,
       last_name: formValues.lastName,
       email: formValues.email,
@@ -302,7 +292,12 @@ export class ViewEditStaffComponent implements OnInit {
       updated_by: 1,
       refresh_token: "",
       permissions,
+      store_id: permissionValues.store,
     };
+
+    if (!this.file && this.profileImage && this.profileImage !== this.defaultImage) {
+      reqBody.profileImage = this.profileImage;
+    }
 
     const formData = new FormData();
     if (this.file) {
@@ -312,10 +307,16 @@ export class ViewEditStaffComponent implements OnInit {
 
     this.apis.postApi(AppConstants.api_end_points.staff, formData).subscribe({
       next: (res: any) => {
-        if (res.code === 1) {
+        // 🔍 Debug log (optional)
+        console.log("API response:", res);
+        console.log("res.code type:", typeof res.code, "value:", res.code);
+
+        if (Number(res.code) === 1) {
           Swal.fire("Success", res.message, "success").then(() => {
             this.router.navigate(["/staff/staff-list"]);
           });
+        } else {
+          Swal.fire("Error", res.message || "Unknown error", "error");
         }
       },
       error: (err) => {
@@ -324,4 +325,5 @@ export class ViewEditStaffComponent implements OnInit {
       },
     });
   }
+
 }
