@@ -1,36 +1,32 @@
 .new-save-button {
-    float: right;
-    background: linear-gradient(to right, rgba(#F2A93E, 1),rgba(#F07054, 1) );;
-    color: #fff;
-    font-size: calc(15px + (16 - 15) * ((100vw - 320px) / (1920 - 320)));
-    margin-top: 20px;
+  float: right;
+  background: linear-gradient(to right, rgba(#f2a93e, 1), rgba(#f07054, 1));
+  color: #fff;
+  font-size: calc(15px + (16 - 15) * ((100vw - 320px) / (1920 - 320)));
+  margin-top: 20px;
+  border: 1px solid #b1743c;
+  background: #b1743c;
+  border-radius: 10px;
+  &:hover {
+    color: #b1743c;
     border: 1px solid #b1743c;
-    background: #b1743c;  
-    border-radius: 10px;
-    &:hover {
-        color: #b1743c;;
-        border: 1px solid #b1743c;
-        background:#fff;  
-        
-    }
-    
+    background: #fff;
+  }
 }
 .new-reset-button {
-    float: right;
-    background: linear-gradient(to right, rgba(#F2A93E, 1),rgba(#F07054, 1) );;
-    color: #b1743c;
-    font-size: calc(15px + (16 - 15) * ((100vw - 320px) / (1920 - 320)));
-    margin-top: 20px;
+  float: right;
+  background: linear-gradient(to right, rgba(#f2a93e, 1), rgba(#f07054, 1));
+  color: #b1743c;
+  font-size: calc(15px + (16 - 15) * ((100vw - 320px) / (1920 - 320)));
+  margin-top: 20px;
+  border: 1px solid #b1743c;
+  background: #fff2cd;
+  border-radius: 10px;
+  &:hover {
+    color: #000;
     border: 1px solid #b1743c;
-    background: #fff2cd;  
-    border-radius: 10px;
-    &:hover {
-        color: #000;;
-        border: 1px solid #b1743c;
-        background-color:#fff2cd;  
-        
-    }
-    
+    background-color: #fff2cd;
+  }
 }
 
 .presets {
@@ -66,7 +62,6 @@
   }
 }
 
-
 .management-section {
   margin-bottom: 24px;
 
@@ -80,7 +75,6 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-
   }
 }
 
@@ -131,7 +125,7 @@
     }
   }
 
-  input:checked+.slider {
+  input:checked + .slider {
     background-color: #ffa500; // Orange toggle
 
     &::before {
@@ -149,20 +143,20 @@
 .description {
   margin: -13px 0px 21px 0px;
 }
-h3{
+h3 {
   font-size: 15px !important;
 }
 .hover-text {
   display: none !important;
 }
 .img1 {
-  width: 170px;       /* Fixed width */
-  height: 170px;      /* Fixed height */
-  object-fit: cover;  /* Crops and centers image */
+  width: 170px; /* Fixed width */
+  height: 170px; /* Fixed height */
+  object-fit: cover; /* Crops and centers image */
   border-radius: 8px; /* Optional: makes corners rounded */
   border: 1px solid #ccc;
 }
-.imageItems{
+.imageItems {
   position: relative;
   display: flex;
   left: 5%;

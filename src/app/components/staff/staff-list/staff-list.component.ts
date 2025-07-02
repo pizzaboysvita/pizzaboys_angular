@@ -57,28 +57,28 @@ export class StaffListComponent {
     //   suppressMenu: true,
     //   unSortIcon: true,
     // },
-    
-   {
-  field: 'fullname',
-  headerName: 'Name',
-  suppressHeaderMenuButton: true, // updated from deprecated `suppressMenu`
-  unSortIcon: true,
-  cellRenderer: (params: any) => {
-    const firstName = params.value;
-    const image = params.data?.profiles;
-    const initials = firstName ? firstName.charAt(0).toUpperCase() : '?';
-    const backgroundColor = getColorForName(firstName);
 
-    if (image) {
-      return `
+    {
+      field: 'fullname',
+      headerName: 'Name',
+      suppressHeaderMenuButton: true, // updated from deprecated `suppressMenu`
+      unSortIcon: true,
+      cellRenderer: (params: any) => {
+        const firstName = params.value;
+        const image = params.data?.profiles;
+        const initials = firstName ? firstName.charAt(0).toUpperCase() : '?';
+        const backgroundColor = getColorForName(firstName);
+
+        if (image) {
+          return `
         <div class="d-flex align-items-center gap-2">
           <img src="${image}" class="img-fluid rounded-circle" 
             style="width: 40px; height: 40px;" alt="${firstName}" />
           <span>${firstName}</span>
         </div>
       `;
-    } else {
-      return `
+        } else {
+          return `
         <div class="d-flex align-items-center gap-2">
           <div class="avatar-placeholder rounded-circle text-white d-flex align-items-center justify-content-center"
             style="width: 40px; height: 40px; font-weight: bold; font-size: 1rem; background-color: ${backgroundColor}">
@@ -87,21 +87,21 @@ export class StaffListComponent {
           <span>${firstName}</span>
         </div>
       `;
-    }
+        }
 
-    // Helper function for fallback color
-    function getColorForName(name: string): string {
-      const colors = ['#6c5ce7', '#00b894', '#fd79a8', '#e17055', '#0984e3'];
-      let index = 0;
-      if (name) {
-        index = name.charCodeAt(0) % colors.length;
+        // Helper function for fallback color
+        function getColorForName(name: string): string {
+          const colors = ['#6c5ce7', '#00b894', '#fd79a8', '#e17055', '#0984e3'];
+          let index = 0;
+          if (name) {
+            index = name.charCodeAt(0) % colors.length;
+          }
+          return colors[index];
+        }
       }
-      return colors[index];
     }
-  }
-}
-,
-{
+    ,
+    {
       field: 'email',
       headerName: 'Email-Id',
       suppressMenu: true,
@@ -248,8 +248,8 @@ export class StaffListComponent {
   //     this.delete(event.data);
   //   }
   // }
-    onCellClicked(event: any): void {
-     let target = event.event?.target as HTMLElement;
+  onCellClicked(event: any): void {
+    let target = event.event?.target as HTMLElement;
 
     // Traverse up the DOM to find the element with data-action
     while (target && !target.dataset?.['action'] && target !== document.body) {
@@ -257,16 +257,16 @@ export class StaffListComponent {
     }
     console.log(target, 'target action')
     const action = target?.getAttribute("data-action");
-     const staffId = event.data?.user_id;
-    console.log(action,staffId)
-           if (action === "view") {
+    const staffId = event.data?.user_id;
+    console.log(action, staffId)
+    if (action === "view") {
       this.router.navigate([`/staff/view/${staffId}`]);
     } else if (action === "edit") {
       this.router.navigate([`/staff/edit/${staffId}`]);
     } else if (action === "delete") {
       this.delete(event.data);
     }
-    }
+  }
   openConfirmPopup() {
     this.modalService.open(this.confirmModalRef, {
       centered: true,

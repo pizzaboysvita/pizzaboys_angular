@@ -101,7 +101,7 @@ export class AddStaffComponent {
     private fb: FormBuilder,
     private apis: ApisService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.permissionForm = this.fb.group({
