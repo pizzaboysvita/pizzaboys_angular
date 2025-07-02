@@ -16,7 +16,7 @@ export class LoggingOutComponent {
   logOut() {
     localStorage.clear();
     this.modal.dismissAll();
-    this.router.navigateByUrl("/auth/login");
+    this.router.navigateByUrl("/login");
   }
 
 }

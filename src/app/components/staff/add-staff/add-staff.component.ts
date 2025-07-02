@@ -1,158 +1,382 @@
-import { Component, ViewChild } from '@angular/core';
-import { CardComponent } from '../../../shared/components/card/card.component';
-import { NgSelectModule } from '@ng-select/ng-select';
-import { AccountComponent } from '../../users/add-new-users/account/account.component';
-import { PermissionComponent } from '../../users/add-new-users/permission/permission.component';
-import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { AppComponent } from '../../../app.component';
-import { AppConstants } from '../../../app.constants';
-import Swal from 'sweetalert2';
-import { Router } from '@angular/router';
-import { ApisService } from '../../../shared/services/apis.service';
+import { Component, ViewChild } from "@angular/core";
+import { CardComponent } from "../../../shared/components/card/card.component";
+import { NgSelectModule } from "@ng-select/ng-select";
+import { AccountComponent } from "../../users/add-new-users/account/account.component";
+import { PermissionComponent } from "../../users/add-new-users/permission/permission.component";
+import { NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from "@angular/forms";
+import { CommonModule } from "@angular/common";
+import { AppComponent } from "../../../app.component";
+import { AppConstants } from "../../../app.constants";
+import Swal from "sweetalert2";
+import { Router } from "@angular/router";
+import { ApisService } from "../../../shared/services/apis.service";
 
 @Component({
-  selector: 'app-add-staff',
-  imports: [NgbNavModule, PermissionComponent, AccountComponent, CardComponent,ReactiveFormsModule,CommonModule],
-  templateUrl: './add-staff.component.html',
-  styleUrl: './add-staff.component.scss'
+  selector: "app-add-staff",
+  imports: [
+    NgbNavModule,
+    CardComponent,
+    ReactiveFormsModule,
+    CommonModule,
+    NgSelectModule,
+  ],
+  templateUrl: "./add-staff.component.html",
+  styleUrl: "./add-staff.component.scss",
 })
 export class AddStaffComponent {
-    public active = 1;
-    staffForm!: FormGroup;
+  @ViewChild(AccountComponent) accountComponent!: AccountComponent;
+  public active = 1;
+  staffForm!: FormGroup;
+  permissionForm: FormGroup;
   public ProductPlaceholder = [
-    { id: 1, name: 'Static Menu' },
-    { id: 2, name: 'Simple' },
-    { id: 3, name: 'Classified' },
-  ]
-  constructor(private fb: FormBuilder,private apis:ApisService,private router:Router) {}
+    { id: 1, name: "Static Menu" },
+    { id: 2, name: "Simple" },
+    { id: 3, name: "Classified" },
+  ];
+  storesList: any;
+  presetList = ["Manager", "Front Staff & Kitchen", "Driver", "Menu Manager"];
+  selectedPreset: string | null = null;
 
-  public createRoles=[
+  managementSections = [
     {
-        data: [
-            {
-                title: 'POS Management',
-                subData: [
-                    {
-                        id: 'role1',
-                        title: 'Orders'
-                    },
-                    {
-                        id: 'role2',
-                        title: 'Tracking'
-                    },
-                    {
-                      id: 'role1',
-                      title: 'Orders'
-                  },
-                  {
-                      id: 'role2',
-                      title: 'Tracking'
-                  },
-                   {
-                        id: 'role1',
-                        title: 'Orders'
-                    },
-                    {
-                        id: 'role2',
-                        title: 'Tracking'
-                    },
-                    {
-                      id: 'role2',
-                      title: 'Tracking'
-                  },
-                  {
-                    id: 'role1',
-                    title: 'Orders'
-                },
-                {
-                    id: 'role2',
-                    title: 'Tracking'
-                },
-                 {
-                      id: 'role1',
-                      title: 'Orders'
-                  },
-                  {
-                      id: 'role2',
-                      title: 'Tracking'
-                  },
-                  {
-                    id: 'role2',
-                    title: 'Tracking'
-                },
-                {
-                  id: 'role1',
-                  title: 'Orders'
-              },
-              {
-                  id: 'role2',
-                  title: 'Tracking'
-              },
-               {
-                    id: 'role1',
-                    title: 'Orders'
-                },
-                {
-                    id: 'role2',
-                    title: 'Tracking'
-                },
-                   
-                ]
-            },
-           
-          ]}
-          ]
-     ngOnInit(): void {
-    this.staffForm = this.fb.group({
-      name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      role: ['', Validators.required],
-      permissions: this.fb.group({
-        canEdit: [false],
-        canDelete: [false],
-        canView: [true],
-      }),
+      title: "Restaurant Management",
+      key: "restaurant",
+      permissions: [
+        "Create",
+        "Dashboard",
+        "Orders_board_View",
+        "Orders - List View",
+        "Orders - Delete",
+        "Bookings",
+        "Bookings - Delete",
+        "Customers",
+        "Menus",
+        "Menus - Images",
+        "Settings - Systems",
+        "Settings - Services",
+        "Settings - Payments",
+        "Settings - Website",
+        "Settings - Integrations",
+        "Billing",
+        "Reports",
+      ],
+      description:
+        "Restrict your staff member's access to particular pages of the restaurant dashboard ",
+    },
+    {
+      title: "POS Management",
+      key: "pos",
+      permissions: ["Orders", "Takings"],
+      description:
+        "Restrict your staff member's access to particular pages of the restaurant dashboard ",
+    },
+    {
+      title: "Website Management",
+      key: "website",
+      permissions: ["Create", "Edit"],
+      description:
+        "Restrict your staff member's access to particular website management functions",
+    },
+    {
+      title: "Staff Management",
+      key: "staff",
+      permissions: ["Create", "Edit", "Delete"],
+      description:
+        "Restrict your staff member's access to particular staff management fuctions",
+    },
+  ];
+  uploadImagUrl: any;
+  rolesList: any;
+  rolesId: any;
+  file: File;
+
+  constructor(
+    private fb: FormBuilder,
+    private apis: ApisService,
+    private router: Router
+  ) { }
+
+  ngOnInit(): void {
+    this.permissionForm = this.fb.group({
+      store: new FormControl(""),
     });
+    this.initForm();
+    this.applyPreset("Manager");
+    this.staffForm = this.fb.group(
+      {
+        firstName: [
+          "",
+          [Validators.required, Validators.pattern("^[A-Za-z ]+$")],
+        ],
+        lastName: ["", [Validators.pattern("^[A-Za-z ]+$")]],
+        phone: [
+          "",
+          [Validators.required, Validators.pattern(/^\+?\d[\d\s]{7,13}$/)],
+        ],
+        email: [
+          "",
+          [
+            Validators.required,
+            Validators.pattern(
+              /^$|^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/
+            ),
+          ],
+        ],
+        password: ["", [Validators.required, Validators.minLength(6)]],
+        confirmPassword: ["", Validators.required],
+        address: [""],
+        country: [""],
+        state: [""],
+        city: [""],
+        posPin: [""],
+        status: [""],
+      },
+      {
+        validators: this.passwordMatchValidator,
+      }
+    );
+    this.roles();
+    this.storeList();
+  }
+  passwordMatchValidator(group: FormGroup) {
+    const pass = group.get("password")?.value;
+    const confirm = group.get("confirmPassword")?.value;
+    return pass === confirm ? null : { mismatch: true };
   }
 
-    @ViewChild(AccountComponent) accountComponent!: AccountComponent;
-
-  onSubmit() {
-    const isValid = this.accountComponent.validateAndSubmit();
-    this.accountComponent.accountForm.value
-    console.log(isValid   ,this.accountComponent.accountForm.controls)
-    if (isValid) {
- const req_body={
-  "first_name":  this.accountComponent.accountForm.value.firstName,
-  "last_name":   this.accountComponent.accountForm.value.lastName,
-  "phone_number":   this.accountComponent.accountForm.value.phone,
-  "email":   this.accountComponent.accountForm.value.email,
-  "password_hash":  this.accountComponent.accountForm.value.password,
-  "address":   this.accountComponent.accountForm.value.address,
-  "country":   this.accountComponent.accountForm.value.country,
-  "state":   this.accountComponent.accountForm.value.state,
-  "city":  this.accountComponent.accountForm.value.city,
-  "pos_pin":   this.accountComponent.accountForm.value.posPin,
-}
-this.apis.postApi(AppConstants.api_end_points.staff,req_body).subscribe((data:any)=>{
-  if(data.code ==1){
-    console.log(data)
-      Swal.fire('Success!',data.message, 'success').then(
-          (result) => {
-      if (result) {
-        console.log('User clicked OK');
-        this.router.navigate(['/staff/staff-list'])
-      
-      }})
-  }
-})
-    } else {
-      
+  initForm() {
+    for (const section of this.managementSections) {
+      const group: any = {};
+      for (const permission of section.permissions) {
+        group[permission] = [false];
+      }
+      this.permissionForm.addControl(section.key, this.fb.group(group));
     }
   }
 
+  applyPreset(preset: any) {
+    console.log(preset);
+    this.selectedPreset = preset.role_name;
+    this.rolesId = preset.role_id;
+    switch (this.selectedPreset) {
+      case "Super Admin":
+        this.setSectionPermissions({
+          restaurant: [
+            "Create",
+            "Dashboard",
+            "Orders board View",
+            "Orders - List View",
+            "Orders - Delete",
+            "Bookings",
+            "Bookings - Delete",
+            "Customers",
+            "Menus",
+            "Menus - Images",
+            "Settings - Systems",
+            "Settings - Services",
+            "Settings - Payments",
+            "Settings - Website",
+            "Settings - Integrations",
+            "Billing",
+            "Reports",
+          ],
+          pos: ["Orders", "Takings"],
+          website: ["Create", "Edit"],
+          staff: ["Create", "Edit", "Delete"],
+        });
+        break;
+      case "Manager":
+        this.setSectionPermissions({
+          restaurant: [
+            "Create",
+            "Dashboard",
+            "Orders board View",
+            "Orders - List View",
+            "Orders - Delete",
+            "Bookings",
+            "Bookings - Delete",
+            "Customers",
+            "Menus",
+            "Menus - Images",
+            "Settings - Systems",
+            "Settings - Services",
+            "Settings - Payments",
+            "Settings - Website",
+            "Settings - Integrations",
+            "Billing",
+          ],
+          pos: ["Orders"],
+          website: ["Create"],
+          staff: [],
+        });
+        break;
+      case "Front Staff & Kitchen":
+        this.setSectionPermissions({
+          restaurant: ["Dashboard"],
+          pos: ["Orders"],
+          website: ["Create"],
+          staff: [],
+        });
+        break;
+
+      case "Menu Manager":
+        this.setSectionPermissions({
+          restaurant: [
+            "Dashboard",
+            "Orders - Delete",
+            "Bookings",
+            "Bookings - Delete",
+          ],
+          pos: [],
+          website: [],
+          staff: [],
+        });
+        break;
+      case "User":
+        this.setSectionPermissions({
+          restaurant: [],
+          pos: [],
+          website: [],
+          staff: [],
+        });
+        break;
+    }
+  }
+
+  setAll(value: boolean) {
+    for (const section of this.managementSections) {
+      const group = this.permissionForm.get(section.key) as FormGroup;
+      Object.keys(group.controls).forEach((key) =>
+        group.get(key)?.setValue(value)
+      );
+    }
+  }
+
+  setSectionPermissions(config: { [key: string]: string[] }) {
+    for (const section of this.managementSections) {
+      const group = this.permissionForm.get(section.key) as FormGroup;
+      for (const permission of section.permissions) {
+        group
+          .get(permission)
+          ?.setValue(config[section.key]?.includes(permission) ?? false);
+      }
+    }
+  }
+  capitalizeWords_firstName(event: any) {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value
+      .toLowerCase()
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+    this.staffForm.patchValue({
+      firstName: input.value,
+    });
+  }
+  capitalizeWords_lastName(event: any) {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value
+      .toLowerCase()
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+    this.staffForm.patchValue({
+      lastName: input.value,
+    });
+  }
+  storeList() {
+    this.apis
+      .getApi(AppConstants.api_end_points.store_list)
+      .subscribe((data) => {
+        if (data) {
+          console.log(data);
+          this.storesList = data;
+        }
+      });
+  }
+  roles() {
+    this.apis.getApi(AppConstants.api_end_points.roles).subscribe((data) => {
+      if (data) {
+        this.rolesList = data;
+      }
+    });
+  }
+  onSubmit() {
+    // if (isValid) {
+
+    const req_body: any = {
+      type: "insert",
+      role_id: this.rolesId,
+      store_id: this.permissionForm.value.store,
+      first_name: this.staffForm.value.firstName,
+      last_name: this.staffForm.value.lastName,
+      phone_number: this.staffForm.value.phone,
+      email: this.staffForm.value.email,
+      password_hash: this.staffForm.value.password,
+      address: this.staffForm.value.address,
+      country: this.staffForm.value.country,
+      state: this.staffForm.value.state,
+      city: this.staffForm.value.city,
+      pos_pin: this.staffForm.value.posPin,
+      status: this.staffForm.value.status == true ? 1 : 0,
+      created_by: 1,
+      updated_by: 1,
+      refresh_token: "",
+      permissions: {
+        create: this.permissionForm.value.restaurant.Create,
+        dashboard: this.permissionForm.value.restaurant.Create,
+        orders_board_view: this.permissionForm.value.restaurant.Create,
+        orders_list_view: this.permissionForm.value.restaurant.Create,
+        orders_delete: this.permissionForm.value.restaurant.Create,
+        bookings: this.permissionForm.value.restaurant.Create,
+        bookings_delete: this.permissionForm.value.restaurant.Create,
+        customers: this.permissionForm.value.restaurant.Create,
+        menus: this.permissionForm.value.restaurant.Create,
+        menus_images: this.permissionForm.value.restaurant.Create,
+        settings_systems: this.permissionForm.value.restaurant.Create,
+        settings_services: this.permissionForm.value.restaurant.Create,
+        settings_payments: this.permissionForm.value.restaurant.Create,
+        settings_website: this.permissionForm.value.restaurant.Create,
+        settings_integrations: this.permissionForm.value.restaurant.Create,
+        billing: this.permissionForm.value.restaurant.Create,
+        reports: this.permissionForm.value.restaurant.Create,
+      },
+    };
+    console.log(this.file, req_body);
+    const formData = new FormData();
+    formData.append("image", this.file); // Attach Blob with a filename
+    formData.append("body", JSON.stringify(req_body));
+    this.apis
+      .postApi(AppConstants.api_end_points.staff, formData)
+      .subscribe((data: any) => {
+        if (data.code == 1) {
+          console.log(data);
+          Swal.fire("Success!", data.message, "success").then((result) => {
+            if (result) {
+              console.log("User clicked OK");
+              this.router.navigate(["/staff/staff-list"]);
+            }
+          });
+        }
+      });
+  }
+  onSelectFile(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    if (input.files && input.files[0]) {
+      console.log(input.files[0]);
+      this.file = input.files[0];
+      console.log();
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        this.uploadImagUrl = reader.result; // this will update the image source
+      };
+
+      reader.readAsDataURL(this.file); // convert image to base64 URL
+    }
+  }
 }

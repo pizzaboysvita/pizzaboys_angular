@@ -1,0 +1,146 @@
+<form [formGroup]="staffForm">
+  <div class="row">
+    <div class="col-12">
+      <div class="row">
+        <div class="col-12">
+          <app-card [header]="true" [body]="true">
+            <h5 header class="font-family">{{ isViewMode ? "View Staff" : "Edit Staff" }}</h5>
+            <div class="input-items font-family" body>
+              <div class="row">
+                <div class="col-12">
+                  <ul class="nav nav-pills flex-nowrap mb-3" ngbNav #nav="ngbNav" [(activeId)]="activeTab">
+                    <!-- Staff Details Tab -->
+                    <li [ngbNavItem]="'details'" class="nav-item m-0">
+                      <button ngbNavLink class="nav-link" type="button">Staff Details</button>
+                      <ng-template ngbNavContent>
+                        <div class="input-items">
+                          <div class="row gy-3">
+                            <!-- Profile Image -->
+                            <div class="col-xl-3 d-flex justify-content-center">
+                              <label for="fileInput" class="position-relative">
+                                <img class="img1" style="width: 180px; border-radius: 12px;"
+                                  [src]="profileImage || defaultImage" />
+                                <div class="background position-absolute top-0 start-0 w-100 h-100" style="z-index: 1;">
+                                </div>
+                              </label>
+                              <input id="fileInput" type="file" accept="image/*" style="display: none"
+                                (change)="onSelectFile($event)" [disabled]="isViewMode" />
+                            </div>
+
+
+                            <!-- Form Fields -->
+                            <div class="col-xl-9">
+                              <div class="row gy-3">
+                                <!-- Common Fields -->
+                                <div class="col-xl-6" *ngFor="let field of [
+                                  { name: 'firstName', label: 'First Name', required: true },
+                                  { name: 'lastName', label: 'Last Name' },
+                                  { name: 'phone', label: 'Phone Number', required: true },
+                                  { name: 'email', label: 'Email', required: true },
+                                  { name: 'address', label: 'Address' },
+                                  { name: 'country', label: 'Country' },
+                                  { name: 'state', label: 'State' },
+                                  { name: 'city', label: 'City' },
+                                  { name: 'pos_pin', label: 'POS Pin Number' }
+                                ]">
+                                  <div class="input-box">
+                                    <h6 class="f-w-600 p-1">
+                                      {{ field.label }}<span *ngIf="field.required" class="text-danger">*</span>
+                                    </h6>
+                                    <input [type]="field.name.includes('pin') ? 'password' : 'text'"
+                                      [formControlName]="field.name" [readonly]="isViewMode"
+                                      [placeholder]="'Enter ' + field.label" />
+                                  </div>
+                                </div>
+
+                                <!-- Status -->
+                                <div class="col-xl-6">
+                                  <div class="input-box">
+                                    <h6 class="f-w-600 p-1">Status</h6>
+                                    <label class="switch">
+                                      <input type="checkbox" [formControlName]="'status'"
+                                        (change)="onStatusToggle($event)" [disabled]="isViewMode" />
+                                      <span class="slider round"></span>
+                                    </label>
+                                  </div>
+                                </div>
+
+
+
+
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </li>
+
+                    <!-- Permissions Tab -->
+                    <li [ngbNavItem]="'permissions'" class="nav-item m-0">
+                      <button ngbNavLink class="nav-link" type="button">Permissions</button>
+                      <ng-template ngbNavContent>
+                        <div class="input-items" [formGroup]="permissionForm">
+                          <div class="col-12 mb-3">
+                            <div class="input-box">
+                              <h6 class="f-w-600 p-1">Store<span class="text-danger">*</span></h6>
+                              <ng-select [items]="storesList" [searchable]="true" [multiple]="false"
+                                formControlName="store" bindLabel="store_name" bindValue="store_id"
+                                [disabled]="isViewMode"
+                                placeholder="Select from the dropdown or type to search"></ng-select>
+                            </div>
+                          </div>
+                          <h3 class="p-1">Restriction Presets</h3>
+                          <div class="presets mb-3 nav-pills">
+                            <button *ngFor="let role of rolesList" type="button" (click)="applyPreset(role)"
+                              [class.active]="selectedPreset === role.role_name">
+                              {{ role.role_name }}
+                            </button>
+                          </div>
+
+                          <div class="management-section nav-pills" *ngFor="let section of managementSections">
+                            <h3 class="p-1">{{ section.title }}</h3>
+                            <div class="section">
+                              <div [formGroupName]="section.key" class="permissions">
+                                <div class="row gy-3 mb-4">
+                                  <div class="switch-wrapper col-sm-3" *ngFor="let permission of section.permissions">
+                                    <label class="switch">
+                                      <input type="checkbox" [formControlName]="permission" [disabled]="isViewMode" />
+                                      <span class="slider round"></span>
+                                    </label>
+                                    <span class="label-text">{{ permission }}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="description">
+                                <p>{{ section.description }}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="col-12" [ngbNavOutlet]="nav"></div>
+
+                <!-- Buttons -->
+                <div class="text-end mt-4" *ngIf="!isViewMode">
+                  <button type="button" class="btn btn-animation save-button font-family me-3"
+                    style="margin-left: 10px;" (click)="onUpdate()">
+                    <i class="ri-edit-line"></i>&nbsp; Update Staff
+                  </button>
+                  <button type="button" class="btn btn-animation reset-button font-family" (click)="onReset()">
+                    <i class="ri-loop-right-line"></i>&nbsp; Reset
+                  </button>
+                </div>
+
+
+              </div>
+            </div>
+          </app-card>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

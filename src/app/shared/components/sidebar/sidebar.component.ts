@@ -19,10 +19,9 @@ export class SidebarComponent {
   constructor(public navService: NavService,private sessionStorageService:SessionStorageService,
     private router: Router,
   ) {
-  console.log(JSON.parse(localStorage.getItem('user') as any).name,'openn')
-  if(JSON.parse(localStorage.getItem('user') as any).name =='customer'){
+  if(this.sessionStorageService.getsessionStorage('loginDetails') && JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).staff_id =='1'){
 this.menuItemsList= this.navService.customer_menu_items;
-  }else  if(JSON.parse(localStorage.getItem('user') as any).name =='pos'){
+  }else    if(JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).staff_id =='2'){
     this.menuItemsList= this.navService.pos_menu_items;
   }else{
     this.menuItemsList= this.navService.menuItem

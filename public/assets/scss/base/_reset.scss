@@ -764,7 +764,7 @@ input[type="number"] {
   align-items: center;
   justify-content: center;
   position: fixed;
-  background-color: $inner-bg;
+  background-color: rgba(0, 0, 0, 0.5);;
   z-index: 11;
   top: 0;
 }

@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
+import { SessionStorageService } from '../services/session-storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,21 +11,22 @@ export class AdminGuard  {
   
   public url : any;
 
-  constructor(public router: Router) { }
+  constructor(public router: Router,private sessionStorage:SessionStorageService) { }
   
   ngOnInit(){
     this.url = this.router.url;
   } 
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
-    let user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (!user || user === null) {
-      this.router.navigate(['/auth/login']);
+  
+    let user =this.sessionStorage.getsessionStorage('islogin') ;
+    if (!user) {
+      this.router.navigate(['/login']);
       return true;
     }
     else if (user) {
       if (!Object.keys(user).length) {
-        this.router.navigate(['/auth/login']);
+        this.router.navigate(['/login']);
         return true;
       }
     }

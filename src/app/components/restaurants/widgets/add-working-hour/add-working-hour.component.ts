@@ -4,14 +4,16 @@ import { DropdownComponent } from "../../../setting/widgets/dropdown/dropdown.co
 import { CardComponent } from '../../../../shared/components/card/card.component';
 import { TableComponent } from '../../../widgets/table/table.component';
 import { TableConfig } from '../../../../shared/interface/table.interface';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SessionStorageService } from '../../../../shared/services/session-storage.service';
+import Swal from 'sweetalert2';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-add-working-hour',
     templateUrl: './add-working-hour.component.html',
     styleUrl: './add-working-hour.component.scss',
-    imports: [CardComponent,TableComponent,FormsModule,ReactiveFormsModule]
+    imports: [CommonModule,CardComponent,FormsModule,ReactiveFormsModule]
 })
 
 export class AddWorkingHourComponent {
@@ -19,7 +21,6 @@ addWorkingForm:FormGroup
   storeData: any;
   constructor(public modal: NgbActiveModal,private fb:FormBuilder,private session:SessionStorageService) { }
   public day = [
-      { "day": "Select Day", "id": "0" },
   { "day": "Sunday", "id": "1" },
   { "day": "Monday", "id": "2" },
   { "day": "Tuesday", "id": "3" },
@@ -29,21 +30,23 @@ addWorkingForm:FormGroup
   { "day": "Saturday", "id": "7" }
 ]
 
-  workingHours: any[] = [];
-  public tableConfig: TableConfig = {
-    columns: [
+  columns:any[]= [
       { title: "No", dataField: 'id', class: 'f-w-600' },
       { title: "Day", dataField: 'day' },
       { title: "From Time", dataField: 'from', class: 'f-w-600' },
       { title: "To Time", dataField: 'to' },
-      { title: "Options", type: "option" },
+      // { title: "Options", type: "option" },
 
       // { title: "Actions", dataField: '', class: 'action-column' } 
-    ],
-    rowActions: [
+    ]
+    rowActions:any[]= [
       { icon: "ri-pencil-line", permission: "edit" },
       { icon: "ri-delete-bin-line", permission: "delete" },
-    ],
+    ]
+  workingHours: any[] = [];
+  public tableConfig: TableConfig = {
+  
+    
     data: [] // will be filled in ngOnInit
   };
   
@@ -59,13 +62,17 @@ addWorkingForm:FormGroup
    this.workingHours = typeof working_hours1 === "string" ? JSON.parse(working_hours1) : working_hours1;
 
         }
-    this.addWorkingForm=this.fb.group({
-      day:['Select Day'],
-      formtime:[''],
-      to:['']
-    })
-     
+    
+     this.createFrom()
     this.generateTableData();
+  }
+  createFrom(){
+    this.addWorkingForm=this.fb.group({
+      id:[''],
+      day:['-1',[Validators.required]],
+      formtime:['',[Validators.required]],
+      to:['',[Validators.required]]
+    })
   }
   
   private generateTableData() {
@@ -82,19 +89,61 @@ addWorkingForm:FormGroup
     console.log(  this.tableConfig.data )
   }
   save(){
+    const newDay = this.addWorkingForm.value.day;
+    // const isDayExists = this.workingHours.some(item => item.day === newDay);
+
+    const index = this.workingHours.findIndex(item => item.id ===  this.addWorkingForm.value.id);
+
+if (index !== -1) {
+  // If day exists, update the object at that index
+  this.workingHours[index] = {
+    ...this.workingHours[index],
+    // update with new data here
+   day: this.addWorkingForm.value.day,
+        from: this.addWorkingForm.value.formtime,
+        to: this.addWorkingForm.value.to,
+    // add other fields you want to update
+  };
+   this.createFrom()
+    this.generateTableData()
+} else {
+    const newDay = this.addWorkingForm.value.day;
+    const isDayExists = this.workingHours.some(item => item.day === newDay);
+
+  // If day doesn't exist, add a new object
+if (!isDayExists) {
     this.workingHours.push({
-        id: this.workingHours.length + 1, // Auto-incrementing ID
+        // id: this.workingHours.length + 1, // Auto-incrementing ID
         day: this.addWorkingForm.value.day,
         from: this.addWorkingForm.value.formtime,
         to: this.addWorkingForm.value.to,
       });
       console.log(this.workingHours)
-         this.addWorkingForm.reset()
+       this.createFrom()
+    
       this.generateTableData()
+    }else{
+       Swal.fire('Error!',this.addWorkingForm.value.day+' ' +'is exist', 'error')
+    }
+}
+
+
   }
 close(){
   this.modal.close(this.workingHours);
     this.modal.dismiss();
 }
 Cancel(){}
+performAction(action:any,rowData:any){
+  console.log(action,rowData)
+  if(action.permission =='edit'){
+    this.addWorkingForm.patchValue({
+      id:rowData.id,
+ day:rowData.day,
+        formtime:rowData.from,
+        to:rowData.to,
+    })
+     
+  }
+}
 }

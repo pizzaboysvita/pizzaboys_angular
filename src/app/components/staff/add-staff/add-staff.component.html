@@ -1,40 +1,245 @@
-<form [formGroup]="staffForm" >
-    
+<form [formGroup]="staffForm">
   <div class="row">
     <div class="col-12">
       <div class="row">
         <div class="col-12">
           <app-card [header]="true" [body]="true">
-            <h5 header>Create New Staff</h5>
-            <div class="row" body>
-              <div class="col-12">
-                <ul class="nav nav-pills flex-nowrap mb-3" ngbNav #nav="ngbNav" [(activeId)]="active">
-                  <li [ngbNavItem]="1" class="nav-item m-0">
-                    <button ngbNavLink class="nav-link" type="button">Staff Details</button>
-                    <ng-template ngbNavContent>
-                      <app-account [form]="staffForm"></app-account>
-                    </ng-template>
-                  </li>
-                  <li [ngbNavItem]="2" class="nav-item m-0">
-                    <button ngbNavLink class="nav-link" type="button">Permission</button>
-                    <ng-template ngbNavContent>
-                      <app-permission></app-permission>
-                    </ng-template>
-                  </li>
-                </ul>
-              </div>
-              <div class="col-12" [ngbNavOutlet]="nav"></div>
-            </div>
+            <h5 header class="font-family">Create New Staff</h5>
+            <div class="input-items font-family" body>
+              <div class="row">
+                <div class="col-12">
+                  <ul class="nav nav-pills flex-nowrap mb-3" ngbNav #nav="ngbNav" [(activeId)]="active">
+                    <!-- Staff Details Tab -->
+                    <li [ngbNavItem]="1" class="nav-item m-0">
+                      <button ngbNavLink class="nav-link" type="button">Staff Details</button>
+                      <ng-template ngbNavContent>
+                        <div class="input-items" [formGroup]="staffForm">
+                          <div class="row gy-3">
+                            <!-- Profile Image -->
+                            <div class="col-xl-3 d-flex justify-content-center mt-4">
+                              <label for="fileInput" class="position-relative">
+                                <img class="img1" style="width: 180px; border-radius: 12px;"
+                                  [src]="uploadImagUrl || 'https://www.w3schools.com/howto/img_avatar.png'" />
+                                <div class="background position-absolute top-0 start-0 w-100 h-100" style="z-index: 1;">
+                                </div>
+                              </label>
+                              <input id="fileInput" type="file" accept="image/*" style="display: none"
+                                (change)="onSelectFile($event)" />
+                            </div>
 
-            <!-- <div class="pt-3"> -->
-              <button body class="btn btn-animation new-save-button" style="margin-left: 10px;" (click)="onSubmit()" type="submit">
+
+                            <!-- Form Fields -->
+                            <div class="col-xl-9">
+                              <div class="row gy-3">
+                                <!-- First Name -->
+                                <div class="col-xl-6">
+                                  <div class="input-box">
+                                    <h6 class="f-w-600 p-1">First Name<span class="text-danger">*</span></h6>
+                                    <input type="text" formControlName="firstName" placeholder="Enter First Name"
+                                      (input)="capitalizeWords_firstName($event)" />
+                                    @if (staffForm.get('firstName')?.touched && staffForm.get('firstName')?.invalid) {
+                                    <div class="text-danger">First name is required.</div>
+                                    }
+                                    @if ((staffForm.get('firstName')?.touched || staffForm.get('firstName')?.dirty) &&
+                                    staffForm.get('firstName')?.hasError('pattern')) {
+                                    <div class="text-danger">Only alphabets are allowed.</div>
+                                    }
+                                  </div>
+                                </div>
+
+                                <!-- Last Name -->
+                                <div class="col-xl-6">
+                                  <div class="input-box">
+                                    <h6 class="f-w-600 p-1">Last Name</h6>
+                                    <input type="text" formControlName="lastName" placeholder="Enter Last Name"
+                                      (input)="capitalizeWords_lastName($event)" />
+                                    @if ((staffForm.get('lastName')?.touched || staffForm.get('lastName')?.dirty) &&
+                                    staffForm.get('lastName')?.hasError('pattern')) {
+                                    <div class="text-danger">Only alphabets are allowed.</div>
+                                    }
+                                  </div>
+                                </div>
+
+                                <!-- Phone -->
+                                <div class="col-xl-6">
+                                  <div class="input-box">
+                                    <h6 class="f-w-600 p-1">Phone Number<span class="text-danger">*</span></h6>
+                                    <input type="text" formControlName="phone" placeholder="Enter Phone Number" />
+                                    @if (staffForm.get('phone')?.touched &&
+                                    staffForm.get('phone')?.hasError('required')) {
+                                    <div class="text-danger">Phone Number is required</div>
+                                    }
+                                  </div>
+                                </div>
+
+                                <!-- Email -->
+                                <div class="col-xl-6">
+                                  <div class="input-box">
+                                    <h6 class="f-w-600 p-1">Email<span class="text-danger">*</span></h6>
+                                    <input type="email" formControlName="email" placeholder="Enter Email" />
+                                    @if (staffForm.get('email')?.touched &&
+                                    staffForm.get('email')?.hasError('required')) {
+                                    <div class="text-danger">Email is required</div>
+                                    }
+                                    @if ((staffForm.get('email')?.touched || staffForm.get('email')?.dirty) &&
+                                    staffForm.get('email')?.hasError('pattern')) {
+                                    <div class="text-danger">Enter valid email is required</div>
+                                    }
+                                  </div>
+                                </div>
+
+                                <!-- Password -->
+                                <div class="col-xl-6">
+                                  <div class="input-box">
+                                    <h6 class="f-w-600 p-1">Password<span class="text-danger">*</span></h6>
+                                    <input type="password" formControlName="password" placeholder="Enter Password" />
+                                    @if (staffForm.get('password')?.touched && staffForm.get('password')?.invalid) {
+                                    <div class="text-danger">Min 6 characters required</div>
+                                    }
+                                  </div>
+                                </div>
+
+                                <!-- Confirm Password -->
+                                <div class="col-xl-6">
+                                  <div class="input-box">
+                                    <h6 class="f-w-600 p-1">Confirm Password<span class="text-danger">*</span></h6>
+                                    <input type="password" formControlName="confirmPassword"
+                                      placeholder="Enter Confirm Password" />
+                                    @if (staffForm.get('confirmPassword')?.touched &&
+                                    staffForm.get('confirmPassword')?.invalid) {
+                                    <div class="text-danger">Passwords must match</div>
+                                    }
+                                  </div>
+                                </div>
+
+                                <!-- Address -->
+                                <div class="col-xl-6">
+                                  <div class="input-box">
+                                    <h6 class="f-w-600 p-1">Address</h6>
+                                    <input type="text" formControlName="address" placeholder="Enter Address" />
+                                  </div>
+                                </div>
+
+                                <!-- Country -->
+                                <div class="col-xl-6">
+                                  <div class="input-box">
+                                    <h6 class="f-w-600 p-1">Country</h6>
+                                    <input type="text" formControlName="country" placeholder="Enter Country" />
+                                  </div>
+                                </div>
+
+                                <!-- State -->
+                                <div class="col-xl-6">
+                                  <div class="input-box">
+                                    <h6 class="f-w-600 p-1">State</h6>
+                                    <input type="text" formControlName="state" placeholder="Enter State" />
+                                  </div>
+                                </div>
+
+                                <!-- City -->
+                                <div class="col-xl-6">
+                                  <div class="input-box">
+                                    <h6 class="f-w-600 p-1">City</h6>
+                                    <input type="text" formControlName="city" placeholder="Enter City" />
+                                  </div>
+                                </div>
+
+                                <!-- POS Pin -->
+                                <div class="col-xl-6">
+                                  <div class="input-box">
+                                    <h6 class="f-w-600 p-1">POS Pin Number</h6>
+                                    <input type="password" formControlName="posPin"
+                                      placeholder="Enter POS Pin Number" />
+                                  </div>
+                                </div>
+
+                                <!-- Status -->
+                                <div class="col-xl-6">
+                                  <div class="input-box">
+                                    <h6 class="f-w-600 p-1">Status</h6>
+                                    <label class="switch">
+                                      <input type="checkbox" formControlName="status" />
+                                      <span class="slider round"></span>
+                                    </label>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </li>
+
+                    <!-- Permissions Tab -->
+                    <li [ngbNavItem]="2" class="nav-item m-0">
+                      <button ngbNavLink class="nav-link" type="button">Permission</button>
+                      <ng-template ngbNavContent>
+                        <div class="input-items" [formGroup]="permissionForm">
+                          <div class="row gy-3">
+                            <div class="col-12">
+                              <div class="input-box">
+                                <h6 class="f-w-600 p-1">Store List</h6>
+                                <ng-select [items]="storesList" [searchable]="true" [multiple]="false"
+                                  formControlName="store" bindLabel="store_name" bindValue="store_id"
+                                  placeholder="Select from the dropdown or type to search">
+                                </ng-select>
+                              </div>
+                            </div>
+
+                            <div class="col-12">
+                              <h3 class="p-1">Restriction Presets</h3>
+                              <div class="presets mb-3 nav-pills">
+                                @for (role of rolesList; track role) {
+                                <button type="button" class="mb-3" (click)="applyPreset(role)"
+                                  [class.active]="selectedPreset === role.role_name">
+                                  {{ role.role_name }}
+                                </button>
+                                }
+                              </div>
+                            </div>
+
+                            @for (section of managementSections; track section) {
+                            <div class="management-section nav-pills">
+                              <h3 class="p-1">{{ section.title }}</h3>
+                              <div class="section">
+                                <div [formGroupName]="section.key" class="permissions">
+                                  <div class="row gy-3 mb-4">
+                                    @for (permission of section.permissions; track permission) {
+                                    <div class="switch-wrapper col-sm-3">
+                                      <label class="switch">
+                                        <input type="checkbox" [formControlName]="permission" />
+                                        <span class="slider round"></span>
+                                      </label>
+                                      <span class="label-text">{{ permission }}</span>
+                                    </div>
+                                    }
+                                  </div>
+                                </div>
+                                <div class="description">
+                                  <p>{{ section.description }}</p>
+                                </div>
+                              </div>
+                            </div>
+                            }
+                          </div>
+                        </div>
+                      </ng-template>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="col-12" [ngbNavOutlet]="nav"></div>
+              </div>
+
+              <!-- Submit/Reset Buttons -->
+              <button type="submit" class="btn btn-animation save-button font-family" style="margin-left: 10px;"
+                (click)="onSubmit()">
                 <i class="ri-add-circle-line"></i>&nbsp; Add Staff
               </button>
-              <button body class="btn btn-animation new-reset-button" type="button" (click)="staffForm.reset()">
+              <button type="button" class="btn btn-animation reset-button font-family" (click)="staffForm.reset()">
                 <i class="ri-loop-right-line"></i>&nbsp; Reset
               </button>
-            <!-- </div> -->
-
+            </div>
           </app-card>
         </div>
       </div>

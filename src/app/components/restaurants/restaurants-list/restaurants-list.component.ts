@@ -11,6 +11,8 @@ import { AppConstants } from '../../../app.constants';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { ApisService } from '../../../shared/services/apis.service';
+import * as ExcelJS from 'exceljs';
+import * as FileSaver from 'file-saver';
 import { SessionStorageService } from '../../../shared/services/session-storage.service';
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
@@ -38,9 +40,9 @@ export class RestaurantsListComponent {
   storeData: any;
   constructor(private router: Router, private apis: ApisService, private modalService: NgbModal, private session: SessionStorageService) { }
   modules = [ClientSideRowModelModule];
-  public products = ProductsList;
+
   stausList = ['Active', 'In-Active']
-  columnDefs: ColDef<RowData>[] = [    // <-- Important to give <RowData> here!
+  columnDefs: ColDef<RowData>[] = [   
     {
       field: 'store_name', headerName: 'Store Name', sortable: true,
       suppressMenu: true,
@@ -207,7 +209,7 @@ delete
     const req_body = {
       "store_id": this.storeData.store_id
     }
-    this.apis.deleteApi(AppConstants.api_end_points.add_store, req_body).subscribe((data: any) => {
+    this.apis.deleteApi(AppConstants.api_end_points.store_list+'/'+this.storeData.store_id).subscribe((data: any) => {
 
       if (data) {
         console.log(data)
@@ -227,5 +229,59 @@ delete
       }
     })
   }
+
+
+
+
+downloadDevicesExcel(): void {
+  if (!this.storeList || this.storeList.length === 0) {
+    console.warn('No data to export.');
+    return;
+  }
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Stores');
+
+  // Define header row with styles
+  const headers = [
+    { header: 'Store Name', key: 'store_name', width: 20 },
+    { header: 'E-Mail', key: 'email', width: 25 },
+    { header: 'Phone Number', key: 'phone', width: 15 },
+    { header: 'Store Address', key: 'street_address', width: 30 },
+    { header: 'Created Date', key: 'created_on', width: 20 },
+    { header: 'Status', key: 'Status', width: 12 },
+  ];
+
+  worksheet.columns = headers;
+
+  worksheet.getRow(1).eachCell((cell) => {
+    cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FF1F4E78' }, // dark blue
+    };
+  });
+
+  // Add data rows
+  this.storeList.forEach((store: any) => {
+    worksheet.addRow({
+      store_name: store.store_name || '',
+      email: store.email || '',
+      phone: store.phone || '',
+      street_address: store.street_address || '',
+      created_on: store.created_on || '',
+      Status: store.Status || '',
+    });
+  });
+
+  // Create buffer and save
+  workbook.xlsx.writeBuffer().then((data) => {
+    const blob = new Blob([data], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    FileSaver.saveAs(blob, 'storesList.xlsx');
+  });
+}
 
 }
