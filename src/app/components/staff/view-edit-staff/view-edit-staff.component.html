@@ -92,7 +92,7 @@
                           <h3 class="p-1">Restriction Presets</h3>
                           <div class="presets mb-3 nav-pills">
                             <button *ngFor="let role of rolesList" type="button" (click)="applyPreset(role)"
-                              [class.active]="selectedPreset === role.role_name">
+                              [class.active]="selectedPreset == role.role_id">
                               {{ role.role_name }}
                             </button>
                           </div>

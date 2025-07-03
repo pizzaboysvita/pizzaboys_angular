@@ -276,10 +276,11 @@ export class StaffListComponent {
   onConfirm(modal: any) {
     // modal.close();
     // Perform your confirm logic here
-    const req_body = {
-      "staff_id": this.staffData.staff_id
-    }
-    this.apis.deleteApi(AppConstants.api_end_points.staff).subscribe((data: any) => {
+    // const req_body = {
+    //   "staff_id": this.staffData.staff_id
+    // }
+    console.log(this.staffData)
+    this.apis.deleteApi(AppConstants.api_end_points.staff+'/'+this.staffData.user_id).subscribe((data: any) => {
 
       if (data) {
         console.log(data)
