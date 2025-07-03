@@ -279,6 +279,14 @@ export class NavService {
       type: "link",
       active: false,
     },
+       {
+      level: 1,
+      title: "Optionset",
+      path: "/options/add-options",
+      icon: "ri-bowl-line",
+      type: "link",
+      active: false,
+    },
       {
       level: 1,
       title: "Category",
