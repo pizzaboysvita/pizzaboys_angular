@@ -9,27 +9,25 @@ import { ColDef, ModuleRegistry } from "@ag-grid-community/core";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { AddMenuModalComponent } from "../add-menu-modal/add-menu-modal.component";
 import { NgSelectModule } from "@ng-select/ng-select";
-
+import { ApisService } from "../../../shared/services/apis.service";
+import { AppComponent } from "../../../app.component";
+import { AppConstants } from "../../../app.constants";
+import { SessionStorageService } from "../../../shared/services/session-storage.service";
+import FileSaver from "file-saver";
+import * as ExcelJS from 'exceljs';
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
-  storename: string;
-  email: string;
-  phoneNumber: number;
-  storeAddress: string;
+  dish_menu_id: string;
+  name: string;
+  display_name: number;
+  created_on:string;
+  description: string;
   status: string;
 }
-interface RowData1 {
-  menutype: string;
-  categoryType: string;
-  dishName: string;
-  price: string;
-  status: string;
-  pos: string;
-  misc: string;
-}
+
 @Component({
   selector: "app-add-menus",
-  imports: [CardComponent, AgGridAngular,NgSelectModule],
+  imports: [CardComponent, AgGridAngular, NgSelectModule],
   templateUrl: "./add-menus.component.html",
   styleUrl: "./add-menus.component.scss",
 })
@@ -37,33 +35,65 @@ export class AddMenusComponent {
   modules = [ClientSideRowModelModule];
   public products = ProductsList;
   stausList = ["Active", "In-Active", "Pending"];
+  public tableConfig: TableConfig = {
+    columns: [
+      { title: "Store Id", dataField: 'store_id' },
+      { title: "Menu Name", dataField: "name" },
+      { title: "Display Name", dataField: "display_name" },
+      { title: "Description", dataField: "description", class: "f-w-500" },
+      { title: "Created On", dataField: "created_on", class: "td-price" },
+      { title: "Status", dataField: "status" },
+      { title: "Options", type: "option" },
+    ],
+    rowActions: [
+      { icon: "ri-eye-line", permission: "show" },
+      { icon: "ri-pencil-line", permission: "edit" },
+      { icon: "ri-delete-bin-line", permission: "delete" },
+    ],
+    data: this.products,
+  };
   columnDefs: ColDef<RowData>[] = [
     // <-- Important to give <RowData> here!
     {
-      field: "storename",
-      headerName: "Store Name",
+      field: "dish_menu_id",
+      headerName: "Menu Id",
       sortable: true,
       suppressMenu: true,
       unSortIcon: true,
     },
     {
-      field: "email",
-      headerName: "E-Mail",
+      field: "name",
+      headerName: "Menu Name",
       suppressMenu: true,
       unSortIcon: true,
     },
     {
-      field: "phoneNumber",
-      headerName: "Phone Number",
+      field: "display_name",
+      headerName: "Display Name",
       suppressMenu: true,
       unSortIcon: true,
     },
     {
-      field: "storeAddress",
-      headerName: "Store Address",
+      field: "description",
+      headerName: "Description",
       suppressMenu: true,
       unSortIcon: true,
     },
+    {
+      field: 'created_on', headerName: 'Created Date', suppressMenu: true,
+      unSortIcon: true,
+      valueFormatter: (params) => {
+        if (!params.value) return '';
+        const date = new Date(params.value);
+        const day = date.getDate();
+        const month = date.toLocaleString('default', { month: 'long' });
+        const year = date.getFullYear();
+        let hours = date.getHours();
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+        return `${day} ${month} ${year} ${hours}:${minutes}${ampm}`;
+      }},
     {
       headerName: "Status",
       field: "status",
@@ -96,7 +126,7 @@ export class AddMenusComponent {
 
         return `<div class="status-badge ${statusClass}">${params.value}</div>`;
       },
-      
+
     },
 
     {
@@ -127,59 +157,9 @@ delete
     },
   ];
 
-  rowData: RowData[] = [
-    {
-      storename: "Toyota",
-      email: "Celica",
-      status: "Active",
-      phoneNumber: 35000,
-      storeAddress: "Abc Address",
-    },
-    {
-      storename: "Ford",
-      email: "Mondeo",
-      status: "In-Active",
-      phoneNumber: 32000,
-      storeAddress: "Abc Address",
-    },
-    {
-      storename: "Porsche",
-      email: "Boxster",
-      status: "Pending",
-      phoneNumber: 72000,
-      storeAddress: "Abc Address",
-    },
-  ];
 
-  rowData1: RowData1[] = [
-    {
-      menutype: "TakeWay Menu",
-      categoryType: "Valentines Day Promotion",
-      status: "",
-      dishName: "Pizza chicken",
-      price: "85",
-      pos: "Hide in POS",
-      misc: "Cancel",
-    },
-    {
-      menutype: "Seasonal menu",
-      categoryType: "Limited Time Deal",
-      status: "No Stock",
-      dishName: "Pizza chicken",
-      price: "90",
-      pos: "",
-      misc: "",
-    },
-    {
-      menutype: "Seasonal menu",
-      categoryType: "Lunch",
-      status: "Hide",
-      dishName: "Pizza chicken",
-      price: "15",
-      pos: "Hide in POS",
-      misc: "Cancel",
-    },
-  ];
+
+
   public menuList = [
     { id: 1, name: "TakeWay Menu" },
     { id: 2, name: "Seasonal menu" },
@@ -188,25 +168,27 @@ delete
       name: "Cycle menu",
     },
   ];
-  constructor(public modal: NgbModal) {}
+  menuItemsList: any = []
+  constructor(public modal: NgbModal, private apis: ApisService, private session: SessionStorageService) { }
 
-  public tableConfig: TableConfig = {
-    columns: [
-      // { title: "Product Image", dataField: 'product_image', type: 'image' },
-      { title: "Store Name", dataField: "product_name" },
-      { title: "Email", dataField: "category" },
-      { title: "Phone", dataField: "current_qty", class: "f-w-500" },
-      { title: "Address", dataField: "price", class: "td-price" },
-      { title: "Status", dataField: "status" },
-      { title: "Options", type: "option" },
-    ],
-    rowActions: [
-      { icon: "ri-eye-line", permission: "show" },
-      { icon: "ri-pencil-line", permission: "edit" },
-      { icon: "ri-delete-bin-line", permission: "delete" },
-    ],
-    data: this.products,
-  };
+
+
+  ngOnInit() {
+    this.getmenuList()
+  }
+  getmenuList() {
+    console.log(JSON.parse(this.session.getsessionStorage('loginDetails') as any).user.user_id)
+    this.apis.getApi(AppConstants.api_end_points.menu + '?user_id=' + JSON.parse(this.session.getsessionStorage('loginDetails') as any).user.user_id).subscribe((data: any) => {
+      if (data) {
+        console.log(data)
+        data.data.forEach((item: any) => {
+          item.status = item.status == 1 ? 'Active' : item.status == 0 ? 'In-Active' : ''
+        })
+        this.menuItemsList = data.data
+
+      }
+    })
+  }
   onCellClicked(event: any) {
     if (event.event.target && event.event.target.dataset.action) {
       const action = event.event.target.dataset.action;
@@ -228,4 +210,56 @@ delete
       size: "lg",
     });
   }
+   downloadDevicesExcel(): void {
+      if (!this.menuItemsList || this.menuItemsList.length === 0) {
+        console.warn('No data to export.');
+        return;
+      }
+  
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Stores');
+  
+      // Define header row with styles
+   const headers = Object.keys(this.menuItemsList[0]).map(key => {
+  // Capitalize each word from snake_case or camelCase
+  const formattedHeader = key
+    .replace(/_/g, ' ')                           // snake_case -> snake case
+    .replace(/([a-z])([A-Z])/g, '$1 $2')          // camelCase -> camel Case
+    .replace(/\b\w/g, char => char.toUpperCase()); // Capitalize first letter of each word
+
+  return {
+    header: formattedHeader,
+    key: key,
+    width: 20
+  };
+});
+      worksheet.columns = headers;
+  
+      worksheet.getRow(1).eachCell((cell:any) => {
+        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FF1F4E78' }, // dark blue
+        };
+      });
+  
+      // Add data rows
+     this.menuItemsList.forEach((store: any) => {
+  const row: Record<string, any> = {};
+  
+  Object.keys(store).forEach(key => {
+    row[key] = store[key] ?? ''; // use '' for null or undefined
+  });
+   worksheet.addRow(row);
+})
+      // Create buffer and save
+      workbook.xlsx.writeBuffer().then((data:any) => {
+        const blob = new Blob([data], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        });
+        FileSaver.saveAs(blob, 'Menu List.xlsx');
+      });
+     
+    }
 }
