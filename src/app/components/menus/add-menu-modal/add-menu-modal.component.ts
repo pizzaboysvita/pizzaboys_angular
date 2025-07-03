@@ -4,6 +4,7 @@ import { NgbModal, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { AppConstants } from '../../../app.constants';
 import { ApisService } from '../../../shared/services/apis.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-add-menu-modal',
@@ -49,10 +50,9 @@ surchargeForm:FormGroup
   ];
 
   orderTimesOptions = [
-    { id: 1, name: 'Breakfast' },
-    { id: 2, name: 'Lunch' },
-    { id: 3, name: 'Dinner' },
-    { id: 4, name: 'Late Night' }
+    { id: 'now', name: 'Now' },
+    { id: 'Later', name: 'Later' },
+   
   ];
 
   servicesOptions = [
@@ -128,7 +128,7 @@ hideMenu:['']
   "disable_dish_notes": this.menuForm.value.disableDishNotes ==true?1:0,
   "re_stock_menu_daily": this.menuForm.value.restockMenuDaily ==true?1:0,
   "hide_menu": this.menuForm.value.hideMenu==true?1:0,
-  "order_times":   this.conditionForm.value.orderTimes,
+  "order_times":   this.conditionForm.value.orderTimes.toString(),
   "services":  this.conditionForm.value.services.toString(),
   "applicable_hours": "[{\"day\":\"Mon\",\"from\":\"12:00\",\"to\":\"15:00\"}]",
   "mark_as_age_restricted":  this.conditionForm.value.ageRestricted ==true?1:0,
@@ -153,7 +153,16 @@ this.apis.postApi(AppConstants.api_end_points.menu,reqbody).subscribe((data:any)
   console.log(data)
   if(data.success ==1){
     console.log(data)
-  }
+       Swal.fire('Success!',data.message, 'success').then(
+          (result) => {
+      if (result) {
+        console.log('User clicked OK');
+        // this.router.navigate(['/restaurants/restaurants-list'])
+        this.modal.dismissAll();
+      }
+          })}
+    
+  
 })
   }
   addTimeSlot() {

@@ -103,6 +103,7 @@
   .ag-theme-alpine .ag-header-cell-label {
     
     font: 600 13px / 18px "Roboto", sans-serif;
+    color: #af5d00;
   }
 
   .ag-theme-alpine .ag-header-cell .ag-header-icon {
@@ -113,4 +114,25 @@
 }
 .card {
   letter-spacing: 0px;
+}
+
+select.form-select {
+  background-color: #fff;
+}
+
+.ag-row {
+   
+    color: #000;
+      font: 500 13px / 18px "Roboto", sans-serif;
+  
+}
+// .ag-header.ag-header-allow-overflow .ag-header-row {
+//   background-color: #fef4e8;
+// }
+.ag-header, .ag-advanced-filter-header {
+        background-color: #fef4e8 !important;
+    border-bottom: 1px solid #fbdfbf !important;
+    border-top: 1px solid #fbdfbf !important;
+    // padding: 0.8rem;
+    color: #af5d00;
 }

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ClickOutsideDirective } from '../../directive/click-outside.directive';
 import { NavService, menuItem } from '../../services/nav.service';
 import { FeatherIconsComponent } from "../feather-icons/feather-icons.component";
@@ -36,7 +36,7 @@ export class HeaderComponent {
   public searchResultEmpty: boolean = false;
   users: any;
 
-  constructor(public navService: NavService,private sessionStorageService:SessionStorageService) { 
+  constructor(public navService: NavService,private sessionStorageService:SessionStorageService,public router: Router) { 
     this.navService.items.subscribe(
       (menuItems) => (this.items = menuItems)
     );
@@ -102,5 +102,11 @@ export class HeaderComponent {
     this.searchText = "";
     this.searchResult = false;
   }
-
+home(){
+   this.router.navigate(["/store-dashboard"]);
+    this.sessionStorageService.setsessionStorage('Pos','false')
+     setTimeout(() => {
+    window.location.reload();
+  }, 1000);
+}
 }

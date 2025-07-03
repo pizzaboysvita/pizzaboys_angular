@@ -215,7 +215,7 @@ export class NavService {
   //     active: false,
   //   },
   // ]
-  menuItem: menuItem[] = [
+  superAdminmenuItem: menuItem[] = [
        
     //    {
     //   level: 1,
@@ -333,14 +333,7 @@ export class NavService {
       type: "link",
       active: false,
     },
-    // {
-    //   level: 1,
-    //   title: "Reports",
-    //   path: "/reports",
-    //   icon: "ri-file-chart-line",
-    //   type: "link",
-    //   active: false,
-    // },
+   
     {
       level: 1,
       title: "Orders",
@@ -382,14 +375,33 @@ export class NavService {
       type: "link",
       active: false,
     },
-    // {
-    //   level: 1,
-    //   title: "Settings",
-    //   path: "/users/add-new-user",
-    //   icon: "ri-settings-line",
-    //   type: "link",
-    //   active: false,
-    // },
+     {
+      level: 1,
+      title: "Reports",
+      path: "/reports",
+      icon: "ri-file-chart-line",
+      type: "link",
+      active: false,
+    },
+    {
+      level: 1,
+      title: "Settings",
+      path: "/users/add-new-user",
+      icon: "ri-settings-line",
+      type: "link",
+      active: false,
+    },
+
+ {
+      level: 1,
+      title: "Pos",
+      path: "/orders/order-detail",
+      icon: "ri-settings-line",
+      type: "link",
+      active: false,
+    },
+
+  
   ]
   pos_menu_items:menuItem[]  =[
 
@@ -449,7 +461,7 @@ export class NavService {
    
   ]
   
-  items = new BehaviorSubject<menuItem[]>(this.menuItem);
+  items = new BehaviorSubject<menuItem[]>(this.superAdminmenuItem);
    logOut() {
           this.modal.open(LoggingOutComponent,{
               windowClass:'theme-modal',centered:true

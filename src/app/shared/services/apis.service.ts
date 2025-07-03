@@ -1,12 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApisService {
 basesurl='http://localhost:3002'
+  private change$ =  new BehaviorSubject<boolean>(false);
+    poschanges$ = this.change$.asObservable();
   constructor() { }
  private http = inject(HttpClient);
  isLoading = new BehaviorSubject<boolean>(false);
@@ -31,5 +33,8 @@ basesurl='http://localhost:3002'
     hide(): void {
  
     this.isLoading.next(false);
+  }
+  changesPos(data:any){
+    this.change$.next(data)
   }
 }
