@@ -1,0 +1,289 @@
+<div class="modal-header">
+    <h5 class="modal-title">Create Option Set</h5>
+    <button type="button" class="btn-close" (click)="close()"></button>
+</div>
+
+<div class="modal-body p-3">
+    <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav nav-tabs mb-4" role="tablist">
+        <li class="nav-item" [ngbNavItem]="'general'">
+            <a ngbNavLink class="nav-link">General</a>
+            <ng-template ngbNavContent>
+                <form [formGroup]="optionSetForm">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Name</label>
+                        <input type="text" class="form-control" formControlName="name"
+                            placeholder="Enter option set name" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Display Name</label>
+                        <input type="text" class="form-control" formControlName="displayName"
+                            placeholder="Enter display name" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Hide Option Set</label>
+                        <div *ngFor="let option of hideOptionSet" class="form-check mb-1">
+                            <input class="form-check-input" type="checkbox" [(ngModel)]="option.checked"
+                                [id]="option.key" [name]="option.key" [ngModelOptions]="{ standalone: true }" />
+                            <label class="form-check-label" [for]="option.key">{{ option.label }}</label>
+                        </div>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" [(ngModel)]="hideName" name="hideName"
+                            id="hideName" [ngModelOptions]="{ standalone: true }" />
+                        <label class="form-check-label" for="hideName">Hide Option Set Name in POS</label>
+                    </div>
+                </form>
+            </ng-template>
+        </li>
+
+        <!-- OPTIONS TAB START -->
+        <li class="nav-item" [ngbNavItem]="'options'">
+            <a ngbNavLink class="nav-link">Options</a>
+            <ng-template ngbNavContent>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <button class="btn btn-outline-primary btn-sm me-2" type="button" (click)="addOption()">
+                            <i class="ri ri-add-line"></i> ADD
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm" type="button">
+                            <i class="ri ri-sort-asc"></i> SORT
+                        </button>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="serviceCheckbox" value="service" />
+                        <label class="form-check-label" for="serviceCheckbox">SERVICE ($)</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="comboCheckbox" value="combo" />
+                        <label class="form-check-label" for="comboCheckbox">COMBO ($)</label>
+                    </div>
+                    <div ngbDropdown class="d-inline-block">
+                        <button class="btn btn-outline-secondary btn-sm" id="dropdownBasic1" ngbDropdownToggle>
+                            <i class="ri ri-eye-line"></i>
+                        </button>
+                        <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                            <button ngbDropdownItem *ngFor="let hideOpt of globalHideOptionsArray"
+                                (click)="toggleGlobalHideOption(hideOpt)">
+                                <div class="form-check">
+                                    <input type="checkbox" [checked]="hideOpt.checked" class="form-check-input me-2" />
+                                    <label class="form-check-label">{{ hideOpt.label }}</label>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <ng-select [items]="['Vary based on other options', 'Option 1', 'Option 2']"
+                        [(ngModel)]="selectedVaryOption" placeholder="Vary based on other options"
+                        [ngModelOptions]="{ standalone: true }">
+                    </ng-select>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Price ($)</th>
+                                <th>In Stock</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngIf="options.length === 0">
+                                <td colspan="5" class="text-center text-muted">No options added yet.</td>
+                            </tr>
+                            <tr *ngFor="let opt of options; let i = index">
+                                <td>
+                                    <input class="form-control form-control-sm" [(ngModel)]="opt.name"
+                                        [name]="'optName' + i" placeholder="Option Name"
+                                        [ngModelOptions]="{ standalone: true }" />
+                                </td>
+                                <td>
+                                    <input class="form-control form-control-sm" [(ngModel)]="opt.description"
+                                        [name]="'optDesc' + i" placeholder="Description"
+                                        [ngModelOptions]="{ standalone: true }" />
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control form-control-sm" [(ngModel)]="opt.price"
+                                        [name]="'optPrice' + i" placeholder="0.00"
+                                        [ngModelOptions]="{ standalone: true }" />
+                                </td>
+                                <td class="text-center">
+                                    <div class="form-check d-flex justify-content-center">
+                                        <input class="form-check-input" type="checkbox" [(ngModel)]="opt.inStock"
+                                            [name]="'optInStock' + i" [ngModelOptions]="{ standalone: true }" />
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center align-items-center gap-2">
+                                        <button class="btn btn-sm btn-outline-secondary p-0" type="button"
+                                            ngbTooltip="View">
+                                            <i class="ri ri-eye-line"></i>
+                                        </button>
+                                        <div ngbDropdown container="body">
+                                            <button class="btn btn-sm btn-outline-secondary p-0" ngbDropdownToggle
+                                                type="button">
+                                                <i class="ri ri-settings-3-line"></i>
+                                            </button>
+                                            <div ngbDropdownMenu>
+                                                <button ngbDropdownItem *ngFor="let hideOpt of hideOptions"
+                                                    (click)="toggleOptionVisibility(opt, hideOpt.key)">
+                                                    <input type="checkbox" [checked]="opt && opt[hideOpt.key]"
+                                                        class="form-check-input me-2" />
+                                                    <label class="form-check-label">{{ hideOpt.label }}</label>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-danger p-0" type="button"
+                                            (click)="removeOption(i)">
+                                            <i class="ri ri-delete-bin-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-muted mt-2">
+                    Define a list of options for this option set
+                </p>
+            </ng-template>
+        </li>
+        <!-- OPTIONS TAB END -->
+
+        <li class="nav-item" [ngbNavItem]="'conditions'">
+            <a ngbNavLink class="nav-link">Conditions</a>
+            <ng-template ngbNavContent>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Required</label>
+                    <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" [(ngModel)]="isOptionSetRequired"
+                            id="requiredToggle" [ngModelOptions]="{ standalone: true }" />
+                        <label class="form-check-label" for="requiredToggle">If enabled, a customer must make a choice
+                            from this option set</label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Select Multiple</label>
+                    <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" [(ngModel)]="canSelectMultiple"
+                            id="selectMultipleToggle" [ngModelOptions]="{ standalone: true }" />
+                        <label class="form-check-label" for="selectMultipleToggle">If enabled, a customer can select
+                            multiple options</label>
+                    </div>
+                </div>
+            </ng-template>
+        </li>
+
+        <li class="nav-item" [ngbNavItem]="'dishes'">
+            <a ngbNavLink class="nav-link">Add/Remove From Dishes</a>
+            <ng-template ngbNavContent>
+                <div class="tree-view">
+                    <ul>
+                        <ng-container *ngFor="let category of dishTree">
+                            <li>
+                                <div class="d-flex align-items-center">
+                                    <button class="btn btn-sm p-0 me-2" (click)="toggleExpand(category)"
+                                        *ngIf="category.children?.length">
+                                        <i class="ri" [ngClass]="
+                        category.expanded
+                          ? 'ri-arrow-down-s-line'
+                          : 'ri-arrow-right-s-line'
+                      ">
+                                        </i>
+                                    </button>
+                                    <input class="form-check-input me-2" type="checkbox" [(ngModel)]="category.checked"
+                                        (change)="toggleCategory(category)" [ngModelOptions]="{ standalone: true }" />
+                                    <label class="form-check-label fw-bold">{{ category.name }}</label>
+                                </div>
+
+                                <ul *ngIf="category.children && category.expanded" class="ms-4 mt-1">
+                                    <ng-container *ngFor="let dish of category.children">
+                                        <li>
+                                            <div *ngIf="!dish.children; else nested" class="form-check">
+                                                <input class="form-check-input" type="checkbox"
+                                                    [(ngModel)]="dish.checked"
+                                                    [ngModelOptions]="{ standalone: true }" />
+                                                <label class="form-check-label">{{ dish.name }}</label>
+                                            </div>
+                                            <ng-template #nested>
+                                                <div class="d-flex align-items-center">
+                                                    <button class="btn btn-sm p-0 me-2" (click)="toggleExpand(dish)">
+                                                        <i class="ri" [ngClass]="
+                                dish.expanded
+                                  ? 'ri-arrow-down-s-line'
+                                  : 'ri-arrow-right-s-line'
+                              ">
+                                                        </i>
+                                                    </button>
+                                                    <input class="form-check-input me-2" type="checkbox"
+                                                        [(ngModel)]="dish.checked" (change)="toggleCategory(dish)"
+                                                        [ngModelOptions]="{ standalone: true }" />
+                                                    <label class="form-check-label fw-bold">{{ dish.name }}</label>
+                                                </div>
+                                                <ul *ngIf="dish.expanded" class="ms-4 mt-1">
+                                                    <li *ngFor="let subdish of dish.children">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                [(ngModel)]="subdish.checked"
+                                                                [ngModelOptions]="{ standalone: true }" />
+                                                            <label class="form-check-label">{{ subdish.name }}</label>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </ng-template>
+                                        </li>
+                                    </ng-container>
+                                </ul>
+                            </li>
+                        </ng-container>
+                    </ul>
+                </div>
+
+                <p class="text-muted mt-2">
+                    Easily add or remove this option set to/from your dishes
+                </p>
+            </ng-template>
+        </li>
+
+        <li class="nav-item" [ngbNavItem]="'misc'">
+            <a ngbNavLink class="nav-link">Misc.</a>
+            <ng-template ngbNavContent>
+                <div class="misc-tab">
+                    <!-- Corrected misc-header structure -->
+                    <div class="misc-header mb-3 d-flex justify-content-between align-items-center">
+                        <label class="form-label">Inc. Price in Free Quantity Promos</label>
+                        <span class="badge bg-light text-dark border border-secondary">OPTIONAL</span>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <!-- Added mb-3 for spacing -->
+                        <input type="checkbox" class="form-check-input" [(ngModel)]="misc.includePriceInPromo"
+                            id="includePriceInPromo" [ngModelOptions]="{ standalone: true }" />
+                    </div>
+
+                    <p class="text-muted">
+                        By default, option set prices are not counted towards promos such as
+                        buy 1 get 1 free. For example, if the base dish price is $10 but the
+                        customer added an option costing $5 extra, total $15, if they buy 2
+                        units, the second will be discounted for the base cost of $10. If
+                        this setting is enabled, the discount would be valid for up to $15.
+                    </p>
+                </div>
+                <button class="btn btn-primary w-100 text-white" (click)="submit()">
+                    Save
+                </button>
+            </ng-template>
+        </li>
+    </ul>
+
+    <div [ngbNavOutlet]="nav"></div>
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-secondary" (click)="close()">Cancel</button>
+    <button class="btn btn-primary" (click)="submit()">Save</button>
+</div>
