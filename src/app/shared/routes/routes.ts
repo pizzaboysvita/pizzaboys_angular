@@ -51,6 +51,10 @@ export const content: Routes = [
         path: 'staff',
         loadChildren: () => import('../../components/staff/staff.routes'),
     },
+      {
+        path: 'options',
+        loadChildren: () => import('../../components/optionset/options.routes'),
+    },
     ///// customer Routes /////
     {
         path: 'bookings',

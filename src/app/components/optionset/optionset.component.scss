@@ -1,0 +1,23 @@
+// optionset.component.scss
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  text-transform: capitalize;
+  display: inline-block;
+}
+
+.status-active {
+  background-color: #28a745;
+}
+
+.status-no-stock {
+  background-color: #ffc107;
+  color: black;
+}
+
+.status-hide {
+  background-color: #dc3545;
+}

@@ -1,0 +1,281 @@
+.modal-header {
+  border-bottom: 1px solid #dee2e6;
+  background-color: #f8f9fa;
+  .modal-title {
+    font-weight: 600;
+    font-size: 18px;
+  }
+}
+
+.modal-body {
+  padding-top: 0;
+
+  .nav-tabs {
+    border-bottom: 1px solid #dee2e6;
+    .nav-link {
+      padding: 10px 16px;
+      &.active {
+        font-weight: 600;
+        background-color: #fff;
+        border-color: #dee2e6 #dee2e6 #fff;
+      }
+    }
+  }
+
+  form .form-label {
+    font-weight: 500;
+  }
+
+  .form-check {
+    margin-bottom: 10px;
+  }
+
+  .d-flex.align-items-center {
+    gap: 8px;
+  }
+
+  .btn-outline-primary {
+    font-size: 13px;
+    padding: 5px 10px;
+  }
+}
+
+.modal-footer {
+  border-top: 1px solid #dee2e6;
+  background-color: #f8f9fa;
+}
+.tree-view ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.tree-view li {
+  margin-bottom: 6px;
+}
+.ri {
+  font-size: 20px;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+// Misc tab styles
+.misc-tab {
+  .form-check.form-switch {
+    padding-left: 0;
+    display: flex;
+    align-items: center;
+
+    input.form-check-input {
+      width: 45px;
+      height: 25px;
+      cursor: pointer;
+      background-color: #dee2e6;
+      border: none;
+      transition: all 0.3s ease;
+
+      &:checked {
+        background-color: #ff6600;
+      }
+    }
+  }
+
+  .badge {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 6px;
+  }
+
+  .text-muted {
+    font-size: 13px;
+    line-height: 1.6;
+    margin-top: 10px;
+  }
+
+  .form-label {
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .misc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+/* Styles for the Options Tab within the AddOptionSetModalComponent */
+
+// General styling for buttons in the header of the options tab
+.d-flex.justify-content-between.align-items-center.mb-3 {
+  .btn-outline-primary,
+  .btn-outline-secondary {
+    border-radius: 0.25rem; // Slightly more square, matching the image
+    font-weight: 500; // Medium font weight
+    padding: 0.375rem 0.75rem; // Standard button padding
+    display: inline-flex; // Align icon and text
+    align-items: center; // Vertically center icon and text
+    line-height: 1.5; // Ensure consistent line height
+    font-size: 0.875rem; // Slightly smaller font size for buttons
+
+    i {
+      margin-right: 0.25rem; // Space between icon and text
+      font-size: 0.9rem; // Adjust icon size to match button text
+    }
+  }
+
+  // Styling for the eye icon dropdown button
+  .btn-outline-secondary[ngbdropdowntoggle] {
+    padding: 0.375rem 0.6rem; // Adjust padding for icon-only button
+  }
+
+  // Styling for the inline checkboxes like SERVICE ($) and COMBO ($)
+  .form-check-inline {
+    display: flex; // Use flexbox for better alignment of checkbox and label
+    align-items: center; // Vertically center them
+    margin-right: 1rem; // Add some space between them
+    font-size: 0.875rem; // Match button font size
+
+    .form-check-input {
+      margin-top: 0; // Remove default top margin for better vertical alignment
+      margin-right: 0.5rem; // Space between checkbox and label
+    }
+  }
+}
+
+// Styling for the ng-select dropdown
+ng-select {
+  .ng-select-container {
+    border-radius: 0.25rem; // Match button and other input fields
+    min-height: 38px; // Standard input height
+    border-color: #ced4da; // Bootstrap default border color
+    box-shadow: none; // Remove default ng-select shadow
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; // Add transitions
+
+    &:hover {
+      border-color: #80bdff; // Hover effect
+    }
+    &.ng-select-focused {
+      border-color: #80bdff;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); // Focus ring
+    }
+  }
+
+  .ng-placeholder {
+    color: #6c757d; // Placeholder text color
+  }
+
+  .ng-value-container {
+    padding-left: 0.75rem; // Align text with form controls
+  }
+}
+
+
+// Table styling
+.table {
+  font-size: 0.875rem; // Slightly smaller font for table content
+  border-radius: 0.25rem; // Match other elements for consistency
+  overflow: hidden; // Ensures rounded corners apply to borders
+  border: 1px solid #dee2e6; // Add a consistent border around the entire table
+
+  thead {
+    th {
+      background-color: #f8f9fa; // Light background for table header
+      font-weight: 600; // Bolder header text
+      border-bottom: 1px solid #dee2e6; // Lighter bottom border for header
+      padding: 0.6rem 0.75rem; // Adjusted padding
+      white-space: nowrap; // Prevent text wrapping in headers
+    }
+  }
+
+  tbody {
+    tr {
+      td {
+        vertical-align: middle; // Vertically align content in cells
+        padding: 0.4rem 0.75rem; // Adjusted padding for table cells
+        border-color: #dee2e6; // Light border for cells
+
+        // Styling for input fields within table cells
+        .form-control-sm {
+          height: calc(1.5rem + 2px); // Slightly smaller input height
+          padding: 0.2rem 0.5rem; // Smaller padding for table inputs
+          font-size: 0.8rem; // Smaller font for table inputs
+          border-radius: 0.2rem; // Slightly smaller border-radius for table inputs
+        }
+
+        // Center checkbox in "In Stock" column
+        .form-check.d-flex.justify-content-center {
+          input[type="checkbox"] {
+            margin-top: 0; // Remove default top margin for better centering
+            transform: scale(0.9); // Slightly reduce checkbox size
+          }
+        }
+
+        // Styling for action buttons in table
+        .btn-sm.btn-outline-secondary,
+        .btn-sm.btn-outline-danger {
+          width: 24px; // Fixed width for small icon buttons
+          height: 24px; // Fixed height for small icon buttons
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 0.2rem; // More square corners for action buttons
+          padding: 0; // Remove padding as width/height are fixed
+          font-size: 0.8rem; // Adjust icon size
+          border-width: 1px; // Thin border
+          flex-shrink: 0; // Prevent shrinking in flex container
+        }
+        .btn-sm.btn-outline-danger {
+          color: #dc3545; // Danger color for remove button
+          border-color: #dc3545;
+          &:hover {
+            background-color: #dc3545;
+            color: white;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Dropdown menu styling for the hide options (eye icon dropdown)
+.ngb-dropdown-menu {
+  padding: 0; // Remove padding from the menu itself
+  border-radius: 0.25rem; // Match other elements
+  box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.1); // Lighter shadow
+
+  .dropdown-item {
+    padding: 0.25rem 0.75rem; // Adjust padding for dropdown items
+    font-size: 0.875rem; // Match general text size
+    white-space: nowrap; // Prevent text wrapping
+
+    .form-check {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0; // Remove default margin from form-check
+
+      .form-check-input {
+        margin-right: 0.5rem; // Space between checkbox and label
+        margin-top: 0; // Align checkbox vertically
+        transform: scale(0.9); // Slightly reduce checkbox size
+      }
+      .form-check-label {
+        line-height: 1.2; // Adjust line height for label
+      }
+    }
+  }
+}
+
+// Tooltip styling (if ngbTooltip is used)
+:host ::ng-deep .tooltip-inner {
+  background-color: #343a40; // Dark background for tooltip
+  color: #fff; // White text
+  border-radius: 0.3rem;
+  font-size: 0.8rem;
+}
+
+:host ::ng-deep .bs-tooltip-auto[x-placement^=top] .arrow::before,
+:host ::ng-deep .bs-tooltip-top .arrow::before {
+  border-top-color: #343a40; // Match tooltip background
+}
+
+
