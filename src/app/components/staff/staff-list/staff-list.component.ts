@@ -18,7 +18,8 @@ import { SessionStorageService } from "../../../shared/services/session-storage.
 import { AgGridAngular } from "@ag-grid-community/angular";
 import { ColDef, ModuleRegistry } from "@ag-grid-community/core";
 import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
-
+import * as ExcelJS from 'exceljs';
+import FileSaver from "file-saver";
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 
 interface RowData {
@@ -231,23 +232,7 @@ export class StaffListComponent {
 
     // Optionally trigger actual sorting of data here
   }
-  // delete(data: any) {
-  //   this.staffData = data
-  //   this.openConfirmPopup()
 
-  //   const action = target?.getAttribute("data-action");
-  //   const staffId = event.data?.user_id;
-
-  //   if (!action || !staffId) return;
-
-  //   if (action === "view") {
-  //     this.router.navigate([`/staff/view/${staffId}`]);
-  //   } else if (action === "edit") {
-  //     this.router.navigate([`/staff/edit/${staffId}`]);
-  //   } else if (action === "delete") {
-  //     this.delete(event.data);
-  //   }
-  // }
   onCellClicked(event: any): void {
     let target = event.event?.target as HTMLElement;
 
@@ -276,10 +261,11 @@ export class StaffListComponent {
   onConfirm(modal: any) {
     // modal.close();
     // Perform your confirm logic here
-    const req_body = {
-      "staff_id": this.staffData.staff_id
-    }
-    this.apis.deleteApi(AppConstants.api_end_points.staff).subscribe((data: any) => {
+    // const req_body = {
+    //   "staff_id": this.staffData.staff_id
+    // }
+    console.log(this.staffData)
+    this.apis.deleteApi(AppConstants.api_end_points.staff + '/' + this.staffData.user_id).subscribe((data: any) => {
 
       if (data) {
         console.log(data)
@@ -298,5 +284,78 @@ export class StaffListComponent {
 
       }
     })
+  }
+  downloadDevicesExcel(): void {
+    if (!this.staff_list || this.staff_list.length === 0) {
+      console.warn('No data to export.');
+      return;
+    }
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Stores');
+
+    // Define header row with styles
+    const headers = [
+      { header: 'User Id', key: 'user_id', width: 20 },
+      { header: 'Role Id', key: 'role_id', width: 25 },
+      { header: 'First Name', key: 'first_name', width: 15 },
+      { header: 'Last Name', key: 'last_name', width: 30 },
+      { header: 'Phone Number', key: 'phone_number', width: 20 },
+      { header: 'Address', key: 'address', width: 12 },
+      { header: 'City', key: 'city', width: 12 },
+      { header: 'State', key: 'state', width: 12 },
+      { header: 'Country', key: 'country', width: 12 },
+      { header: 'Pos Code', key: 'pos_pin', width: 12 },
+      { header: 'Status', key: 'status', width: 12 },
+      { header: 'Created on', key: 'created_on', width: 12 },
+      { header: 'Updated on', key: 'updated_on', width: 12 },
+      { header: 'Created By', key: 'created_by', width: 12 },
+      { header: 'Updated BY', key: 'updated_by', width: 12 },
+      { header: 'Permissions', key: 'permissions', width: 12 },
+      { header: 'Profiles', key: 'profiles', width: 12 },
+
+    ];
+
+    worksheet.columns = headers;
+
+    worksheet.getRow(1).eachCell((cell) => {
+      cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF1F4E78' }, // dark blue
+      };
+    });
+
+    // Add data rows
+    this.staff_list.forEach((store: any) => {
+      worksheet.addRow({
+        user_id: store.user_id || '',
+        role_id: store.role_id || '',
+        first_name: store.first_name || '',
+        last_name: store.last_name || '',
+        phone_number: store.phone_number || '',
+        address: store.address || '',
+        city: store.city || '',
+        state: store.state || '',
+        country: store.country || '',
+        pos_pin: store.pos_pin || '',
+        status: store.status || '',
+        created_on: store.created_on || '',
+        updated_on: store.updated_on || '',
+        created_by: store.created_by || '',
+        updated_by: store.updated_by || '',
+        permissions: store.permissions || '',
+        profiles: store.profiles || '',
+      });
+    });
+
+    // Create buffer and save
+    workbook.xlsx.writeBuffer().then((data) => {
+      const blob = new Blob([data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      FileSaver.saveAs(blob, 'staffList.xlsx');
+    });
   }
 }

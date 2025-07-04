@@ -7,7 +7,7 @@
         <!-- Store Name -->
         <div class="col-xl-6">
           <div class="input-box">
-            <h6 class="f-w-600 p-1">Store Name</h6>
+            <h6 class="f-w-600 p-1">Store Name<span class="text-danger">*</span></h6>
             <input type="text" formControlName="storeName" placeholder="Enter Store Name"  (input)="capitalizeWords_firstName($event)"  />
             @if (storeForm.get('storeName')?.touched && storeForm.get('storeName')?.errors?.['required']) {
               <div class="text-danger">Store Name is required</div>
@@ -18,7 +18,7 @@
         <!-- Email -->
         <div class="col-xl-6">
           <div class="input-box">
-            <h6 class="f-w-600 p-1">E-Mail</h6>
+            <h6 class="f-w-600 p-1">E-Mail<span class="text-danger">*</span></h6>
             <input type="email" formControlName="email" placeholder="Enter E-Mail" />
             @if (storeForm.get('email')?.touched && storeForm.get('email')?.hasError('required')) {
                               <div class="text-danger">Email is required</div>
@@ -33,7 +33,7 @@
         <!-- Phone -->
         <div class="col-xl-6">
           <div class="input-box">
-            <h6 class="f-w-600 p-1">Phone Number</h6>
+            <h6 class="f-w-600 p-1">Phone Number<span class="text-danger">*</span></h6>
             <input type="text" formControlName="phoneNumber" placeholder="Enter Phone Number" maxlength="16" />
              @if (storeForm.get('phoneNumber')?.touched && storeForm.get('phoneNumber')?.hasError('required')) {
                               <div class="text-danger">Phone Nuber is required</div>
@@ -45,7 +45,7 @@
         <!-- Password -->
         <div class="col-md-6">
           <div class="input-box">
-            <h6 class="f-w-600 p-1">Password</h6>
+            <h6 class="f-w-600 p-1">Password<span class="text-danger">*</span></h6>
             <input type="password" formControlName="password" placeholder="Enter Password" />
             @if (storeForm.get('password')?.touched && storeForm.get('password')?.invalid) {
               <div class="text-danger">Minimum 6 characters required</div>
@@ -56,7 +56,7 @@
         <!-- Address Fields -->
         <div class="col-xl-6">
           <div class="input-box">
-            <h6 class="f-w-600 p-1">Street Address</h6>
+            <h6 class="f-w-600 p-1">Street Address<span class="text-danger">*</span></h6>
             <input type="text" formControlName="address" placeholder="Enter Street Address" />
               @if (storeForm.get('address')?.touched && storeForm.get('address')?.errors?.['required']) {
               <div class="text-danger">Address is required</div>
@@ -66,7 +66,7 @@
 
         <div class="col-xl-6">
           <div class="input-box">
-            <h6 class="f-w-600 p-1">City</h6>
+            <h6 class="f-w-600 p-1">City<span class="text-danger">*</span></h6>
             <input type="text" formControlName="city" placeholder="Enter City" />
               @if (storeForm.get('city')?.touched && storeForm.get('city')?.errors?.['required']) {
               <div class="text-danger">City is required</div>
@@ -76,7 +76,7 @@
 
         <div class="col-xl-6">
           <div class="input-box">
-            <h6 class="f-w-600 p-1">State</h6>
+            <h6 class="f-w-600 p-1">State<span class="text-danger">*</span></h6>
             <input type="text" formControlName="state" placeholder="Enter State" />
               @if (storeForm.get('state')?.touched && storeForm.get('state')?.errors?.['required']) {
               <div class="text-danger">State is required</div>
@@ -86,14 +86,14 @@
 
         <div class="col-xl-6">
           <div class="input-box">
-            <h6 class="f-w-600 p-1">Postal Code</h6>
+            <h6 class="f-w-600 p-1">Postal Code<span class="text-danger">*</span></h6>
             <input type="text" formControlName="postalCode" placeholder="Enter Postal Code" />
           </div>
         </div>
 
         <div class="col-xl-6">
           <div class="input-box">
-            <h6 class="f-w-600 p-1">Country</h6>
+            <h6 class="f-w-600 p-1">Country<span class="text-danger">*</span></h6>
             <input type="text" formControlName="country" placeholder="Enter Country" />
           </div>
         </div>
@@ -101,7 +101,7 @@
         <!-- Status -->
         <div class="col-md-6">
           <div class="input-box">
-            <h6 class="f-w-600 p-1">Status</h6>
+            <h6 class="f-w-600 p-1">Status<span class="text-danger">*</span></h6>
             <div class="radio-section">
               <label>
                 <input type="radio" value="1" formControlName="status" />
