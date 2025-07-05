@@ -1,15 +1,13 @@
-import { Component } from '@angular/core';
-import { CardComponent } from '../../../shared/components/card/card.component';
-// import { TableComponent } from '../../widgets/table/table.component';
-import { TableConfig } from '../../../shared/interface/table.interface';
-import { ProductsList } from '../../../shared/data/products';
-import { AgGridAngular } from '@ag-grid-community/angular';
-import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
-import { ColDef, ModuleRegistry } from '@ag-grid-community/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AddCategoryComponent } from '../add-category/add-category.component';
+import { Component, OnInit } from "@angular/core";
+import { CardComponent } from "../../../shared/components/card/card.component";
+import { AgGridAngular } from "@ag-grid-community/angular";
+import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
+import { ColDef, ModuleRegistry } from "@ag-grid-community/core";
+import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
+import { AddCategoryComponent } from "../add-category/add-category.component";
 import { NgSelectModule } from "@ng-select/ng-select";
-
+import { SessionStorageService } from "../../../shared/services/session-storage.service";
+import { ApisService } from "../../../shared/services/apis.service";
 
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
@@ -19,55 +17,63 @@ interface RowData {
   price: string;
   status: string;
   pos: string;
-  misc:string
+  misc: string;
 }
 @Component({
-  selector: 'app-category',
-  imports: [CardComponent, AgGridAngular,NgSelectModule],
-  templateUrl: './category.component.html',
-  styleUrl: './category.component.scss'
+  selector: "app-category",
+  imports: [CardComponent, AgGridAngular, NgSelectModule],
+  templateUrl: "./category.component.html",
+  styleUrl: "./category.component.scss",
 })
-export class CategoryComponent {
+export class CategoryComponent implements OnInit {
   modules = [ClientSideRowModelModule];
-  stausList = ['Active', 'No Stock', 'Hide']
-  columnDefs: ColDef<RowData>[] = [    // <-- Important to give <RowData> here!
+  stausList = ["Active", "No Stock", "Hide"];
+
+  rowData: RowData[] = [];
+  public categoryList = [];
+  columnDefs: ColDef<RowData>[] = [
     {
-      field: 'menutype', headerName: 'Menu Type', sortable: true,
+      field: "menutype",
+      headerName: "Menu Type",
+      sortable: true,
       suppressMenu: true,
       unSortIcon: true,
-      tooltipField: 'menutype' 
+      tooltipField: "menutype",
     },
     {
-      field: 'categoryType', headerName: 'Category Type', suppressMenu: true,
-      unSortIcon: true
-      ,
-      tooltipField: 'categoryType' 
+      field: "categoryType",
+      headerName: "Category Type",
+      suppressMenu: true,
+      unSortIcon: true,
+      tooltipField: "categoryType",
     },
     {
-      field: 'dishName', headerName: 'Dish Name', suppressMenu: true,
-      unSortIcon: true
-      ,
-      tooltipField: 'dishName' 
+      field: "dishName",
+      headerName: "Dish Name",
+      suppressMenu: true,
+      unSortIcon: true,
+      tooltipField: "dishName",
     },
     {
-      field: 'price', headerName: 'Price ($)', suppressMenu: true,
-      unSortIcon: true
-      ,
-      tooltipField: 'price' 
+      field: "price",
+      headerName: "Price ($)",
+      suppressMenu: true,
+      unSortIcon: true,
+      tooltipField: "price",
     },
     {
-      headerName: 'Status',
-      field: 'status',
+      headerName: "Status",
+      field: "status",
       cellRenderer: (params: any) => {
-        let statusClass = '';
-        if (params.value === 'Active') {
-          statusClass = 'status-active';
-        } else if (params.value === 'No Stock') {
-          statusClass = 'status-no-stock';
-        } else if (params.value === 'Hide') {
-          statusClass = 'status-hide';
+        let statusClass = "";
+        if (params.value === "Active") {
+          statusClass = "status-active";
+        } else if (params.value === "No Stock") {
+          statusClass = "status-no-stock";
+        } else if (params.value === "Hide") {
+          statusClass = "status-hide";
         }
-        if (params.value === '') {
+        if (params.value === "") {
           return `
             <select class="status-dropdown" onchange="updateStatus(event, ${params.rowIndex})">
                 <option value="">Select Status</option>
@@ -79,25 +85,25 @@ export class CategoryComponent {
         }
         return `<div class="status-badge ${statusClass}">${params.value}</div>`;
       },
-      editable: true, // Make the cell editable
-      cellEditor: 'agSelectCellEditor', // Use the ag-Grid built-in select editor
+      editable: true, 
+      cellEditor: "agSelectCellEditor", 
       cellEditorParams: {
-        values: ['Active', 'No Stock', 'Hide'], // List of values for the dropdown
+        values: ["Active", "No Stock", "Hide"], 
       },
       suppressMenu: true,
-      unSortIcon: true
-    }
-    , {
-      headerName: 'POS',
-      field: 'pos',
+      unSortIcon: true,
+    },
+    {
+      headerName: "POS",
+      field: "pos",
       cellRenderer: (params: any) => {
-        let statusClass = '';
-        if (params.value === 'Hide in POS') {
-          statusClass = 'hide-pos';
-        } else if (params.value === 'Show in POS') {
-          statusClass = 'show-pos';
+        let statusClass = "";
+        if (params.value === "Hide in POS") {
+          statusClass = "hide-pos";
+        } else if (params.value === "Show in POS") {
+          statusClass = "show-pos";
         }
-        if (params.value === '') {
+        if (params.value === "") {
           return `
             <select class="status-dropdown" onchange="updateStatus(event, ${params.rowIndex})">
                 <option value="">Select POS</option>
@@ -109,26 +115,25 @@ export class CategoryComponent {
         }
         return `<div class="pos-badge ${statusClass}">${params.value}</div>`;
       },
-      editable: true, // Make the cell editable
-      cellEditor: 'agSelectCellEditor', // Use the ag-Grid built-in select editor
+      editable: true, 
+      cellEditor: "agSelectCellEditor", 
       cellEditorParams: {
-        values: ['Hide in POS', 'Show in POS'], // List of values for the dropdown
+        values: ["Hide in POS", "Show in POS"],
       },
       suppressMenu: true,
-      unSortIcon: true
-    }
-    ,
+      unSortIcon: true,
+    },
     {
-      headerName: 'MISC',
-      field: 'misc',
+      headerName: "MISC",
+      field: "misc",
       cellRenderer: (params: any) => {
-        let statusClass = '';
-        if (params.value === 'Cancel') {
-          statusClass = 'status-active';
-        } else if (params.value === 'Delete') {
-          statusClass = 'status-no-stock';
-        } 
-        if (params.value === '') {
+        let statusClass = "";
+        if (params.value === "Cancel") {
+          statusClass = "status-active";
+        } else if (params.value === "Delete") {
+          statusClass = "status-no-stock";
+        }
+        if (params.value === "") {
           return `
             <select class="status-dropdown" onchange="updateStatus(event, ${params.rowIndex})">
                 <option value="">Select MISC</option>
@@ -140,19 +145,16 @@ export class CategoryComponent {
         }
         return `<div class="status-badge ${statusClass}">${params.value}</div>`;
       },
-      editable: true, // Make the cell editable
-      cellEditor: 'agSelectCellEditor', // Use the ag-Grid built-in select editor
+      editable: true,
+      cellEditor: "agSelectCellEditor", 
       cellEditorParams: {
-        values: ['Cancel', 'Delete'], // List of values for the dropdown
+        values: ["Cancel", "Delete"], 
       },
       suppressMenu: true,
-      unSortIcon: true
-    }
-    ,
-
-
+      unSortIcon: true,
+    },
     {
-      headerName: 'Actions',
+      headerName: "Actions",
       cellRenderer: (params: any) => {
         return `
         <div style="display: flex; align-items: center; gap:15px;">
@@ -175,39 +177,84 @@ delete
       `;
       },
       minWidth: 150,
-      flex: 1
-    }
+      flex: 1,
+    },
   ];
 
-  rowData: RowData[] = [
-    { menutype: 'TakeWay Menu', categoryType: 'Valentines Day Promotion', status: '', dishName: 'Pizza chicken', price: '85', pos: 'Hide in POS',misc:'Cancel' },
-    { menutype: 'Seasonal menu', categoryType: 'Limited Time Deal', status: 'No Stock', dishName: 'Pizza chicken', price: '90', pos: '',misc:'' },
-    { menutype: 'Seasonal menu', categoryType: 'Lunch', status: 'Hide', dishName: 'Pizza chicken', price: '15', pos: 'Hide in POS',misc:'Cancel' }
-  ];
-  public categoryList = [
-    { id: 1, name: "Valentines Day Promotion" },
-    { id: 2, name: "Limited Time Deal" },
-    { id: 3, name: "Specials" },
-    { id: 4, name: "Lunch" },
-    { id: 5, name: "Chicken Pizza" },
-    { id: 6, name: "Meat Pizza" },
-  ];
-  constructor(public modal: NgbModal) { }
+  constructor(
+    public modal: NgbModal,
+    private apiService: ApisService,
+    private sessionStorage: SessionStorageService
+  ) {}
+
+  ngOnInit(): void {
+    this.fetchCategories();
+  }
+
+  fetchCategories(): void {
+    const loginRaw = this.sessionStorage.getsessionStorage("loginDetails");
+    const loginData = loginRaw ? JSON.parse(loginRaw) : null;
+    const userId = loginData?.user?.user_id;
+    console.log(userId, 'user id');
+    
+
+    if (!userId) {
+      console.error("No user ID found in session");
+      return;
+    }
+
+    this.apiService
+      .getApi(`/api/category?user_id=${userId}`)
+      .subscribe((res: any) => {
+
+        console.log(res, 'categories response');
+        
+        if (res.code === "1") {
+          this.rowData = res.categories.map((cat: any) => ({
+            menutype: "TakeWay Menu", 
+            categoryType: cat.name,
+            dishName: String(cat.dish_menu_id ?? ''), 
+            price: "", 
+            status: cat.status === 1 ? "Active" : "Hide",
+            pos: cat.hide_category_in_POS === 1 ? "Hide in POS" : "Show in POS",
+            misc: "", 
+          }));
+
+          this.categoryList = res.categories.map((cat: any) => ({
+            id: cat.id,
+            name: cat.name,
+          }));
+        } else {
+          console.error("Failed to load categories:", res.message);
+        }
+      });
+  }
+
   onCellClicked(event: any) {
     if (event.event.target && event.event.target.dataset.action) {
       const action = event.event.target.dataset.action;
       const rowData = event.data;
 
-      if (action === 'view') {
-        console.log('Viewing', rowData);
-      } else if (action === 'edit') {
-        console.log('Editing', rowData);
-      } else if (action === 'delete') {
-        console.log('Deleting', rowData);
+      if (action === "view") {
+        console.log("Viewing", rowData);
+      } else if (action === "edit") {
+        console.log("Editing", rowData);
+      } else if (action === "delete") {
+        console.log("Deleting", rowData);
       }
     }
   }
   insertCategory() {
-    this.modal.open(AddCategoryComponent, { windowClass: 'theme-modal', centered: true, size: 'lg' })
+    const modalRef = this.modal.open(AddCategoryComponent, {
+      windowClass: "theme-modal",
+      centered: true,
+      size: "lg",
+    });
+
+    modalRef.closed.subscribe((result) => {
+      if (result === "refresh") {
+        this.fetchCategories();
+      }
+    });
   }
 }
