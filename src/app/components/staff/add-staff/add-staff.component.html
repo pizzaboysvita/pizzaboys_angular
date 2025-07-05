@@ -191,7 +191,7 @@
                               <div class="presets mb-3 nav-pills">
                                 @for (role of rolesList; track role) {
                                 <button type="button" class="mb-3" (click)="applyPreset(role)"
-                                  [class.active]="selectedPreset === role.role_name">
+                                  [class.active]="selectedPreset == role.role_name">
                                   {{ role.role_name }}
                                 </button>
                                 }

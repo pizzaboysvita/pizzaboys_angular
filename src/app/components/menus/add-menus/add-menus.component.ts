@@ -35,23 +35,7 @@ export class AddMenusComponent {
   modules = [ClientSideRowModelModule];
   public products = ProductsList;
   stausList = ["Active", "In-Active", "Pending"];
-  public tableConfig: TableConfig = {
-    columns: [
-      { title: "Store Id", dataField: 'store_id' },
-      { title: "Menu Name", dataField: "name" },
-      { title: "Display Name", dataField: "display_name" },
-      { title: "Description", dataField: "description", class: "f-w-500" },
-      { title: "Created On", dataField: "created_on", class: "td-price" },
-      { title: "Status", dataField: "status" },
-      { title: "Options", type: "option" },
-    ],
-    rowActions: [
-      { icon: "ri-eye-line", permission: "show" },
-      { icon: "ri-pencil-line", permission: "edit" },
-      { icon: "ri-delete-bin-line", permission: "delete" },
-    ],
-    data: this.products,
-  };
+
   columnDefs: ColDef<RowData>[] = [
     // <-- Important to give <RowData> here!
     {

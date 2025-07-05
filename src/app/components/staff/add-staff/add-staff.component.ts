@@ -42,7 +42,7 @@ export class AddStaffComponent {
   ];
   storesList: any;
   presetList = ["Manager", "Front Staff & Kitchen", "Driver", "Menu Manager"];
-  selectedPreset: string | null = null;
+  selectedPreset: any = 'Super Admin';
 
   managementSections = [
     {
@@ -105,7 +105,7 @@ export class AddStaffComponent {
 
   ngOnInit(): void {
     this.permissionForm = this.fb.group({
-      store: new FormControl(""),
+      store: new FormControl(null),
     });
     this.initForm();
     this.applyPreset("Manager");
@@ -301,6 +301,8 @@ export class AddStaffComponent {
     this.apis.getApi(AppConstants.api_end_points.roles).subscribe((data) => {
       if (data) {
         this.rolesList = data;
+        // this.selectedPreset='Super Admin';
+        this.applyPreset(this.rolesList[0])
       }
     });
   }

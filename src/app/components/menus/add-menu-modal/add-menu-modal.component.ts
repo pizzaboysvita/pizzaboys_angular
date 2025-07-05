@@ -57,17 +57,17 @@ export class AddMenuModalComponent {
   ];
 
   servicesOptions = [
-    { id: 'Delivery', name: 'Delivery' },
-    { id: 'Pickup', name: 'Pickup' },
-    { id: 'Dine-in', name: 'Dine-in' }
+    { id: 'delivery', name: 'Delivery' },
+    { id: 'pickup', name: 'Pickup' },
+    { id: 'dine-in', name: 'Dine-in' }
   ];
 
   preOrderServicesOptions = [
-    { id: 'Delivery', name: 'Delivery' },
-    { id: 'Pickup', name: 'Pickup' }
+    { id: 'delivery', name: 'Delivery' },
+    { id: 'pickup', name: 'Pickup' }
   ];
   storeList: any;
-
+  reqbody:any
   constructor(private fb: FormBuilder, public modal: NgbModal, private apis: ApisService) {
     this.menuForm = this.fb.group({
       name: [''],
@@ -139,14 +139,15 @@ export class AddMenuModalComponent {
 
       })
       this.conditionForm.patchValue({
-        store: this.myData.store_id,
+        store:[this.myData.store_id],
+          services: this.myData.services.split(','),
         orderTimes: this.myData.order_times,
-        services: this.myData.services.split(','),
-        ageRestricted: this.myData.mark_as_age_restricted,
-        preOrderOnly: this.myData.enable_pre_orders_only,
+      
+        ageRestricted: this.myData.mark_as_age_restricted ==0?false:this.myData.mark_as_age_restricted ==1? true:'',
+        preOrderOnly: this.myData.enable_pre_orders_only ==0?false:this.myData.enable_pre_orders_only ==1?true:'',
         preOrderDays: this.myData.pre_order_days_in_advance,
         preOrderCutoffTime: this.myData.pre_order_cutoff_time,
-        preOrderServices: this.myData.pre_order_applicable_service,
+        preOrderServices: this.myData.pre_order_applicable_service.split(","),
         hideRestrictionWarning: this.myData.hide_restriction_warning == 0 ? false : this.myData.hide_restriction_warning == 1 ? true : '',
         hideIfUnavailable: this.myData.hide_if_unavailable == 0 ? false : this.myData.hide_if_unavailable == 1 ? true : '',
       })
@@ -165,8 +166,37 @@ export class AddMenuModalComponent {
 
   saveMenu() {
     console.log('Saving menu', this.menuForm.value);
-
-    const reqbody = {
+    if(this.type =='Edit'){
+ this.reqbody = {
+      "type": "update",
+        "menu_id":this.myData.dish_menu_id,
+      "name": this.menuForm.value.name,
+      "display_name": this.menuForm.value.displayName,
+      "description": this.menuForm.value.description,
+      "disable_dish_notes": this.menuForm.value.disableDishNotes == true ? 1 : 0,
+      "re_stock_menu_daily": this.menuForm.value.restockMenuDaily == true ? 1 : 0,
+      "hide_menu": this.menuForm.value.hideMenu == true ? 1 : 0,
+      "order_times": this.conditionForm.value.orderTimes.toString(),
+      "services": this.conditionForm.value.services.toString(),
+      "applicable_hours": "[{\"day\":\"Mon\",\"from\":\"12:00\",\"to\":\"15:00\"}]",
+      "mark_as_age_restricted": this.conditionForm.value.ageRestricted == true ? 1 : 0,
+      "enable_pre_orders_only": this.conditionForm.value.preOrderOnly == true ? 1 : 0,
+      "pre_order_days_in_advance": this.conditionForm.value.preOrderDays,
+      "pre_order_cutoff_time": this.conditionForm.value.preOrderCutoffTime,
+      "pre_order_applicable_service": this.conditionForm.value.preOrderServices.toString(),
+      "hide_restriction_warning": this.conditionForm.value.hideRestrictionWarning == true ? 1 : 0,
+      "hide_if_unavailable": this.conditionForm.value.hideIfUnavailable == true ? 1 : 0,
+      "POS_display_name": this.posForm.value.posDispalyname,
+      "hide_menu_in_POS": this.posForm.value.hideMenu == true ? 1 : 0,
+      "pickup_surcharge": this.surchargeForm.value.pickupSurcharge,
+      "delivery_surcharge": this.surchargeForm.value.deliverySurcharge,
+      "managed_delivery_surcharge": this.surchargeForm.value.managedDeliverySurcharge,
+      "dine_in_surcharge": this.surchargeForm.value.dineInSurcharge,
+      "store_id": this.conditionForm.value.store.toString(),
+      "created_by": 1
+    }
+  }else{
+    this.reqbody = {
       "type": "insert",
       "name": this.menuForm.value.name,
       "display_name": this.menuForm.value.displayName,
@@ -193,9 +223,10 @@ export class AddMenuModalComponent {
       "store_id": this.conditionForm.value.store.toString(),
       "created_by": 1
     }
-    console.log(reqbody)
+  }
+    console.log(this.reqbody)
 
-    this.apis.postApi(AppConstants.api_end_points.menu, reqbody).subscribe((data: any) => {
+    this.apis.postApi(AppConstants.api_end_points.menu, this.reqbody).subscribe((data: any) => {
       console.log(data)
       if (data.code == 1) {
         console.log(data)

@@ -279,19 +279,12 @@ export class NavService {
       type: "link",
       active: false,
     },
-       {
-      level: 1,
-      title: "Optionset",
-      path: "/options/add-options",
-      icon: "ri-bowl-line",
-      type: "link",
-      active: false,
-    },
+      
       {
       level: 1,
       title: "Category",
       path: "/menus/category",
-      icon: "ri-bowl-line",
+      icon: "ri-restaurant-2-fill",
       type: "link",
       active: false,
     },
@@ -299,10 +292,19 @@ export class NavService {
       level: 1,
       title: "Dish",
       path: "/menus/dish",
-      icon: "ri-bowl-line",
+      icon: "ri-restaurant-fill",
       type: "link",
       active: false,
-    }
+    },
+     {
+      level: 1,
+      title: "Optionset",
+      path: "/options/add-options",
+      icon: "ri-image-circle-fill",
+      type: "link",
+      active: false,
+    },
+
     //    {
     //   level: 1,
     //   title: "Users",

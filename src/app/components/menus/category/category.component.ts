@@ -11,12 +11,12 @@ import { ApisService } from "../../../shared/services/apis.service";
 
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
-  menutype: string;
-  categoryType: string;
-  dishName: string;
+  dish_menu_id: string;
+  name: string;
+  display_name: string;
   price: string;
   status: string;
-  pos: string;
+  hide_category_in_POS: string;
   misc: string;
 }
 @Component({
@@ -31,28 +31,29 @@ export class CategoryComponent implements OnInit {
 
   rowData: RowData[] = [];
   public categoryList = [];
+ 
   columnDefs: ColDef<RowData>[] = [
     {
-      field: "menutype",
+      field: "dish_menu_id",
       headerName: "Menu Type",
       sortable: true,
       suppressMenu: true,
       unSortIcon: true,
-      tooltipField: "menutype",
+      tooltipField: "dish_menu_id",
     },
     {
-      field: "categoryType",
-      headerName: "Category Type",
+      field: "name",
+      headerName: "Category Name",
       suppressMenu: true,
       unSortIcon: true,
-      tooltipField: "categoryType",
+      tooltipField: "name",
     },
     {
-      field: "dishName",
-      headerName: "Dish Name",
+      field: "display_name",
+      headerName: "Dispaly Name",
       suppressMenu: true,
       unSortIcon: true,
-      tooltipField: "dishName",
+      tooltipField: "display_name",
     },
     {
       field: "price",
@@ -95,7 +96,7 @@ export class CategoryComponent implements OnInit {
     },
     {
       headerName: "POS",
-      field: "pos",
+      field: "hide_category_in_POS",
       cellRenderer: (params: any) => {
         let statusClass = "";
         if (params.value === "Hide in POS") {
@@ -180,6 +181,7 @@ delete
       flex: 1,
     },
   ];
+  categoryRowData: any;
 
   constructor(
     public modal: NgbModal,
@@ -210,47 +212,43 @@ delete
         console.log(res, 'categories response');
         
         if (res.code === "1") {
-          this.rowData = res.categories.map((cat: any) => ({
-            menutype: "TakeWay Menu", 
-            categoryType: cat.name,
-            dishName: String(cat.dish_menu_id ?? ''), 
-            price: "", 
-            status: cat.status === 1 ? "Active" : "Hide",
-            pos: cat.hide_category_in_POS === 1 ? "Hide in POS" : "Show in POS",
-            misc: "", 
-          }));
+          this.rowData = res.categories
 
-          this.categoryList = res.categories.map((cat: any) => ({
-            id: cat.id,
-            name: cat.name,
-          }));
+          
         } else {
           console.error("Failed to load categories:", res.message);
         }
       });
   }
 
-  onCellClicked(event: any) {
-    if (event.event.target && event.event.target.dataset.action) {
-      const action = event.event.target.dataset.action;
-      const rowData = event.data;
+   onCellClicked(event: any): void {
+    let target = event.event?.target as HTMLElement;
 
-      if (action === "view") {
-        console.log("Viewing", rowData);
-      } else if (action === "edit") {
-        console.log("Editing", rowData);
-      } else if (action === "delete") {
-        console.log("Deleting", rowData);
-      }
+    // Traverse up the DOM to find the element with data-action
+    while (target && !target.dataset?.['action'] && target !== document.body) {
+      target = target.parentElement as HTMLElement;
+    }
+    console.log(target, 'target action')
+    const action = target?.getAttribute("data-action");
+    this.categoryRowData = event.data;
+    console.log(this.categoryRowData)
+    if (action === "view") {
+      console.log(event.data)
+   this.insertCategory('View')
+    } else if (action === "edit") {
+this.insertCategory("Edit")
+    } else if (action === "delete") {
+      // this.delete(event.data);
     }
   }
-  insertCategory() {
+  insertCategory(type:any) {
     const modalRef = this.modal.open(AddCategoryComponent, {
       windowClass: "theme-modal",
       centered: true,
       size: "lg",
     });
-
+     modalRef.componentInstance.type =type
+    modalRef.componentInstance.myData =this.categoryRowData
     modalRef.closed.subscribe((result) => {
       if (result === "refresh") {
         this.fetchCategories();
