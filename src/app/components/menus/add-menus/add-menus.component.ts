@@ -169,6 +169,7 @@ delete
     },
   ];
   menuItemsList: any = []
+  menuData: any;
   constructor(public modal: NgbModal, private apis: ApisService, private session: SessionStorageService) { }
 
 
@@ -189,26 +190,35 @@ delete
       }
     })
   }
-  onCellClicked(event: any) {
-    if (event.event.target && event.event.target.dataset.action) {
-      const action = event.event.target.dataset.action;
-      const rowData = event.data;
+  onCellClicked(event: any): void {
+    let target = event.event?.target as HTMLElement;
 
-      if (action === "view") {
-        console.log("Viewing", rowData);
-      } else if (action === "edit") {
-        console.log("Editing", rowData);
-      } else if (action === "delete") {
-        console.log("Deleting", rowData);
-      }
+    // Traverse up the DOM to find the element with data-action
+    while (target && !target.dataset?.['action'] && target !== document.body) {
+      target = target.parentElement as HTMLElement;
+    }
+    console.log(target, 'target action')
+    const action = target?.getAttribute("data-action");
+    this.menuData = event.data;
+    console.log(action)
+    if (action === "view") {
+      console.log(event.data)
+   this.insertMenu('View')
+    } else if (action === "edit") {
+this.insertMenu("Edit")
+    } else if (action === "delete") {
+      // this.delete(event.data);
     }
   }
-  insertMenu() {
-    this.modal.open(AddMenuModalComponent, {
+  insertMenu(type:any) {
+    const modalRef =this.modal.open(AddMenuModalComponent, {
       windowClass: "theme-modal",
       centered: true,
       size: "lg",
     });
+    console.log(this.menuData)
+      modalRef.componentInstance.type =type
+    modalRef.componentInstance.myData =this.menuData
   }
    downloadDevicesExcel(): void {
       if (!this.menuItemsList || this.menuItemsList.length === 0) {

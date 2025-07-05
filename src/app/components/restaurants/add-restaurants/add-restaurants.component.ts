@@ -60,6 +60,7 @@ export class AddRestaurantsComponent {
     });
   }
 addStore() {
+  console.log(this.storeForm.value.status )
   console.log(this.workinghours)
     // if (!this.storeForm.invalid) {
     //   console.log(this.storeForm.value);
