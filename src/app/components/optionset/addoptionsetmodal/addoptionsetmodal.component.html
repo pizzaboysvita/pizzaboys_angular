@@ -36,7 +36,6 @@
             </ng-template>
         </li>
 
-        <!-- OPTIONS TAB START -->
         <li class="nav-item" [ngbNavItem]="'options'">
             <a ngbNavLink class="nav-link">Options</a>
             <ng-template ngbNavContent>
@@ -152,7 +151,6 @@
                 </p>
             </ng-template>
         </li>
-        <!-- OPTIONS TAB END -->
 
         <li class="nav-item" [ngbNavItem]="'conditions'">
             <a ngbNavLink class="nav-link">Conditions</a>
@@ -254,13 +252,11 @@
             <a ngbNavLink class="nav-link">Misc.</a>
             <ng-template ngbNavContent>
                 <div class="misc-tab">
-                    <!-- Corrected misc-header structure -->
                     <div class="misc-header mb-3 d-flex justify-content-between align-items-center">
                         <label class="form-label">Inc. Price in Free Quantity Promos</label>
                         <span class="badge bg-light text-dark border border-secondary">OPTIONAL</span>
                     </div>
                     <div class="form-check form-switch mb-3">
-                        <!-- Added mb-3 for spacing -->
                         <input type="checkbox" class="form-check-input" [(ngModel)]="misc.includePriceInPromo"
                             id="includePriceInPromo" [ngModelOptions]="{ standalone: true }" />
                     </div>
