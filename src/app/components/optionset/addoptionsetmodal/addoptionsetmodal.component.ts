@@ -4,7 +4,6 @@ import { NgbActiveModal, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { CommonModule } from '@angular/common';
 
-// Interface definition for OptionItem
 interface OptionItem {
   name: string;
   description: string;
@@ -18,7 +17,6 @@ interface OptionItem {
   hidePickup?: boolean;
   hideDelivery?: boolean;
   hideDineIn?: boolean;
-  // Add an index signature to allow string indexing for these optional boolean properties
   [key: string]: string | number | boolean | undefined;
 }
 
@@ -33,15 +31,12 @@ export class AddoptionsetmodalComponent {
   activeTab = 'general';
   hideName = false;
 
-  // Properties for the new "Conditions" tab toggles
   isOptionSetRequired: boolean = false;
   canSelectMultiple: boolean = false;
 
-  // Updated 'options' array to match the table structure from the Options Tab TypeScript Snippet
   options: OptionItem[] = [];
 
-  // Data for the "Vary based on other options" dropdown from the Options Tab TypeScript Snippet
-  selectedVaryOption: string = 'Vary based on other options'; // For the ng-select dropdown
+  selectedVaryOption: string = 'Vary based on other options';
 
   hideOptionSet = [
     { key: 'always', label: 'Always', checked: false },
@@ -50,7 +45,6 @@ export class AddoptionsetmodalComponent {
     { key: 'thirdParty', label: '3rd Party Integration', checked: false }
   ];
 
-  // globalHideOptionsArray for the eye icon dropdown (global settings) from the Options Tab TypeScript Snippet
   globalHideOptionsArray = [
     { key: 'hide', label: 'Hide', checked: false },
     { key: 'hideOnline', label: 'Hide Online', checked: false },
@@ -62,7 +56,6 @@ export class AddoptionsetmodalComponent {
     { key: 'hideDineIn', label: 'Hide Dine-In', checked: false }
   ];
 
-  // hideOptions for individual option settings (settings icon dropdown) from the Options Tab TypeScript Snippet
   hideOptions = [
     { key: 'hide', label: 'Hide' },
     { key: 'hideOnline', label: 'Hide Online' },
@@ -132,14 +125,12 @@ export class AddoptionsetmodalComponent {
     });
   }
 
-  // Method to add a new option row to the table (updated to use OptionItem structure)
   addOption() {
     this.options.push({
       name: '',
       description: '',
       price: 0.00,
-      inStock: true, // Default to true as per image
-      // Initialize all hide properties to false for individual options
+      inStock: true,
       hide: false,
       hideOnline: false,
       hidePOS: false,
@@ -151,24 +142,18 @@ export class AddoptionsetmodalComponent {
     });
   }
 
-  // Method to remove an option row from the table
   removeOption(index: number) {
     this.options.splice(index, 1);
   }
 
-  // Method to toggle the visibility (hide) property of an INDIVIDUAL option (used by settings icon dropdown)
   toggleOptionVisibility(opt: OptionItem, key: string) {
-    // Now that OptionItem has an index signature, direct access is safer.
-    // We still need to check if the property exists and is a boolean.
     if (typeof opt[key] === 'boolean') {
       opt[key] = !opt[key];
     } else {
-      // If the property is undefined or not a boolean, set it to true (assuming first click enables it)
       opt[key] = true;
     }
   }
 
-  // Method to toggle the GLOBAL hide options (used by eye icon dropdown)
   toggleGlobalHideOption(hideOption: { key: string; label: string; checked: boolean }) {
     hideOption.checked = !hideOption.checked;
   }
@@ -197,15 +182,14 @@ export class AddoptionsetmodalComponent {
       const selectedDishes = this.getSelectedDishes();
       const formData = {
         ...this.optionSetForm.value,
-        options: this.options, // Pass the entire options array
-        misc: this.misc, // Use the misc object directly
+        options: this.options,
+        misc: this.misc,
         hideOptionSet: this.hideOptionSet.filter(o => o.checked).map(o => o.key),
         hideName: this.hideName,
         selectedDishes,
         isOptionSetRequired: this.isOptionSetRequired,
         canSelectMultiple: this.canSelectMultiple,
-        selectedVaryOption: this.selectedVaryOption, // Include the selected vary option
-        // Include the global hide options in the form data
+        selectedVaryOption: this.selectedVaryOption,
         globalHideOptions: this.globalHideOptionsArray.reduce((acc, item) => {
           acc[item.key] = item.checked;
           return acc;
