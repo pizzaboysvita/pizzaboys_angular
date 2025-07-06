@@ -20,6 +20,7 @@ import { ColDef, ModuleRegistry } from "@ag-grid-community/core";
 import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
 import * as ExcelJS from 'exceljs';
 import FileSaver from "file-saver";
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 
 interface RowData {
@@ -33,7 +34,7 @@ interface RowData {
 
 @Component({
   selector: 'app-staff-list',
-  imports: [CardComponent, CommonModule, AgGridAngular],
+  imports: [CardComponent, CommonModule,FormsModule,ReactiveFormsModule ,AgGridAngular],
   templateUrl: './staff-list.component.html',
   styleUrl: './staff-list.component.scss',
   encapsulation: ViewEncapsulation.None
@@ -41,6 +42,7 @@ interface RowData {
 export class StaffListComponent {
   @ViewChild('confirmModal') confirmModalRef!: TemplateRef<any>;
   staff_list: any;
+  staffForm:FormGroup
   sortColumn: string = "";
   sortDirection: "asc" | "desc" = "asc";
 
@@ -120,7 +122,7 @@ export class StaffListComponent {
       suppressMenu: true,
       unSortIcon: true,
     },
-    {
+   {
       headerName: 'Status',
       field: 'status',
       cellRenderer: (params: any) => {
@@ -134,22 +136,23 @@ export class StaffListComponent {
         }
         if (params.value === '') {
           return `
-              <select class="status-dropdown" onchange="updateStatus(event, ${params.rowIndex})">
-                 <option value="">Select Status</option>
-                 <option value="Active">Active</option>
-                 <option value="Inactive">Inactive</option>
-                 <option value="Pending">Pending</option>
-              </select>`;
+                <select class="status-dropdown" onchange="updateStatus(event, ${params.rowIndex})">
+                    <option value="">Select Status</option>
+                  <option value="Active">Active</option>
+                  <option value="No Stock">No Stock</option>
+                  <option value="Hide">Hide</option>
+                </select>
+              `;
         }
         return `<div class="status-badge ${statusClass}">${params.value}</div>`;
       },
-      editable: true,
-      cellEditor: 'agSelectCellEditor',
+      editable: true, // Make the cell editable
+      cellEditor: 'agSelectCellEditor', // Use the ag-Grid built-in select editor
       cellEditorParams: {
         values: ['Active', 'Inactive', 'Pending'], // List of values for the dropdown
       },
       suppressMenu: true,
-      unSortIcon: true,
+      unSortIcon: true
     },
     {
       headerName: 'Actions',
@@ -179,11 +182,19 @@ export class StaffListComponent {
   ];
 
   staffData: any;
-  constructor(private router: Router, private apis: ApisService, private modalService: NgbModal, private session: SessionStorageService) {
+  staffListSorting: any;
+  constructor(private router: Router, private apis: ApisService, private fb:FormBuilder,private modalService: NgbModal, private session: SessionStorageService) {
 
     this.getStaffList()
   }
-
+ngOnInit(){
+  this.staffForm=this.fb.group({
+ staffeName:[''],
+      email:[''],
+      address:[''],
+      status:['Active']
+  })
+}
   stausList = ['Active', 'In-Active']
 
   getStaffList() {
@@ -197,7 +208,7 @@ export class StaffListComponent {
           element.status = element.status == 1 ? 'Active' : element.status == 0 ? 'Inactive' : ''
         })
         this.staff_list = data
-
+this.staffListSorting=data
       }
     })
   }
@@ -222,16 +233,7 @@ export class StaffListComponent {
     this.staffData = data;
     this.openConfirmPopup();
   }
-  onSort(columnKey: any): void {
-    if (columnKey) {
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
-      this.sortColumn = columnKey;
-      this.sortDirection = 'asc';
-    }
-
-    // Optionally trigger actual sorting of data here
-  }
+  
 
   onCellClicked(event: any): void {
     let target = event.event?.target as HTMLElement;
@@ -358,4 +360,17 @@ export class StaffListComponent {
       FileSaver.saveAs(blob, 'staffList.xlsx');
     });
   }
+  search(){
+ 
+  this.staff_list = this.staffListSorting.filter((store:any) => {
+    return (
+      ( store.first_name.toLowerCase().includes(this.staffForm.value.staffeName.toLowerCase())) &&    ( store.email.toLowerCase().includes(this.staffForm.value.email.toLowerCase())) &&( store.address.toLowerCase().includes(this.staffForm.value.address.toLowerCase())) &&( store.status.toLowerCase().includes(this.staffForm.value.status.toLowerCase())) 
+    );
+  });
+  console.log(this.staff_list)
+}
+reset(){
+  this.staffForm.reset()
+  this.getStaffList()
+}
 }

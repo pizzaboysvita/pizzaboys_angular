@@ -35,7 +35,10 @@ export class CategoryComponent implements OnInit {
 
   rowData: RowData[] = [];
   public categoryList = [];
- 
+  gridOptions = {
+    pagination: true,
+    rowHeight: 60
+  };
   columnDefs: ColDef<RowData>[] = [
      {
       field: "store_id",

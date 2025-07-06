@@ -7,6 +7,7 @@ export const AppConstants = {
         staff:'/api/user',
         roles:'/api/role',
        menu :'/api/menu',
-       category:'/api/category'
+       category:'/api/category',
+       optionSet:'api/optionset'
     }
     }

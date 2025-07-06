@@ -48,7 +48,7 @@
             </div>
             <div class="col-xl-3 d-flex align-items-end">
               <div class="d-flex flex-wrap gap-2">
-                <button class="btn btn-animation save-button" type="button" (click)="search()">Search</button>
+                <button class="btn btn-animation save-button" type="button" >Search</button>
                 <button class="btn btn-animation reset-button" type="button" (click)="reset()">Reset</button>
               </div>
             </div>
@@ -70,7 +70,7 @@
           <ul>
             <li>
               <span style="font-size: 14px; color: #787c8b; font-weight: 600"
-                >No.of.Records: {{ rowData.length }}</span
+                >No.of.Records: </span
               >
             </li>
             <li (click)="createOptionSet()">
@@ -85,14 +85,19 @@
 
       <div body>
         <div style="max-height: 400px; overflow: auto">
-          <ag-grid-angular
+           <!-- <ag-grid-angular class="ag-theme-alpine font-family my-grid" style="width: 100%" [columnDefs]="tableConfig"
+            [rowData]="optSetDetails" [domLayout]="'autoHeight'" [pagination]="true" [paginationPageSize]="10"
+            [gridOptions]="gridOptions" [suppressColumnVirtualisation]="true" (cellClicked)="onCellClicked($event)"
+            [defaultColDef]="{ flex: 1, minWidth: 100, sortable: true }">
+          </ag-grid-angular> -->
+            <ag-grid-angular
             class="ag-theme-alpine"
             [columnDefs]="columnDefs"
-            [rowData]="rowData"
+            [rowData]="optSetDetails"
             [domLayout]="'autoHeight'"
-            [suppressColumnVirtualisation]="true"
+            [suppressColumnVirtualisation]="true" [pagination]="true" [paginationPageSize]="15"
             [defaultColDef]="{ flex: 1, minWidth: 100, sortable: true }"
-            (cellClicked)="onCellClicked($event)"
+          
           >
           </ag-grid-angular>
         </div>
