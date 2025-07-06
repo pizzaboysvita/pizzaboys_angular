@@ -107,7 +107,7 @@
             [columnDefs]="columnDefs"
             [rowData]="menuItemsList"
             [domLayout]="'autoHeight'"
-            [suppressColumnVirtualisation]="true"
+            [suppressColumnVirtualisation]="true"[pagination]="true" [paginationPageSize]="15"
             [defaultColDef]="{ flex: 1, minWidth: 100, sortable: true }"
             (cellClicked)="onCellClicked($event)"
           >

@@ -17,6 +17,7 @@ import FileSaver from "file-saver";
 import * as ExcelJS from 'exceljs';
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
+  store_id:string
   dish_menu_id: string;
   name: string;
   display_name: number;
@@ -39,11 +40,12 @@ export class AddMenusComponent {
   columnDefs: ColDef<RowData>[] = [
     // <-- Important to give <RowData> here!
     {
-      field: "dish_menu_id",
-      headerName: "Menu Id",
+      field: "store_id",
+      headerName: "Store Name",
       sortable: true,
       suppressMenu: true,
       unSortIcon: true,
+         valueGetter: (params: any) =>this.storeNameData(params.data.store_id)
     },
     {
       field: "name",
@@ -154,15 +156,28 @@ delete
   ];
   menuItemsList: any = []
   menuData: any;
+  storeList: any;
   constructor(public modal: NgbModal, private apis: ApisService, private session: SessionStorageService) { }
 
 
 
   ngOnInit() {
-    this.getmenuList()
+    this.getStoreList()
+  }
+    getStoreList() {
+    this.apis.getApi(AppConstants.api_end_points.store_list).subscribe((data: any) => {
+      console.log(data)
+      if(data){
+      data.forEach((element: any) => {
+        element.status = element.status == 1 ? 'Active' : element.status == 0 ? 'Inactive' : element.status
+      })
+      this.storeList = data.reverse()
+       this.getmenuList()
+    }
+    })
   }
   getmenuList() {
-    console.log(JSON.parse(this.session.getsessionStorage('loginDetails') as any).user.user_id)
+
     this.apis.getApi(AppConstants.api_end_points.menu + '?user_id=' + JSON.parse(this.session.getsessionStorage('loginDetails') as any).user.user_id).subscribe((data: any) => {
       if (data) {
         console.log(data)
@@ -173,6 +188,12 @@ delete
 
       }
     })
+  }
+    storeNameData(data:any){
+    console.log(this.storeList,'storeeeeee namee')
+const storeName =this.storeList.find((store:any)=>store.store_id ==data)
+console.log(storeName,'storeeeeeeeee nammmme')
+return storeName?storeName.store_name : '--'
   }
   onCellClicked(event: any): void {
     let target = event.event?.target as HTMLElement;

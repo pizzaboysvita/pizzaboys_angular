@@ -79,13 +79,13 @@ export class AddCategoryComponent implements OnInit {
       status: [1],
       store:['']
     });
-    if(this.type =='view'|| this.type =='Edit'){
+    if(this.type =='View'|| this.type =='Edit'){
     this.PatchValuesForm()
     }
   }
   PatchValuesForm()
 {
-  console.log(this.myData)
+  console.log(this.myData,this.type,'viewwwwwwwwwwwwww')
   this.menuForm.patchValue({
      dish_menu_id: this.myData.dish_menu_id,
       name: this.myData.name,
