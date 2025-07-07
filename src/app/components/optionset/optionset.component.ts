@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AgGridAngular } from '@ag-grid-community/angular';
@@ -11,6 +11,7 @@ import { ApisService } from '../../shared/services/apis.service';
 import { AppConstants } from '../../app.constants';
 import { SessionStorageService } from '../../shared/services/session-storage.service';
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
+import Swal from 'sweetalert2';
 
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
@@ -39,6 +40,7 @@ export class OptionsetComponent implements OnInit {
   statusList = ['Active', 'In-Active', 'Pending'];
   modules = [ClientSideRowModelModule];
 
+    @ViewChild('confirmModal') confirmModalRef!: TemplateRef<any>;
 
   columnDefs: ColDef<RowData>[] = [
     {
@@ -137,6 +139,7 @@ export class OptionsetComponent implements OnInit {
     },
   ];
   optSetDetails: RowData[] =[];
+  optSetRowData: any;
 
   constructor(private fb: FormBuilder, private modal: NgbModal, private apis: ApisService, private sessionStorage: SessionStorageService) {
     this.searchForm = this.fb.group({
@@ -169,15 +172,22 @@ export class OptionsetComponent implements OnInit {
 
 
   onCellClicked(event: any) {
-    const action = event.event?.target?.dataset?.action;
-    const row = event.data;
+   let target = event.event?.target as HTMLElement;
 
+    // Traverse up the DOM to find the element with data-action
+    while (target && !target.dataset?.['action'] && target !== document.body) {
+      target = target.parentElement as HTMLElement;
+    }
+    console.log(target, 'target action')
+    const action = target?.getAttribute("data-action");
+this.optSetRowData=event.data
     if (action === 'view') {
-      console.log('Viewing', row);
+      // console.log('Viewing', row);
     } else if (action === 'edit') {
-      console.log('Editing', row);
+      // console.log('Editing', row);
     } else if (action === 'delete') {
-      console.log('Deleting', row);
+      console.log('Deleting',event.data);
+      this.openConfirmPopup()
     }
   }
 
@@ -191,4 +201,37 @@ export class OptionsetComponent implements OnInit {
 
   }
 
+  openConfirmPopup() {
+    this.modal.open(this.confirmModalRef, {
+      centered: true,
+      backdrop: 'static'
+    });
+  }
+ onConfirm(modal: any) {
+     // modal.close();
+     // Perform your confirm logic here
+     // const req_body = {
+     //   "staff_id": this.staffData.staff_id
+     // }
+    console.log(this.optSetRowData)
+     this.apis.deleteApi(AppConstants.api_end_points.optionSet + '/' +this.optSetRowData.option_set_id).subscribe((data: any) => {
+ 
+       if (data) {
+         console.log(data)
+         modal.close();
+         Swal.fire({
+           title: 'Success!',
+           text: data.message,
+           icon: 'success',
+           width: '350px',  // customize width (default ~ 600px)
+         }).then((result) => {
+           if (result.isConfirmed) {
+             console.log('User clicked OK');
+             this.getOptionSets();
+           }
+         });
+ 
+       }
+     })
+   }
 }

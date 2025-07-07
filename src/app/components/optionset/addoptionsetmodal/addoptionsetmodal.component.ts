@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray, ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
 import { NgbActiveModal, NgbModal, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -41,7 +41,7 @@ interface OptionItem {
 export class AddoptionsetmodalComponent {
   @Input() type: any
   @Input() myData: any;
-
+optionSetConditionForm:FormGroup
  hideOptionSet = [
     { key: 'always', label: 'Always', checked: false },
     { key: 'pos', label: 'POS', checked: false },
@@ -139,6 +139,105 @@ gridApi: any;
     resizable: true
   };
 
+toggleOptions = [
+  { key: 'editing', label: 'Hide Editing Mode', enabled: false },
+  { key: 'hide', label: 'Hide', enabled: true },
+  { key: 'online', label: 'Hide Online', enabled: true },
+  { key: 'pos', label: 'Hide POS', enabled: true },
+  { key: 'std', label: 'Hide Standard Dish', enabled: true },
+  { key: 'combo', label: 'Hide Combo Dish', enabled: true },
+  { key: 'pickup', label: 'Hide Pickup', enabled: true },
+  { key: 'delivery', label: 'Hide Delivery', enabled: true },
+  { key: 'dinein', label: 'Hide Dine-In', enabled: true }
+];
+
+
+  active = 1;
+  optionSetForm: FormGroup;
+  miscForm:FormGroup
+  storeList: any;
+  reqbody:any
+  constructor(private fb: FormBuilder, public modal: NgbModal, private apis: ApisService) {
+    this.optionSetForm = this.fb.group({
+      name: [''],
+      displayName: [''],
+      description: [''],
+      disableDishNotes: [false],
+      restockMenuDaily: [false],
+      hideMenu: [false],
+      availability: [[]],
+      posName: [''],
+      surcharge: [''],
+      
+    });
+this.optionSetConditionForm=this.fb.group({
+  required:[''],
+  SelectMultiple:[''],
+  enableOptionQuantity:[''],
+  MinOptionsRequired:[''],
+  MaxOptionsAllowed:[''],
+  FreeQuantity:['']
+})
+   
+this.miscForm =this.fb.group({
+  PriceinFreeQuantityPromos:['']
+})
+  }
+
+  ngOnInit() {
+  }
+  addNewRow() {
+    console.log("new datat")
+  const newRow = {
+    name: '',
+    description: '',
+    price: 0.00,
+    inStock: true
+  };
+  this.rowData = [newRow, ...this.rowData];
+  setTimeout(() => {
+    this.gridApi.setFocusedCell(0, 'name');
+    this.gridApi.startEditingCell({ rowIndex: 0, colKey: 'name' });
+  });
+}
+
+
+  saveMenu() {
+    console.log('Saving menu', this.rowData,this.hideOptionSet);
+
+    const reqboy={
+  "type": "insert",
+
+  "option_set_name":this.optionSetForm.value.name ,
+  "dispaly_name": this.optionSetForm.value.displayName,
+  "hide_name": this.optionSetForm.value.hideMenu==false?0:1,
+  "hide_option_set":JSON.stringify( this.hideOptionSet),
+  "option_set_combo": JSON.stringify(this.rowData),
+  "required": this.optionSetConditionForm.value.required ==true?1:0,
+  "hide_opion_set_json":JSON.stringify(this.hideOptionSet),
+  "select_multiple": this.optionSetConditionForm.value.SelectMultiple ==true?1:0,
+  "enable_option_quantity":  this.optionSetConditionForm.value.enableOptionQuantity =true?1:0,
+  "min_option_quantity":  this.optionSetConditionForm.value.MinOptionsRequired,
+  "max_option_allowed":  this.optionSetConditionForm.value.MaxOptionsAllowed,
+  "free_quantity": this.optionSetConditionForm.value.FreeQuantity,
+  "option_set_dishes":JSON.stringify(this.dishTree),
+  "inc_price_in_free": this.miscForm.value.PriceinFreeQuantityPromos=true?1:0,
+  "cretaed_by": 1011
+}
+this.apis.postApi(AppConstants.api_end_points.optionSet,reqboy).subscribe((data:any)=>{
+  console.log(data)
+  if(data.code ==1){
+       Swal.fire("Success!", data.message, "success").then((result) => {
+                if (result) {
+                  console.log("User clicked OK");
+                  // this.router.navigate(["/staff/staff-list"]);
+                }
+              });
+  }
+})
+  
+  }
+  
 onGridReady(params: GridReadyEvent) {
     this.gridApi = params.api;
   }
@@ -171,263 +270,4 @@ onGridReady(params: GridReadyEvent) {
   }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  active = 1;
-  menuForm: FormGroup;
-  conditionForm: FormGroup;
-  posForm!: FormGroup
-  surchargeForm: FormGroup
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  availabilityOptions = [
-    { id: 'Breakfast', name: 'Breakfast' },
-    { id: 'Lunch', name: 'Lunch' },
-    { id: 'Dinner', name: 'Dinner' },
-  ];
-
-  surchargeFields = [
-    {
-      label: 'Pickup Surcharge',
-      controlName: 'pickupSurcharge',
-      subtext: 'Additional % to apply to item prices for pickup sales'
-    },
-    {
-      label: 'Delivery Surcharge',
-      controlName: 'deliverySurcharge',
-      subtext: 'Additional % to apply to item prices for delivery sales'
-    },
-    {
-      label: 'Managed Delivery Surcharge',
-      controlName: 'managedDeliverySurcharge',
-      subtext: 'Additional % to apply to item prices for managed delivery sales where we supply drivers'
-    },
-    {
-      label: 'Dine-In Surcharge',
-      controlName: 'dineInSurcharge',
-      subtext: 'Additional % to apply to item prices for dine-in sales'
-    }
-  ];
-
-  orderTimesOptions = [
-    { id: 'now', name: 'Now' },
-    { id: 'Later', name: 'Later' },
-
-  ];
-
-  servicesOptions = [
-    { id: 'delivery', name: 'Delivery' },
-    { id: 'pickup', name: 'Pickup' },
-    { id: 'dine-in', name: 'Dine-in' }
-  ];
-
-  preOrderServicesOptions = [
-    { id: 'delivery', name: 'Delivery' },
-    { id: 'pickup', name: 'Pickup' }
-  ];
-  storeList: any;
-  reqbody:any
-  constructor(private fb: FormBuilder, public modal: NgbModal, private apis: ApisService) {
-    this.menuForm = this.fb.group({
-      name: [''],
-      displayName: [''],
-      description: [''],
-      disableDishNotes: [false],
-      restockMenuDaily: [false],
-      hideMenu: [false],
-      availability: [[]],
-      posName: [''],
-      surcharge: [''],
-    });
-
-  
-    this.posForm = this.fb.group({
-      posDispalyname: [''],
-      hideMenu: ['']
-    })
-    // this.buildForm()
-   
-  }
- 
-  // buildForm() {
-  //   const controlsConfig: { [key: string]: FormControl } = {};
-  //   this.surchargeFields.forEach(field => {
-  //     controlsConfig[field.controlName] = new FormControl(''); // or provide default value
-  //   });
-
-  //   this.surchargeForm = this.fb.group(controlsConfig);
-
-  // }
-  ngOnInit() {
-    this.patchValue()
-    console.log('Received data:', this.myData);
-  }
-  addNewRow() {
-    console.log("new datat")
-  const newRow = {
-    name: '',
-    description: '',
-    price: 0.00,
-    inStock: true
-  };
-
-  this.rowData = [newRow, ...this.rowData];
-
-  // Delay edit to allow grid to render new row
-  setTimeout(() => {
-    this.gridApi.setFocusedCell(0, 'name');
-    this.gridApi.startEditingCell({ rowIndex: 0, colKey: 'name' });
-  });
-}
-
-  patchValue() {
-    console.log(this.myData, this.type, 'opennnnnnnnnnnnn')
-    if (this.type == 'Edit' || this.type == 'View') {
-      this.menuForm.patchValue({
-
-        name: this.myData.name,
-        displayName: this.myData.display_name,
-        description: this.myData.description,
-        disableDishNotes: this.myData.disable_dish_notes == 1 ? true : this.myData.disable_dish_notes == 0 ? false : '',
-        restockMenuDaily: this.myData.re_stock_menu_daily == 1 ? true : this.myData.re_stock_menu_daily == 0 ? false : '',
-        hideMenu: this.myData.hide_menu == 1 ? true : this.myData.hide_menu == 0 ? false : '',
-        availability: [[]],
-        posName: [''],
-        surcharge: [''],
-
-      })
-      this.conditionForm.patchValue({
-        store:[this.myData.store_id],
-          services: this.myData.services.split(','),
-        orderTimes: this.myData.order_times,
-      
-        ageRestricted: this.myData.mark_as_age_restricted ==0?false:this.myData.mark_as_age_restricted ==1? true:'',
-        preOrderOnly: this.myData.enable_pre_orders_only ==0?false:this.myData.enable_pre_orders_only ==1?true:'',
-        preOrderDays: this.myData.pre_order_days_in_advance,
-        preOrderCutoffTime: this.myData.pre_order_cutoff_time,
-        preOrderServices: this.myData.pre_order_applicable_service.split(","),
-        hideRestrictionWarning: this.myData.hide_restriction_warning == 0 ? false : this.myData.hide_restriction_warning == 1 ? true : '',
-        hideIfUnavailable: this.myData.hide_if_unavailable == 0 ? false : this.myData.hide_if_unavailable == 1 ? true : '',
-      })
-      this.posForm.patchValue({
-        posDispalyname:this.myData.POS_display_name,
-        hideMenu:this.myData.hide_menu_in_POS ==0?false:this.myData.hide_menu_in_POS ==1?true:'',
-      })
-       this.surchargeForm.patchValue({
-        pickupSurcharge:this.myData.pickup_surcharge,
-        deliverySurcharge:this.myData.delivery_surcharge,
-        managedDeliverySurcharge:this.myData.managed_delivery_surcharge,
-        dineInSurcharge:this.myData.dine_in_surcharge,
-       })
-    }
-  }
-
-  saveMenu() {
-    console.log('Saving menu', this.menuForm.value);
-    if(this.type =='Edit'){
- this.reqbody = {
-      "type": "update",
-        "menu_id":this.myData.dish_menu_id,
-      "name": this.menuForm.value.name,
-      "display_name": this.menuForm.value.displayName,
-      "description": this.menuForm.value.description,
-      "disable_dish_notes": this.menuForm.value.disableDishNotes == true ? 1 : 0,
-      "re_stock_menu_daily": this.menuForm.value.restockMenuDaily == true ? 1 : 0,
-      "hide_menu": this.menuForm.value.hideMenu == true ? 1 : 0,
-      "order_times": this.conditionForm.value.orderTimes.toString(),
-      "services": this.conditionForm.value.services.toString(),
-      "applicable_hours": "[{\"day\":\"Mon\",\"from\":\"12:00\",\"to\":\"15:00\"}]",
-      "mark_as_age_restricted": this.conditionForm.value.ageRestricted == true ? 1 : 0,
-      "enable_pre_orders_only": this.conditionForm.value.preOrderOnly == true ? 1 : 0,
-      "pre_order_days_in_advance": this.conditionForm.value.preOrderDays,
-      "pre_order_cutoff_time": this.conditionForm.value.preOrderCutoffTime,
-      "pre_order_applicable_service": this.conditionForm.value.preOrderServices.toString(),
-      "hide_restriction_warning": this.conditionForm.value.hideRestrictionWarning == true ? 1 : 0,
-      "hide_if_unavailable": this.conditionForm.value.hideIfUnavailable == true ? 1 : 0,
-      "POS_display_name": this.posForm.value.posDispalyname,
-      "hide_menu_in_POS": this.posForm.value.hideMenu == true ? 1 : 0,
-      "pickup_surcharge": this.surchargeForm.value.pickupSurcharge,
-      "delivery_surcharge": this.surchargeForm.value.deliverySurcharge,
-      "managed_delivery_surcharge": this.surchargeForm.value.managedDeliverySurcharge,
-      "dine_in_surcharge": this.surchargeForm.value.dineInSurcharge,
-      "store_id": this.conditionForm.value.store.toString(),
-      "created_by": 1
-    }
-  }else{
-    this.reqbody = {
-      "type": "insert",
-      "name": this.menuForm.value.name,
-      "display_name": this.menuForm.value.displayName,
-      "description": this.menuForm.value.description,
-      "disable_dish_notes": this.menuForm.value.disableDishNotes == true ? 1 : 0,
-      "re_stock_menu_daily": this.menuForm.value.restockMenuDaily == true ? 1 : 0,
-      "hide_menu": this.menuForm.value.hideMenu == true ? 1 : 0,
-      "order_times": this.conditionForm.value.orderTimes.toString(),
-      "services": this.conditionForm.value.services.toString(),
-      "applicable_hours": "[{\"day\":\"Mon\",\"from\":\"12:00\",\"to\":\"15:00\"}]",
-      "mark_as_age_restricted": this.conditionForm.value.ageRestricted == true ? 1 : 0,
-      "enable_pre_orders_only": this.conditionForm.value.preOrderOnly == true ? 1 : 0,
-      "pre_order_days_in_advance": this.conditionForm.value.preOrderDays,
-      "pre_order_cutoff_time": this.conditionForm.value.preOrderCutoffTime,
-      "pre_order_applicable_service": this.conditionForm.value.preOrderServices.toString(),
-      "hide_restriction_warning": this.conditionForm.value.hideRestrictionWarning == true ? 1 : 0,
-      "hide_if_unavailable": this.conditionForm.value.hideIfUnavailable == true ? 1 : 0,
-      "POS_display_name": this.posForm.value.posDispalyname,
-      "hide_menu_in_POS": this.posForm.value.hideMenu == true ? 1 : 0,
-      "pickup_surcharge": this.surchargeForm.value.pickupSurcharge,
-      "delivery_surcharge": this.surchargeForm.value.deliverySurcharge,
-      "managed_delivery_surcharge": this.surchargeForm.value.managedDeliverySurcharge,
-      "dine_in_surcharge": this.surchargeForm.value.dineInSurcharge,
-      "store_id": this.conditionForm.value.store.toString(),
-      "created_by": 1
-    }
-  }
-    console.log(this.reqbody)
-
-    this.apis.postApi(AppConstants.api_end_points.menu, this.reqbody).subscribe((data: any) => {
-      console.log(data)
-      if (data.code == 1) {
-        console.log(data)
-        Swal.fire('Success!', data.message, 'success').then(
-          (result) => {
-            if (result) {
-              console.log('User clicked OK');
-              // this.router.navigate(['/restaurants/restaurants-list'])
-              this.modal.dismissAll();
-
-            }
-          })
-      }
-
-
-    })
-  }
-  addTimeSlot() {
-    console.log('Add Time Slot clicked');
-    alert('Add Time Slot clicked (you can open a modal or dialog here)');
-  }
 }
