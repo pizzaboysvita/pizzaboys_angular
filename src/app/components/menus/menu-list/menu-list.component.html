@@ -4,11 +4,11 @@
             <!-- <h5 header>Setting</h5> -->
             <div header class="title-header option-title justify-content-start right-options-height">
                 <h3 class="p-2">Menu</h3>
-            
+
                 <div class="right-options ms-auto">
-                    
+
                     <ul>
-                     
+
                         <li>
                             <a class="btn btn-dashed" (click)="insertMenu()">Add Menu Type</a>
                         </li>
@@ -22,83 +22,89 @@
                 </div>
             </div>
             <div class="row" body>
-                <div class="col-xxl-3 col-xl-4">
-                    
-                    <ul class="nav setting-main-box sticky theme-scrollbar" style="background-color: rgb(240 240 240);" >
+                <div class="col-xxl-3 col-xl-3">
+
+                    <ul class="nav setting-main-box sticky theme-scrollbar" style="background-color: rgb(240 240 240);">
                         <li style="font-weight: 500;"> Menu Type:</li>
-                <li class="position-relative d-flex align-items-center">
-  <select class="form-select" [(ngModel)]="selectedMenuId" (change)="selectedTabIndex = 0">
-    @for(item of menuList; track item) {
-      <option [value]="item.id">{{ item.name }}</option>
-    }
-  </select>
+                        <li class="position-relative d-flex align-items-center">
+                            <select class="form-select" [(ngModel)]="selectedMenuId" (change)="selectedTabIndex = 0">
+                                @for(item of menuList; track item) {
+                                <option [value]="item.id">{{ item.name }}</option>
+                                }
+                            </select>
 
-  <!-- Icon container pushed to right -->
-  <div class="d-flex ms-auto" style="position: relative; left: 20px;
+                            <!-- Icon container pushed to right -->
+                            <!-- <div class="d-flex ms-auto" style="position: relative; left: 20px;
     ">
-    <div class="icon-box d-flex align-items-center justify-content-center me-2">
-      <i class="ri-edit-line cursor-pointer" style="margin-right: 0px;"></i>
-    </div>
+                                <div class="icon-box d-flex align-items-center justify-content-center me-2">
+                                    <i class="ri-edit-line cursor-pointer" style="margin-right: 0px;"></i>
+                                </div>
 
-    <div class="icon-box d-flex align-items-center justify-content-center">
-      <i class="ri-delete-bin-line cursor-pointer" style="margin-right: 0px;"></i>
-    </div>
-  </div>
-</li>
+                                <div class="icon-box d-flex align-items-center justify-content-center">
+                                    <i class="ri-delete-bin-line cursor-pointer" style="margin-right: 0px;"></i>
+                                </div>
+                            </div> -->
+                        </li>
 
-                          @for (item of tabs; track item; let i = $index) {
-                            <li>
-                              <button class="nav-link" 
-                                      [class.active]="selectedTabIndex === i"
-                                      (click)="selectedTabIndex = i">
+                        @for (item of tabs; track item; let i = $index) {
+                        <li>
+                            <button class="nav-link" [class.active]="selectedTabIndex === i"
+                                (click)="selectedTabIndex = i">
                                 {{ item.label }}
-                              </button>
-                            </li>
-                          }
-                          
-                          
-                     
+                            </button>
+                        </li>
+                        }
+
+
+
                     </ul>
                 </div>
-                <div class="col-xxl-9 col-xl-4">
-                <div  class="row row-cols-xl-9 row-cols-md-5 row-cols-sm-3 row-cols-2 g-sm-3 g-2 media-library-sec ratio_landscape">
-                    <!-- <div class="setting-box"> -->
+                <div class="col-xxl-9 col-xl-9">
+                    <div
+                        class="row row-cols-xl-9 row-cols-md-5 row-cols-sm-3 row-cols-2 g-sm-3 g-2 media-library-sec ratio_landscape">
+                        <!-- <div class="setting-box"> -->
                         @for (item of MediaLibrary; track item) {
-                            <div>
-                                <div class="library-box">
-                                    <input type="checkbox" [id]="item.id" />
-                                    <label [for]="item.id">
-                                        <div class="b_size_content bg-size" [style.background-image]="'url('+item.image_url+')'" style="background-size: cover;
+                        <div>
+                            <div class="library-box">
+                                <input type="checkbox" [id]="item.id" />
+                                <label [for]="item.id">
+                                    <div class="b_size_content bg-size"
+                                        [style.background-image]="'url('+item.image_url+')'" style="background-size: cover;
                                         background-position: center center;
                                         background-repeat: no-repeat;
                                         display: block;">
-                                            <img [src]="item.image_url" class="img-fluid bg-img bg_size_content" alt="" style="display: none;">
-                                       
-                                        </div>
-                                     
-                                        <div class="dropdown" (click)="open(item)" (clickOutside)="item.active = false">
-                                            <a href="javascript:void(0)" [class.show]="item.active">
-                                                <i class="ri-more-fill"></i>
-                                            </a>
-                                            <ul class="dropdown-menu dropdown-menu-end" [class.show]="item.active" style="position: absolute;inset: 0px 0px auto auto; margin: 0px;transform: translate(-5px, 22px);">
-                                                <li>
-                                                    <a class="dropdown-item d-flex align-items-center" href="javascript:void(0)" (click)="openPopup()">
-                                                        <i class="ri-download-2-line me-2"></i>Action</a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item d-flex align-items-center" href="javascript:void(0)">
-                                                        <i class="ri-delete-bin-line me-2"></i>Delete</a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </label>
-                                    <h6 class="f-w-600">{{item.name}}</h6>
-                                   
-                                </div>
+                                        <img [src]="item.image_url" class="img-fluid bg-img bg_size_content" alt=""
+                                            style="display: none;">
+
+                                    </div>
+
+                                    <div class="dropdown" (click)="open(item)" (clickOutside)="item.active = false">
+                                        <a href="javascript:void(0)" [class.show]="item.active">
+                                            <i class="ri-more-fill"></i>
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-menu-end" [class.show]="item.active"
+                                            style="position: absolute;inset: 0px 0px auto auto; margin: 0px;transform: translate(-5px, 22px);">
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center"
+                                                    href="javascript:void(0)" (click)="openPopup()">
+                                                    <i class="ri-download-2-line me-2"></i>Action</a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center"
+                                                    href="javascript:void(0)">
+                                                    <i class="ri-delete-bin-line me-2"></i>Delete</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </label>
+                                <h6 class="f-w-600">{{item.name}}</h6>
+
                             </div>
-                            }
-                    <!-- </div> -->
-                </div></div>
+                        </div>
+                        }
+                        <!-- </div> -->
+                    </div>
+                </div>
             </div>
             <button class="btn save-button" type="submit">Save</button>
         </app-card>

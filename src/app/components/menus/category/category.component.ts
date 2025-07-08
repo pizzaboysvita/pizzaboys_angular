@@ -1,73 +1,91 @@
-import { Component } from '@angular/core';
-import { CardComponent } from '../../../shared/components/card/card.component';
-// import { TableComponent } from '../../widgets/table/table.component';
-import { TableConfig } from '../../../shared/interface/table.interface';
-import { ProductsList } from '../../../shared/data/products';
-import { AgGridAngular } from '@ag-grid-community/angular';
-import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
-import { ColDef, ModuleRegistry } from '@ag-grid-community/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AddCategoryComponent } from '../add-category/add-category.component';
+import { Component, OnInit, TemplateRef, ViewChild } from "@angular/core";
+import { CardComponent } from "../../../shared/components/card/card.component";
+import { AgGridAngular } from "@ag-grid-community/angular";
+import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
+import { ColDef, ModuleRegistry } from "@ag-grid-community/core";
+import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
+import { AddCategoryComponent } from "../add-category/add-category.component";
 import { NgSelectModule } from "@ng-select/ng-select";
-
+import { SessionStorageService } from "../../../shared/services/session-storage.service";
+import { ApisService } from "../../../shared/services/apis.service";
+import { AppConstants } from "../../../app.constants";
+import Swal from "sweetalert2";
 
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
-  menutype: string;
-  categoryType: string;
-  dishName: string;
+  store_id:string;
+  dish_menu_id: string;
+  name: string;
+  display_name: string;
   price: string;
   status: string;
-  pos: string;
-  misc:string
+  hide_category_in_POS: string;
+  misc: string;
 }
 @Component({
-  selector: 'app-category',
-  imports: [CardComponent, AgGridAngular,NgSelectModule],
-  templateUrl: './category.component.html',
-  styleUrl: './category.component.scss'
+  selector: "app-category",
+  imports: [CardComponent, AgGridAngular, NgSelectModule],
+  templateUrl: "./category.component.html",
+  styleUrl: "./category.component.scss",
 })
-export class CategoryComponent {
+export class CategoryComponent implements OnInit {
+    @ViewChild('confirmModal') confirmModalRef!: TemplateRef<any>;
   modules = [ClientSideRowModelModule];
-  stausList = ['Active', 'No Stock', 'Hide']
-  columnDefs: ColDef<RowData>[] = [    // <-- Important to give <RowData> here!
-    {
-      field: 'menutype', headerName: 'Menu Type', sortable: true,
+  stausList = ["Active", "No Stock", "Hide"];
+
+  rowData: RowData[] = [];
+  public categoryList = [];
+  gridOptions = {
+    pagination: true,
+    rowHeight: 60
+  };
+  columnDefs: ColDef<RowData>[] = [
+     {
+      field: "store_id",
+      headerName: "Store Name",
+      sortable: true,
       suppressMenu: true,
       unSortIcon: true,
-      tooltipField: 'menutype' 
+      tooltipField: "store_id",
+      valueGetter: (params: any) =>this.storeNameData(params.data.store_id)
     },
     {
-      field: 'categoryType', headerName: 'Category Type', suppressMenu: true,
-      unSortIcon: true
-      ,
-      tooltipField: 'categoryType' 
+      field: "dish_menu_id",
+      headerName: "Menu Type",
+      sortable: true,
+      suppressMenu: true,
+      unSortIcon: true,
+      tooltipField: "dish_menu_id",
+valueGetter: (params: any) =>this.menuNameData(params.data.dish_menu_id)
     },
     {
-      field: 'dishName', headerName: 'Dish Name', suppressMenu: true,
-      unSortIcon: true
-      ,
-      tooltipField: 'dishName' 
+      field: "name",
+      headerName: "Category Name",
+      suppressMenu: true,
+      unSortIcon: true,
+      tooltipField: "name",
     },
     {
-      field: 'price', headerName: 'Price ($)', suppressMenu: true,
-      unSortIcon: true
-      ,
-      tooltipField: 'price' 
+      field: "display_name",
+      headerName: "Dispaly Name",
+      suppressMenu: true,
+      unSortIcon: true,
+      tooltipField: "display_name",
     },
+   
     {
-      headerName: 'Status',
-      field: 'status',
+      headerName: "Status",
+      field: "status",
       cellRenderer: (params: any) => {
-        let statusClass = '';
-        if (params.value === 'Active') {
-          statusClass = 'status-active';
-        } else if (params.value === 'No Stock') {
-          statusClass = 'status-no-stock';
-        } else if (params.value === 'Hide') {
-          statusClass = 'status-hide';
+        let statusClass = "";
+        if (params.value === "Active") {
+          statusClass = "status-active";
+        } else if (params.value === "No Stock") {
+          statusClass = "status-no-stock";
+        } else if (params.value === "Hide") {
+          statusClass = "status-hide";
         }
-        if (params.value === '') {
+        if (params.value === "") {
           return `
             <select class="status-dropdown" onchange="updateStatus(event, ${params.rowIndex})">
                 <option value="">Select Status</option>
@@ -79,80 +97,38 @@ export class CategoryComponent {
         }
         return `<div class="status-badge ${statusClass}">${params.value}</div>`;
       },
-      editable: true, // Make the cell editable
-      cellEditor: 'agSelectCellEditor', // Use the ag-Grid built-in select editor
+      editable: true, 
+      cellEditor: "agSelectCellEditor", 
       cellEditorParams: {
-        values: ['Active', 'No Stock', 'Hide'], // List of values for the dropdown
+        values: ["Active", "No Stock", "Hide"], 
       },
       suppressMenu: true,
-      unSortIcon: true
-    }
-    , {
-      headerName: 'POS',
-      field: 'pos',
+      unSortIcon: true,
+    },
+    {
+      headerName: "POS",
+      field: "hide_category_in_POS",
       cellRenderer: (params: any) => {
-        let statusClass = '';
-        if (params.value === 'Hide in POS') {
-          statusClass = 'hide-pos';
-        } else if (params.value === 'Show in POS') {
-          statusClass = 'show-pos';
+        let statusClass = "";
+        if (params.value === "Hide in POS") {
+          statusClass = "hide-pos";
+        } else if (params.value === "Show in POS") {
+          statusClass = "show-pos";
         }
-        if (params.value === '') {
-          return `
-            <select class="status-dropdown" onchange="updateStatus(event, ${params.rowIndex})">
-                <option value="">Select POS</option>
-              <option value="showinpos">Show in POS</option>
-              <option value="hideinpos">Hide in POS</option>
-              
-            </select>
-          `;
-        }
+       
         return `<div class="pos-badge ${statusClass}">${params.value}</div>`;
       },
-      editable: true, // Make the cell editable
-      cellEditor: 'agSelectCellEditor', // Use the ag-Grid built-in select editor
+      editable: true, 
+      cellEditor: "agSelectCellEditor", 
       cellEditorParams: {
-        values: ['Hide in POS', 'Show in POS'], // List of values for the dropdown
+        values: ["Hide in POS", "Show in POS"],
       },
       suppressMenu: true,
-      unSortIcon: true
-    }
-    ,
+      unSortIcon: true,
+    },
+   
     {
-      headerName: 'MISC',
-      field: 'misc',
-      cellRenderer: (params: any) => {
-        let statusClass = '';
-        if (params.value === 'Cancel') {
-          statusClass = 'status-active';
-        } else if (params.value === 'Delete') {
-          statusClass = 'status-no-stock';
-        } 
-        if (params.value === '') {
-          return `
-            <select class="status-dropdown" onchange="updateStatus(event, ${params.rowIndex})">
-                <option value="">Select MISC</option>
-              <option value="Cancel">Cancel</option>
-              <option value="Delete">Delete</option>
-          
-            </select>
-          `;
-        }
-        return `<div class="status-badge ${statusClass}">${params.value}</div>`;
-      },
-      editable: true, // Make the cell editable
-      cellEditor: 'agSelectCellEditor', // Use the ag-Grid built-in select editor
-      cellEditorParams: {
-        values: ['Cancel', 'Delete'], // List of values for the dropdown
-      },
-      suppressMenu: true,
-      unSortIcon: true
-    }
-    ,
-
-
-    {
-      headerName: 'Actions',
+      headerName: "Actions",
       cellRenderer: (params: any) => {
         return `
         <div style="display: flex; align-items: center; gap:15px;">
@@ -175,39 +151,167 @@ delete
       `;
       },
       minWidth: 150,
-      flex: 1
+      flex: 1,
+    },
+  ];
+  categoryRowData: any;
+  modelRef: any;
+  menuItemsList: any=[];
+  menuMap: any;
+  storeList: any;
+
+  constructor(
+    public modal: NgbModal,
+    private apiService: ApisService,
+    private sessionStorage: SessionStorageService
+  ) {}
+
+  ngOnInit(): void {
+    this.getStoreList()
+
+  
+  }
+
+
+    getStoreList() {
+    this.apiService.getApi(AppConstants.api_end_points.store_list).subscribe((data: any) => {
+      console.log(data)
+      if(data){
+      data.forEach((element: any) => {
+        element.status = element.status == 1 ? 'Active' : element.status == 0 ? 'Inactive' : element.status
+      })
+      this.storeList = data.reverse()
+       this.getmenuList()
     }
-  ];
+    })
+  }
+  getmenuList() {
 
-  rowData: RowData[] = [
-    { menutype: 'TakeWay Menu', categoryType: 'Valentines Day Promotion', status: '', dishName: 'Pizza chicken', price: '85', pos: 'Hide in POS',misc:'Cancel' },
-    { menutype: 'Seasonal menu', categoryType: 'Limited Time Deal', status: 'No Stock', dishName: 'Pizza chicken', price: '90', pos: '',misc:'' },
-    { menutype: 'Seasonal menu', categoryType: 'Lunch', status: 'Hide', dishName: 'Pizza chicken', price: '15', pos: 'Hide in POS',misc:'Cancel' }
-  ];
-  public categoryList = [
-    { id: 1, name: "Valentines Day Promotion" },
-    { id: 2, name: "Limited Time Deal" },
-    { id: 3, name: "Specials" },
-    { id: 4, name: "Lunch" },
-    { id: 5, name: "Chicken Pizza" },
-    { id: 6, name: "Meat Pizza" },
-  ];
-  constructor(public modal: NgbModal) { }
-  onCellClicked(event: any) {
-    if (event.event.target && event.event.target.dataset.action) {
-      const action = event.event.target.dataset.action;
-      const rowData = event.data;
+    this.apiService.getApi(AppConstants.api_end_points.menu + '?user_id=' + JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id).subscribe((data: any) => {
+      if (data) {
+     
+        // data.data.forEach((item: any) => {
+        //   item.status = item.status == 1 ? 'Active' : item.status == 0 ? 'In-Active' : ''
+        // })
+        this.menuItemsList = data.data
+           console.log(this.menuItemsList)
+          // this.menuMap = {};
+  this.fetchCategories();
+   
 
-      if (action === 'view') {
-        console.log('Viewing', rowData);
-      } else if (action === 'edit') {
-        console.log('Editing', rowData);
-      } else if (action === 'delete') {
-        console.log('Deleting', rowData);
       }
+    })
+  }
+    fetchCategories(): void {
+    const loginRaw = this.sessionStorage.getsessionStorage("loginDetails");
+    const loginData = loginRaw ? JSON.parse(loginRaw) : null;
+    const userId = loginData?.user?.user_id;
+    console.log(userId, 'user id');
+    
+
+    if (!userId) {
+      console.error("No user ID found in session");
+      return;
+    }
+
+    this.apiService
+      .getApi(`/api/category?user_id=${userId}`)
+      .subscribe((res: any) => {
+
+        console.log(res, 'categories response');
+        
+        if (res.code === "1") {
+              res.categories.forEach((categorie:any)=>{
+                categorie.status =  categorie.status==0?'Hide': categorie.status==1?'Active':'--';
+                categorie.hide_category_in_POS= categorie.hide_category_in_POS=1?'Hide in POS': categorie.hide_category_in_POS==0?'Show in POS':'--'
+              })
+          this.rowData = res.categories
+
+          
+        } else {
+          console.error("Failed to load categories:", res.message);
+        }
+      });
+  }
+   onCellClicked(event: any): void {
+    let target = event.event?.target as HTMLElement;
+
+    // Traverse up the DOM to find the element with data-action
+    while (target && !target.dataset?.['action'] && target !== document.body) {
+      target = target.parentElement as HTMLElement;
+    }
+    console.log(target, 'target action')
+    const action = target?.getAttribute("data-action");
+    this.categoryRowData = event.data;
+    console.log(this.categoryRowData)
+    if (action === "view") {
+      console.log(event.data)
+   this.insertCategory('View')
+    } else if (action === "edit") {
+this.insertCategory("Edit")
+    } else if (action === "delete") {
+      this.delete(event.data);
     }
   }
-  insertCategory() {
-    this.modal.open(AddCategoryComponent, { windowClass: 'theme-modal', centered: true, size: 'lg' })
+  delete(data:any){
+    console.log(data)
+   
+      this.modelRef=this.modal.open(this.confirmModalRef, {
+      centered: true,
+      backdrop: 'static'
+    });
   }
+  insertCategory(type:any) {
+    const modalRef = this.modal.open(AddCategoryComponent, {
+      windowClass: "theme-modal",
+      centered: true,
+      size: "lg",
+    });
+     modalRef.componentInstance.type =type
+    modalRef.componentInstance.myData =this.categoryRowData
+    modalRef.closed.subscribe((result) => {
+      if (result === "refresh") {
+        this.fetchCategories();
+      }
+    });
+  }
+  onConfirm(){
+    console.log(this.categoryRowData)
+const reqbody={
+  "type": "delete",
+  "id":this.categoryRowData.id,
+  "status": 0
 }
+this.apiService.postApi(AppConstants.api_end_points.category,reqbody).subscribe((data:any)=>{
+  console.log(data)
+  if(data.code ==1){
+        this.modelRef.close();
+            Swal.fire({
+              title: 'Success!',
+              text: data.message,
+              icon: 'success',
+              width: '350px',  // customize width (default ~ 600px)
+            }).then((result) => {
+              if (result.isConfirmed) {
+                console.log('User clicked OK');
+                this.fetchCategories();
+              }
+            });
+  }
+})
+  }
+  storeNameData(data:any){
+    console.log(this.storeList,'storeeeeee namee')
+const storeName =this.storeList.find((store:any)=>store.store_id ==data)
+console.log(storeName,'storeeeeeeeee nammmme')
+return storeName?storeName.store_name : '--'
+  }
+menuNameData(data: any): string {
+  console.log(this.menuItemsList,data)
+ const match = this.menuItemsList.find((item:any) => item.dish_menu_id === data);
+  console.log( match ,'oppppppppppppppeeeeeeee');
+  return match?.name || '--';
+}
+}
+
+

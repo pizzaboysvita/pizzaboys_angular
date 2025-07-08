@@ -5,6 +5,7 @@ import { NavService, menuItem } from '../../services/nav.service';
 import { FeatherIconsComponent } from '../feather-icons/feather-icons.component';
 import { SessionStorageService } from '../../services/session-storage.service';
 import { filter } from 'rxjs';
+import { ApisService } from '../../services/apis.service';
 
 @Component({
     selector: 'app-sidebar',
@@ -16,17 +17,39 @@ import { filter } from 'rxjs';
 export class SidebarComponent {
 
   public menuItemsList :any
+  titleToPermissionKey: { [key: string]: string } = {
+  "Dashboard": "dashboard",
+  "Orders": "orders_delete",
+  "Bookings": "bookings",
+  "Customers": "customers",
+  "Menus": "menus",
+  "Menus 2": "menus_images",
+  "Reports":"reports",
+  "Settings":"settings_systems",
+  "Pos":'pos_orders'
+};
   constructor(public navService: NavService,private sessionStorageService:SessionStorageService,
-    private router: Router,
+    private router: Router,private apis:ApisService
   ) {
-  console.log(JSON.parse(localStorage.getItem('user') as any).name,'openn')
-  if(JSON.parse(localStorage.getItem('user') as any).name =='customer'){
-this.menuItemsList= this.navService.customer_menu_items;
-  }else  if(JSON.parse(localStorage.getItem('user') as any).name =='pos'){
-    this.menuItemsList= this.navService.pos_menu_items;
+    console.log(JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).user.role_id,'new Dateee')
+  if(this.sessionStorageService.getsessionStorage('loginDetails') && JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).user.role_id ==1){
+ this.menuItemsList= this.navService.superAdminmenuItem
+    // this.menuItemsList= this.navService.customer_menu_items;
   }else{
-    this.menuItemsList= this.navService.menuItem
+   const permissionsFromApi= JSON.parse(JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).user.permissions)
+     this.menuItemsList = this.navService.customer_menu_items.filter((item:any) => {
+  const key = this.titleToPermissionKey[item.title];
+  return key && permissionsFromApi[key];
+});
+
+console.log( this.menuItemsList )
+
   }
+  // }else    if(JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).staff_id =='2'){
+  //   this.menuItemsList= this.navService.pos_menu_items;
+  // }else{
+  //   this.menuItemsList= this.navService.superAdminmenuItem
+  // }
     this.router.events.subscribe((event) => {
 
       if (event instanceof NavigationEnd) {
@@ -69,6 +92,16 @@ this.menuItemsList= this.navService.customer_menu_items;
     });
   }
   toggleNavActive(item: menuItem) {
+    console.log(item,'>>>>>>>>>> new items')
+    if(item.title =='Pos'){
+   this.sessionStorageService.setsessionStorage('Pos','true')
+       this.apis.changesPos(true);
+// location.reload()
+this.router.navigate(["/orders/order-detail"]);
+ setTimeout(() => {
+    window.location.reload();
+  }, 1000);
+    }else{
     if (item.type === 'method' && item.methodName) {
       this.navService.logOut(); // ✅ dynamically call the method in NavService
     }
@@ -101,7 +134,7 @@ this.menuItemsList= this.navService.customer_menu_items;
    
 
     item.active = !item.active;
-    
+  }
   }
   setActiveOnNavigation(url: string) {
     this.menuItemsList.forEach((item: any) => {

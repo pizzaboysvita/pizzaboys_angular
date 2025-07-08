@@ -85,15 +85,15 @@
           <ul>
             <li>
               <span style="font-size: 14px; color: #787c8b; font-weight: 600"
-                >No.of.Records:50</span
+                >No.of.Records:{{menuItemsList.length}}</span
               >
             </li>
-            <li (click)="insertMenu()">
+            <li (click)="insertMenu('Add')">
               <a class="export-btn"
                 ><i class="ri-add-box-fill"></i> Create Menu</a
               >
             </li>
-            <li>
+            <li (click)="downloadDevicesExcel()">
               <a class="export-btn"><i class="ri-export-fill"></i> Export</a>
             </li>
           </ul>
@@ -105,9 +105,9 @@
           <ag-grid-angular
             class="ag-theme-alpine"
             [columnDefs]="columnDefs"
-            [rowData]="rowData"
+            [rowData]="menuItemsList"
             [domLayout]="'autoHeight'"
-            [suppressColumnVirtualisation]="true"
+            [suppressColumnVirtualisation]="true"[pagination]="true" [paginationPageSize]="15"
             [defaultColDef]="{ flex: 1, minWidth: 100, sortable: true }"
             (cellClicked)="onCellClicked($event)"
           >

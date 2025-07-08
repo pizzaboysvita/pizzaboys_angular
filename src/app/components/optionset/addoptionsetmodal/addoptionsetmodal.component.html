@@ -1,0 +1,314 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5>{{type}} Option Set</h5>
+    <button class="btn-close" type="button" (click)="modal.dismissAll()">
+      <i class="ri-close-line"></i>
+    </button>
+  </div>
+
+  <div class="modal-body pt-0">
+    <div class="col-12">
+      <ul class="nav nav-pills flex-nowrap mb-3" ngbNav #nav="ngbNav" [(activeId)]="active">
+        <li [ngbNavItem]="1" class="nav-item m-0">
+          <button ngbNavLink class="nav-link" type="button">General</button>
+          <ng-template ngbNavContent>
+            <form [formGroup]="optionSetForm">
+              <div class="input-items">
+                <div class="row gy-3">
+
+                  <div class="col-12">
+                    <div class="input-box">
+                      <h6>Name</h6>
+                      <input type="text" placeholder="Enter Name" formControlName="name">
+                      <span class="lableSubtext">Unique menu name</span>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="input-box">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Display Name</h6>
+                        <span class="optional-tag">OPTIONAL</span>
+                      </div>
+                      <input type="text" placeholder="Enter Display Name" formControlName="displayName">
+                      <span class="lableSubtext">Overrides unique name in your store</span>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="row">
+                      <div class="col-6">
+                        <h6 class="mb-1" style="font-weight: 600;">Hide Option Set</h6>
+                        <div *ngFor="let option of hideOptionSet" class="form-check">
+                          <input class="form-check-input" type="checkbox" [(ngModel)]="option.checked" [id]="option.key"
+                            [name]="option.key" [ngModelOptions]="{ standalone: true }" />
+                          <label class="form-check-label" [for]="option.key">{{ option.label }}</label>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+
+
+
+                  <div class="col-12">
+                    <div class="row g-3 align-items-center">
+                      <div class="col-6">
+                        <h6 class="toggleHeading">Hide Menu</h6>
+                      </div>
+                      <div class="col-6 text-end">
+                        <div class="form-switch d-inline-block">
+                          <input type="checkbox" class="form-check-input" formControlName="hideMenu">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </ng-template>
+        </li>
+
+        <!-- @if(menuForm.value.hideMenu == false){ -->
+        <li [ngbNavItem]="2" class="nav-item m-0">
+          <button ngbNavLink class="nav-link" type="button">Options</button>
+          <ng-template ngbNavContent>
+            <div class="col-12">
+              <!-- <h3 class="p-1">Restriction Presets</h3> -->
+              <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                <button class="btn btn-outline-primary btn-sm border rounded" (click)="addNewRow()">
+                  ADD &nbsp; <i class="ri-add-circle-line"></i>
+                </button>
+
+
+                <button class="btn form-check btn-sm border rounded">
+                  SERVICE ($) &nbsp; <input type="checkbox" class="form-check-input m-0" />
+                </button>
+
+                <button class="btn form-check btn-sm border rounded">
+                  COMBO ($) &nbsp; <input type="checkbox" class="form-check-input m-0" />
+                </button>
+
+
+                <div class="dropdown">
+                  <button class="btn btn-outline-dark btn-sm border rounded dropdown-toggle" type="button"
+                    data-bs-toggle="dropdown">
+                    Toggle Options
+                  </button>
+
+                  <ul class="dropdown-menu p-2" style="min-width: 250px;">
+                    <li *ngFor="let option of toggleOptions">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" [(ngModel)]="option.enabled"
+                          id="{{ option.key }}">
+                        <label class="form-check-label" for="{{ option.key }}">
+                          {{ option.label }}
+                        </label>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+
+              </div>
+
+              <select class="form-select form-select-sm w-50">
+                <option selected>Vary based on other options</option>
+                <option>Option 1</option>
+                <option>Option 2</option>
+              </select>
+              <br>
+
+              <ag-grid-angular class="ag-theme-alpine" [rowData]="rowData" [columnDefs]="columnDefs"
+                [defaultColDef]="defaultColDef" [domLayout]="'autoHeight'" (gridReady)="onGridReady($event)">
+              </ag-grid-angular>
+
+
+            </div>
+          </ng-template>
+        </li>
+        <!-- } -->
+        <li [ngbNavItem]="3" class="nav-item m-0">
+          <button ngbNavLink class="nav-link" type="button">Condition</button>
+          <ng-template ngbNavContent>
+
+            <div class="input-items">
+                <form [formGroup]="optionSetConditionForm">
+              <div class="row gy-3">
+
+                <div class="col-12">
+                  <div class="row g-3 align-items-center">
+                    <div class="col-6">
+                      <h6 style="font-weight: 600;">Required</h6>
+                      <div class="form-switch d-inline-block">
+                        <input type="checkbox" formControlName="required" class="form-check-input">
+                      </div>
+
+
+                    </div>
+                    <span class="lableSubtext">If enabled, a customer must make a choice from this option set
+                    </span>
+
+                  </div>
+
+                </div>
+
+                <div class="row g-3 align-items-center" >
+                  <div class="col-6">
+                    <h6 style="font-weight: 600;">Select Multiple</h6>
+                    <div class="form-switch d-inline-block">
+                      <input type="checkbox"  formControlName="SelectMultiple"  class="form-check-input">
+                    </div>
+
+
+                  </div>
+                  <span class="lableSubtext">If enabled, a customer must make a choice from this option set
+                  </span>
+
+                </div>
+@if(optionSetConditionForm.value.SelectMultiple){
+                  <div class="row  align-items-center">
+                  <div class="col-6">
+                    <h6 style="font-weight: 600;">Enable Option Quantity</h6>
+                    <div class="form-switch d-inline-block">
+                      <input type="checkbox"  formControlName="enableOptionQuantity"  class="form-check-input">
+                    </div>
+                  </div>
+                  <span class="lableSubtext">If enabled, customers can select the quantity of a particular option
+                  </span>
+                    <div class="col-12">
+                    <div class="input-box">
+                      <h6>Min Options Required</h6>
+                      <input type="text" placeholder="Enter Min Options Required" formControlName="MinOptionsRequired">
+                      <span class="lableSubtext">The minimum number of options that must be selected. Leave empty for no minimum</span>
+                    </div>
+                  </div>
+                    <div class="col-12">
+                    <div class="input-box">
+                      <h6>Max Options Allowed</h6>
+                      <input type="text" placeholder="Enter Name" formControlName="MaxOptionsAllowed">
+                      <span class="lableSubtext">The maximum number of options that can be selected. Leave empty for no limit</span>
+                    </div>
+                  </div>
+                    <div class="col-12">
+                    <div class="input-box">
+                      <h6>Free Quantity</h6>
+                      <input type="text" placeholder="Enter Name" formControlName="FreeQuantity">
+                      <span class="lableSubtext">The number of options that can be selected for free. NOTE: If enabled, ensure all your options are the same price otherwise the free options will be credited top to bottom</span>
+                    </div>
+                  </div>
+                </div>
+              }
+              </div>
+              </form>
+            </div>
+
+          </ng-template>
+        </li>
+
+        <li [ngbNavItem]="4" class="nav-item m-0">
+          <button ngbNavLink class="nav-link" type="button">Add / Remove From Dishes</button>
+          <ng-template ngbNavContent>
+            <div class="tree-view">
+              <ul>
+                <ng-container *ngFor="let category of dishTree">
+                  <li>
+                    <div class="d-flex">
+                      <button class="btn btn-sm p-0 me-2 mb-2" (click)="toggleExpand(category)"
+                        *ngIf="category.children?.length">
+                        <i class="ri" [ngClass]="
+                        category.expanded
+                          ? 'ri-arrow-down-s-line'
+                          : 'ri-arrow-right-s-line'
+                      ">
+                        </i>
+                      </button>
+                      <input class="form-check-input me-2" type="checkbox" [(ngModel)]="category.checked"
+                        (change)="toggleCategory(category)" [ngModelOptions]="{ standalone: true }" />
+                      <label class="form-check-label fw-bold">{{ category.name }}</label>
+                    </div>
+
+                    <ul *ngIf="category.children && category.expanded" class="ms-4 ">
+                      <ng-container *ngFor="let dish of category.children">
+                        <li>
+                          <div *ngIf="!dish.children; else nested" class="form-check">
+                            <input class="form-check-input" type="checkbox" [(ngModel)]="dish.checked"
+                              [ngModelOptions]="{ standalone: true }" />
+                            <label class="form-check-label">{{ dish.name }}</label>
+                          </div>
+                          <ng-template #nested>
+                            <div class="d-flex">
+                              <button class="btn btn-sm p-0 me-2 mb-2" (click)="toggleExpand(dish)">
+                                <i class="ri" [ngClass]="
+                                dish.expanded
+                                  ? 'ri-arrow-down-s-line'
+                                  : 'ri-arrow-right-s-line'
+                              ">
+                                </i>
+                              </button>
+                              <input class="form-check-input me-2" type="checkbox" [(ngModel)]="dish.checked"
+                                (change)="toggleCategory(dish)" [ngModelOptions]="{ standalone: true }" />
+                              <label class="form-check-label fw-bold">{{ dish.name }}</label>
+                            </div>
+                            <ul *ngIf="dish.expanded" class="ms-4 mt-1">
+                              <li *ngFor="let subdish of dish.children">
+                                <div class="form-check">
+                                  <input class="form-check-input" type="checkbox" [(ngModel)]="subdish.checked"
+                                    [ngModelOptions]="{ standalone: true }" />
+                                  <label class="form-check-label">{{ subdish.name }}</label>
+                                </div>
+                              </li>
+                            </ul>
+                          </ng-template>
+                        </li>
+                      </ng-container>
+                    </ul>
+                  </li>
+                </ng-container>
+              </ul>
+            </div>
+          </ng-template>
+        </li>
+
+        <li [ngbNavItem]="5" class="nav-item m-0">
+          <button ngbNavLink class="nav-link" type="button">Misc</button>
+          <ng-template ngbNavContent>
+
+            <div class="input-items">
+              <div class="row gy-3">
+<form [formGroup]="miscForm">
+                <div class="col-12">
+                  <div class="row g-3 align-items-center">
+                    <div class="col-6">
+                      <h6 style="font-weight: 600;">Inc. Price in Free Quantity Promos</h6>
+                    </div>
+                    <div class="col-6 text-end">
+                      <div class="form-switch d-inline-block">
+                        <input type="checkbox"  formControlName="PriceinFreeQuantityPromos" class="form-check-input">
+                      </div>
+                    </div>
+                    <span class="lableSubtext">By default, option set prices are not counted towards promos such as buy
+                      1 get 1 free. For example, if the base dish price is $10 but the customer added an option costing
+                      $5 extra, total $15, if they buy 2 units, the second will be discounted for the base cost of $10.
+                      If this setting is enabled, the discount would be valid for up to $15</span>
+                  </div>
+                </div>
+                </form>
+              </div>
+            </div>
+
+          </ng-template>
+        </li>
+
+
+      </ul>
+    </div>
+    <div class="col-12" [ngbNavOutlet]="nav"></div>
+  </div>
+  @if(type != 'View'){
+  <div class="modal-footer">
+    <button class="btn btn-cancel" type="button" (click)="modal.dismissAll()">Cancel</button>
+    <button class="btn btn-submit" type="submit" (click)="saveMenu()">Save</button>
+  </div>
+  }
+</div>
+

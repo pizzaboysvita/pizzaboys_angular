@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ClickOutsideDirective } from '../../directive/click-outside.directive';
 import { NavService, menuItem } from '../../services/nav.service';
 import { FeatherIconsComponent } from "../feather-icons/feather-icons.component";
@@ -9,6 +9,7 @@ import { MessagesComponent } from './messages/messages.component';
 import { ModeComponent } from './mode/mode.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { ProfileComponent } from "./profile/profile.component";
+import { SessionStorageService } from '../../services/session-storage.service';
 
 @Component({
     selector: 'app-header',
@@ -35,13 +36,15 @@ export class HeaderComponent {
   public searchResultEmpty: boolean = false;
   users: any;
 
-  constructor(public navService: NavService) { 
+  constructor(public navService: NavService,private sessionStorageService:SessionStorageService,public router: Router) { 
     this.navService.items.subscribe(
       (menuItems) => (this.items = menuItems)
     );
-    const userData = localStorage.getItem("user");
+
+    const userData = JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any)
+
         if (userData !== null) {
-          this.users = JSON.parse(userData);
+          this.users = userData
         } else {
           console.log("No user data found in localStorage.");
         }
@@ -99,5 +102,11 @@ export class HeaderComponent {
     this.searchText = "";
     this.searchResult = false;
   }
-
+home(){
+   this.router.navigate(["/store-dashboard"]);
+    this.sessionStorageService.setsessionStorage('Pos','false')
+     setTimeout(() => {
+    window.location.reload();
+  }, 1000);
+}
 }

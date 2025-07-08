@@ -2,8 +2,8 @@
 .switch {
     position: relative;
     display: inline-block;
-    width: 50px;
-    height: 28px;
+    width: 45px;
+    height: 20px;
     margin-top: 10px;
   }
   
@@ -25,10 +25,10 @@
   .slider:before {
     position: absolute;
     content: "";
-    height: 20px;
-    width: 20px;
+    height: 18px;
+    width: 18px;
     left: 4px;
-    bottom: 4px;
+    bottom: 1px;
     background-color: white;
     transition: 0.4s;
     border-radius: 50%;

@@ -1,0 +1,273 @@
+import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, FormArray, ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
+import { NgbActiveModal, NgbModal, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { CommonModule } from '@angular/common';
+import { SessionStorageService } from '../../../shared/services/session-storage.service';
+import { ApisService } from '../../../shared/services/apis.service';
+import { AppConstants } from '../../../app.constants';
+import Swal from 'sweetalert2';
+import { AgGridAngular } from '@ag-grid-community/angular';
+import { ColDef, GridReadyEvent } from '@ag-grid-community/core';
+interface RowData {
+  name:string;
+  description:string;
+  price:string;
+  inStock:string
+}
+interface OptionItem {
+  name: string;
+  description: string;
+  price: number;
+  inStock: boolean;
+  hide?: boolean;
+  hideOnline?: boolean;
+  hidePOS?: boolean;
+  hideStandardDish?: boolean;
+  hideComboDish?: boolean;
+  hidePickup?: boolean;
+  hideDelivery?: boolean;
+  hideDineIn?: boolean;
+  [key: string]: string | number | boolean | undefined;
+}
+
+@Component({
+  selector: 'app-addoptionsetmodal',
+  standalone: true,
+  imports: [CommonModule,AgGridAngular, FormsModule, ReactiveFormsModule, NgbNavModule, NgSelectModule],
+  templateUrl: './addoptionsetmodal.component.html',
+})
+
+export class AddoptionsetmodalComponent {
+  @Input() type: any
+  @Input() myData: any;
+optionSetConditionForm:FormGroup
+ hideOptionSet = [
+    { key: 'always', label: 'Always', checked: false },
+    { key: 'pos', label: 'POS', checked: false },
+    { key: 'online', label: 'Online Ordering', checked: false },
+    { key: 'thirdParty', label: '3rd Party Integration', checked: false }
+  ];
+  dishTree = [
+    {
+      name: 'Takeaway Menu',
+      checked: false,
+      expanded: false,
+      children: [
+        { name: 'Limited Time Deal', checked: false },
+        { name: 'Chicken Wings Special', checked: false },
+        { name: 'Deal of the Week', checked: false },
+        { name: 'Specials', checked: false },
+        { name: 'Lunch', checked: false },
+        { name: 'Classic Range Pizzas', checked: false },
+        { name: 'Vegetarian Pizzas', checked: false },
+        { name: 'Chicken Pizzas', checked: false },
+        { name: 'Meat Pizzas', checked: false },
+        {
+          name: 'Seafood Pizzas',
+          checked: false,
+          expanded: false,
+          children: [
+            { name: 'Jamaican Jerk Prawns Pizza (Spicy)', checked: false },
+            { name: 'Seafood Supreme', checked: false },
+            { name: 'Tropical Caribbean Pizza', checked: false },
+            { name: 'Chipotle Prawns Pizza', checked: false },
+            { name: 'Creamy Prawns and Bacon Pizza', checked: false },
+            { name: 'Garlic Prawns Pizza', checked: false },
+            { name: 'Prawn and Bacon Pizza', checked: false },
+            { name: 'Salmon and Feta Pizza', checked: false },
+            { name: 'Pesto Prawns Pizza', checked: false },
+            { name: 'Tuna and Pineapple Pizza', checked: false }
+          ]
+        },
+        { name: 'Standard Sides', checked: false },
+        { name: 'Classic Sides', checked: false },
+        { name: 'Signature Sides', checked: false },
+        { name: 'Premium Sides', checked: false },
+        { name: 'Pastas', checked: false },
+        { name: "Ben & Jerry's Ice Cream", checked: false },
+        { name: 'Dessert', checked: false },
+        { name: 'Drinks', checked: false },
+        { name: 'Bases', checked: false },
+        { name: "Valentine's Day Promotion", checked: false }
+      ]
+    }
+  ];
+columnDefs: ColDef<RowData>[]  =  [
+  { field: 'name', headerName: 'Name', editable: true },
+  { field: 'description', headerName: 'Description', editable: true },
+  { field: 'price', headerName: 'Price ($)', editable: true, valueFormatter: (p:any) => Number(p.value).toFixed(2) },
+  {
+    field: 'inStock',
+    headerName: 'In Stock',
+    cellRenderer: (p:any) => p.value ? '✔️' : '❌',
+    editable: false
+  },
+{
+      headerName: 'Actions',
+      cellRenderer: (params: any) => {
+        return `
+        <div style="display: flex; align-items: center; gap:15px">
+          <button class="btn btn-sm p-0" data-action="view" title="View">
+            <span class="material-symbols-outlined text-warning">
+              visibility
+            </span>
+          </button>
+          <button class="btn btn-sm p-0" data-action="edit" title="Edit">
+            <span class="material-symbols-outlined text-success">
+              edit
+            </span>
+          </button>
+          <button class="btn btn-sm p-0" data-action="delete" title="Delete">
+            <span class="material-symbols-outlined text-danger">
+              delete
+            </span>
+          </button>
+        </div>`;
+      },
+      minWidth: 150,
+      flex: 1,
+    },
+];
+
+  rowData: any[] = []
+gridApi: any;
+ defaultColDef: ColDef = {
+    flex: 1,
+    minWidth: 100,
+    sortable: true,
+    resizable: true
+  };
+
+toggleOptions = [
+  { key: 'editing', label: 'Hide Editing Mode', enabled: false },
+  { key: 'hide', label: 'Hide', enabled: true },
+  { key: 'online', label: 'Hide Online', enabled: true },
+  { key: 'pos', label: 'Hide POS', enabled: true },
+  { key: 'std', label: 'Hide Standard Dish', enabled: true },
+  { key: 'combo', label: 'Hide Combo Dish', enabled: true },
+  { key: 'pickup', label: 'Hide Pickup', enabled: true },
+  { key: 'delivery', label: 'Hide Delivery', enabled: true },
+  { key: 'dinein', label: 'Hide Dine-In', enabled: true }
+];
+
+
+  active = 1;
+  optionSetForm: FormGroup;
+  miscForm:FormGroup
+  storeList: any;
+  reqbody:any
+  constructor(private fb: FormBuilder, public modal: NgbModal, private apis: ApisService) {
+    this.optionSetForm = this.fb.group({
+      name: [''],
+      displayName: [''],
+      description: [''],
+      disableDishNotes: [false],
+      restockMenuDaily: [false],
+      hideMenu: [false],
+      availability: [[]],
+      posName: [''],
+      surcharge: [''],
+      
+    });
+this.optionSetConditionForm=this.fb.group({
+  required:[''],
+  SelectMultiple:[''],
+  enableOptionQuantity:[''],
+  MinOptionsRequired:[''],
+  MaxOptionsAllowed:[''],
+  FreeQuantity:['']
+})
+   
+this.miscForm =this.fb.group({
+  PriceinFreeQuantityPromos:['']
+})
+  }
+
+  ngOnInit() {
+  }
+  addNewRow() {
+    console.log("new datat")
+  const newRow = {
+    name: '',
+    description: '',
+    price: 0.00,
+    inStock: true
+  };
+  this.rowData = [newRow, ...this.rowData];
+  setTimeout(() => {
+    this.gridApi.setFocusedCell(0, 'name');
+    this.gridApi.startEditingCell({ rowIndex: 0, colKey: 'name' });
+  });
+}
+
+
+  saveMenu() {
+    console.log('Saving menu', this.rowData,this.hideOptionSet);
+
+    const reqboy={
+  "type": "insert",
+
+  "option_set_name":this.optionSetForm.value.name ,
+  "dispaly_name": this.optionSetForm.value.displayName,
+  "hide_name": this.optionSetForm.value.hideMenu==false?0:1,
+  "hide_option_set":JSON.stringify( this.hideOptionSet),
+  "option_set_combo": JSON.stringify(this.rowData),
+  "required": this.optionSetConditionForm.value.required ==true?1:0,
+  "hide_opion_set_json":JSON.stringify(this.hideOptionSet),
+  "select_multiple": this.optionSetConditionForm.value.SelectMultiple ==true?1:0,
+  "enable_option_quantity":  this.optionSetConditionForm.value.enableOptionQuantity =true?1:0,
+  "min_option_quantity":  this.optionSetConditionForm.value.MinOptionsRequired,
+  "max_option_allowed":  this.optionSetConditionForm.value.MaxOptionsAllowed,
+  "free_quantity": this.optionSetConditionForm.value.FreeQuantity,
+  "option_set_dishes":JSON.stringify(this.dishTree),
+  "inc_price_in_free": this.miscForm.value.PriceinFreeQuantityPromos=true?1:0,
+  "cretaed_by": 1011
+}
+this.apis.postApi(AppConstants.api_end_points.optionSet,reqboy).subscribe((data:any)=>{
+  console.log(data)
+  if(data.code ==1){
+       Swal.fire("Success!", data.message, "success").then((result) => {
+                if (result) {
+                  console.log("User clicked OK");
+                  // this.router.navigate(["/staff/staff-list"]);
+                }
+              });
+  }
+})
+  
+  }
+  
+onGridReady(params: GridReadyEvent) {
+    this.gridApi = params.api;
+  }
+ toggleOptionVisibility(opt: OptionItem, key: string) {
+    if (typeof opt[key] === 'boolean') {
+      opt[key] = !opt[key];
+    } else {
+      opt[key] = true;
+    }
+  }
+
+  toggleGlobalHideOption(hideOption: { key: string; label: string; checked: boolean }) {
+    hideOption.checked = !hideOption.checked;
+  }
+
+  toggleCategory(category: any) {
+    console.log(category.checked)
+    // if (category.checked) {
+      category.children.forEach((child: any) => {
+        child.checked = category.checked;
+       
+      });
+ 
+    // }
+  }
+
+  toggleExpand(category: any) {
+    
+    category.expanded = !category.expanded;
+  }
+
+
+}

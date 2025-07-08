@@ -11,7 +11,10 @@ import { AppConstants } from '../../../app.constants';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { ApisService } from '../../../shared/services/apis.service';
+import * as ExcelJS from 'exceljs';
+import * as FileSaver from 'file-saver';
 import { SessionStorageService } from '../../../shared/services/session-storage.service';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
   store_name: string;
@@ -23,7 +26,7 @@ interface RowData {
 }
 @Component({
   selector: 'app-restaurants-list',
-  imports: [CardComponent, AgGridAngular],
+  imports: [CardComponent, AgGridAngular,ReactiveFormsModule,FormsModule],
   templateUrl: './restaurants-list.component.html',
   styleUrl: './restaurants-list.component.scss'
 })
@@ -33,14 +36,15 @@ export class RestaurantsListComponent {
     pagination: true,
 
   };
-
+storeForm:FormGroup
   storeList: any;
   storeData: any;
-  constructor(private router: Router, private apis: ApisService, private modalService: NgbModal, private session: SessionStorageService) { }
+  storeListSorting: any;
+  constructor(private router: Router, private apis: ApisService,private fb:FormBuilder, private modalService: NgbModal, private session: SessionStorageService) { }
   modules = [ClientSideRowModelModule];
-  public products = ProductsList;
+
   stausList = ['Active', 'In-Active']
-  columnDefs: ColDef<RowData>[] = [    // <-- Important to give <RowData> here!
+  columnDefs: ColDef<RowData>[] = [   
     {
       field: 'store_name', headerName: 'Store Name', sortable: true,
       suppressMenu: true,
@@ -80,9 +84,9 @@ export class RestaurantsListComponent {
       field: 'status',
       cellRenderer: (params: any) => {
         let statusClass = '';
-        if (params.value === 'Active') {
+        if (params.value == 'Active') {
           statusClass = 'status-active';
-        } else if (params.value === 'Inactive') {
+        } else if (params.value == 'Inactive') {
           statusClass = 'status-no-stock';
         } else if (params.value === 'Pending') {
           statusClass = 'status-hide';
@@ -144,6 +148,12 @@ delete
   //   { storename: 'Porsche', email: 'Boxster',status: 'Pending', phoneNumber: 72000,storeAddress:'Abc Address' }
   // ];
   ngOnInit() {
+    this.storeForm =this.fb.group({
+      storeName:[''],
+      email:[''],
+      address:[''],
+      status:['Active']
+    })
     this.getStoreList()
   }
   getStoreList() {
@@ -153,6 +163,7 @@ delete
         element.status = element.status == 1 ? 'Active' : element.status == 0 ? 'Inactive' : element.status
       })
       this.storeList = data.reverse()
+         this.storeListSorting = data.reverse()
     })
   }
   onCellClicked(event: any): void {
@@ -207,7 +218,7 @@ delete
     const req_body = {
       "store_id": this.storeData.store_id
     }
-    this.apis.deleteApi(AppConstants.api_end_points.add_store, req_body).subscribe((data: any) => {
+    this.apis.deleteApi(AppConstants.api_end_points.store_list+'/'+this.storeData.store_id).subscribe((data: any) => {
 
       if (data) {
         console.log(data)
@@ -228,4 +239,70 @@ delete
     })
   }
 
+
+
+
+downloadDevicesExcel(): void {
+  if (!this.storeList || this.storeList.length === 0) {
+    console.warn('No data to export.');
+    return;
+  }
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Stores');
+
+  // Define header row with styles
+  const headers = [
+    { header: 'Store Name', key: 'store_name', width: 20 },
+    { header: 'E-Mail', key: 'email', width: 25 },
+    { header: 'Phone Number', key: 'phone', width: 15 },
+    { header: 'Store Address', key: 'street_address', width: 30 },
+    { header: 'Created Date', key: 'created_on', width: 20 },
+    { header: 'Status', key: 'Status', width: 12 },
+  ];
+
+  worksheet.columns = headers;
+
+  worksheet.getRow(1).eachCell((cell) => {
+    cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FF1F4E78' }, // dark blue
+    };
+  });
+
+  // Add data rows
+  this.storeList.forEach((store: any) => {
+    worksheet.addRow({
+      store_name: store.store_name || '',
+      email: store.email || '',
+      phone: store.phone || '',
+      street_address: store.street_address || '',
+      created_on: store.created_on || '',
+      Status: store.Status || '',
+    });
+  });
+
+  // Create buffer and save
+  workbook.xlsx.writeBuffer().then((data) => {
+    const blob = new Blob([data], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    FileSaver.saveAs(blob, 'storesList.xlsx');
+  });
+}
+search(){
+  console.log(this.storeForm.value.status, this.storeListSorting)
+  this.storeList = this.storeListSorting.filter((store:any) => {
+    return (
+      ( store.store_name.toLowerCase().includes(this.storeForm.value.storeName.toLowerCase())) &&    ( store.email.toLowerCase().includes(this.storeForm.value.email.toLowerCase())) &&( store.street_address.toLowerCase().includes(this.storeForm.value.address.toLowerCase())) &&( store.status.toLowerCase().includes(this.storeForm.value.status.toLowerCase())) 
+    );
+  });
+  console.log(this.storeList)
+}
+reset(){
+  this.storeForm.reset()
+  this.getStoreList()
+}
 }

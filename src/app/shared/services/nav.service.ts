@@ -215,7 +215,7 @@ export class NavService {
   //     active: false,
   //   },
   // ]
-  menuItem: menuItem[] = [
+  superAdminmenuItem: menuItem[] = [
        
     //    {
     //   level: 1,
@@ -271,6 +271,40 @@ export class NavService {
       type: "link",
       active: false,
     },
+      {
+      level: 1,
+      title: "Menus",
+      path: "/menus/list",
+      icon: "ri-bowl-line",
+      type: "link",
+      active: false,
+    },
+      
+      {
+      level: 1,
+      title: "Category",
+      path: "/menus/category",
+      icon: "ri-restaurant-2-fill",
+      type: "link",
+      active: false,
+    },
+     {
+      level: 1,
+      title: "Dish",
+      path: "/menus/dish",
+      icon: "ri-restaurant-fill",
+      type: "link",
+      active: false,
+    },
+     {
+      level: 1,
+      title: "Optionset",
+      path: "/options/add-options",
+      icon: "ri-image-circle-fill",
+      type: "link",
+      active: false,
+    },
+
     //    {
     //   level: 1,
     //   title: "Users",
@@ -301,14 +335,7 @@ export class NavService {
       type: "link",
       active: false,
     },
-    // {
-    //   level: 1,
-    //   title: "Reports",
-    //   path: "/reports",
-    //   icon: "ri-file-chart-line",
-    //   type: "link",
-    //   active: false,
-    // },
+   
     {
       level: 1,
       title: "Orders",
@@ -350,14 +377,33 @@ export class NavService {
       type: "link",
       active: false,
     },
-    // {
-    //   level: 1,
-    //   title: "Settings",
-    //   path: "/users/add-new-user",
-    //   icon: "ri-settings-line",
-    //   type: "link",
-    //   active: false,
-    // },
+     {
+      level: 1,
+      title: "Reports",
+      path: "/reports",
+      icon: "ri-file-chart-line",
+      type: "link",
+      active: false,
+    },
+    {
+      level: 1,
+      title: "Settings",
+      path: "/users/add-new-user",
+      icon: "ri-settings-line",
+      type: "link",
+      active: false,
+    },
+
+ {
+      level: 1,
+      title: "Pos",
+      path: "/orders/order-detail",
+      icon: "ri-settings-line",
+      type: "link",
+      active: false,
+    },
+
+  
   ]
   pos_menu_items:menuItem[]  =[
 
@@ -417,7 +463,7 @@ export class NavService {
    
   ]
   
-  items = new BehaviorSubject<menuItem[]>(this.menuItem);
+  items = new BehaviorSubject<menuItem[]>(this.superAdminmenuItem);
    logOut() {
           this.modal.open(LoggingOutComponent,{
               windowClass:'theme-modal',centered:true

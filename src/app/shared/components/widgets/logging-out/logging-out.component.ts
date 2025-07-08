@@ -14,9 +14,10 @@ export class LoggingOutComponent {
   constructor(public modal: NgbModal,public router: Router) { }
 
   logOut() {
+    sessionStorage.clear()
     localStorage.clear();
     this.modal.dismissAll();
-    this.router.navigateByUrl("/auth/login");
+    this.router.navigateByUrl("/login");
   }
 
 }

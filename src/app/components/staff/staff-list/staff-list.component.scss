@@ -1,20 +1,4 @@
-.new-save-button {
-    float: right;
-    background: linear-gradient(to right, rgba(#F2A93E, 1),rgba(#F07054, 1) );;
-    color: #fff;
-    font-size: calc(15px + (16 - 15) * ((100vw - 320px) / (1920 - 320)));
-    margin-top: 20px;
-    border: 1px solid #b1743c;
-    background: #b1743c;  
-    border-radius: 10px;
-    &:hover {
-        color: #b1743c;;
-        border: 1px solid #b1743c;
-        background:#fff;  
-        
-    }
-    
-}
+
 .new-reset-button {
     float: right;
     background: linear-gradient(to right, rgba(#F2A93E, 1),rgba(#F07054, 1) );;
@@ -42,3 +26,9 @@
     background: #b1743c !important;  
     cursor: pointer !important;
   }
+
+.ag-row .ag-cell {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+}
