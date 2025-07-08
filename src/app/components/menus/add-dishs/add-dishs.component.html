@@ -19,13 +19,14 @@
                                   <div class="input-box">
                                     <h6>Menu Type</h6>
                                     <ng-select 
-                                      [items]="menuList" 
+                                      [items]="menuItemsList" 
                                       [searchable]="true" 
                                       [multiple]="false"
                                       bindLabel="name" 
-                                      bindValue="id"
+                                      bindValue="dish_menu_id"
                                       placeholder="Select from the dropdown or type to search"
-                                      formControlName="menuType">
+                                      formControlName="menuType"
+                                       (change)="getCategories($event)">
                                     </ng-select>
                                   </div>
                                 </div>
@@ -140,7 +141,8 @@
                                         <h6>Option Sets</h6>
                                         <ng-select [items]="PlaceholderSubcategory" [searchable]="true"
                                             [multiple]="true" bindLabel="name" bindValue="id"
-                                            placeholder="Select from the dropdown or type to search"></ng-select>
+                                            placeholder="Select from the dropdown or type to search" [(ngModel)]="selectedSubcategories"
+                                           (change)="onSubcategoryChange($event)"></ng-select>
                                     </div>
                                     <span class="lableSubtext">Select option sets to be applied to the dish. Option sets
                                         are ordered according to how they are listed on the option set page, not by the
@@ -159,8 +161,47 @@
                                         dish will show your base dish price along with the price of the large
                                         option</span>
                                 </div>
+                                    <div class="col-12">
+                                    <div class="input-box">
+                                        <h6>Primary Option Set</h6>
+<div class="mb-2 mt-2">
+  <button class="btn addChoice-button" type="button" (click)="addIngredients()">Add Ingredient</button>
+</div>
+@for (choice of Ingredients; track choice; let i = $index) {
+  <div class="choice-container border border-top-0 rounded-0">
+    <!-- Main Row -->
+    <div class="row align-items-center gx-0 border fixed-height-row">
+      <div class="col-1 d-flex justify-content-center align-items-center border-end">
+        <i class="ri-menu-line" style="font-size: 1.2rem; color: black;"></i>
+      </div>
 
+      <div class="col-1 d-flex justify-content-center align-items-center border-end" style="color: black;">
+        {{ i + 1 }}
+      </div>
+
+      <div class="col-9 border-end d-flex align-items-center">
+        <input
+          type="text"
+          class="form-control border-0 py-0"
+          style="height: 32px; font-size: 0.875rem"
+          placeholder="Name"
+        />
+      </div>
+
+      <div class="col-1 d-flex justify-content-center align-items-center">
+        <i class="ri-delete-bin-line"   (click)="removeIngredients(i)" style="
+    cursor: pointer;
+    font-size: 1rem;"></i>
+
+
+      </div>
+    </div>
+                                    </div>
+                                  }
+                                    <span class="lableSubtext">Define a list of ingredients for this dish that be can removed by the customer when ordering</span>
+                                </div>
                             </div>
+                        </div>
                         </div>
                     </ng-template>
                 </li>
@@ -168,7 +209,7 @@
                 <li [ngbNavItem]="2" class="nav-item m-0" >
                     <button ngbNavLink class="nav-link" type="button">Dish Choices</button>
                     <ng-template ngbNavContent>
-                        <div class="input-items">
+                        <!-- <div class="input-items">
                             <div class="row">
                                 <div class="col-12">
                                     <button class="btn addChoice-button" type="button">Add Choice</button>
@@ -176,7 +217,124 @@
                               
 <span class="lableSubtext">Define choices that can contain a list of dishes a customer can select from. If a choice only has a single dish, then it will be preselect when ordering</span>
                             </div>
-                        </div>
+                        </div> -->
+<!-- Add Choice Button -->
+<div class="mb-3">
+  <button class="btn addChoice-button" type="button" (click)="addChoice()">Add Choice</button>
+</div>
+@for (choice of choices; track choice; let i = $index) {
+  <div class="choice-container border border-top-0 rounded-0">
+    <!-- Main Row -->
+    <div class="row align-items-center gx-0 border fixed-height-row">
+      <div class="col-1 d-flex justify-content-center align-items-center border-end">
+        <i
+          class="ri-arrow-right-s-line"
+          *ngIf="!choice.expanded"
+          (click)="toggleExpand(i)"
+          style="cursor: pointer; font-size: 1.3rem; color: black;"
+        ></i>
+        <i
+          class="ri-arrow-down-s-line"
+          *ngIf="choice.expanded"
+          (click)="toggleExpand(i)"
+          style="cursor: pointer; font-size: 1.3rem; color: black;"
+        ></i>
+      </div>
+
+      <div class="col-1 d-flex justify-content-center align-items-center border-end">
+        <i class="ri-menu-line" style="font-size: 1.2rem; color: black;"></i>
+      </div>
+
+      <div class="col-1 d-flex justify-content-center align-items-center border-end" style="color: black;">
+        {{ i + 1 }}
+      </div>
+
+      <div class="col-8 border-end d-flex align-items-center">
+        <input
+          type="text"
+          class="form-control border-0 py-0"
+          style="height: 32px; font-size: 0.875rem"
+          placeholder="Name"
+        />
+      </div>
+
+      <div class="col-1 d-flex justify-content-center align-items-center">
+<span
+  (click)="removeChoice(i)"
+  style="
+    cursor: pointer;
+    color: white;
+    font-size: 0.85rem;
+    background-color: #383838;
+    width: 15px;
+    height: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    line-height: 1;
+    font-weight: bold;
+  "
+
+>
+  −
+</span>
+
+      </div>
+    </div>
+
+    @if (choice.expanded) {
+      <!-- Takeaway Toggle -->
+      <div class="row ps-4 py-1" style="font-size: 0.92rem;">
+        <div class="col d-flex align-items-center">
+          <i
+            class="me-2"
+            [ngClass]="choice.takeawayExpanded ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"
+            (click)="choice.takeawayExpanded = !choice.takeawayExpanded"
+            style="cursor: pointer; font-size: 1.3rem; color: black;"
+          ></i>
+
+          <input type="checkbox" id="checkbox-{{ i }}" class="form-check-input me-2" />
+          <label for="checkbox-{{ i }}" class="form-check-label mb-0" style="font-size: 0.92rem;">
+            Takeaway Menu
+          </label>
+        </div>
+      </div>
+
+      @if (choice.takeawayExpanded) {
+        <!-- Subcategories -->
+        @for (sub of choice.subcategories; track sub; let j = $index) {
+          <div class="row ps-5 pb-0" style="font-size: 0.92rem; font-weight: normal;">
+            <div class="col d-flex align-items-center">
+              <i
+                class="me-2"
+                [ngClass]="sub.expanded ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"
+                (click)="sub.expanded = !sub.expanded"
+                style="cursor: pointer; font-size: 1.3rem; color: black;"
+              ></i>
+              <input type="checkbox" class="form-check-input me-2" [(ngModel)]="sub.checked" />
+              <label class="form-check-label mb-0 subcat-label">{{ sub.name }}</label>
+            </div>
+          </div>
+
+          <!-- Sub-subcategories -->
+          @if (sub.expanded && sub.subSubcategories?.length) {
+            @for (subsub of sub.subSubcategories; track subsub; let k = $index) {
+              <div class="row ps-5 pb-0">
+                <div class="col d-flex align-items-center" style="font-size: 0.92rem;margin-left: 2.5rem;">
+                  <!-- <i class="ri-checkbox-blank-line me-2 text-muted" style="font-size: 0.8rem;"></i> -->
+                  <input type="checkbox" class="form-check-input me-2" [(ngModel)]="subsub.checked" />
+                  <label class="form-check-label mb-0 subcat-label">{{ subsub.name }}</label>
+                </div>
+              </div>
+            }
+          }
+        }
+      }
+    }
+  </div>
+}
+
                     </ng-template>
                 </li> 
             }
@@ -186,6 +344,6 @@
     </div>
     <div class="modal-footer">
         <button class="btn btn-cancel" type="button" (click)="modal.dismissAll()"><i class="ri-close-circle-line"></i> &nbsp;Cancel</button>
-        <button body class="btn btn-animation  save-button" style="margin-left: 10px;" type="button"><i class="ri-add-circle-line"></i>&nbsp; Add Dish</button>&nbsp;
+        <button body class="btn btn-animation  save-button" style="margin-left: 10px;" type="button"><i class="ri-add-circle-line" (click)="insertDishData()"></i>&nbsp; Add Dish</button>&nbsp;
       </div>
 </div>
