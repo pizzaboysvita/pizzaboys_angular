@@ -118,3 +118,33 @@
     </app-card>
   </div>
 </div>
+
+
+<ng-template #confirmModal let-modal>
+  <div class="modal-content">
+    <div class="modal-header d-block text-center">
+      <h5 class="modal-title w-100" style="font-size: 20px; font-weight: 600">
+        Confirm Menu Deletion
+      </h5>
+      <button type="button" class="btn-close" (click)="modal.dismiss()">
+        <!-- <i class="fa fa-times"></i> -->
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="text-center">
+        <span style="font-size: 16px">
+          Are you sure you want to delete this  Menu?
+        </span>
+        <span class="text-danger fw-bold">This action cannot be undone.</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-sm fw-bold btn-animation" (click)="modal.dismiss()">
+        No
+      </button>
+      <button type="button" class="btn btn-sm fw-bold btn-animation" (click)="onConfirm(modal)">
+        Yes
+      </button>
+    </div>
+  </div>
+</ng-template>

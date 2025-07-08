@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, JsonPipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModal, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
@@ -6,6 +6,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { ApisService } from '../../../shared/services/apis.service';
 import { SessionStorageService } from '../../../shared/services/session-storage.service';
 import { AppConstants } from '../../../app.constants';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-add-dishs',
@@ -43,7 +44,22 @@ export class AddDishsComponent {
   menuForm!: FormGroup;
   menuItemsList: any = []
   categoryList:any = []
-
+  optSetDetails: any;
+  storesList: any;
+choices: {
+  name: string;
+  expanded: boolean;
+  takeawayExpanded: boolean;
+  subcategories: {
+    name: string;
+    checked: boolean;
+    expanded?: boolean;
+    subSubcategories?: {
+      name: string;
+      checked: boolean;
+    }[];
+  }[];
+}[] = [];
   constructor(private fb: FormBuilder,public modal: NgbModal, private apiService: ApisService, private sessionStorage: SessionStorageService) {}
 
   ngOnInit() {
@@ -58,30 +74,73 @@ export class AddDishsComponent {
       printName: [''],
       posName: [''],
       description: [''],
-      subtitle: ['']
+      subtitle: [''],
+      storeName:[null]
+      
     });
+    this.storeList()
+    this.getOptionSets()
     this.getmenuList();
+    this.getMenuCategoryDishData()
   }
     menuItems = [
     { name: 'Takeaway Menu' },
     { name: 'Pizza of the Week' },
     { name: 'Limited Time Deal' },
   ];
+    storeList() {
+    this.apiService
+      .getApi(AppConstants.api_end_points.store_list)
+      .subscribe((data) => {
+        if (data) {
+          console.log(data);
+          this.storesList = data;
+        }
+      });
+
+  }
+    getMenuCategoryDishData() {
+    const userId = JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id;
+  
+    const menuApi = this.apiService.getApi(AppConstants.api_end_points.menu + '?user_id=' + userId);
+    const categoryApi = this.apiService.getApi(`/api/category?user_id=` + userId);
+    const dishApi = this.apiService.getApi(AppConstants.api_end_points.dish + '?user_id=' + userId);
+  
+    forkJoin([menuApi, categoryApi, dishApi]).subscribe(
+      ([menuRes, categoryRes, dishRes]: any) => {
+const resi=this.apiService.buildMenuTree(menuRes.data,categoryRes.categories,dishRes.data)
+        // this.selectedMenuId=this.menuList[0]
+        
+        // this.totalcategoryList=categoryRes.categories
+        // this.totalDishList=dishRes.data
+        // this.menuType_cat(this.menuList[0])
+      // this.totalmenuDetails=this.apiService.buildMenuTree(menuRes.data,categoryRes.categories,dishRes.data)
+      // console.log(this.totalmenuDetails)
+    
+      })
+    }
     getmenuList() {
   
       this.apiService.getApi(AppConstants.api_end_points.menu + '?user_id=' + JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id).subscribe((data: any) => {
         if (data) {
           console.log(data)
           this.menuItemsList=  data.data.filter((x: {  status: number; })=>(x.status==1))
-
-          // data.data.forEach((item: any) => {
-          //   item.status = item.status == 1 ? 'Active' : item.status == 0 ? 'In-Active' : ''
-          // })
-          // this.menuItemsList = data.data
   
         }
       })
     }
+      getOptionSets() {
+   
+    this.apiService.getApi('/api/optionset?user_id=' + JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id).subscribe((data: any) => {
+      if (data.code==1) {
+        console.log(data, 'optionnnnnnnn')
+         data.data.forEach((item:any)=>{
+          item.status=item.status ==1?'Active':item.status ==0?'Inactive':'--'
+         })
+        this.optSetDetails = data.data
+      }
+    })
+  }
         getCategories(data:any): void {
           console.log(data.dish_menu_id);
           
@@ -104,11 +163,6 @@ export class AddDishsComponent {
         
         if (res.code === "1") {
           this.categoryList=  res.categories.filter((x: { dish_menu_id: any; status: number; })=>(x.dish_menu_id== data.dish_menu_id && x.status==1))
-             // res.categories.forEach((categorie:any)=>{
-                // categorie.status =  categorie.status==0?'Hide': categorie.status==1?'Active':'--';
-                // categorie.hide_category_in_POS= categorie.hide_category_in_POS=1?'Hide in POS': categorie.hide_category_in_POS==0?'Show in POS':'--'
-             // })
-         // this.categoryList = res.categories
 
           
         } else {
@@ -116,20 +170,7 @@ export class AddDishsComponent {
         }
       });
   }
-choices: {
-  name: string;
-  expanded: boolean;
-  takeawayExpanded: boolean;
-  subcategories: {
-    name: string;
-    checked: boolean;
-    expanded?: boolean;
-    subSubcategories?: {
-      name: string;
-      checked: boolean;
-    }[];
-  }[];
-}[] = [];
+
 
 addChoice() {
   const nextIndex = this.choices.length + 1;
@@ -198,18 +239,18 @@ selectedSubcategories: number[] = [];
 dish_option_set_json: string = '';
 
 onSubcategoryChange(selectedIds: number[]) {
-  const selectedOptions = this.PlaceholderSubcategory
-    .filter(item => selectedIds.includes(item.id))
-    .map(item => ({
-      option: item.name,
-      price: Number(item.price)
-    }));
+  // const selectedOptions = this.optSetDetails
+  //   .filter(item => selectedIds.includes(item.id))
+  //   .map(item => ({
+  //     option: item.name,
+  //     price: Number(item.price)
+  //   }));
 
-  this.dish_option_set_json = JSON.stringify(selectedOptions);
+  // this.dish_option_set_json = JSON.stringify(selectedOptions);
   console.log('dish_option_set_json:', this.dish_option_set_json);
 }
 insertDishData(){
-
+console.log("innnnnnnnnnnnn", this.Ingredients, this.selectedSubcategories)
 const reqbody={
     "type": "insert",
     "dish_menu_id": this.menuForm.value.menuType,
@@ -226,10 +267,10 @@ const reqbody={
     "pos_name": this.menuForm.value.posName,
     "description":this.menuForm.value.description,
     "subtitle": this.menuForm.value.subtitle,
-    "store_id": 10,
+    "store_id":this.menuForm.value.storeName,
     // "created_by": 1,
-    "dish_option_set_json": this.dish_option_set_json,
-    "dish_ingredients_json": this.Ingredients.map(i => i.name),
+    "dish_option_set_json": JSON.stringify(this.selectedSubcategories as any),
+    "dish_ingredients_json": JSON.stringify(this.Ingredients.map(i => i.name) as any),
     "dish_choices_json": "[{\"choice\":\"Spice Level\",\"values\":[\"Mild\",\"Medium\",\"Hot\"]}]"
 }
 console.log(reqbody)

@@ -27,9 +27,9 @@
                     <ul class="nav setting-main-box sticky theme-scrollbar" style="background-color: rgb(240 240 240);">
                         <li style="font-weight: 500;"> Menu Type:</li>
                         <li class="position-relative d-flex align-items-center">
-                            <select class="form-select" [(ngModel)]="selectedMenuId" (change)="selectedTabIndex = 0">
+                            <select class="form-select" [(ngModel)]="selectedMenuId" (change)="menuType_cat(selectedMenuId)" >
                                 @for(item of menuList; track item) {
-                                <option [value]="item.id">{{ item.name }}</option>
+                                <option [ngValue]="item">{{ item.name }}</option>
                                 }
                             </select>
 
@@ -46,11 +46,11 @@
                             </div> -->
                         </li>
 
-                        @for (item of tabs; track item; let i = $index) {
+                        @for (item of categoryList; track item; let i = $index) {
                         <li>
                             <button class="nav-link" [class.active]="selectedTabIndex === i"
-                                (click)="selectedTabIndex = i">
-                                {{ item.label }}
+                                (click)="category_dish(item)">
+                                {{ item.name }}
                             </button>
                         </li>
                         }
@@ -63,7 +63,7 @@
                     <div
                         class="row row-cols-xl-9 row-cols-md-5 row-cols-sm-3 row-cols-2 g-sm-3 g-2 media-library-sec ratio_landscape">
                         <!-- <div class="setting-box"> -->
-                        @for (item of MediaLibrary; track item) {
+                        @for (item of dishList; track item) {
                         <div>
                             <div class="library-box">
                                 <input type="checkbox" [id]="item.id" />
@@ -97,7 +97,7 @@
                                         </ul>
                                     </div>
                                 </label>
-                                <h6 class="f-w-600">{{item.name}}</h6>
+                                <h6 class="f-w-600">{{item.dish_name}}</h6>
 
                             </div>
                         </div>

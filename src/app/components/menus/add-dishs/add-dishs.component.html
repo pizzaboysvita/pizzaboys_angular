@@ -14,7 +14,21 @@
                         <form [formGroup]="menuForm">
                             <div class="input-items">
                               <div class="row gy-3">
-                          
+                           <div class="col-12">
+                                  <div class="input-box">
+                                    <h6>Store Type</h6>
+                                    <ng-select 
+                                      [items]="storesList" 
+                                      [searchable]="true" 
+                                      [multiple]="false"
+                                      bindLabel="store_name" 
+                                      bindValue="store_id"
+                                      placeholder="Select from the dropdown or type to search"
+                                      formControlName="storeName"
+                                       (change)="getCategories($event)">
+                                    </ng-select>
+                                  </div>
+                                </div>
                                 <div class="col-12">
                                   <div class="input-box">
                                     <h6>Menu Type</h6>
@@ -50,7 +64,7 @@
                                   <div class="input-box">
                                     <h6>Dish Type</h6>
                                     <div class="btn-group w-auto" role="group" aria-label="Dish Type" style="height: 44px;">
-                                      <input type="radio" class="btn-check" formControlName="dishType" value="standard" id="standard" autocomplete="off">
+                                      <input type="radio" class="btn-check" formControlName="dishType" value="Veg" id="standard" autocomplete="off">
                                       <label class="btn btn-style" for="standard">Standard</label>
                           
                                       <input type="radio" class="btn-check" formControlName="dishType" value="combo" id="combo" autocomplete="off">
@@ -130,7 +144,7 @@
                           
                     </ng-template>
                 </li>
-                @if(menuForm.value.dishType =='standard'){
+                @if(menuForm.value.dishType =='Veg'){
                 <li [ngbNavItem]="2" class="nav-item m-0" >
                     <button ngbNavLink class="nav-link" type="button">Options & ingeration</button>
                     <ng-template ngbNavContent>
@@ -139,8 +153,8 @@
                                 <div class="col-12">
                                     <div class="input-box">
                                         <h6>Option Sets</h6>
-                                        <ng-select [items]="PlaceholderSubcategory" [searchable]="true"
-                                            [multiple]="true" bindLabel="name" bindValue="id"
+                                        <ng-select [items]="optSetDetails" [searchable]="true"
+                                            [multiple]="true" bindLabel="option_set_name" 
                                             placeholder="Select from the dropdown or type to search" [(ngModel)]="selectedSubcategories"
                                            (change)="onSubcategoryChange($event)"></ng-select>
                                     </div>
@@ -151,8 +165,8 @@
                                 <div class="col-12">
                                     <div class="input-box">
                                         <h6>Primary Option Set</h6>
-                                        <ng-select [items]="PlaceholderSubcategory" [searchable]="true"
-                                            [multiple]="true" bindLabel="name" bindValue="id"
+                                        <ng-select [items]="optSetDetails" [searchable]="true"
+                                            [multiple]="true" bindLabel="option_set_name" bindValue="option_set_id"
                                             placeholder="Select from the dropdown or type to search"></ng-select>
                                     </div>
                                     <span class="lableSubtext">Designate a primary option set which is 'required' and
@@ -184,7 +198,7 @@
           type="text"
           class="form-control border-0 py-0"
           style="height: 32px; font-size: 0.875rem"
-          placeholder="Name"
+          placeholder="Name" [(ngModel)]="Ingredients[i].name"
         />
       </div>
 
@@ -344,6 +358,6 @@
     </div>
     <div class="modal-footer">
         <button class="btn btn-cancel" type="button" (click)="modal.dismissAll()"><i class="ri-close-circle-line"></i> &nbsp;Cancel</button>
-        <button body class="btn btn-animation  save-button" style="margin-left: 10px;" type="button"><i class="ri-add-circle-line" (click)="insertDishData()"></i>&nbsp; Add Dish</button>&nbsp;
+        <button body class="btn btn-animation  save-button"(click)="insertDishData()" style="margin-left: 10px;" type="button"><i class="ri-add-circle-line" ></i>&nbsp; Add Dish</button>&nbsp;
       </div>
 </div>

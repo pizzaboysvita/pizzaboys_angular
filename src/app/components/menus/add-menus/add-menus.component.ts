@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, TemplateRef, ViewChild } from "@angular/core";
 import { CardComponent } from "../../../shared/components/card/card.component";
 // import { TableComponent } from '../../widgets/table/table.component';
 import { TableConfig } from "../../../shared/interface/table.interface";
@@ -15,6 +15,7 @@ import { AppConstants } from "../../../app.constants";
 import { SessionStorageService } from "../../../shared/services/session-storage.service";
 import FileSaver from "file-saver";
 import * as ExcelJS from 'exceljs';
+import Swal from "sweetalert2";
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
   store_id:string
@@ -34,6 +35,7 @@ interface RowData {
 })
 export class AddMenusComponent {
   modules = [ClientSideRowModelModule];
+   @ViewChild('confirmModal') confirmModalRef!: TemplateRef<any>;
   public products = ProductsList;
   stausList = ["Active", "In-Active", "Pending"];
 
@@ -157,7 +159,8 @@ delete
   menuItemsList: any = []
   menuData: any;
   storeList: any;
-  constructor(public modal: NgbModal, private apis: ApisService, private session: SessionStorageService) { }
+  modelRef: any;
+  constructor(public modal: NgbModal, private apis: ApisService, private session: SessionStorageService,private modalService: NgbModal) { }
 
 
 
@@ -212,9 +215,44 @@ return storeName?storeName.store_name : '--'
     } else if (action === "edit") {
 this.insertMenu("Edit")
     } else if (action === "delete") {
-      // this.delete(event.data);
+      console.log("deleteeeeeeeee")
+      this.openConfirmPopup()
     }
   }
+   openConfirmPopup() {
+    this.modelRef=this.modalService.open(this.confirmModalRef, {
+      centered: true,
+      backdrop: 'static'
+    });
+  }
+  onConfirm(data:any){
+    console.log( this.menuData)
+const reqbody={
+  "type": "delete",
+  "menu_id":this.menuData.dish_menu_id,
+}
+
+
+    this.apis.postApi(AppConstants.api_end_points.menu,reqbody).subscribe((data:any)=>{
+      if(data){
+        console.log(data)
+
+        this.modelRef.close();
+                    Swal.fire({
+                      title: 'Success!',
+                      text: data.message,
+                      icon: 'success',
+                      width: '350px',  // customize width (default ~ 600px)
+                    }).then((result) => {
+                      if (result.isConfirmed) {
+                        console.log('User clicked OK');
+                        this.getmenuList();
+                      }
+                    });
+      }
+    })
+  }
+  
   insertMenu(type:any) {
     const modalRef =this.modal.open(AddMenuModalComponent, {
       windowClass: "theme-modal",

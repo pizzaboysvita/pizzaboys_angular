@@ -37,4 +37,35 @@ basesurl='http://localhost:3002'
   changesPos(data:any){
     this.change$.next(data)
   }
+
+buildMenuTree(
+  menus:any[],
+  categories: any[],
+  dishes: any[]
+): any[] {
+
+  console.log(menus,categories,dishes)
+  return menus.map(menu => {
+    const filteredCategories = categories.filter(c => c.dish_menu_id === menu.dish_menu_id);
+
+    const categoryNodes = filteredCategories.map(category => {
+      const filteredDishes = dishes.filter(d => d.dish_id === category.id);
+      return {
+        categoryId: category.id,
+        categoryName: category.name,
+        dishes: filteredDishes.map(d => ({
+          dishId: d.dish_id,
+          dishName: d.dish_name,
+          image_url:'assets/pizzaImg/menus/3.png'
+        }))
+      };
+    });
+
+    return {
+      menuId: menu.dish_menu_id,
+      menuName: menu.name,
+      categories: categoryNodes
+    };
+  });
+}
 }
