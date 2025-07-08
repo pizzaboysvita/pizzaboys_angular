@@ -60,3 +60,31 @@
       
   }
 }
+.choice-container {
+  border-radius: 0;
+  .cursor {
+    cursor: pointer;
+  }
+
+
+
+  input[type="text"] {
+    font-size: 0.95rem;
+  }
+}
+.form-check-input {
+  width: 18px;
+  height: 18px;
+  margin-top: 0;
+}
+
+.subcat-label {
+  font-size: 0.92rem;
+}
+
+.fixed-height-row {
+  height: 40px;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  line-height: 40px;
+}
