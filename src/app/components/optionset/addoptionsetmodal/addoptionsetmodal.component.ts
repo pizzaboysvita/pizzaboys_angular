@@ -9,6 +9,7 @@ import { AppConstants } from '../../../app.constants';
 import Swal from 'sweetalert2';
 import { AgGridAngular } from '@ag-grid-community/angular';
 import { ColDef, GridReadyEvent } from '@ag-grid-community/core';
+import { forkJoin } from 'rxjs';
 interface RowData {
   name:string;
   description:string;
@@ -41,6 +42,11 @@ interface OptionItem {
 export class AddoptionsetmodalComponent {
   @Input() type: any
   @Input() myData: any;
+  choices: any[] = [];
+  currentMenuIndex = 0;
+  rawMenus: any[] = [];
+  addedMenuIds: Set<number> = new Set();
+
 optionSetConditionForm:FormGroup
  hideOptionSet = [
     { key: 'always', label: 'Always', checked: false },
@@ -157,7 +163,7 @@ toggleOptions = [
   miscForm:FormGroup
   storeList: any;
   reqbody:any
-  constructor(private fb: FormBuilder, public modal: NgbModal, private apis: ApisService) {
+  constructor(private fb: FormBuilder, public modal: NgbModal, private apis: ApisService,private sessionStorage: SessionStorageService) {
     this.optionSetForm = this.fb.group({
       name: [''],
       displayName: [''],
@@ -185,6 +191,7 @@ this.miscForm =this.fb.group({
   }
 
   ngOnInit() {
+    this.getMenuCategoryDishData();
   }
   addNewRow() {
     console.log("new datat")
@@ -200,7 +207,108 @@ this.miscForm =this.fb.group({
     this.gridApi.startEditingCell({ rowIndex: 0, colKey: 'name' });
   });
 }
+  getMenuCategoryDishData() {
+    const userId = JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id;
+  
+    const menuApi = this.apis.getApi(AppConstants.api_end_points.menu + '?user_id=' + userId);
+    const categoryApi = this.apis.getApi(`/api/category?user_id=` + userId);
+    const dishApi = this.apis.getApi(AppConstants.api_end_points.dish + '?user_id=' + userId);
+  
+    forkJoin([menuApi, categoryApi, dishApi]).subscribe(
+      ([menuRes, categoryRes, dishRes]: any) => {
+const resi=this.apis.buildMenuTree(menuRes.data,categoryRes.categories,dishRes.data)
+this.rawMenus=resi
+ this.choices = this.rawMenus.map(menu => ({
+    menuId: menu.menuId,
+    name: menu.menuName,
+    expanded: false,               // for main menu toggle
+    takeawayExpanded: false,       // for category toggle
+    subcategories: menu.categories.map((category: { categoryName: any; dishes: any[]; }) => ({
+      name: category.categoryName,
+      checked: false,
+      expanded: false,             // for subcategory toggle
+      subSubcategories: category.dishes?.map(dish => ({
+        name: dish.dishName,
+        checked: false,
+        image_url: dish.image_url
+      })) || []
+    }))
+  }));
+console.log(resi,"resi");
 
+        // this.selectedMenuId=this.menuList[0]
+        
+        // this.totalcategoryList=categoryRes.categories
+        // this.totalDishList=dishRes.data
+        // this.menuType_cat(this.menuList[0])
+      // this.totalmenuDetails=this.apiService.buildMenuTree(menuRes.data,categoryRes.categories,dishRes.data)
+      // console.log(this.totalmenuDetails)
+    
+      })
+    }
+addChoice() {
+  const nextMenu = this.rawMenus.find(menu => !this.addedMenuIds.has(menu.menuId));
+  if (!nextMenu) {
+    console.warn("No more menus to add.");
+    return;
+  }
+
+  const newChoice = {
+    menuId: nextMenu.menuId,
+    name: nextMenu.menuName,
+    expanded: false,
+    takeawayExpanded: false,
+    subcategories: nextMenu.categories.map((category: { categoryName: any; dishes: any[]; }) => ({
+      name: category.categoryName,
+      checked: false,
+      expanded: false,
+      subSubcategories: category.dishes?.map(dish => ({
+        name: dish.dishName,
+        checked: false,
+        image_url: dish.image_url
+      })) || []
+    }))
+  };
+
+  this.choices.push(newChoice);
+  this.addedMenuIds.add(nextMenu.menuId);
+}
+
+onChoiceToggle(choice: any) {
+  const isChecked = choice.checked;
+
+  for (let sub of choice.subcategories) {
+    sub.checked = isChecked;
+
+    if (sub.subSubcategories && sub.subSubcategories.length > 0) {
+      for (let subsub of sub.subSubcategories) {
+        subsub.checked = isChecked;
+      }
+    }
+  }
+}
+onSubcategoryToggle(sub: any) {
+  const isChecked = sub.checked;
+
+  if (sub.subSubcategories && sub.subSubcategories.length > 0) {
+    for (let subsub of sub.subSubcategories) {
+      subsub.checked = isChecked;
+    }
+  }
+}
+
+toggleExpand(index: number) {
+  this.choices[index].expanded = !this.choices[index].expanded;
+}
+
+// removeChoice(index: number) {
+//   this.choices.splice(index, 1);
+// }
+removeChoice(index: number) {
+  const removedMenuId = this.choices[index].menuId;
+  this.choices.splice(index, 1);
+  this.addedMenuIds.delete(removedMenuId);  // Allow it to be added again
+}
 
   saveMenu() {
     console.log('Saving menu', this.rowData,this.hideOptionSet);
@@ -264,10 +372,10 @@ onGridReady(params: GridReadyEvent) {
     // }
   }
 
-  toggleExpand(category: any) {
+  // toggleExpand(category: any) {
     
-    category.expanded = !category.expanded;
-  }
+  //   category.expanded = !category.expanded;
+  // }
 
 
 }

@@ -46,20 +46,24 @@ export class AddDishsComponent {
   categoryList:any = []
   optSetDetails: any;
   storesList: any;
-choices: {
-  name: string;
-  expanded: boolean;
-  takeawayExpanded: boolean;
-  subcategories: {
-    name: string;
-    checked: boolean;
-    expanded?: boolean;
-    subSubcategories?: {
-      name: string;
-      checked: boolean;
-    }[];
-  }[];
-}[] = [];
+// choices: {
+//   name: string;
+//   expanded: boolean;
+//   takeawayExpanded: boolean;
+//   subcategories: {
+//     name: string;
+//     checked: boolean;
+//     expanded?: boolean;
+//     subSubcategories?: {
+//       name: string;
+//       checked: boolean;
+//     }[];
+//   }[];
+// }[] = [];
+choices: any[] = [];
+currentMenuIndex = 0;
+rawMenus: any[];
+addedMenuIds: Set<number> = new Set();
   constructor(private fb: FormBuilder,public modal: NgbModal, private apiService: ApisService, private sessionStorage: SessionStorageService) {}
 
   ngOnInit() {
@@ -109,6 +113,9 @@ choices: {
     forkJoin([menuApi, categoryApi, dishApi]).subscribe(
       ([menuRes, categoryRes, dishRes]: any) => {
 const resi=this.apiService.buildMenuTree(menuRes.data,categoryRes.categories,dishRes.data)
+this.rawMenus=resi
+console.log(resi,"resi");
+
         // this.selectedMenuId=this.menuList[0]
         
         // this.totalcategoryList=categoryRes.categories
@@ -172,59 +179,116 @@ const resi=this.apiService.buildMenuTree(menuRes.data,categoryRes.categories,dis
   }
 
 
+// addChoice() {
+  // const nextIndex = this.choices.length + 1;
+  // this.choices.push({
+  //   name: `Takeaway Menu ${nextIndex}`,
+  //   expanded: false,
+  //   takeawayExpanded: false,
+  //   subcategories: [
+  //     {
+  //       name: 'Pizza of the Week',
+  //       checked: false,
+  //       expanded: false,
+  //       subSubcategories: [
+  //         { name: 'Monday Special', checked: false },
+  //         { name: 'Tuesday Treat', checked: false }
+  //       ]
+  //     },
+  //     {
+  //       name: 'Limited Time Deal',
+  //       checked: false,
+  //       expanded: false,
+  //       subSubcategories: [
+  //         { name: 'BOGO Offer', checked: false },
+  //         { name: 'Flash Sale', checked: false }
+  //       ]
+  //     },
+  //     {
+  //       name: 'Chicken Wings Special',
+  //       checked: false,
+  //       expanded: false,
+  //       subSubcategories: []
+  //     },
+  //     { name: 'Specials', checked: false, expanded: false },
+  //     { name: 'Lunch', checked: false, expanded: false },
+  //     { name: 'Classic Range Pizzas', checked: false, expanded: false },
+  //     { name: 'Vegetarian Pizzas', checked: false, expanded: false },
+  //     { name: 'Chicken Pizzas', checked: false, expanded: false },
+  //     { name: 'Meat Pizzas', checked: false, expanded: false },
+  //     { name: 'Seafood Pizzas', checked: false, expanded: false },
+  //     { name: 'Standard Sides', checked: false, expanded: false },
+  //     { name: 'Classic Sides', checked: false, expanded: false },
+  //     { name: 'Signature Sides', checked: false, expanded: false }
+  //   ]
+  // });
+// }
+
+
 addChoice() {
-  const nextIndex = this.choices.length + 1;
-  this.choices.push({
-    name: `Takeaway Menu ${nextIndex}`,
+  const nextMenu = this.rawMenus.find(menu => !this.addedMenuIds.has(menu.menuId));
+  if (!nextMenu) {
+    console.warn("No more menus to add.");
+    return;
+  }
+
+  const newChoice = {
+    menuId: nextMenu.menuId,
+    name: nextMenu.menuName,
     expanded: false,
     takeawayExpanded: false,
-    subcategories: [
-      {
-        name: 'Pizza of the Week',
+    subcategories: nextMenu.categories.map((category: { categoryName: any; dishes: any[]; }) => ({
+      name: category.categoryName,
+      checked: false,
+      expanded: false,
+      subSubcategories: category.dishes?.map(dish => ({
+        name: dish.dishName,
         checked: false,
-        expanded: false,
-        subSubcategories: [
-          { name: 'Monday Special', checked: false },
-          { name: 'Tuesday Treat', checked: false }
-        ]
-      },
-      {
-        name: 'Limited Time Deal',
-        checked: false,
-        expanded: false,
-        subSubcategories: [
-          { name: 'BOGO Offer', checked: false },
-          { name: 'Flash Sale', checked: false }
-        ]
-      },
-      {
-        name: 'Chicken Wings Special',
-        checked: false,
-        expanded: false,
-        subSubcategories: []
-      },
-      { name: 'Specials', checked: false, expanded: false },
-      { name: 'Lunch', checked: false, expanded: false },
-      { name: 'Classic Range Pizzas', checked: false, expanded: false },
-      { name: 'Vegetarian Pizzas', checked: false, expanded: false },
-      { name: 'Chicken Pizzas', checked: false, expanded: false },
-      { name: 'Meat Pizzas', checked: false, expanded: false },
-      { name: 'Seafood Pizzas', checked: false, expanded: false },
-      { name: 'Standard Sides', checked: false, expanded: false },
-      { name: 'Classic Sides', checked: false, expanded: false },
-      { name: 'Signature Sides', checked: false, expanded: false }
-    ]
-  });
+        image_url: dish.image_url
+      })) || []
+    }))
+  };
+
+  this.choices.push(newChoice);
+  this.addedMenuIds.add(nextMenu.menuId);
 }
 
+onChoiceToggle(choice: any) {
+  const isChecked = choice.checked;
+
+  for (let sub of choice.subcategories) {
+    sub.checked = isChecked;
+
+    if (sub.subSubcategories && sub.subSubcategories.length > 0) {
+      for (let subsub of sub.subSubcategories) {
+        subsub.checked = isChecked;
+      }
+    }
+  }
+}
+onSubcategoryToggle(sub: any) {
+  const isChecked = sub.checked;
+
+  if (sub.subSubcategories && sub.subSubcategories.length > 0) {
+    for (let subsub of sub.subSubcategories) {
+      subsub.checked = isChecked;
+    }
+  }
+}
 
 toggleExpand(index: number) {
   this.choices[index].expanded = !this.choices[index].expanded;
 }
 
+// removeChoice(index: number) {
+//   this.choices.splice(index, 1);
+// }
 removeChoice(index: number) {
+  const removedMenuId = this.choices[index].menuId;
   this.choices.splice(index, 1);
+  this.addedMenuIds.delete(removedMenuId);  // Allow it to be added again
 }
+
 Ingredients: {name:string}[]=[];
 
 addIngredients() {
