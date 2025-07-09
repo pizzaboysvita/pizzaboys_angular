@@ -208,7 +208,65 @@
         <li [ngbNavItem]="4" class="nav-item m-0">
           <button ngbNavLink class="nav-link" type="button">Add / Remove From Dishes</button>
           <ng-template ngbNavContent>
-            <div class="tree-view">
+
+
+  <!-- Subcategories -->
+@for (choice of choices; track choice; let i = $index) {
+    <!-- Main Menu Row -->
+
+<div class="choice-container border">
+    <!-- Expanded Section -->
+      <!-- Takeaway toggle -->
+      <div class="row ps-4 py-1" style="font-size: 0.92rem;">
+        <div class="col d-flex align-items-center">
+          <i
+            class="me-2"
+            [ngClass]="choice.takeawayExpanded ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"
+            (click)="choice.takeawayExpanded = !choice.takeawayExpanded"
+            style="cursor: pointer; font-size: 1.3rem; color: black;"
+          ></i>
+
+          <input type="checkbox" id="checkbox-{{ i }}" class="form-check-input me-2" style="width: 18px !important;height: 18px !important;" [(ngModel)]="choice.checked" (change)="onChoiceToggle(choice)" />
+          <label for="checkbox-{{ i }}" class="form-check-label mb-0">
+            {{ choice.name }} Items
+          </label>
+        </div>
+      </div>
+
+      @if (choice.takeawayExpanded) {
+        <!-- Subcategories -->
+        @for (sub of choice.subcategories; track sub; let j = $index) {
+          <div class="row ps-5 pb-0" style="font-size: 0.92rem;">
+            <div class="col d-flex align-items-center">
+              <i
+                class="me-2"
+                [ngClass]="sub.expanded ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"
+                (click)="sub.expanded = !sub.expanded"
+                style="cursor: pointer; font-size: 1.3rem; color: black;"
+              ></i>
+              <input type="checkbox" class="form-check-input me-2" style="width: 18px !important;height: 18px !important;" [(ngModel)]="sub.checked" (change)="onSubcategoryToggle(sub)" />
+              <label class="form-check-label mb-0">{{ sub.name }}</label>
+            </div>
+          </div>
+
+          <!-- Sub-subcategories -->
+          @if (sub.expanded && sub.subSubcategories?.length) {
+            @for (subsub of sub.subSubcategories; track subsub; let k = $index) {
+              <div class="row ps-5 pb-1">
+                <div class="col d-flex align-items-center" style="margin-left: 2.5rem;">
+                  <input type="checkbox" class="form-check-input me-2" [(ngModel)]="subsub.checked" style="width: 18px !important;height: 18px !important;" />
+                  <label class="form-check-label mb-0">{{ subsub.name }}</label>
+                </div>
+              </div>
+            }
+          }
+        }
+      }
+    </div>
+}
+
+
+            <!-- <div class="tree-view">
               <ul>
                 <ng-container *ngFor="let category of dishTree">
                   <li>
@@ -265,7 +323,7 @@
                   </li>
                 </ng-container>
               </ul>
-            </div>
+            </div> -->
           </ng-template>
         </li>
 
