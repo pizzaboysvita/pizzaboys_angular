@@ -156,7 +156,7 @@
                                         <ng-select [items]="optSetDetails" [searchable]="true"
                                             [multiple]="true" bindLabel="option_set_name" 
                                             placeholder="Select from the dropdown or type to search" [(ngModel)]="selectedSubcategories"
-                                           (change)="onSubcategoryChange($event)"></ng-select>
+                                           ></ng-select>
                                     </div>
                                     <span class="lableSubtext">Select option sets to be applied to the dish. Option sets
                                         are ordered according to how they are listed on the option set page, not by the
@@ -268,7 +268,7 @@
           type="text"
           class="form-control border-0 py-0"
           style="height: 32px; font-size: 0.875rem"
-          placeholder="Name"
+          placeholder="Name" [(ngModel)]="choice.name"
         />
       </div>
 
@@ -298,27 +298,28 @@
     </div>
 
     @if (choice.expanded) {
-      <!-- Takeaway Toggle -->
+      <!-- Menu Toggle -->
+     @for (menu of choice.menuItems; track menu; let j = $index){
+      
       <div class="row ps-4 py-1" style="font-size: 0.92rem;">
         <div class="col d-flex align-items-center">
           <i
             class="me-2"
-            [ngClass]="choice.takeawayExpanded ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"
-            (click)="choice.takeawayExpanded = !choice.takeawayExpanded"
+            [ngClass]="menu.takeawayExpanded ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"
+            (click)="menu.takeawayExpanded = !menu.takeawayExpanded"
             style="cursor: pointer; font-size: 1.3rem; color: black;"
           ></i>
 
-          <input type="checkbox" id="checkbox-{{ i }}" class="form-check-input me-2" [(ngModel)]="choice.checked" (change)="onChoiceToggle(choice)"/>
-          <label for="checkbox-{{ i }}" class="form-check-label mb-0" style="font-size: 0.92rem;">
+          <input type="checkbox" id="checkbox-{{ j }}" class="form-check-input me-2" [(ngModel)]="menu.checked" (change)="onChoiceToggle(menu)"/>
+          <label for="checkbox-{{ j }}" class="form-check-label mb-0" style="font-size: 0.92rem;">
             <!-- Takeaway Menu -->
-               {{choice.name}}
+               {{menu.menuName}}
           </label>
         </div>
       </div>
-
-      @if (choice.takeawayExpanded) {
+         @if (menu.takeawayExpanded) {
         <!-- Subcategories -->
-        @for (sub of choice.subcategories; track sub; let j = $index) {
+        @for (sub of menu.categories; track sub; let k = $index) {
           <div class="row ps-5 pb-0" style="font-size: 0.92rem; font-weight: normal;">
             <div class="col d-flex align-items-center">
               <i
@@ -328,24 +329,26 @@
                 style="cursor: pointer; font-size: 1.3rem; color: black;"
               ></i>
               <input type="checkbox" class="form-check-input me-2"  [(ngModel)]="sub.checked" (change)="onSubcategoryToggle(sub)" />
-              <label class="form-check-label mb-0 subcat-label">{{ sub.name }}</label>
+              <label class="form-check-label mb-0 subcat-label">{{ sub.categoryName }}</label>
             </div>
           </div>
 
           <!-- Sub-subcategories -->
-          @if (sub.expanded && sub.subSubcategories?.length) {
-            @for (subsub of sub.subSubcategories; track subsub; let k = $index) {
+          @if (sub.expanded && sub.dishes?.length) {
+            @for (subsub of sub.dishes; track subsub; let l = $index) {
               <div class="row ps-5 pb-1">
                 <div class="col d-flex align-items-center" style="font-size: 0.92rem;margin-left: 2.5rem;">
                   <!-- <i class="ri-checkbox-blank-line me-2 text-muted" style="font-size: 0.8rem;"></i> -->
                   <input type="checkbox" class="form-check-input me-2" [(ngModel)]="subsub.checked" />
-                  <label class="form-check-label mb-0 subcat-label">{{ subsub.name }}</label>
+                  <label class="form-check-label mb-0 subcat-label">{{ subsub.dishName }}</label>
                 </div>
               </div>
             }
           }
         }
       }
+    }
+   
     }
   </div>
 }

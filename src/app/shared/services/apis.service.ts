@@ -44,24 +44,31 @@ buildMenuTree(
   dishes: any[]
 ): any[] {
 
-  console.log(menus,categories,dishes)
+  console.log(menus,categories,dishes,'dev categories')
   return menus.map(menu => {
+
+   
     const filteredCategories = categories.filter(c => c.dish_menu_id === menu.dish_menu_id);
 
     const categoryNodes = filteredCategories.map(category => {
-      const filteredDishes = dishes.filter(d => d.dish_id === category.id);
+      const filteredDishes = dishes.filter(d => d.dish_category_id === category.id);
       return {
         categoryId: category.id,
         categoryName: category.name,
+             checked: false,
+             
+        expanded: false,
         dishes: filteredDishes.map(d => ({
           dishId: d.dish_id,
           dishName: d.dish_name,
+          checked: false ,
           image_url:'assets/pizzaImg/menus/3.png'
         }))
       };
     });
 
     return {
+      takeawayExpanded:false,
       menuId: menu.dish_menu_id,
       menuName: menu.name,
       categories: categoryNodes

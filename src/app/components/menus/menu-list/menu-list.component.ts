@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { CardComponent } from '../../../shared/components/card/card.component';
 import { media, MediaLibrary } from '../../../shared/data/media';
 import { AddMediaComponent } from '../../media/add-media/add-media.component';
@@ -14,6 +14,7 @@ import { SessionStorageService } from '../../../shared/services/session-storage.
 import { ApisService } from '../../../shared/services/apis.service';
 import { AppConstants } from '../../../app.constants';
 import { forkJoin } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-menu-list',
@@ -22,6 +23,7 @@ import { forkJoin } from 'rxjs';
   styleUrl: './menu-list.component.scss'
 })
 export class MenuListComponent {
+    @ViewChild('confirmModal') confirmModalRef!: TemplateRef<any>;
   selectedTabIndex = 0;
   menuItemsList: any;
   getCategories: any;
@@ -31,9 +33,11 @@ export class MenuListComponent {
   menuList: any;
   totalcategoryList: any;
   totalDishList: any;
+  modelRef: any;
+  dishDetails: any;
 constructor(
     public modal: NgbModal,
-    private apiService: ApisService,
+    private apiService: ApisService,private modalService: NgbModal, 
     private sessionStorage: SessionStorageService
   ) {}
   public MediaLibrary = MediaLibrary;
@@ -67,7 +71,11 @@ constructor(
 
 
    insertDish() {
-      this.modal.open(AddDishsComponent, { windowClass: 'theme-modal', centered: true, size: 'lg' })
+      this.modelRef=this.modal.open(AddDishsComponent, { windowClass: 'theme-modal', centered: true, size: 'lg' })
+      this.modelRef.result.then(
+  (result:any) => {
+    this.getMenuCategoryDishData()
+  })
     }
     insertCategory() {
       this.modal.open(AddCategoryComponent, { windowClass: 'theme-modal', centered: true, size: 'lg' })
@@ -126,6 +134,7 @@ dishRes.data.forEach((elemet:any)=>{
   }
   menuType_cat(data:any){
     // console.log(data,this.selectedMenuId)
+    this.selectedTabIndex=0
     this.categoryList=this.totalcategoryList.filter((cat:any) => cat.dish_menu_id == data.dish_menu_id);
     console.log(this.categoryList)
     this.category_dish(this.categoryList[0])
@@ -145,6 +154,36 @@ dishRes.data.forEach((elemet:any)=>{
         item.active = false;
       }
     });
+  }
+  dishDelete(data:any){
+    this.dishDetails=data
+ this.modelRef=this.modalService.open(this.confirmModalRef, {
+      centered: true,
+      backdrop: 'static'
+    });
+  }
+  onConfirm(data:any){
+const reqboy={
+  "type": "delete",
+  "dish_id":this.dishDetails.dish_id
+}
+this.apiService.postApi(AppConstants.api_end_points.dish,reqboy).subscribe((data:any)=>{
+  if(data.code ==1){
+      this.modelRef.close();
+                        Swal.fire({
+                          title: 'Success!',
+                          text: data.message,
+                          icon: 'success',
+                          width: '350px',  // customize width (default ~ 600px)
+                        }).then((result) => {
+                          if (result.isConfirmed) {
+                            console.log('User clicked OK');
+                            this.getMenuCategoryDishData();
+                          }
+                        });
+  }
+})
+
   }
 //    getmenuList() {
     
