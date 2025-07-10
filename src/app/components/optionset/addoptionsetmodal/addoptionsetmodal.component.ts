@@ -192,6 +192,7 @@ this.miscForm =this.fb.group({
 
   ngOnInit() {
     this.getMenuCategoryDishData();
+    this.patchValue();
   }
   addNewRow() {
     console.log("new datat")
@@ -218,10 +219,11 @@ this.miscForm =this.fb.group({
       ([menuRes, categoryRes, dishRes]: any) => {
 const resi=this.apis.buildMenuTree(menuRes.data,categoryRes.categories,dishRes.data)
 this.rawMenus=resi
- this.choices = this.rawMenus.map(menu => ({
+ const builtChoices = this.rawMenus.map(menu => ({
     menuId: menu.menuId,
     name: menu.menuName,
-    expanded: false,               // for main menu toggle
+    expanded: false,
+    checked:false,             // for main menu toggle
     takeawayExpanded: false,       // for category toggle
     subcategories: menu.categories.map((category: { categoryName: any; dishes: any[]; }) => ({
       name: category.categoryName,
@@ -235,6 +237,17 @@ this.rawMenus=resi
     }))
   }));
 console.log(resi,"resi");
+// Load saved checked/expanded state from myData
+    let savedChoices: any[] = [];
+    const jsonString = this.myData?.option_set_dishes;
+    if(this.type== 'Edit' || this.type== 'View'){
+    if (jsonString) {
+        savedChoices = JSON.parse(jsonString);
+    }
+  }
+
+    // Merge state
+    this.choices = this.mergeChoiceStates(builtChoices, savedChoices);
 
         // this.selectedMenuId=this.menuList[0]
         
@@ -246,6 +259,34 @@ console.log(resi,"resi");
     
       })
     }
+    mergeChoiceStates(apiChoices: any[], savedChoices: any[]) {
+  return apiChoices.map(apiChoice => {
+    const saved = savedChoices.find((sc: any) => sc.menuId === apiChoice.menuId);
+    if (!saved) return apiChoice;
+
+    return {
+      ...apiChoice,
+      checked: saved.checked,
+      takeawayExpanded: saved.takeawayExpanded,
+      subcategories: apiChoice.subcategories.map((sub: { name: any; subSubcategories: any[]; }) => {
+        const savedSub = saved.subcategories?.find((ss: any) => ss.name === sub.name);
+        return {
+          ...sub,
+          checked: savedSub?.checked ?? false,
+          expanded: savedSub?.expanded ?? false,
+          subSubcategories: sub.subSubcategories.map(subsub => {
+            const savedSubSub = savedSub?.subSubcategories?.find((sss: any) => sss.name === subsub.name);
+            return {
+              ...subsub,
+              checked: savedSubSub?.checked ?? false
+            };
+          })
+        };
+      })
+    };
+  });
+}
+
 addChoice() {
   const nextMenu = this.rawMenus.find(menu => !this.addedMenuIds.has(menu.menuId));
   if (!nextMenu) {
@@ -256,6 +297,7 @@ addChoice() {
   const newChoice = {
     menuId: nextMenu.menuId,
     name: nextMenu.menuName,
+    checked:false,
     expanded: false,
     takeawayExpanded: false,
     subcategories: nextMenu.categories.map((category: { categoryName: any; dishes: any[]; }) => ({
@@ -312,10 +354,30 @@ removeChoice(index: number) {
 
   saveMenu() {
     console.log('Saving menu', this.rowData,this.hideOptionSet);
-
-    const reqboy={
+ if(this.type =='Edit'){
+   this.reqbody={
+  "type": "update",
+  'option_set_id':this.myData?.option_set_id,
+  "option_set_name":this.optionSetForm.value.name,
+  "dispaly_name": this.optionSetForm.value.displayName,
+  "hide_name": this.optionSetForm.value.hideMenu==false?0:1,
+  "hide_option_set":JSON.stringify( this.hideOptionSet),
+  "option_set_combo": JSON.stringify(this.rowData),
+  "required": this.optionSetConditionForm.value.required ==true?1:0,
+  "hide_opion_set_json":JSON.stringify(this.hideOptionSet),
+  "select_multiple": this.optionSetConditionForm.value.SelectMultiple ==true?1:0,
+  "enable_option_quantity":  this.optionSetConditionForm.value.enableOptionQuantity =true?1:0,
+  "min_option_quantity":  this.optionSetConditionForm.value.MinOptionsRequired,
+  "max_option_allowed":  this.optionSetConditionForm.value.MaxOptionsAllowed,
+  "free_quantity": this.optionSetConditionForm.value.FreeQuantity,
+  "option_set_dishes":JSON.stringify(this.choices),
+  "inc_price_in_free": this.miscForm.value.PriceinFreeQuantityPromos=true?1:0,
+  "cretaed_by": 1011
+}
+ }
+ else{
+  this.reqbody={
   "type": "insert",
-
   "option_set_name":this.optionSetForm.value.name ,
   "dispaly_name": this.optionSetForm.value.displayName,
   "hide_name": this.optionSetForm.value.hideMenu==false?0:1,
@@ -328,22 +390,58 @@ removeChoice(index: number) {
   "min_option_quantity":  this.optionSetConditionForm.value.MinOptionsRequired,
   "max_option_allowed":  this.optionSetConditionForm.value.MaxOptionsAllowed,
   "free_quantity": this.optionSetConditionForm.value.FreeQuantity,
-  "option_set_dishes":JSON.stringify(this.dishTree),
+  "option_set_dishes":JSON.stringify(this.choices),
   "inc_price_in_free": this.miscForm.value.PriceinFreeQuantityPromos=true?1:0,
   "cretaed_by": 1011
 }
-this.apis.postApi(AppConstants.api_end_points.optionSet,reqboy).subscribe((data:any)=>{
+ }
+this.apis.postApi(AppConstants.api_end_points.optionSet,this.reqbody).subscribe((data:any)=>{
   console.log(data)
   if(data.code ==1){
        Swal.fire("Success!", data.message, "success").then((result) => {
                 if (result) {
                   console.log("User clicked OK");
+                 this.modal.dismissAll(true);
                   // this.router.navigate(["/staff/staff-list"]);
                 }
               });
   }
 })
   
+  } 
+  patchValue() {
+    console.log(this.myData, this.type, 'opennnnnnnnnnnnn')
+    if (this.type == 'Edit' || this.type == 'View') {
+          this.optionSetForm.patchValue({
+      name: this.myData?.option_set_name,
+      displayName: this.myData?.dispaly_name,
+      description: this.myData?.description,
+      disableDishNotes: this.myData.disable_dish_notes == 1 ? true : this.myData.disable_dish_notes == 0 ? false : '',
+      restockMenuDaily: this.myData.disable_dish_notes == 1 ? true : this.myData.disable_dish_notes == 0 ? false : '',
+      hideMenu: this.myData.hide_name == 1 ? true : this.myData.hide_name == 0 ? false : '',
+      availability: [[]],
+      posName: [''],
+      surcharge: [''],
+      
+    });
+
+this.optionSetConditionForm.patchValue({
+  required:this.myData.required == 1 ? true : this.myData.required == 0 ? false : '',
+  SelectMultiple:this.myData.select_multiple == 1 ? true : this.myData.select_multiple == 0 ? false : '',
+  enableOptionQuantity:this.myData.enable_option_quantity == 1 ? true : this.myData.enable_option_quantity == 0 ? false : '',
+  MinOptionsRequired:this.myData?.min_options_required,
+  MaxOptionsAllowed:this.myData?.max_options_allowed,
+  FreeQuantity:this.myData?.free_qunatity,
+});
+   
+this.miscForm.patchValue({
+  PriceinFreeQuantityPromos:this.myData.inc_price_in_free_quantity_promos == 1 ? true : this.myData.inc_price_in_free_quantity_promos == 0 ? false : '',
+});
+this.hideOptionSet=JSON.parse(this.myData?.hide_opion_set_json)
+this.rowData=JSON.parse(this.myData?.option_set_combo_json)
+// this.choices=JSON.parse(this.myData?.option_set_dishes)
+
+}
   }
   
 onGridReady(params: GridReadyEvent) {

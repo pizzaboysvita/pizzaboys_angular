@@ -213,7 +213,7 @@ return storeName?storeName.store_name : '--'
       console.log(event.data)
    this.insertMenu('View')
     } else if (action === "edit") {
-this.insertMenu("Edit")
+     this.insertMenu("Edit")
     } else if (action === "delete") {
       console.log("deleteeeeeeeee")
       this.openConfirmPopup()

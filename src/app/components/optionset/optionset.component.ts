@@ -182,21 +182,36 @@ export class OptionsetComponent implements OnInit {
     const action = target?.getAttribute("data-action");
 this.optSetRowData=event.data
     if (action === 'view') {
+      this.createOptionSet('View')
       // console.log('Viewing', row);
     } else if (action === 'edit') {
       // console.log('Editing', row);
+      this.createOptionSet('Edit')
     } else if (action === 'delete') {
       console.log('Deleting',event.data);
       this.openConfirmPopup()
     }
   }
 
-  createOptionSet() {
+  createOptionSet(type:any) {
     const modalRef = this.modal.open(AddoptionsetmodalComponent, {
       windowClass: 'theme-modal',
       centered: true,
       size: 'lg'
     });
+      modalRef.componentInstance.type =type;
+    modalRef.componentInstance.myData =this.optSetRowData;
+    modalRef.result.then(
+  (result) => {
+    if (result) {
+      console.log("Option set saved and modal closed.");
+      this.getOptionSets(); // or any refresh logic
+    }
+  },
+  (reason) => {
+    console.log("Modal dismissed", reason);
+  }
+);
 
 
   }

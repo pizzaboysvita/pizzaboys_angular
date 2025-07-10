@@ -35,6 +35,7 @@ export class MenuListComponent {
   totalDishList: any;
   modelRef: any;
   dishDetails: any;
+  dishRowData: any;
 constructor(
     public modal: NgbModal,
     private apiService: ApisService,private modalService: NgbModal, 
@@ -67,15 +68,43 @@ constructor(
     return this.tabsData[this.selectedMenuId.toString()] || [];
   }
  
+ viewDish(data:any,type:any) {
+    console.log(data,'data',type);
+     this.dishRowData=data
+    if (type === 'view') {
+      this.insertDish('View')
+      // console.log('Viewing', row);
+    } else if (type === 'edit') {
+      // console.log('Editing', row);
+      this.insertDish('Edit')
+    } else if (type === 'delete') {
+    }
+  }
 
 
+   insertDish(type:any) {
+      this.modelRef=this.modal.open(AddDishsComponent, 
+        { windowClass: 'theme-modal', centered: true, size: 'lg' })
+        this.modelRef.componentInstance.type =type;
+    this.modelRef.componentInstance.myData =this.dishRowData;
+  //     this.modelRef.result.then(
+  // (result:any) => {
+  //   this.getMenuCategoryDishData();
 
-   insertDish() {
-      this.modelRef=this.modal.open(AddDishsComponent, { windowClass: 'theme-modal', centered: true, size: 'lg' })
+  // })
       this.modelRef.result.then(
-  (result:any) => {
-    this.getMenuCategoryDishData()
-  })
+  (result: any) => {
+    if (result) {
+      console.log("Option set saved and modal closed.");
+        this.getMenuCategoryDishData();
+    }
+  },
+  (reason: any) => {
+    console.log("Modal dismissed", reason);
+  }
+);
+
+
     }
     insertCategory() {
       this.modal.open(AddCategoryComponent, { windowClass: 'theme-modal', centered: true, size: 'lg' })
