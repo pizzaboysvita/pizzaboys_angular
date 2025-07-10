@@ -1,5 +1,5 @@
 import { CommonModule, JsonPipe } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModal, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -17,6 +17,8 @@ import { Router } from '@angular/router';
   styleUrl: './add-dishs.component.scss'
 })
 export class AddDishsComponent {
+  @Input() type: any
+  @Input() myData: any;
   active = 1
   menuForm!: FormGroup;
   menuItemsList: any = []
@@ -31,6 +33,7 @@ export class AddDishsComponent {
   mainMenuItems: any[];
   selectedSubcategories: number[] = [];
   dish_option_set_json: string = '';
+  reqbody:any
   constructor(private fb: FormBuilder, public modal: NgbModal, private router: Router, private apiService: ApisService, private sessionStorage: SessionStorageService) { }
 
   ngOnInit() {
@@ -52,6 +55,7 @@ export class AddDishsComponent {
     this.storeList()
     this.getOptionSets()
     this.getMenuCategoryDishData()
+     this.patchValue()
   }
   storeList() {
     this.apiService
@@ -64,6 +68,32 @@ export class AddDishsComponent {
       });
 
   }
+    patchValue() {
+    this.getMenuCategoryDishData()
+
+    console.log(this.myData, this.type, 'opennnnnnnnnnnnn')
+    if (this.type == 'Edit' || this.type == 'View') {
+        this.menuForm.patchValue({
+        menuType: this.myData.dish_menu_id,
+      categoryType:this.myData.dish_category_id,
+      dishType:  ['standard'], // Default selected
+      firstName: this.myData.dish_name,
+      price: this.myData.dish_price,
+      priceSuffix: this.myData.price_suffix,
+      displayName: this.myData.display_name,
+      printName:this.myData.print_name,
+      posName:this.myData.pos_name,
+      description: this.myData.description,
+      subtitle: this.myData.subtitle,
+      storeName: this.myData.store_id
+      
+    });
+    //  this.Ingredients=JSON.parse(this.myData)
+    // this.selectedSubcategories=JSON.parse(dish_option_set_json)
+    // dish_choices_json
+    }
+  }
+  
   getMenuCategoryDishData() {
     const userId = JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id;
     const menuApi = this.apiService.getApi(AppConstants.api_end_points.menu + '?user_id=' + userId);
@@ -95,7 +125,6 @@ export class AddDishsComponent {
   }
   getCategories(data: any): void {
     console.log(data.dish_menu_id);
-
     const loginRaw = this.sessionStorage.getsessionStorage("loginDetails");
     const loginData = loginRaw ? JSON.parse(loginRaw) : null;
     const userId = loginData?.user?.user_id;
@@ -170,7 +199,32 @@ export class AddDishsComponent {
   }
   insertDishData() {
     console.log("innnnnnnnnnnnn", this.Ingredients, this.selectedSubcategories, this.choices)
-    const reqbody = {
+       if (this.type == 'Edit') {
+        this.reqbody = {
+      "type": "update",
+      "dish_id":this.myData?.dish_id,
+      "dish_menu_id": this.menuForm.value.menuType,
+      "dish_category_id": this.menuForm.value.categoryType,
+      "dish_type": this.menuForm.value.dishType,
+      "dish_name": this.menuForm.value.firstName,
+      "dish_price": this.menuForm.value.price,
+      "price_pickup": 240,
+      "price_delivery": 260,
+      "price_dine_in": 250,
+      "price_suffix": this.menuForm.value.priceSuffix,
+      "display_name": this.menuForm.value.firstName,
+      "print_name": this.menuForm.value.printName,
+      "pos_name": this.menuForm.value.posName,
+      "description": this.menuForm.value.description,
+      "subtitle": this.menuForm.value.subtitle,
+      "store_id": this.menuForm.value.storeName,
+      // "created_by": 1,
+      "dish_option_set_json": JSON.stringify(this.selectedSubcategories as any),
+      "dish_ingredients_json": JSON.stringify(this.Ingredients as any),
+      "dish_choices_json": JSON.stringify(this.choices),
+    }
+       }else{
+   this.reqbody = {
       "type": "insert",
       "dish_menu_id": this.menuForm.value.menuType,
       "dish_category_id": this.menuForm.value.categoryType,
@@ -189,16 +243,20 @@ export class AddDishsComponent {
       "store_id": this.menuForm.value.storeName,
       // "created_by": 1,
       "dish_option_set_json": JSON.stringify(this.selectedSubcategories as any),
-      "dish_ingredients_json": JSON.stringify(this.Ingredients.map(i => i.name) as any),
-      "dish_choices_json": "[{\"choice\":\"Spice Level\",\"values\":[\"Mild\",\"Medium\",\"Hot\"]}]"
+      "dish_ingredients_json": JSON.stringify(this.Ingredients as any),
+      "dish_choices_json": JSON.stringify(this.choices),
     }
-    console.log(reqbody)
-    this.apiService.postApi(AppConstants.api_end_points.dish, reqbody).subscribe((res: any) => {
+       }
+    
+    console.log(this.reqbody)
+    this.apiService.postApi(AppConstants.api_end_points.dish, this.reqbody).subscribe((res: any) => {
       if (res.code === "1") {
         Swal.fire("Success!", res.message, "success").then((result) => {
           if (result) {
             console.log("User clicked OK");
             this.router.navigate(["/menus/dish"]);
+           this.modal.dismissAll("refresh");
+
           }
         });
         this.modal.dismissAll("refresh");

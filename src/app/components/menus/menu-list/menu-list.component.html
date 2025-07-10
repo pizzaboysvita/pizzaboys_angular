@@ -16,7 +16,7 @@
                             <a class="btn btn-dashed" (click)="insertCategory()">Add Category</a>
                         </li> -->
                         <li>
-                            <a class="btn btn-dashed" (click)="insertDish()">Add Dish</a>
+                            <a class="btn btn-dashed" (click)="insertDish('Add')">Add Dish</a>
                         </li>
                     </ul>
                 </div>
@@ -72,23 +72,27 @@
                                         <a href="javascript:void(0)" [class.show]="item.active">
                                             <i class="ri-more-fill"></i>
                                         </a>
-                                        <ul class="dropdown-menu dropdown-menu-end" [class.show]="item.active"
-                                            style="position: absolute;inset: 0px 0px auto auto; margin: 0px;transform: translate(-5px, 22px);">
+                                        
+                                         <ul class="dropdown-menu dropdown-menu-end mb-10" [class.show]="item.active"  
+                                            style="position: absolute;inset: 0px 0px auto auto; margin: 0px;transform: translate(-5px, 20px);">
+                                            <!-- <li>
+                                                <a class="dropdown-item d-flex align-items-center" (click)="openPopup()">
+                                                    <i class="ri-download-2-line me-2"></i>Action</a>
+                                            </li> -->
                                             <li>
                                                 <a class="dropdown-item d-flex align-items-center"
-                                                    href="javascript:void(0)" (click)="openPopup()">
-                                                    <i class="ri-download-2-line me-2"></i>Action</a>
+                                                     (click)="viewDish(item,'view')">
+                                                    <i class="ri-download-2-line me-2"></i>View</a>
                                             </li>
                                            
                                             <li>
                                                 <a class="dropdown-item d-flex align-items-center"
-                                                    href="javascript:void(0)" (click)="openPopup()">
-                                                    <i class="ri-download-2-line"></i>Edit</a>
+                                                     (click)="viewDish(item,'edit')">
+                                                    <i class="ri-download-2-line me-2"></i>Edit</a>
                                             </li>
-                                            <li (click)="dishDelete(item)">
-                                                <a class="dropdown-item d-flex align-items-center"
-                                                    href="javascript:void(0)">
-                                                    <i class="ri-delete-bin-line"></i>Delete</a>
+                                            <li (click)="dishDelete(item)" class=" mb-10">
+                                                <a class="dropdown-item d-flex align-items-center">
+                                                    <i class="ri-delete-bin-line me-2"></i>Delete</a>
                                             </li>
                                         </ul>
                                     </div>
