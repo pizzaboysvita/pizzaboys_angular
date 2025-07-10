@@ -16,6 +16,7 @@ import { SessionStorageService } from "../../../shared/services/session-storage.
 import FileSaver from "file-saver";
 import * as ExcelJS from 'exceljs';
 import Swal from "sweetalert2";
+import { DatePipe } from "@angular/common";
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
   store_id:string
@@ -32,6 +33,7 @@ interface RowData {
   imports: [CardComponent, AgGridAngular, NgSelectModule],
   templateUrl: "./add-menus.component.html",
   styleUrl: "./add-menus.component.scss",
+  providers:[DatePipe]
 })
 export class AddMenusComponent {
   modules = [ClientSideRowModelModule];
@@ -160,7 +162,7 @@ delete
   menuData: any;
   storeList: any;
   modelRef: any;
-  constructor(public modal: NgbModal, private apis: ApisService, private session: SessionStorageService,private modalService: NgbModal) { }
+  constructor(public modal: NgbModal, private datePipe:DatePipe,private apis: ApisService, private session: SessionStorageService,private modalService: NgbModal) { }
 
 
 
@@ -311,7 +313,9 @@ const reqbody={
         const blob = new Blob([data], {
           type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         });
-        FileSaver.saveAs(blob, 'Menu List.xlsx');
+        const formattedDate =  this.datePipe.transform(new Date(), 'dd MMM yyyy');
+
+        FileSaver.saveAs(blob, `Menu List ${formattedDate}.xlsx`);
       });
      
     }

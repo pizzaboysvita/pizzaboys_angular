@@ -19,11 +19,13 @@ export class SidebarComponent {
   public menuItemsList :any
   titleToPermissionKey: { [key: string]: string } = {
   "Dashboard": "dashboard",
-  "Orders": "orders_delete",
+  "Orders":"orders_list_view",
+  // "Orders": "orders_delete",
   "Bookings": "bookings",
   "Customers": "customers",
   "Menus": "menus",
-  "Menus 2": "menus_images",
+  "Category": "menus_images",
+  "Dish":"menus",
   "Reports":"reports",
   "Settings":"settings_systems",
   "Pos":'pos_orders'

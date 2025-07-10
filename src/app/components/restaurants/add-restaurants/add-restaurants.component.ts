@@ -10,11 +10,13 @@ import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import { ApisService } from '../../../shared/services/apis.service';
 import { SessionStorageService } from '../../../shared/services/session-storage.service';
+import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 @Component({
   selector: 'app-add-restaurants',
-  imports: [CardComponent,ReactiveFormsModule,CommonModule],
+  imports: [CardComponent,ReactiveFormsModule,CommonModule,NgxMaskDirective],
   templateUrl: './add-restaurants.component.html',
-  styleUrl: './add-restaurants.component.scss'
+  styleUrl: './add-restaurants.component.scss',
+  providers:[NgxMaskPipe]
 })
 export class AddRestaurantsComponent {
   @ViewChild(AddWorkingHourComponent) addWork!: AddWorkingHourComponent;

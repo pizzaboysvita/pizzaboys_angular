@@ -10,13 +10,13 @@ import { CardComponent } from "../../../shared/components/card/card.component";
 import { TableComponent } from "../../widgets/table/table.component";
 import { Router } from "@angular/router";
 import { AppConstants } from "../../../app.constants";
-import { CommonModule } from "@angular/common";
+import { CommonModule, DatePipe } from "@angular/common";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import Swal from "sweetalert2";
 import { ApisService } from "../../../shared/services/apis.service";
 import { SessionStorageService } from "../../../shared/services/session-storage.service";
 import { AgGridAngular } from "@ag-grid-community/angular";
-import { ColDef, ModuleRegistry } from "@ag-grid-community/core";
+import { ColDef, ITooltipParams, ModuleRegistry } from "@ag-grid-community/core";
 import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
 import * as ExcelJS from 'exceljs';
 import FileSaver from "file-saver";
@@ -37,7 +37,8 @@ interface RowData {
   imports: [CardComponent, CommonModule,FormsModule,ReactiveFormsModule ,AgGridAngular],
   templateUrl: './staff-list.component.html',
   styleUrl: './staff-list.component.scss',
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+providers:[DatePipe]
 })
 export class StaffListComponent {
   @ViewChild('confirmModal') confirmModalRef!: TemplateRef<any>;
@@ -66,6 +67,7 @@ export class StaffListComponent {
       headerName: 'Name',
       suppressHeaderMenuButton: true, // updated from deprecated `suppressMenu`
       unSortIcon: true,
+         tooltipValueGetter: (p: ITooltipParams) =>p.value,
       cellRenderer: (params: any) => {
         const firstName = params.value;
         const image = params.data?.profiles;
@@ -109,18 +111,21 @@ export class StaffListComponent {
       headerName: 'Email-Id',
       suppressMenu: true,
       unSortIcon: true,
+         tooltipValueGetter: (p: ITooltipParams) =>p.value,
     },
     {
       field: 'phone_number',
       headerName: 'Phone Number',
       suppressMenu: true,
       unSortIcon: true,
+         tooltipValueGetter: (p: ITooltipParams) =>p.value,
     },
     {
       field: 'address',
       headerName: 'Address',
       suppressMenu: true,
       unSortIcon: true,
+         tooltipValueGetter: (p: ITooltipParams) =>p.value,
     },
    {
       headerName: 'Status',
@@ -183,7 +188,7 @@ export class StaffListComponent {
 
   staffData: any;
   staffListSorting: any;
-  constructor(private router: Router, private apis: ApisService, private fb:FormBuilder,private modalService: NgbModal, private session: SessionStorageService) {
+  constructor(private router: Router,private datePipe:DatePipe ,private apis: ApisService, private fb:FormBuilder,private modalService: NgbModal, private session: SessionStorageService) {
 
     this.getStaffList()
   }
@@ -357,7 +362,11 @@ this.staffListSorting=data
       const blob = new Blob([data], {
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       });
-      FileSaver.saveAs(blob, 'staffList.xlsx');
+
+const formattedDate =  this.datePipe.transform(new Date(), 'dd MMM yyyy');
+
+
+      FileSaver.saveAs(blob, `staffList${formattedDate}.xlsx`);
     });
   }
   search(){

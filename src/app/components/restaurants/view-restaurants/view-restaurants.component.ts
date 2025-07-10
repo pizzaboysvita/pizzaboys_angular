@@ -9,12 +9,14 @@ import { SessionStorageService } from '../../../shared/services/session-storage.
 import { ApisService } from '../../../shared/services/apis.service';
 import { AppConstants } from '../../../app.constants';
 import Swal from 'sweetalert2';
+import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 
 @Component({
   selector: 'app-view-restaurants',
-  imports: [CardComponent, ReactiveFormsModule, CommonModule],
+  imports: [CardComponent, ReactiveFormsModule, CommonModule,NgxMaskDirective],
   templateUrl: './view-restaurants.component.html',
-  styleUrl: './view-restaurants.component.scss'
+  styleUrl: './view-restaurants.component.scss',
+    providers:[NgxMaskPipe]
 })
 export class ViewRestaurantsComponent {
 

@@ -17,6 +17,7 @@ import { AppConstants } from "../../../app.constants";
 import Swal from "sweetalert2";
 import { Router } from "@angular/router";
 import { ApisService } from "../../../shared/services/apis.service";
+import { NgxMaskDirective, NgxMaskPipe } from "ngx-mask";
 
 @Component({
   selector: "app-add-staff",
@@ -25,10 +26,12 @@ import { ApisService } from "../../../shared/services/apis.service";
     CardComponent,
     ReactiveFormsModule,
     CommonModule,
-    NgSelectModule,
+    NgSelectModule,NgxMaskDirective
+
   ],
   templateUrl: "./add-staff.component.html",
   styleUrl: "./add-staff.component.scss",
+   providers:[NgxMaskPipe]
 })
 export class AddStaffComponent {
   @ViewChild(AccountComponent) accountComponent!: AccountComponent;

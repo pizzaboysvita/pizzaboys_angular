@@ -5,7 +5,7 @@ import { TableConfig } from '../../../shared/interface/table.interface';
 import { ProductsList } from '../../../shared/data/products';
 import { AgGridAngular } from '@ag-grid-community/angular';
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
-import { ColDef, ModuleRegistry } from '@ag-grid-community/core';
+import { ColDef, ITooltipParams, ModuleRegistry } from '@ag-grid-community/core';
 import { Router } from '@angular/router';
 import { AppConstants } from '../../../app.constants';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -15,6 +15,8 @@ import * as ExcelJS from 'exceljs';
 import * as FileSaver from 'file-saver';
 import { SessionStorageService } from '../../../shared/services/session-storage.service';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import moment from 'moment';
+import { DatePipe } from '@angular/common';
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
   store_name: string;
@@ -28,7 +30,8 @@ interface RowData {
   selector: 'app-restaurants-list',
   imports: [CardComponent, AgGridAngular,ReactiveFormsModule,FormsModule],
   templateUrl: './restaurants-list.component.html',
-  styleUrl: './restaurants-list.component.scss'
+  styleUrl: './restaurants-list.component.scss',
+  providers:[DatePipe]
 })
 export class RestaurantsListComponent {
   @ViewChild('confirmModal') confirmModalRef!: TemplateRef<any>;
@@ -40,7 +43,7 @@ storeForm:FormGroup
   storeList: any;
   storeData: any;
   storeListSorting: any;
-  constructor(private router: Router, private apis: ApisService,private fb:FormBuilder, private modalService: NgbModal, private session: SessionStorageService) { }
+  constructor(private router: Router, private apis: ApisService,private fb:FormBuilder, private datePipe:DatePipe,private modalService: NgbModal, private session: SessionStorageService) { }
   modules = [ClientSideRowModelModule];
 
   stausList = ['Active', 'In-Active']
@@ -48,11 +51,13 @@ storeForm:FormGroup
     {
       field: 'store_name', headerName: 'Store Name', sortable: true,
       suppressMenu: true,
-      unSortIcon: true
+      unSortIcon: true,
+          tooltipValueGetter: (p: ITooltipParams) =>p.value,
     },
     {
       field: 'email', headerName: 'E-Mail', suppressMenu: true,
-      unSortIcon: true
+      unSortIcon: true,
+        tooltipValueGetter: (p: ITooltipParams) =>p.value,
     },
     {
       field: 'phone', headerName: 'Phone Number', suppressMenu: true,
@@ -60,11 +65,13 @@ storeForm:FormGroup
     },
     {
       field: 'street_address', headerName: 'Store Address', suppressMenu: true,
-      unSortIcon: true
+      unSortIcon: true,
+          tooltipValueGetter: (p: ITooltipParams) =>p.value,
     },
     {
       field: 'created_on', headerName: 'Created Date', suppressMenu: true,
       unSortIcon: true,
+          tooltipValueGetter: (p: ITooltipParams) =>p.value,
    valueFormatter: (params) => {
   if (!params.value) return '';
   const date = new Date(params.value);
@@ -289,7 +296,9 @@ downloadDevicesExcel(): void {
     const blob = new Blob([data], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
-    FileSaver.saveAs(blob, 'storesList.xlsx');
+    // const today = new Date();
+const formattedDate =  this.datePipe.transform(new Date(), 'dd MMM yyyy');
+    FileSaver.saveAs(blob, `storesList_${formattedDate}.xlsx`);
   });
 }
 search(){
@@ -306,3 +315,4 @@ reset(){
   this.getStoreList()
 }
 }
+

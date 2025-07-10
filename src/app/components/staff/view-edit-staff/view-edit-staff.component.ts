@@ -15,6 +15,7 @@ import { CommonModule } from "@angular/common";
 import { CardComponent } from "../../../shared/components/card/card.component";
 import { NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
 import { NgSelectModule } from "@ng-select/ng-select";
+import { NgxMaskDirective, NgxMaskPipe } from "ngx-mask";
 
 @Component({
   selector: "app-view-edit-staff",
@@ -25,10 +26,10 @@ import { NgSelectModule } from "@ng-select/ng-select";
     ReactiveFormsModule,
     NgbNavModule,
     CardComponent,
-    NgSelectModule,
+    NgSelectModule
   ],
   templateUrl: "./view-edit-staff.component.html",
-  styleUrls: ["./view-edit-staff.component.scss"],
+  styleUrls: ["./view-edit-staff.component.scss"], 
 })
 export class ViewEditStaffComponent implements OnInit {
   staffForm!: FormGroup;
@@ -361,10 +362,10 @@ this.selectedPreset =staff.role_id
       return;
     }
 
-    if (!this.file && (!this.profileImage || this.profileImage === this.defaultImage)) {
-      Swal.fire("Error", "Please upload a profile image", "error");
-      return;
-    }
+    // if (!this.file && (!this.profileImage || this.profileImage === this.defaultImage)) {
+    //   Swal.fire("Error", "Please upload a profile image", "error");
+    //   return;
+    // }
 
     const permissions: any = {};
     for (const sectionKey in permissionValues) {
@@ -401,9 +402,9 @@ this.selectedPreset =staff.role_id
     }
 
     const formData = new FormData();
-    if (this.file) {
-      formData.append("image", this.file);
-    }
+    // if (this.file) {
+      formData.append("image", this.file?this.file:'');
+    // }
     formData.append("body", JSON.stringify(reqBody));
 
     this.apis.postApi(AppConstants.api_end_points.staff, formData).subscribe({
