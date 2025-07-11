@@ -101,6 +101,7 @@ constructor(
   },
   (reason: any) => {
     console.log("Modal dismissed", reason);
+     this.getMenuCategoryDishData();
   }
 );
 
@@ -124,9 +125,11 @@ constructor(
           modalRef.result.then(
             (result) => {
               console.log('Modal closed with:', result);
+              this.getMenuCategoryDishData()
             },
             () => {
               console.log('Modal dismissed');
+                  this.getMenuCategoryDishData()
             }
           );
         }
@@ -145,9 +148,9 @@ ngOnInit(): void {
 
   forkJoin([menuApi, categoryApi, dishApi]).subscribe(
     ([menuRes, categoryRes, dishRes]: any) => {
-dishRes.data.forEach((elemet:any)=>{
-  elemet.image_url='assets/pizzaImg/menus/3.png'
-})
+// dishRes.data.forEach((elemet:any)=>{
+//   elemet.image_url='assets/pizzaImg/menus/3.png'
+// })
       console.log(menuRes.data,categoryRes,dishRes)
       this.menuList=menuRes.data
       console.log(this.menuList[0])
@@ -196,7 +199,10 @@ const reqboy={
   "type": "delete",
   "dish_id":this.dishDetails.dish_id
 }
-this.apiService.postApi(AppConstants.api_end_points.dish,reqboy).subscribe((data:any)=>{
+      const formData = new FormData();
+    formData.append("dish_image",''); // Attach Blob with a filename
+    formData.append("body", JSON.stringify(reqboy));
+this.apiService.postApi(AppConstants.api_end_points.dish,formData).subscribe((data:any)=>{
   if(data.code ==1){
       this.modelRef.close();
                         Swal.fire({

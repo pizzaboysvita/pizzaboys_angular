@@ -68,6 +68,8 @@ export class AddMenuModalComponent {
   ];
   storeList: any;
   reqbody:any
+  file: File;
+  uploadImagUrl: string | ArrayBuffer | null;
   constructor(private fb: FormBuilder, public modal: NgbModal, private apis: ApisService) {
     this.menuForm = this.fb.group({
       name: [''],
@@ -225,8 +227,10 @@ export class AddMenuModalComponent {
     }
   }
     console.log(this.reqbody)
-
-    this.apis.postApi(AppConstants.api_end_points.menu, this.reqbody).subscribe((data: any) => {
+   const formData = new FormData();
+    formData.append("image", this.file); // Attach Blob with a filename
+    formData.append("body", JSON.stringify(this.reqbody));
+    this.apis.postApi(AppConstants.api_end_points.menu, formData).subscribe((data: any) => {
       console.log(data)
       if (data.code == 1) {
         console.log(data)
@@ -248,4 +252,20 @@ export class AddMenuModalComponent {
     console.log('Add Time Slot clicked');
     alert('Add Time Slot clicked (you can open a modal or dialog here)');
   }
+   onSelectFile(event: Event): void {
+  const input = event.target as HTMLInputElement;
+
+  if (input.files && input.files[0]) {
+    console.log(input.files[0])
+    this.file = input.files[0];
+    console.log()
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      this.uploadImagUrl = reader.result; // this will update the image source
+    };
+
+    reader.readAsDataURL(this.file); // convert image to base64 URL
+  }
+}
 }

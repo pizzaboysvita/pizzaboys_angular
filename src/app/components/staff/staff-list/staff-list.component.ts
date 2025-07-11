@@ -42,7 +42,7 @@ providers:[DatePipe]
 })
 export class StaffListComponent {
   @ViewChild('confirmModal') confirmModalRef!: TemplateRef<any>;
-  staff_list: any;
+  staff_list: any=[];
   staffForm:FormGroup
   sortColumn: string = "";
   sortDirection: "asc" | "desc" = "asc";
@@ -127,37 +127,38 @@ export class StaffListComponent {
       unSortIcon: true,
          tooltipValueGetter: (p: ITooltipParams) =>p.value,
     },
-   {
-      headerName: 'Status',
-      field: 'status',
+  {
+      headerName: "Status",
+      field: "status",
       cellRenderer: (params: any) => {
-        let statusClass = '';
-        if (params.value === 'Active') {
-          statusClass = 'status-active';
-        } else if (params.value === 'Inactive') {
-          statusClass = 'status-no-stock';
-        } else if (params.value === 'Pending') {
-          statusClass = 'status-hide';
+        // let statusClass = "";
+      let statusClass = "status-active";
+        if (params.value == "Active") {
+          statusClass = "status-active";
+        } else if (params.value === "No Stock") {
+          statusClass = "status-no-stock";
+        } else if (params.value === "Hide") {
+          statusClass = "status-hide";
         }
-        if (params.value === '') {
+        if (params.value === "") {
           return `
-                <select class="status-dropdown" onchange="updateStatus(event, ${params.rowIndex})">
-                    <option value="">Select Status</option>
-                  <option value="Active">Active</option>
-                  <option value="No Stock">No Stock</option>
-                  <option value="Hide">Hide</option>
-                </select>
-              `;
+            <select class="status-dropdown" onchange="updateStatus(event, ${params.rowIndex})">
+                <option value="">Select Status</option>
+              <option value="Active">Active</option>
+              <option value="No Stock">No Stock</option>
+              <option value="Hide">Hide</option>
+            </select>
+          `;
         }
-        return `<div class="status-badge ${statusClass}">${params.value}</div>`;
+        return `<div class="status-badge ${statusClass}"> ${ params.value}</div>`;
       },
-      editable: true, // Make the cell editable
-      cellEditor: 'agSelectCellEditor', // Use the ag-Grid built-in select editor
+      editable: true, 
+      cellEditor: "agSelectCellEditor", 
       cellEditorParams: {
-        values: ['Active', 'Inactive', 'Pending'], // List of values for the dropdown
+        values: ["Active", "No Stock", "Hide"], 
       },
       suppressMenu: true,
-      unSortIcon: true
+      unSortIcon: true,
     },
     {
       headerName: 'Actions',

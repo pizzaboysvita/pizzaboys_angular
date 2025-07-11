@@ -34,6 +34,8 @@ export class AddDishsComponent {
   selectedSubcategories: number[] = [];
   dish_option_set_json: string = '';
   reqbody:any
+  uploadImagUrl: string | ArrayBuffer | null;
+  file: File;
   constructor(private fb: FormBuilder, public modal: NgbModal, private router: Router, private apiService: ApisService, private sessionStorage: SessionStorageService) { }
 
   ngOnInit() {
@@ -247,23 +249,44 @@ export class AddDishsComponent {
       "dish_choices_json": JSON.stringify(this.choices),
     }
        }
-    
+      const formData = new FormData();
+    formData.append("image", this.file); // Attach Blob with a filename
+    formData.append("body", JSON.stringify(this.reqbody));
     console.log(this.reqbody)
-    this.apiService.postApi(AppConstants.api_end_points.dish, this.reqbody).subscribe((res: any) => {
+    this.apiService.postApi(AppConstants.api_end_points.dish,formData).subscribe((res: any) => {
       if (res.code === "1") {
         Swal.fire("Success!", res.message, "success").then((result) => {
           if (result) {
             console.log("User clicked OK");
-            this.router.navigate(["/menus/dish"]);
-           this.modal.dismissAll("refresh");
+            // this.router.navigate(["/menus/dish"]);
+           this.modal.dismissAll();
 
           }
         });
-        this.modal.dismissAll("refresh");
+        // this.modal.dismissAll("refresh");
       } else {
         alert(res.message || "Failed to add Dish");
       }
     });
   }
 
+
+
+
+   onSelectFile(event: Event): void {
+  const input = event.target as HTMLInputElement;
+
+  if (input.files && input.files[0]) {
+    console.log(input.files[0])
+    this.file = input.files[0];
+    console.log()
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      this.uploadImagUrl = reader.result; // this will update the image source
+    };
+
+    reader.readAsDataURL(this.file); // convert image to base64 URL
+  }
+}
 }

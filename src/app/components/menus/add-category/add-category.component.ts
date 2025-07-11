@@ -11,6 +11,7 @@ import { NgSelectModule } from "@ng-select/ng-select";
 import { ApisService } from "../../../shared/services/apis.service";
 import { SessionStorageService } from "../../../shared/services/session-storage.service";
 import { AppConstants } from "../../../app.constants";
+import Swal from "sweetalert2";
 
 @Component({
   selector: "app-add-category",
@@ -37,6 +38,8 @@ export class AddCategoryComponent implements OnInit {
     { id: 'dine-in', name: 'Dine-in' }
   ];
   storeList: any;
+  uploadImagUrl: string | ArrayBuffer | null;
+  file: File;
 
   constructor(
     private fb: FormBuilder,
@@ -176,13 +179,40 @@ const reqbody={
     "updated_by": 10
 }
 console.log(reqbody)
-    this.apis.postApi("/api/category", reqbody).subscribe((res: any) => {
+    const formData = new FormData();
+    formData.append("image", this.file); // Attach Blob with a filename
+    formData.append("body", JSON.stringify(reqbody));
+    this.apis.postApi("/api/category", formData).subscribe((res: any) => {
       if (res.code === "1") {
-        alert("Category added successfully");
-        this.modal.dismissAll("refresh");
+    
+    Swal.fire('Success!', res.message, 'success').then(
+            (result) => {
+              if (result) {
+                console.log('User clicked OK');
+                // this.router.navigate(['/restaurants/restaurants-list'])
+                this.modal.dismissAll();
+  
+              }
+            })
       } else {
         alert(res.message || "Failed to add category");
       }
     });
   }
+     onSelectFile(event: Event): void {
+  const input = event.target as HTMLInputElement;
+
+  if (input.files && input.files[0]) {
+    console.log(input.files[0])
+    this.file = input.files[0];
+    console.log()
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      this.uploadImagUrl = reader.result; // this will update the image source
+    };
+
+    reader.readAsDataURL(this.file); // convert image to base64 URL
+  }
+}
 }

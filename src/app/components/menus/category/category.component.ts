@@ -271,18 +271,35 @@ this.insertCategory("Edit")
     modalRef.componentInstance.myData =this.categoryRowData
     modalRef.closed.subscribe((result) => {
       if (result === "refresh") {
-        this.fetchCategories();
+       
       }
+
     });
+     modalRef.result.then(
+      (result) => {
+        // Modal closed with a result
+        console.log('Modal closed with:', result);
+        this.fetchCategories();
+      },
+      (reason) => {
+        // Modal dismissed (e.g. clicking outside, ESC key)
+        console.log('Modal dismissed with:', reason);
+      this.fetchCategories();
+      }
+    );
   }
   onConfirm(){
     console.log(this.categoryRowData)
 const reqbody={
   "type": "delete",
   "id":this.categoryRowData.id,
-  "status": 0
+
+
 }
-this.apiService.postApi(AppConstants.api_end_points.category,reqbody).subscribe((data:any)=>{
+ const formData = new FormData();
+    formData.append("category_image", ''); // Attach Blob with a filename
+    formData.append("body", JSON.stringify(reqbody));
+this.apiService.postApi(AppConstants.api_end_points.category,formData).subscribe((data:any)=>{
   console.log(data)
   if(data.code ==1){
         this.modelRef.close();

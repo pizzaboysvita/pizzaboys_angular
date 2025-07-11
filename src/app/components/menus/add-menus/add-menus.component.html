@@ -19,39 +19,40 @@
       data-bs-parent="#accordionExample"
     >
       <div class="accordion-body">
+           <form [formGroup]="menuSearchForm">
         <div class="row gy-3">
           <div class="col-xl-3">
             <div class="input-box">
-                <h6 class="fw-bold p-1">Menu Types</h6>
+                <h6 class="fw-bold p-1">Store Name</h6>
                 <ng-select
-                  [items]="menuList"
+                  [items]="storeList"
                   [searchable]="true"
                   [multiple]="false"
-                  bindLabel="name"
-                  bindValue="id"
-                  placeholder="Select Menu Type"
-                  formControlName="menuType"
+                  bindLabel="store_name"
+                  bindValue="store_id"
+                  placeholder="Select Store Name"
+                 formControlName="store"
                 >
                 </ng-select>
               </div>
           </div>
           <div class="col-xl-3">
             <div class="input-box">
-              <h6 class="fw-bold p-1">E-Mail</h6>
-              <input type="text" placeholder="E-Mail" />
+              <h6 class="fw-bold p-1">Menu Name</h6>
+              <input type="text" placeholder="Enter Menu Name"   formControlName="menuName" />
             </div>
           </div>
-          <div class="col-xl-3">
+          <!-- <div class="col-xl-3">
             <div class="input-box">
               <h6 class="fw-bold p-1">Address</h6>
               <input type="text" placeholder="Address" />
             </div>
-          </div>
+          </div> -->
           <div class="col-xl-3">
             <!-- <div class="col-md-6"> -->
             <div class="input-box">
               <h6 class="fw-bold p-1">Status</h6>
-              <select class="form-select" name="carlist">
+              <select class="form-select" name="carlist" formControlName="status" >
                 @for (item of stausList; track item) {
                 <option value="">{{ item }}</option>
                 }
@@ -59,17 +60,20 @@
               <!-- </div> -->
             </div>
           </div>
-          <div class="col-xl-3">
+                 <div class="col-xl-3"></div>
+              <!-- <div class="col-xl-2"></div> -->
+          <div class="col-xl-3" style="margin-top: -10px;">
             <div class="d-flex flex-wrap gap-2">
-              <button class="btn btn-animation save-button" type="button">
+              <button class="btn btn-animation save-button" type="button" (click)="search()">
                 Search
               </button>
-              <button class="btn btn-animation reset-button" type="button">
+              <button class="btn btn-animation reset-button" type="button" (click)="reset()">
                 Reset
               </button>
             </div>
           </div>
         </div>
+        </form>
       </div>
     </div>
   </div>

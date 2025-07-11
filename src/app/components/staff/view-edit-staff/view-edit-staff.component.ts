@@ -398,7 +398,7 @@ this.selectedPreset =staff.role_id
     };
 
     if (!this.file && this.profileImage && this.profileImage !== this.defaultImage) {
-      reqBody.profileImage = this.profileImage;
+      reqBody.profiles = this.profileImage;
     }
 
     const formData = new FormData();
