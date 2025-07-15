@@ -1,25 +1,38 @@
 <app-card [header]="true" [body]="true">
     <h5 header>Menus</h5>
-    <div class="row" body>
+    <div class="row" body style="margin-top: -25px;" >
         <div class="col-12">
             <ul ngbNav #nav="ngbNav" [(activeId)]="active"
-                class="nav setting-main-box driver-main-box sticky theme-scrollbar">
-                <li [ngbNavItem]="1">
-                    <button class="nav-link" ngbNavLink><i class="ri-restaurant-fill"></i>Types of Menus</button>
+              class="nav nav-pills flex-nowrap">
+                 <li [ngbNavItem]="1">
+                    <button class="nav-link" ngbNavLink><i class="ri-image-circle-fill"></i>Dish</button>
                     <ng-template ngbNavContent>
-                       <app-add-menus></app-add-menus>
+                        <br>
+                        <app-menu-list></app-menu-list>
                     </ng-template>
                 </li>
+               
                 <li [ngbNavItem]="2">
                     <button class="nav-link" ngbNavLink><i class="ri-restaurant-2-fill"></i>Categorys</button>
                     <ng-template ngbNavContent>
+                        <br>
                         <app-category></app-category>
                     </ng-template>
                 </li>
-                <li [ngbNavItem]="3">
-                    <button class="nav-link" ngbNavLink><i class="ri-image-circle-fill"></i>Dish</button>
+                 <li [ngbNavItem]="3">
+                    <button class="nav-link" ngbNavLink><i class="ri-restaurant-fill"></i>Types of Menus</button>
                     <ng-template ngbNavContent>
-                        <app-dish></app-dish>
+                        <br>
+                       <app-add-menus></app-add-menus>
+                    </ng-template>
+                </li>
+             
+                <li [ngbNavItem]="4">
+                    <button class="nav-link" ngbNavLink><i class="ri-image-circle-fill"></i>Option Set</button>
+                    <ng-template ngbNavContent>
+                        <br>
+                        <!-- <app-dish></app-dish> -->
+                         <app-optionset></app-optionset>
                     </ng-template>
                 </li>
             </ul>

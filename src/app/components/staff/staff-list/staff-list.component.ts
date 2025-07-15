@@ -207,14 +207,15 @@ ngOnInit(){
 
     this.apis.getApi(AppConstants.api_end_points.staff).subscribe((data: any) => {
       if (data) {
-        data.forEach((element: any) => {
+
+        data.data.forEach((element: any) => {
           // element.option=''
           element.user_image = null,
             element.fullname = element.first_name + ' ' + element.last_name
           element.status = element.status == 1 ? 'Active' : element.status == 0 ? 'Inactive' : ''
         })
-        this.staff_list = data
-this.staffListSorting=data
+        this.staff_list = data.data
+this.staffListSorting=data.data
       }
     })
   }
@@ -248,8 +249,9 @@ this.staffListSorting=data
     while (target && !target.dataset?.['action'] && target !== document.body) {
       target = target.parentElement as HTMLElement;
     }
-    console.log(target, 'target action')
+   
     const action = target?.getAttribute("data-action");
+     console.log(event.data, 'target action')
     const staffId = event.data?.user_id;
     console.log(action, staffId)
     if (action === "view") {
