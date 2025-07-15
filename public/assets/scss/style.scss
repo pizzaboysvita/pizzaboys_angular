@@ -136,3 +136,19 @@ select.form-select {
     // padding: 0.8rem;
     color: #af5d00;
 }
+.ag-cell:focus {
+  outline: none !important;
+  border: none !important;
+}
+.ag-cell.ag-cell-focus {
+  border: none !important;
+  outline: none !important;
+}
+.custom-select {
+  height: 36px; /* Set desired height */
+  border-radius: 8px; /* Rounded corners */
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  outline: none;
+}
