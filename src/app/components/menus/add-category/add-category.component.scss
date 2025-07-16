@@ -107,3 +107,21 @@
     
   }
 }
+
+.add-time-slot-btn {
+    padding: 4px 10px;
+    font-size: 14px;
+    color: #f60;
+    border: 1px solid #f60;
+    background: transparent;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.3s ease all;
+    margin-bottom: 2%;
+}
+
+.add-time-slot-btn:hover {
+    background: #f60;
+    color: #fff;
+}

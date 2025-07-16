@@ -12,15 +12,19 @@ import { ApisService } from "../../../shared/services/apis.service";
 import { SessionStorageService } from "../../../shared/services/session-storage.service";
 import { AppConstants } from "../../../app.constants";
 import Swal from "sweetalert2";
-
+import { ColDef, ITooltipParams, ModuleRegistry } from "@ag-grid-community/core";
+import { AgGridAngular } from "@ag-grid-community/angular";
+import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
+ModuleRegistry.registerModules([ClientSideRowModelModule]);
 @Component({
   selector: "app-add-category",
   standalone: true,
-  imports: [NgbNavModule, NgSelectModule, FormsModule, ReactiveFormsModule],
+  imports: [NgbNavModule, NgSelectModule, FormsModule, ReactiveFormsModule,AgGridAngular],
   templateUrl: "./add-category.component.html",
   styleUrls: ["./add-category.component.scss"],
 })
 export class AddCategoryComponent implements OnInit {
+    modules = [ClientSideRowModelModule];
   @Input() type:any
   @Input() myData:any
   active = 1;
@@ -37,6 +41,76 @@ export class AddCategoryComponent implements OnInit {
     { id: 'pickup', name: 'Pickup' },
     { id: 'dine-in', name: 'Dine-in' }
   ];
+    rowData :any= [];
+isHide=false
+  days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+  columnDefs :any= [
+    {
+      headerName: 'Day',
+      field: 'day',
+      editable: true,
+      cellEditor: 'agSelectCellEditor',
+      cellEditorParams: {
+        values: this.days
+      }
+    },
+    {
+    headerName: 'Open',
+    field: 'open',
+    editable: (params: any) => !params.data.is24Hour
+  },
+  {
+    headerName: 'Close',
+    field: 'close',
+    editable: (params: any) => !params.data.is24Hour
+  },
+    {
+  headerName: '24 Hours',
+  field: 'is24Hour',
+  cellRenderer: (params: any) => {
+    const checked = params.value ? 'checked' : '';
+    return `
+      <div class="d-flex align-items-center justify-content-center gap-2">
+        <input type="checkbox" class="checkbox-24hr" ${checked} data-row="${params.rowIndex}" />
+        <button class="btn btn-sm btn-outline-danger delete-btn" data-row="${params.rowIndex}">🗑</button>
+        
+        <button class="btn btn-sm btn-outline-secondary copy-btn" data-row="${params.rowIndex}">📄</button>
+      </div>
+    `;
+  },
+  onCellClicked: (params: any) => {
+    const target = params.event.target as HTMLElement;
+    const rowIndex = params.node.rowIndex;
+
+    if (target.classList.contains('delete-btn')) {
+      params.api.applyTransaction({ remove: [params.node.data] });
+    }
+
+    if (target.classList.contains('copy-btn')) {
+      const copy = { ...params.node.data };
+      params.api.applyTransaction({ add: [copy], addIndex: rowIndex + 1 });
+    }
+
+    if (target.classList.contains('checkbox-24hr')) {
+      const checked = (target as HTMLInputElement).checked;
+      params.node.setDataValue('is24Hour', checked);
+
+      // Force Open/Close cells to update editable status
+      params.api.refreshCells({
+        rowNodes: [params.node],
+        force: true,
+        columns: ['open', 'close']
+      });
+    }
+  },
+  minWidth: 150,
+  flex: 1
+}
+
+    
+  ];
+
   storeList: any;
   uploadImagUrl: string | ArrayBuffer | null;
   file: File;
@@ -214,5 +288,28 @@ console.log(reqbody)
 
     reader.readAsDataURL(this.file); // convert image to base64 URL
   }
+}
+onCellClicked(params: any) {
+    const rowIndex = params.rowIndex;
+    const actionTarget = params.event.target as HTMLElement;
+
+    if (actionTarget.classList.contains('delete-btn')) {
+      console.log(rowIndex)
+      this.rowData.splice(rowIndex, 1);
+      // this.rowData = [...this.rowData];
+    }
+
+    // if (actionTarget.classList.contains('copy-btn')) {
+    //   const copiedRow = { ...this.rowData[rowIndex] };
+    //   this.rowData.splice(rowIndex + 1, 0, copiedRow);
+    //   this.rowData = [...this.rowData];
+    // }
+  }
+
+addNewRow() {
+  console.log(this.rowData, ' this.rowData');
+  this.isHide =true
+  this.rowData.push({ day: 'Monday', open: '09:00', close: '21:00', is24Hour: false });
+  this.rowData = [...this.rowData]; // forces change detection
 }
 }

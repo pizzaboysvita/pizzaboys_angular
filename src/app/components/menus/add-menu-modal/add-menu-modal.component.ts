@@ -1,19 +1,23 @@
 import { Component, Input } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbModal, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { AppConstants } from '../../../app.constants';
 import { ApisService } from '../../../shared/services/apis.service';
 import Swal from 'sweetalert2';
-
+import { AgGridAngular } from '@ag-grid-community/angular';
+import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
+import { ColDef, ITooltipParams, ModuleRegistry } from "@ag-grid-community/core";
+ModuleRegistry.registerModules([ClientSideRowModelModule]);
 @Component({
   selector: 'app-add-menu-modal',
   standalone: true,
-  imports: [NgbNavModule, NgSelectModule, FormsModule, ReactiveFormsModule],
+  imports: [NgbNavModule, NgSelectModule, FormsModule, ReactiveFormsModule,AgGridAngular],
   templateUrl: './add-menu-modal.component.html',
   styleUrls: ['./add-menu-modal.component.scss']
 })
 export class AddMenuModalComponent {
+    modules = [ClientSideRowModelModule];
   @Input() type: any
   @Input() myData: any;
   active = 1;
@@ -21,6 +25,76 @@ export class AddMenuModalComponent {
   conditionForm: FormGroup;
   posForm!: FormGroup
   surchargeForm: FormGroup
+  rowData :any= [];
+isHide=false
+  days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+  columnDefs :any= [
+    {
+      headerName: 'Day',
+      field: 'day',
+      editable: true,
+      cellEditor: 'agSelectCellEditor',
+      cellEditorParams: {
+        values: this.days
+      }
+    },
+    {
+    headerName: 'Open',
+    field: 'open',
+    editable: (params: any) => !params.data.is24Hour
+  },
+  {
+    headerName: 'Close',
+    field: 'close',
+    editable: (params: any) => !params.data.is24Hour
+  },
+    {
+  headerName: '24 Hours',
+  field: 'is24Hour',
+  cellRenderer: (params: any) => {
+    const checked = params.value ? 'checked' : '';
+    return `
+      <div class="d-flex align-items-center justify-content-center gap-2">
+        <input type="checkbox" class="checkbox-24hr" ${checked} data-row="${params.rowIndex}" />
+        <button class="btn btn-sm btn-outline-danger delete-btn" data-row="${params.rowIndex}">🗑</button>
+        
+        <button class="btn btn-sm btn-outline-secondary copy-btn" data-row="${params.rowIndex}">📄</button>
+      </div>
+    `;
+  },
+  onCellClicked: (params: any) => {
+    const target = params.event.target as HTMLElement;
+    const rowIndex = params.node.rowIndex;
+
+    if (target.classList.contains('delete-btn')) {
+      params.api.applyTransaction({ remove: [params.node.data] });
+    }
+
+    if (target.classList.contains('copy-btn')) {
+      const copy = { ...params.node.data };
+      params.api.applyTransaction({ add: [copy], addIndex: rowIndex + 1 });
+    }
+
+    if (target.classList.contains('checkbox-24hr')) {
+      const checked = (target as HTMLInputElement).checked;
+      params.node.setDataValue('is24Hour', checked);
+
+      // Force Open/Close cells to update editable status
+      params.api.refreshCells({
+        rowNodes: [params.node],
+        force: true,
+        columns: ['open', 'close']
+      });
+    }
+  },
+  minWidth: 150,
+  flex: 1
+}
+
+    
+  ];
+
   availabilityOptions = [
     { id: 'Breakfast', name: 'Breakfast' },
     { id: 'Lunch', name: 'Lunch' },
@@ -72,7 +146,7 @@ export class AddMenuModalComponent {
   uploadImagUrl: string | ArrayBuffer | null;
   constructor(private fb: FormBuilder, public modal: NgbModal, private apis: ApisService) {
     this.menuForm = this.fb.group({
-      name: [''],
+      name: ['',Validators.required],
       displayName: [''],
       description: [''],
       disableDishNotes: [false],
@@ -86,7 +160,7 @@ export class AddMenuModalComponent {
     this.conditionForm = this.fb.group({
       orderTimes: [''],
       services: [''],
-      store: [''],
+      store: ['',Validators.required],
       preOrderServices: [''],
       ageRestricted: [false],
       preOrderOnly: [false],
@@ -167,13 +241,13 @@ export class AddMenuModalComponent {
   }
 
   saveMenu() {
-    console.log('Saving menu', this.menuForm.value);
+    console.log('Saving menu', this.menuForm.value,this.conditionForm.value);
     if(this.type =='Edit'){
  this.reqbody = {
       "type": "update",
         "menu_id":this.myData.dish_menu_id,
-      "name": this.menuForm.value.name,
-      "display_name": this.menuForm.value.displayName,
+      "name": this.menuForm.value.name ,
+      "display_name": this.menuForm.value.displayName =='',
       "description": this.menuForm.value.description,
       "disable_dish_notes": this.menuForm.value.disableDishNotes == true ? 1 : 0,
       "re_stock_menu_daily": this.menuForm.value.restockMenuDaily == true ? 1 : 0,
@@ -198,34 +272,43 @@ export class AddMenuModalComponent {
       "created_by": 1
     }
   }else{
+  
     this.reqbody = {
       "type": "insert",
       "name": this.menuForm.value.name,
-      "display_name": this.menuForm.value.displayName,
-      "description": this.menuForm.value.description,
+      "display_name": this.menuForm.value.displayName ==''?'': this.menuForm.value.displayName,
+      "description": this.menuForm.value.description ==''?'':this.menuForm.value.description,
       "disable_dish_notes": this.menuForm.value.disableDishNotes == true ? 1 : 0,
       "re_stock_menu_daily": this.menuForm.value.restockMenuDaily == true ? 1 : 0,
       "hide_menu": this.menuForm.value.hideMenu == true ? 1 : 0,
-      "order_times": this.conditionForm.value.orderTimes.toString(),
-      "services": this.conditionForm.value.services.toString(),
-      "applicable_hours": "[{\"day\":\"Mon\",\"from\":\"12:00\",\"to\":\"15:00\"}]",
+      "order_times": this.conditionForm.value.orderTimes ==''?null:this.conditionForm.value.orderTimes.toString(),
+      "services": this.conditionForm.value.services==''?null: this.conditionForm.value.services.toString(),
+      "applicable_hours":this.rowData.length ==0?'':JSON.parse(this.rowData),
       "mark_as_age_restricted": this.conditionForm.value.ageRestricted == true ? 1 : 0,
       "enable_pre_orders_only": this.conditionForm.value.preOrderOnly == true ? 1 : 0,
-      "pre_order_days_in_advance": this.conditionForm.value.preOrderDays,
-      "pre_order_cutoff_time": this.conditionForm.value.preOrderCutoffTime,
-      "pre_order_applicable_service": this.conditionForm.value.preOrderServices.toString(),
+      "pre_order_days_in_advance": this.conditionForm.value.preOrderDays ==''?null:this.conditionForm.value.preOrderDays,
+      "pre_order_cutoff_time": this.conditionForm.value.preOrderCutoffTime ==''?null:this.conditionForm.value.preOrderDays,
+      "pre_order_applicable_service": this.conditionForm.value.preOrderServices==''?null: this.conditionForm.value.preOrderServices.toString(),
       "hide_restriction_warning": this.conditionForm.value.hideRestrictionWarning == true ? 1 : 0,
       "hide_if_unavailable": this.conditionForm.value.hideIfUnavailable == true ? 1 : 0,
-      "POS_display_name": this.posForm.value.posDispalyname,
+      "POS_display_name": this.posForm.value.posDispalyname ==''?'':this.posForm.value.posDispalyname,
       "hide_menu_in_POS": this.posForm.value.hideMenu == true ? 1 : 0,
-      "pickup_surcharge": this.surchargeForm.value.pickupSurcharge,
-      "delivery_surcharge": this.surchargeForm.value.deliverySurcharge,
-      "managed_delivery_surcharge": this.surchargeForm.value.managedDeliverySurcharge,
-      "dine_in_surcharge": this.surchargeForm.value.dineInSurcharge,
+      "pickup_surcharge": this.surchargeForm.value.pickupSurcharge ==''?0.0:this.surchargeForm.value.pickupSurcharge,
+      "delivery_surcharge": this.surchargeForm.value.deliverySurcharge ==''?0.0:this.surchargeForm.value.deliverySurcharge,
+      "managed_delivery_surcharge": this.surchargeForm.value.managedDeliverySurcharge ==''?0.0: this.surchargeForm.value.managedDeliverySurcharge,
+      "dine_in_surcharge": this.surchargeForm.value.dineInSurcharge ==''?0.0:this.surchargeForm.value.dineInSurcharge,
       "store_id": this.conditionForm.value.store.toString(),
       "created_by": 1
     }
   }
+     if (this.menuForm.invalid) {
+      Object.keys(this.menuForm.controls).forEach(key => {
+        this.menuForm.get(key)?.markAsTouched();
+      });
+      // this.showToast('error', 'Validation Error', 'Please fill required fields correctly.');
+      // this.messageService.add({ 'error', 'Validation Error','Please fill required fields correctly.'});
+      return;
+    }else{
     console.log(this.reqbody)
    const formData = new FormData();
     formData.append("image", this.file); // Attach Blob with a filename
@@ -248,6 +331,7 @@ export class AddMenuModalComponent {
 
     })
   }
+  }
   addTimeSlot() {
     console.log('Add Time Slot clicked');
     alert('Add Time Slot clicked (you can open a modal or dialog here)');
@@ -267,5 +351,32 @@ export class AddMenuModalComponent {
 
     reader.readAsDataURL(this.file); // convert image to base64 URL
   }
+}
+ formatTime(params: any) {
+    return params.value;
+  }
+
+  onCellClicked(params: any) {
+    const rowIndex = params.rowIndex;
+    const actionTarget = params.event.target as HTMLElement;
+
+    if (actionTarget.classList.contains('delete-btn')) {
+      console.log(rowIndex)
+      this.rowData.splice(rowIndex, 1);
+      // this.rowData = [...this.rowData];
+    }
+
+    // if (actionTarget.classList.contains('copy-btn')) {
+    //   const copiedRow = { ...this.rowData[rowIndex] };
+    //   this.rowData.splice(rowIndex + 1, 0, copiedRow);
+    //   this.rowData = [...this.rowData];
+    // }
+  }
+
+addNewRow() {
+  console.log(this.rowData, ' this.rowData');
+  this.isHide =true
+  this.rowData.push({ day: 'Monday', open: '09:00', close: '21:00', is24Hour: false });
+  this.rowData = [...this.rowData]; // forces change detection
 }
 }
