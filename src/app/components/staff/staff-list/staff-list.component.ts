@@ -239,7 +239,7 @@ ngOnInit(){
 
   getStaffList() {
 
-    this.apis.getApi(AppConstants.api_end_points.staff).subscribe((data: any) => {
+    this.apis.getApi(AppConstants.api_end_points.staff+"?user_id=-1").subscribe((data: any) => {
       if (data) {
 
         data.data.forEach((element: any) => {
