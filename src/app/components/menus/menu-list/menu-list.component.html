@@ -51,7 +51,7 @@
                 </div>
                 <div class="col-xxl-9 col-xl-9">
                     <div
-                        class="row row-cols-xl-9 row-cols-md-5 row-cols-sm-3 row-cols-2 g-sm-3 g-2 media-library-sec ratio_landscape">
+                        class="row row-cols-xl-4 row-cols-md-5 row-cols-sm-3 row-cols-2 g-sm-3 g-2 media-library-sec ratio_landscape">
                         <!-- <div class="setting-box"> -->
                         @for (item of dishList; track item) {
                         <div>
@@ -75,20 +75,20 @@
                                         
                                          <ul class="dropdown-menu dropdown-menu-end mb-10" [class.show]="item.active"  
                                             style="position: absolute;inset: 0px 0px auto auto; margin: 0px;transform: translate(-5px, 20px);">
-                                            <!-- <li>
+                                            <li>
                                                 <a class="dropdown-item d-flex align-items-center" (click)="openPopup()">
                                                     <i class="ri-download-2-line me-2"></i>Action</a>
-                                            </li> -->
+                                            </li>
                                             <li>
                                                 <a class="dropdown-item d-flex align-items-center"
                                                      (click)="viewDish(item,'view')">
-                                                    <i class="ri-download-2-line me-2"></i>View</a>
+                                               <i class="ri-eye-line"></i> &nbsp;  View</a>
                                             </li>
                                            
                                             <li>
                                                 <a class="dropdown-item d-flex align-items-center"
                                                      (click)="viewDish(item,'edit')">
-                                                    <i class="ri-download-2-line me-2"></i>Edit</a>
+                                                   <i class="ri-pencil-line"></i> &nbsp;Edit</a>
                                             </li>
                                             <li (click)="dishDelete(item)" class=" mb-10">
                                                 <a class="dropdown-item d-flex align-items-center">
@@ -97,8 +97,9 @@
                                         </ul>
                                     </div>
                                 </label>
-                                <h6 class="f-w-600">{{item.dish_name}}     <span style="float: inline-end;">${{item.dish_price}}</span>  </h6>
-<!-- <h6>{{item.dish_price}}</h6> -->
+                                <h6 class="f-w-600">{{item.dish_name}}       </h6>
+                                <h6><span style="float: inline-start;">${{item.dish_price}}</span></h6>
+
                             </div>
                         </div>
                         }

@@ -18,6 +18,7 @@ import Swal from "sweetalert2";
 import { Router } from "@angular/router";
 import { ApisService } from "../../../shared/services/apis.service";
 import { NgxMaskDirective, NgxMaskPipe } from "ngx-mask";
+import { ToastrService } from "ngx-toastr";
 
 @Component({
   selector: "app-add-staff",
@@ -103,12 +104,12 @@ export class AddStaffComponent {
   constructor(
     private fb: FormBuilder,
     private apis: ApisService,
-    private router: Router
+    private router: Router,private toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
     this.permissionForm = this.fb.group({
-      store: new FormControl(null),
+      store: new FormControl(null,Validators.required),
     });
     this.initForm();
     this.applyPreset("Manager");
@@ -312,10 +313,15 @@ const posGroup = this.permissionForm.get('pos') as FormGroup;
 const staffGroup = this.permissionForm.get('staff') as FormGroup;
 const websiteGroup = this.permissionForm.get('website') as FormGroup;
 const storeGroup = this.permissionForm.get('store') as FormGroup;
- if (this.staffForm.invalid) {
+ if (this.staffForm.invalid || this.permissionForm.invalid) {
+     this.toastr.error('Fill all Required Fields', 'Error');
       Object.keys(this.staffForm.controls).forEach(key => {
         this.staffForm.get(key)?.markAsTouched();
       });
+       Object.keys(this.permissionForm.controls).forEach(key => {
+        this.permissionForm.get(key)?.markAsTouched();
+      });
+     
     } else {
 
 

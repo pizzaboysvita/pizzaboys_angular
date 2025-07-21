@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { ApisService } from '../../shared/services/apis.service';
 import { AppConstants } from '../../app.constants';
 import { SessionStorageService } from '../../shared/services/session-storage.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-login',
@@ -16,7 +17,7 @@ export class LoginComponent {
 
   public loginForm: FormGroup;
 
-  constructor(public router: Router,private apis:ApisService,private sessionStorage:SessionStorageService) {
+  constructor(public router: Router,private apis:ApisService,private toastr: ToastrService,private sessionStorage:SessionStorageService) {
     const userData = localStorage.getItem('user');
     if (userData?.length != null) {
       router.navigate(['/dashboard'])
@@ -38,10 +39,12 @@ const reqboy={
     "email": this.loginForm.value.email,
     "password_hash": this.loginForm.value.password,
 }
-
-this.apis.postApi(AppConstants.api_end_points.log_api,reqboy).subscribe((data:any)=>{
+ this.apis.postApi(AppConstants.api_end_points.log_api, reqboy).subscribe({
+      next: (data: any) => {
+// this.apis.postApi(AppConstants.api_end_points.log_api,reqboy).subscribe((data:any)=>{
   console.log(data)
   if(data.code ==1){
+      this.toastr.success(data.message, 'Success');
     console.log(data.user.role_id )
     this.sessionStorage.setsessionStorage('loginDetails',JSON.stringify(data))
      this.sessionStorage.setsessionStorage('islogin',true)
@@ -56,6 +59,13 @@ this.router.navigate(["/orders/order-detail"]);
       }else{
       this.router.navigate(["/store-dashboard"]);
     }
+  }else{
+     this.toastr.error('Fill all Required Fields', 'Error');
+  }
+  },
+  error: (error) => {
+    console.log(error.error.message)
+      this.toastr.error(error.error.message, 'Error');
   }
 })
 

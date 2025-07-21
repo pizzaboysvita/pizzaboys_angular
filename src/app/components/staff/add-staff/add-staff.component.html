@@ -183,6 +183,9 @@
                                   formControlName="store" bindLabel="store_name" bindValue="store_id"
                                   placeholder="Select from the dropdown or type to search">
                                 </ng-select>
+                                @if (permissionForm.get('store')?.touched && permissionForm.get('store')?.invalid) {
+                                    <div class="text-danger">store is required.</div>
+                                    }
                               </div>
                             </div>
 
