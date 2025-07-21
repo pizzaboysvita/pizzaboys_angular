@@ -18,11 +18,17 @@
 
                   <div class="col-12">
                     <div class="input-box">
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                      <h6>Name</h6>
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Name</h6>
                         <span class="optional-tag">Required</span>
-                        </div>
+                      </div>
                       <input type="text" placeholder="Enter Name" formControlName="name">
+                      @if((menuForm.get('name')?.touched ||menuForm.get('name')?.dirty) &&
+                      menuForm.get('name')?.hasError('required')){
+                      <div class="text-danger">
+                        Name is required
+                      </div>
+                      }
                       <span class="lableSubtext">Unique menu name</span>
                     </div>
                   </div>
@@ -91,13 +97,22 @@
 
                   <div class="col-12">
                     <div class="input-box">
-                      <h6 class="font-family ">Upload Images </h6>
+                      <!-- <h6 class="font-family ">Upload Images </h6> -->
                       <!-- <span class="choose-img-box font-family" > -->
-
-                      <input autocomplete="off" id="fileInput" class="mt-1" type="file" accept="image/*"
+ <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Upload Images</h6>
+                        <span class="optional-tag">Required</span>
+                      </div>
+                      <input autocomplete="off" id="fileInput" formControlName="image" class="mt-1" type="file" accept="image/*"
                         (change)="onSelectFile($event)">
                       <!-- </span> -->
                     </div>
+                       @if((menuForm.get('image')?.touched ||menuForm.get('image')?.dirty) &&
+                      menuForm.get('image')?.hasError('required')){
+                      <div class="text-danger">
+                        Image is required
+                      </div>
+                      }
                   </div>
 
 
@@ -125,6 +140,12 @@
                         bindValue="store_id" placeholder="Select from the dropdown or type to search..."
                         formControlName="store">
                       </ng-select>
+                         @if((conditionForm.get('store')?.touched ||conditionForm.get('store')?.dirty) &&
+                      conditionForm.get('store')?.hasError('required')){
+                      <div class="text-danger">
+                        Store is required
+                      </div>
+                      }
                       <span class="lableSubtext">
                         Select which Store this menu will be available for. Leave empty for all times.
                       </span>

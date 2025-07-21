@@ -24,7 +24,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from "@angul
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 
 interface RowData {
-  email: string;
+  user_email: string;
   profiles: string;
   phone_number: number;
   fullname: string;
@@ -107,7 +107,7 @@ export class StaffListComponent {
     }
     ,
     {
-      field: 'email',
+      field: 'user_email',
       headerName: 'Email-Id',
       suppressMenu: true,
       unSortIcon: true,

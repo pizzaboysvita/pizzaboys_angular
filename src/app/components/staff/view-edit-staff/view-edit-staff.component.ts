@@ -151,12 +151,13 @@ export class ViewEditStaffComponent implements OnInit {
   getStaffDetails() {
     this.apis.getApi(`${AppConstants.api_end_points.staff}?user_id=${this.staffId}`).subscribe({
       next: (res: any) => {
-        if (res && res.length > 0) {
-          const staff = res[0];
+        if (res.code ==1) {
+          const staff = res.data[0];
+          console.log(staff)
           this.staffForm.patchValue({
             firstName: staff.first_name || "",
             lastName: staff.last_name || "",
-            email: staff.email || "",
+            email: staff.user_email || "",
             phone: staff.phone_number || "",
             address: staff.address || "",
             country: staff.country || "",
@@ -202,31 +203,6 @@ this.selectedPreset =staff.role_id
     }
   }
 
-  // applyPreset(role: any) {
-  //   this.selectedPreset = role.role_name;
-  //   for (const section of this.managementSections) {
-  //     const sectionGroup = this.getPermissionGroup(section.key);
-  //     for (const permission of section.permissions) {
-  //       sectionGroup.get(permission)?.setValue(false);
-  //     }
-  //   }
-
-  //   if (role.permissions) {
-  //     for (const key in role.permissions) {
-  //       if (role.permissions[key]) {
-  //         for (const section of this.managementSections) {
-  //           const sectionGroup = this.getPermissionGroup(section.key);
-  //           for (const permission of section.permissions) {
-  //             const snakeKey = permission.toLowerCase().replace(/[\s-_]/g, "_");
-  //             if (key === snakeKey) {
-  //               sectionGroup.get(permission)?.setValue(true);
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
     applyPreset(preset: any) {
     console.log(preset);
     this.selectedPreset = preset.role_id;
@@ -306,10 +282,10 @@ this.selectedPreset =staff.role_id
           staff: [],
         });
         break;
-      case "User":
+      case "POS":
         this.setSectionPermissions({
           restaurant: [],
-          pos: [],
+          pos: ["Orders", "Takings"],
           website: [],
           staff: [],
         });

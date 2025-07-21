@@ -19,9 +19,17 @@
 
                   <div class="col-12">
                     <div class="input-box">
-                      <h6>Name</h6>
+                   
+
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                              <h6>Name</h6>
+                            <span class="optional-tag">Required</span>
+                          </div>
                       <input type="text" placeholder="Enter Name" formControlName="name" />
                     </div>
+                    @if((menuForm.get('name')?.touched ||menuForm.get('name')?.dirty) && menuForm.get('name')?.hasError('required')){
+                      <span class="text-danger">Name is required.</span><br>
+                    }
                     <span class="lableSubtext mb-2">A unique name for your Category</span>
                   </div>
 
@@ -57,23 +65,27 @@
                    
                       </div>
                               </div>
-                      <!-- <h6>Hide Category</h6>
-                      <label class="switch">
-                        <input type="checkbox" formControlName="hide_category" />
-                        <span class="slider round"></span>
-                      </label> -->
+                      
                     </div>
                     <span class="lableSubtext">Toggling this will hide the category from your store</span>
                   </div>
                    <div class="col-12">
           <div class="input-box">
-            <h6 class="font-family">Upload Images </h6>
+            <!-- <h6 class="font-family">Upload Images </h6> -->
             <!-- <span class="choose-img-box font-family" > -->
-            
-               <input autocomplete="off" id="fileInput" type="file" accept="image/*" (change)="onSelectFile($event)"
+               <div class="d-flex align-items-center justify-content-between mb-1">
+                              <h6>Upload Images</h6>
+                            <span class="optional-tag">Required</span>
+                          </div>
+               <input autocomplete="off" formControlName="image" id="fileInput" type="file" accept="image/*" (change)="onSelectFile($event)"
         >
             <!-- </span> -->
           </div>
+          @if(menuForm.get('image')?.touched && menuForm.get('image')?.hasError('required')){
+          <div class="text-danger">
+  Image is required
+</div>
+          }
         </div>
                 </div>
               </div>
@@ -90,7 +102,7 @@
                         <div class="input-box position-relative">
                           <div class="d-flex align-items-center justify-content-between mb-2">
                             <h6>Store</h6>
-                            <span class="optional-tag">OPTIONAL</span>
+                            <span class="optional-tag">Required</span>
                           </div>
                           <ng-select
                             [items]="storeList"
@@ -101,6 +113,11 @@
                             placeholder="Select from the dropdown or type to search..."
                             formControlName="store">
                           </ng-select>
+                            @if((menuForm.get('store')?.touched ||menuForm.get('store')?.dirty) && menuForm.get('store')?.hasError('required')){
+          <div class="text-danger">
+  store is required
+</div>
+          }
                           <span class="lableSubtext mb-2">
                             Select which Store this Category will be available for. Leave empty for all times.
                           </span>
@@ -108,10 +125,15 @@
                       </div>
                         <div class="col-12 nav-pills">
                     <div class="input-box">
-                      <h6>Menu <span class="text-danger">*</span></h6>
+                      <h6>Menu Type<span class="text-danger">*</span></h6>
                       <ng-select formControlName="dish_menu_id" [items]="menuList" bindLabel="name" bindValue="dish_menu_id"
                         placeholder="Select Menu" [searchable]="true">
                       </ng-select>
+                                    @if((menuForm.get('dish_menu_id')?.touched ||menuForm.get('dish_menu_id')?.dirty) && menuForm.get('dish_menu_id')?.hasError('required')){
+          <div class="text-danger">
+  Menu Type is required
+</div>
+          }
                       <span class="lableSubtext mb-2">
                             Select which Menu Type this Category will be available for. Leave empty for all times.
                           </span>

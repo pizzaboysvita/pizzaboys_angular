@@ -155,6 +155,7 @@ isHide=false
       availability: [[]],
       posName: [''],
       surcharge: [''],
+      image:[null,Validators.required]
     });
 
     this.conditionForm = this.fb.group({
@@ -301,9 +302,12 @@ isHide=false
       "created_by": 1
     }
   }
-     if (this.menuForm.invalid) {
+     if (this.menuForm.invalid || this.conditionForm.invalid) {
       Object.keys(this.menuForm.controls).forEach(key => {
         this.menuForm.get(key)?.markAsTouched();
+      });
+        Object.keys(this.conditionForm.controls).forEach(key => {
+        this.conditionForm.get(key)?.markAsTouched();
       });
       // this.showToast('error', 'Validation Error', 'Please fill required fields correctly.');
       // this.messageService.add({ 'error', 'Validation Error','Please fill required fields correctly.'});

@@ -42,16 +42,20 @@ const reqboy={
 this.apis.postApi(AppConstants.api_end_points.log_api,reqboy).subscribe((data:any)=>{
   console.log(data)
   if(data.code ==1){
-    console.log(data.staff_id )
+    console.log(data.user.role_id )
     this.sessionStorage.setsessionStorage('loginDetails',JSON.stringify(data))
      this.sessionStorage.setsessionStorage('islogin',true)
      this.sessionStorage.setsessionStorage('Pos','false')
     // if(data.staff_id =='-1'){
       console.log("innnnnnnn")
       // this.router.navigate(["store-dashboard"]);
-      
+
+      if(data.user.role_id ==3){
+           this.sessionStorage.setsessionStorage('Pos','true')
+this.router.navigate(["/orders/order-detail"]);
+      }else{
       this.router.navigate(["/store-dashboard"]);
-    // }
+    }
   }
 })
 

@@ -229,17 +229,11 @@ export class AddStaffComponent {
         });
         break;
 
-      case "Menu Manager":
+      case "POS":
         this.setSectionPermissions({
-          restaurant: [
-            "Dashboard",
-            "Orders - Delete",
-            "Bookings",
-            "Bookings - Delete",
-          ],
-          pos: [],
-          website: [],
-          staff: [],
+         
+         pos: ["Orders", "Takings"],
+          
         });
         break;
       case "User":
@@ -311,13 +305,20 @@ export class AddStaffComponent {
   }
   onSubmit() {
     // if (isValid) {
-
+console.log(this.staffForm.value)
 // const restaurantControls = this.permissionForm.get('restaurant')['controls'];
 const restaurantGroup = this.permissionForm.get('restaurant') as FormGroup;
 const posGroup = this.permissionForm.get('pos') as FormGroup;
 const staffGroup = this.permissionForm.get('staff') as FormGroup;
 const websiteGroup = this.permissionForm.get('website') as FormGroup;
 const storeGroup = this.permissionForm.get('store') as FormGroup;
+ if (this.staffForm.invalid) {
+      Object.keys(this.staffForm.controls).forEach(key => {
+        this.staffForm.get(key)?.markAsTouched();
+      });
+    } else {
+
+
 
     const req_body: any = {
       type: "insert",
@@ -383,6 +384,7 @@ const storeGroup = this.permissionForm.get('store') as FormGroup;
           });
         }
       });
+    }
   }
   onSelectFile(event: Event): void {
     const input = event.target as HTMLInputElement;

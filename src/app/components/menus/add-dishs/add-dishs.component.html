@@ -16,7 +16,11 @@
                               <div class="row gy-3">
                            <div class="col-12">
                                   <div class="input-box">
-                                    <h6>Store Type</h6>
+                                    <!-- <h6>Store Type</h6> -->
+                                       <div class="d-flex align-items-center justify-content-between mb-2">
+                       <h6>Store Type</h6>
+                        <span class="optional-tag">Required</span>
+                      </div>
                                     <ng-select 
                                       [items]="storesList" 
                                       [searchable]="true" 
@@ -27,11 +31,21 @@
                                       formControlName="storeName"
                                        (change)="getCategories($event)">
                                     </ng-select>
+                                      @if((menuForm.get('storeName')?.touched ||menuForm.get('storeName')?.dirty) &&
+                      menuForm.get('storeName')?.hasError('required')){
+                      <div class="text-danger">
+                        Store Type is required
+                      </div>
+                      }
                                   </div>
                                 </div>
                                 <div class="col-12">
                                   <div class="input-box">
-                                    <h6>Menu Type</h6>
+                                    <!-- <h6>Menu Type</h6> -->
+                                       <div class="d-flex align-items-center justify-content-between mb-2">
+                       <h6>Menu Type</h6>
+                        <span class="optional-tag">Required</span>
+                      </div>
                                     <ng-select 
                                       [items]="menuItemsList" 
                                       [searchable]="true" 
@@ -42,12 +56,22 @@
                                       formControlName="menuType"
                                        (change)="getCategories($event)">
                                     </ng-select>
+                                          @if((menuForm.get('menuType')?.touched ||menuForm.get('menuType')?.dirty) &&
+                      menuForm.get('menuType')?.hasError('required')){
+                      <div class="text-danger">
+                        Menu Type is required
+                      </div>
+                      }
                                   </div>
                                 </div>
                           
                                 <div class="col-12">
                                   <div class="input-box">
-                                    <h6>Category Type</h6>
+                                    <!-- <h6>Category Type</h6> -->
+                                             <div class="d-flex align-items-center justify-content-between mb-2">
+                       <h6>Category Type</h6>
+                        <span class="optional-tag">Required</span>
+                      </div>
                                     <ng-select 
                                       [items]="categoryList" 
                                       [searchable]="true" 
@@ -57,6 +81,12 @@
                                       placeholder="Select from the dropdown or type to search"
                                       formControlName="categoryType">
                                     </ng-select>
+                                               @if((menuForm.get('categoryType')?.touched ||menuForm.get('categoryType')?.dirty) &&
+                      menuForm.get('categoryType')?.hasError('required')){
+                      <div class="text-danger">
+                      Category Type is required
+                      </div>
+                      }
                                   </div>
                                 </div>
                           
@@ -76,9 +106,20 @@
                           
                                 <div class="col-12">
                                   <div class="input-box">
-                                    <h6>Dish Name</h6>
+                                    <!-- <h6>Dish Name</h6> -->
+                                              <div class="d-flex align-items-center justify-content-between mb-2">
+                       <h6>Dish Name</h6>
+                        <span class="optional-tag">Required</span>
+                      </div>
+                              
                                     <input type="text" placeholder="Enter First Name" formControlName="firstName">
                                   </div>
+                                                    @if((menuForm.get('firstName')?.touched ||menuForm.get('firstName')?.dirty) &&
+                      menuForm.get('firstName')?.hasError('required')){
+                      <div class="text-danger">
+                      Dish Name is required
+                      </div>
+                      }
                                   <span class="lableSubtext">A unique name for your dish</span>
                                 </div>
                           
@@ -143,11 +184,20 @@
                                 
   <div class="col-12">
           <div class="input-box">
-            <h6 class="font-family">Upload Images </h6>
+            <!-- <h6 class="font-family">Upload Images </h6> -->
             <!-- <span class="choose-img-box font-family" > -->
-            
-               <input autocomplete="off" id="fileInput" type="file" accept="image/*" (change)="onSelectFile($event)"
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                       <h6>Upload Images</h6>
+                        <span class="optional-tag">Required</span>
+                      </div>
+               <input autocomplete="off" id="fileInput"formControlName="image" type="file" accept="image/*" (change)="onSelectFile($event)"
         >
+                            @if((menuForm.get('image')?.touched ||menuForm.get('image')?.dirty) &&
+                      menuForm.get('image')?.hasError('required')){
+                      <div class="text-danger">
+                      Image is required
+                      </div>
+                      }
             <!-- </span> -->
           </div>
         </div>

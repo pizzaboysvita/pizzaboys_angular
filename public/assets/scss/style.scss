@@ -152,3 +152,12 @@ select.form-select {
   font-size: 14px;
   outline: none;
 }
+.input-items .input-box input {
+    background-color: #fff;
+    // border: 1px solid #ddd !important;
+    outline-color: #ddd !important;
+}
+
+.mandatory{
+  color: red;
+}

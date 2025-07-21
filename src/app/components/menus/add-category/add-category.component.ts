@@ -133,6 +133,7 @@ isHide=false
     this.menuForm = this.fb.group({
       dish_menu_id: [null, Validators.required],
       name: ["", Validators.required],
+       image: [null, Validators.required],
       display_name: [""],
       description: [""],
       hide_category: [false],
@@ -154,7 +155,7 @@ isHide=false
       managed_delivery_surcharge: [""],
       dine_in_surcharge: [""],
       status: [1],
-      store:['']
+      store:['',Validators.required]
     });
     if(this.type =='View'|| this.type =='Edit'){
     this.PatchValuesForm()
@@ -221,7 +222,15 @@ isHide=false
 
   addCategory(): void {
 
-
+  if (this.menuForm.invalid) {
+      console.log('validation required fields');
+      // const controls = this.menuForm.controls;
+      // Object.keys(controls).forEach(key => {
+      //   controls[key].markAsTouched();
+      // });
+      // return
+        this.menuForm.markAllAsTouched(); 
+    } else {
   
 const reqbody={
     "type": "insert",
@@ -232,7 +241,7 @@ const reqbody={
     "hide_category":this.menuForm.value.hide_category ==true?1:0,
     "order_times": this.menuForm.value.order_times.toString(),
     "services": this.menuForm.value.services.toString(),
-    "applicable_hours": "[{\"day\":\"Tue\",\"from\":\"12:00\",\"to\":\"15:00\"}]",
+    "applicable_hours":this.rowData.length ==0?"":JSON.stringify(this.rowData),
     "mark_as_age_restricted":this.menuForm.value.mark_as_age_restricted ==true?1:0,
     "enable_pre_orders_only":this.menuForm.value.enable_pre_orders_only ==true?1:0,
     "pre_order_days_in_advance": this.menuForm.value.pre_order_days_in_advance,
@@ -272,6 +281,7 @@ console.log(reqbody)
         alert(res.message || "Failed to add category");
       }
     });
+  }
   }
      onSelectFile(event: Event): void {
   const input = event.target as HTMLInputElement;
