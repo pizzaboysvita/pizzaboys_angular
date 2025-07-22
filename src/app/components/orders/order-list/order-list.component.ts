@@ -3,6 +3,8 @@ import { RouterModule } from '@angular/router';
 import { CardComponent } from "../../../shared/components/card/card.component";
 import { TableConfig } from '../../../shared/interface/table.interface';
 import { TableComponent } from "../../widgets/table/table.component";
+import { ApisService } from '../../../shared/services/apis.service';
+import { SessionStorageService } from '../../../shared/services/session-storage.service';
 
 @Component({
   selector: 'app-order-list',
@@ -101,8 +103,11 @@ export class OrderListComponent {
     ],
     data: this.orderList,
   };
+  categoriesList: any;
+  constructor(private apiService:ApisService,  private sessionStorage: SessionStorageService){}
 
   ngOnInit() {
+ 
     const statusClassMap: Record<string, string> = {
       'Ready To Pick': 'badge rounded border border-warning text-warning px-2 py-1',
       'Out Of Delivery': 'badge rounded border border-primary text-primary px-2 py-1',
@@ -121,4 +126,5 @@ export class OrderListComponent {
     });
     this.tableConfig.data = order;
   }
+  
 }

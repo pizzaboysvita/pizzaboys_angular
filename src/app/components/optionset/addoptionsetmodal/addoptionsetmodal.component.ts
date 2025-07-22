@@ -13,6 +13,7 @@ import { forkJoin } from 'rxjs';
 interface RowData {
   name:string;
   description:string;
+  status:string;
   price:string;
   inStock:string
 }
@@ -109,6 +110,39 @@ columnDefs: ColDef<RowData>[]  =  [
     cellRenderer: (p:any) => p.value ? '✔️' : '❌',
     editable: false
   },
+   {
+  headerName: 'Status',
+  field: 'status',
+  cellRenderer: (params: any) => {
+    const select = document.createElement('select');
+    select.className = 'custom-select';
+  
+
+    const options = ['Active', 'Inactive', 'Pending'];
+    const selected = params.value || '';
+
+    options.forEach((opt) => {
+      const option = document.createElement('option');
+      option.value = opt;
+      option.text = opt;
+      if (opt === selected) {
+        option.selected = true;
+      }
+      select.appendChild(option);
+    });
+
+      const rowData = params.data;
+    // Handle the change event
+    select.addEventListener('change', (event) => {
+      const newValue = (event.target as HTMLSelectElement).value;
+      params.setValue(newValue); // Updates the grid's value
+      console.log('Dropdown changed to:', newValue);
+      console.log(rowData,'rowData')
+    });
+
+    return select;
+  }
+},
 {
       headerName: 'Actions',
       cellRenderer: (params: any) => {

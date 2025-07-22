@@ -165,7 +165,7 @@ ngOnInit(): void {
     })
   }
   menuType_cat(data:any){
-    // console.log(data,this.selectedMenuId)
+    console.log(data,'newwwwwwwwwwwwwww')
     this.selectedTabIndex=0
     this.categoryList=this.totalcategoryList.filter((cat:any) => cat.dish_menu_id == data.dish_menu_id);
     console.log(this.categoryList)

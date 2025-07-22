@@ -48,10 +48,11 @@ buildMenuTree(
   console.log(menus,categories,dishes,'dev categories')
   return menus.map(menu => {
 
-   
+     console.log(categories,'categories dev categories')
     const filteredCategories = categories.filter(c => c.dish_menu_id === menu.dish_menu_id);
 
     const categoryNodes = filteredCategories.map(category => {
+      console.log(category,'category')
       const filteredDishes = dishes.filter(d => d.dish_category_id === category.id);
       return {
         categoryId: category.id,

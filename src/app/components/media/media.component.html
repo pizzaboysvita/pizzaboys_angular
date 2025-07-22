@@ -60,34 +60,34 @@
     </div>
   }
 </div> -->
-<h5 class="mb-4 fw-bold">Most Ordered</h5>
+<!-- <h5 class="mb-4 fw-bold">Most Ordered</h5>
 <div class="row gx-2 gy-0">
   @for (item of itemsList; track item) {
     <div class="col-md-3" style="margin-top: -15px !important;">
       <div class="card flex-row align-items-center p-2 shadow-sm h-100"  style="height: 110px !important;" (click)="openIngredientsPopup(item)">
-        
+         -->
         <!-- Left Side: Image -->
-        <img [src]="item.img" alt="{{ item.name }}" 
+        <!-- <img [src]="item.img" alt="{{ item.name }}" 
              class="img-thumbnail me-3" 
              style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
-        
+         -->
         <!-- Right Side: Text and Actions -->
-        <div class="flex-grow-1">
+        <!-- <div class="flex-grow-1">
           <h6 class="mb-1">{{ item.name }}</h6>
           <div class="d-flex justify-content-between align-items-center">
-            <span class="fw-bold">${{ item.price }}</span>
+            <span class="fw-bold">${{ item.price }}</span> -->
 
             <!-- Quantity -->
-             <div class="d-flex align-items-center gap-1">
+             <!-- <div class="d-flex align-items-center gap-1"> -->
               <!-- Show only + if quantity is 0 or undefined -->
-              <button 
+              <!-- <button 
                 *ngIf="!item.quantity || item.quantity === 0" 
                 class="btn btn-sm btn-outline-secondary btn-size"
                 (click)="addItem(item)" [disabled]="item.status !== 'Available'">
                 +
-              </button>
+              </button> -->
               <!-- Show - qty + when quantity > 0 -->
-              <ng-container *ngIf="item.quantity > 0">
+              <!-- <ng-container *ngIf="item.quantity > 0">
                 <button class="btn btn-sm btn-outline-secondary btn-size" (click)="decreaseItem(item)">-</button>
                 <span>{{ item.quantity }}</span>
                 <button class="btn btn-sm btn-outline-secondary btn-size" (click)="increaseItem(item)">+</button>
@@ -100,25 +100,25 @@
       </div>
     </div>
   }
-</div>
+</div> -->
 
 <!-- Popular Dishes -->
-<h5 class="mb-4 fw-bold">Popular Dishes</h5>
+<!-- <h5 class="mb-4 fw-bold">Popular Dishes</h5> -->
 <div class="row gx-2 gy-0">
-  @for (item of itemsList; track item) {
+  @for (item of dishList; track item) {
     <div class="col-md-3" style="margin-top: -15px !important;">
       <div class="card flex-row align-items-center p-2 shadow-sm h-100"  style="height: 110px !important;">
         
         <!-- Left Side: Image -->
-        <img [src]="item.img" alt="{{ item.name }}" 
+        <img [src]="item.dish_image" alt="{{ item.dish_name }}" 
              class="img-thumbnail me-3" 
              style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
         
         <!-- Right Side: Text and Actions -->
         <div class="flex-grow-1">
-          <h6 class="mb-1">{{ item.name }}</h6>
+          <h6 class="mb-1">{{ item.dish_name }}</h6>
           <div class="d-flex justify-content-between align-items-center mb-1">
-            <span class="fw-bold">${{ item.price }}</span>
+            <span class="fw-bold">${{ item.dish_price }}</span>
 
             <!-- Quantity -->
              <!-- <div class="d-flex align-items-center gap-1 maerail-btn-icons">

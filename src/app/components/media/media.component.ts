@@ -11,6 +11,8 @@ import { FeatherIconsComponent } from "../../shared/components/feather-icons/fea
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DishSelectorComponent } from './dish-selector/dish-selector.component';
+import { ApisService } from '../../shared/services/apis.service';
+import { AppConstants } from '../../app.constants';
 
 @Component({
     selector: 'app-media',
@@ -37,6 +39,8 @@ export class MediaComponent{
   itemsList:CartItem[] = [];
   @ViewChild('scrollContainer', { static: false }) scrollContainer!: ElementRef;
   selectedCategory: any;
+  categoriesList: any;
+  dishList: any;
 
 scrollLeft() {
   this.scrollContainer.nativeElement.scrollBy({ left: -150, behavior: 'smooth' });
@@ -85,15 +89,55 @@ scrollRight() {
   selectedDishes: string[] = [];
 
   
-  constructor(public modal: NgbModal,private commonService:SessionStorageService,private cdr: ChangeDetectorRef) { 
+  constructor(public modal: NgbModal,private apiService:ApisService ,private commonService:SessionStorageService,private cdr: ChangeDetectorRef) { 
  
   }
 
   ngOnInit() {
   //  this.loadItemsBySelectedTitle();
+  this.fetchCategories()
+  this.getdishlist()
   this.selectCategory(this.categories[0])
   }
+  fetchCategories(): void {
+    const loginRaw = this.commonService.getsessionStorage("loginDetails");
+    const loginData = loginRaw ? JSON.parse(loginRaw) : null;
+    const userId = loginData?.user?.user_id;
+    console.log(userId, 'user id');
+    
 
+    if (!userId) {
+      console.error("No user ID found in session");
+      return;
+    }
+
+    this.apiService
+      .getApi(`/api/category?user_id=1`)
+      .subscribe((res: any) => {
+
+        console.log(res, 'categories response');
+        
+        if (res.code === "1") {
+           
+          this.categoriesList = res.categories
+
+          
+        } else {
+          console.error("Failed to load categories:", res.message);
+        }
+      });
+  }
+  getdishlist(){
+      const loginRaw = this.commonService.getsessionStorage("loginDetails");
+    const loginData = loginRaw ? JSON.parse(loginRaw) : null;
+    const userId = loginData?.user?.user_id;
+    this.apiService.getApi(AppConstants.api_end_points.dish + '?user_id=1' ).subscribe((dish:any)=>{
+      console.log(dish)
+      if(dish.code ==1){
+        this.dishList =dish.data
+      }
+    })
+  }
 
 
 
