@@ -59,19 +59,18 @@ export class AddRestaurantsComponent {
       postalCode: [''],
       country: [''],
       status: ['1', Validators.required],
+      image:[null,Validators.required]
     });
   }
 addStore() {
   console.log(this.storeForm.value.status )
   console.log(this.workinghours)
-    // if (!this.storeForm.invalid) {
-    //   console.log(this.storeForm.value);
-    //     Object.keys(this.storeForm.controls).forEach(key => {
-    //     this.storeForm.get(key)?.markAsTouched();
-    //   });
-    // } else {
     
-
+ if (this.storeForm.invalid) {
+      Object.keys(this.storeForm.controls).forEach(key => {
+        this.storeForm.get(key)?.markAsTouched();
+      });
+    } else {
 const req_body={
   "type": "insert",
 "store_name": this.storeForm.value.storeName,
@@ -87,7 +86,7 @@ const req_body={
   "country":this.storeForm.value.country,
   "zip_code":  this.storeForm.value.postalCode,
   updated_by:1,
-  "working_hours": this.workinghours
+  "working_hours":  this.workinghours
 }
 
 console.log(req_body)
@@ -108,7 +107,7 @@ this.apis.postApi(AppConstants.api_end_points.store_list,formData).subscribe((da
   }
 })
 
-    // }
+    }
   }
 capitalizeWords_firstName(event: any) {
   const input = event.target as HTMLInputElement;

@@ -15,20 +15,21 @@
             <ng-template ngbNavContent>
               <div class="input-items">
                 <div class="row">
-                
+
 
                   <div class="col-12">
                     <div class="input-box">
-                   
 
-                        <div class="d-flex align-items-center justify-content-between mb-1">
-                              <h6>Name</h6>
-                            <span class="optional-tag">Required</span>
-                          </div>
+
+                      <div class="d-flex align-items-center justify-content-between mb-1">
+                        <h6>Name</h6>
+                        <span class="optional-tag">Required</span>
+                      </div>
                       <input type="text" placeholder="Enter Name" formControlName="name" />
                     </div>
-                    @if((menuForm.get('name')?.touched ||menuForm.get('name')?.dirty) && menuForm.get('name')?.hasError('required')){
-                      <span class="text-danger">Name is required.</span><br>
+                    @if((menuForm.get('name')?.touched ||menuForm.get('name')?.dirty) &&
+                    menuForm.get('name')?.hasError('required')){
+                    <span class="text-danger">Name is required.</span><br>
                     }
                     <span class="lableSubtext mb-2">A unique name for your Category</span>
                   </div>
@@ -51,42 +52,39 @@
 
                   <div class="col-12">
                     <div class="input-box">
-                          <div class="row">
-                          <div class="col-6 ">
-                  <h6>Hide Category</h6>
+                      <div class="row">
+                        <div class="col-6 ">
+                          <h6>Hide Category</h6>
+                        </div>
+                        <div class="col-6 text-end">
+                          <div class="form-switch d-inline-block">
+                            <input type="checkbox" class="form-check-input" formControlName="hide_category">
                           </div>
-                          <div class="col-6 text-end">
-                            <div class="form-switch d-inline-block">
-                              <input 
-                                type="checkbox" 
-                                class="form-check-input" 
-                                formControlName="hide_category">
-                            </div>
-                   
+
+                        </div>
                       </div>
-                              </div>
-                      
+
                     </div>
                     <span class="lableSubtext">Toggling this will hide the category from your store</span>
                   </div>
-                   <div class="col-12">
-          <div class="input-box">
-            <!-- <h6 class="font-family">Upload Images </h6> -->
-            <!-- <span class="choose-img-box font-family" > -->
-               <div class="d-flex align-items-center justify-content-between mb-1">
-                              <h6>Upload Images</h6>
-                            <span class="optional-tag">Required</span>
-                          </div>
-               <input autocomplete="off" formControlName="image" id="fileInput" type="file" accept="image/*" (change)="onSelectFile($event)"
-        >
-            <!-- </span> -->
-          </div>
-          @if(menuForm.get('image')?.touched && menuForm.get('image')?.hasError('required')){
-          <div class="text-danger">
-  Image is required
-</div>
-          }
-        </div>
+                  <div class="col-12">
+                    <div class="input-box">
+                      <!-- <h6 class="font-family">Upload Images </h6> -->
+                      <!-- <span class="choose-img-box font-family" > -->
+                      <div class="d-flex align-items-center justify-content-between mb-1">
+                        <h6>Upload Images</h6>
+                        <span class="optional-tag">Required</span>
+                      </div>
+                      <input autocomplete="off" formControlName="image" id="fileInput" type="file" accept="image/*"
+                        (change)="onSelectFile($event)">
+                      <!-- </span> -->
+                    </div>
+                    @if(menuForm.get('image')?.touched && menuForm.get('image')?.hasError('required')){
+                    <div class="text-danger">
+                      Image is required
+                    </div>
+                    }
+                  </div>
                 </div>
               </div>
             </ng-template>
@@ -97,46 +95,43 @@
             <ng-template ngbNavContent>
               <div class="input-items">
                 <div class="row">
-                  
-                    <div class="col-12">
-                        <div class="input-box position-relative">
-                          <div class="d-flex align-items-center justify-content-between mb-2">
-                            <h6>Store</h6>
-                            <span class="optional-tag">Required</span>
-                          </div>
-                          <ng-select
-                            [items]="storeList"
-                            [searchable]="true"
-                            [multiple]="true"
-                            bindLabel="store_name"
-                            bindValue="store_id"
-                            placeholder="Select from the dropdown or type to search..."
-                            formControlName="store">
-                          </ng-select>
-                            @if((menuForm.get('store')?.touched ||menuForm.get('store')?.dirty) && menuForm.get('store')?.hasError('required')){
-          <div class="text-danger">
-  store is required
-</div>
-          }
-                          <span class="lableSubtext mb-2">
-                            Select which Store this Category will be available for. Leave empty for all times.
-                          </span>
-                        </div>
+
+                  <div class="col-12">
+                    <div class="input-box position-relative">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Store</h6>
+                        <span class="optional-tag">Required</span>
                       </div>
-                        <div class="col-12 nav-pills">
+                      <ng-select [items]="storeList" [searchable]="true" [multiple]="true" bindLabel="store_name"
+                        bindValue="store_id" placeholder="Select from the dropdown or type to search..."
+                        formControlName="store">
+                      </ng-select>
+                      @if((menuForm.get('store')?.touched ||menuForm.get('store')?.dirty) &&
+                      menuForm.get('store')?.hasError('required')){
+                      <div class="text-danger">
+                        store is required
+                      </div>
+                      }
+                      <span class="lableSubtext mb-2">
+                        Select which Store this Category will be available for. Leave empty for all times.
+                      </span>
+                    </div>
+                  </div>
+                  <div class="col-12 nav-pills">
                     <div class="input-box">
                       <h6>Menu Type<span class="text-danger">*</span></h6>
-                      <ng-select formControlName="dish_menu_id" [items]="menuList" bindLabel="name" bindValue="dish_menu_id"
-                        placeholder="Select Menu" [searchable]="true">
+                      <ng-select formControlName="dish_menu_id" [items]="menuList" bindLabel="name"
+                        bindValue="dish_menu_id" placeholder="Select Menu" [searchable]="true">
                       </ng-select>
-                                    @if((menuForm.get('dish_menu_id')?.touched ||menuForm.get('dish_menu_id')?.dirty) && menuForm.get('dish_menu_id')?.hasError('required')){
-          <div class="text-danger">
-  Menu Type is required
-</div>
-          }
+                      @if((menuForm.get('dish_menu_id')?.touched ||menuForm.get('dish_menu_id')?.dirty) &&
+                      menuForm.get('dish_menu_id')?.hasError('required')){
+                      <div class="text-danger">
+                        Menu Type is required
+                      </div>
+                      }
                       <span class="lableSubtext mb-2">
-                            Select which Menu Type this Category will be available for. Leave empty for all times.
-                          </span>
+                        Select which Menu Type this Category will be available for. Leave empty for all times.
+                      </span>
                     </div>
                   </div>
                   <div class="col-12">
@@ -145,9 +140,10 @@
                       <ng-select formControlName="order_times" [items]="orderTimesOptions" [searchable]="true"
                         [multiple]="true" bindLabel="name" bindValue="id"
                         placeholder="Select or type to search"></ng-select>
-                        <span class="lableSubtext mb-2">
-                           Select which order times this menu will be available for. Leave empty for this menu to apply at all times
-                          </span>
+                      <span class="lableSubtext mb-2">
+                        Select which order times this menu will be available for. Leave empty for this menu to apply at
+                        all times
+                      </span>
                     </div>
                   </div>
 
@@ -157,9 +153,10 @@
                       <ng-select formControlName="services" [items]="servicesOptions" [searchable]="true"
                         [multiple]="true" bindLabel="name" bindValue="id"
                         placeholder="Select or type to search"></ng-select>
-                        <span class="lableSubtext mb-2">
-                          Select which services this menu will be available for. Leave empty for this menu to apply for services
-                          </span>
+                      <span class="lableSubtext mb-2">
+                        Select which services this menu will be available for. Leave empty for this menu to apply for
+                        services
+                      </span>
                     </div>
                   </div>
 
@@ -169,7 +166,7 @@
                       <!-- <ng-select formControlName="applicable_hours" [items]="PlaceholderSubcategory" [searchable]="true"
                         [multiple]="true" bindLabel="name" bindValue="id"
                         placeholder="Select or type to search"></ng-select> -->
-                            <div class="d-flex align-items-center justify-content-between mb-2">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
                         <h6>Applicable Hours</h6>
                         <span class="optional-tag">OPTIONAL</span>
                       </div>
@@ -177,7 +174,7 @@
                       <button type="button" class="add-time-slot-btn" (click)="addNewRow()">
                         Add Time Slot
                       </button>
-                         @if(isHide){
+                      @if(isHide){
                       <ag-grid-angular class="ag-theme-alpine" style="width: 100%; height: 300px" [rowData]="rowData"
                         [columnDefs]="columnDefs" rowSelection="single" [stopEditingWhenCellsLoseFocus]="true"
                         (cellClicked)="onCellClicked($event)" [domLayout]="'autoHeight'">
@@ -188,55 +185,52 @@
 
                   <div class="col-12">
                     <div class="input-box">
-                              <div class="row">
-                          <div class="col-6 ">
-                  <h6>Mark As Age Restricted</h6>
+                      <div class="row">
+                        <div class="col-6 ">
+                          <h6>Mark As Age Restricted</h6>
+                        </div>
+                        <div class="col-6 text-end">
+                          <div class="form-switch d-inline-block">
+                            <input type="checkbox" class="form-check-input" formControlName="mark_as_age_restricted">
                           </div>
-                          <div class="col-6 text-end">
-                            <div class="form-switch d-inline-block">
-                              <input 
-                                type="checkbox" 
-                                class="form-check-input" 
-                                formControlName="mark_as_age_restricted">
-                            </div>
-                   
+
+                        </div>
                       </div>
-                              </div>
                       <!-- <h6>Mark As Age Restricted</h6>
                       <label class="switch">
                         <input type="checkbox" formControlName="mark_as_age_restricted" />
                         <span class="slider round"></span>
                       </label> -->
-                        <span class="lableSubtext mb-2">
-                         This will require customers to confirm that they are over 18 before ordering from this menu or category and before they place an order. If ID verification is enabled, a customer will need to be logged in and verify their identity </span>
+                      <span class="lableSubtext mb-2">
+                        This will require customers to confirm that they are over 18 before ordering from this menu or
+                        category and before they place an order. If ID verification is enabled, a customer will need to
+                        be logged in and verify their identity </span>
                     </div>
                   </div>
 
                   <div class="col-12">
                     <div class="input-box">
-                          <div class="row">
-                          <div class="col-6 ">
-                   <h6>Enable Pre-orders Only</h6>
+                      <div class="row">
+                        <div class="col-6 ">
+                          <h6>Enable Pre-orders Only</h6>
+                        </div>
+                        <div class="col-6 text-end">
+                          <div class="form-switch d-inline-block">
+                            <input type="checkbox" class="form-check-input" formControlName="enable_pre_orders_only">
                           </div>
-                          <div class="col-6 text-end">
-                            <div class="form-switch d-inline-block">
-                              <input 
-                                type="checkbox" 
-                                class="form-check-input" 
-                                formControlName="enable_pre_orders_only">
-                            </div>
-                   
+
+                        </div>
                       </div>
-                          </div>
-                         
+
                       <!-- <h6>Enable Pre-orders Only</h6>
                       <label class="switch">
                         <input type="checkbox" formControlName="enable_pre_orders_only" />
                         <span class="slider round"></span>
                         
                       </label> -->
-                       <span class="lableSubtext mb-2">
-                        Enabling this will disable immediate orders for this menu and require that people pre-order according to the conditions below</span>
+                      <span class="lableSubtext mb-2">
+                        Enabling this will disable immediate orders for this menu and require that people pre-order
+                        according to the conditions below</span>
                     </div>
                   </div>
 
@@ -244,8 +238,9 @@
                     <div class="input-box">
                       <h6>Pre-order Days In Advance</h6>
                       <input type="text" formControlName="pre_order_days_in_advance" />
-                       <span class="lableSubtext mb-2">
-                        Ensures customers must pre-order items from this menu a certain amount of days in advance  </span>
+                      <span class="lableSubtext mb-2">
+                        Ensures customers must pre-order items from this menu a certain amount of days in advance
+                      </span>
                     </div>
                   </div>
 
@@ -253,9 +248,12 @@
                     <div class="input-box">
                       <h6>Pre-order Cutoff Time</h6>
                       <input type="time" formControlName="pre_order_cutoff_time" />
-                       <span class="lableSubtext mb-2">
-                        Use in conjunction with the above option to ensure customers must place orders before a certain time on the last pre-order day. For example, if you set the cut off to 8:00pm and you require orders 2 day's in advance. For a customer to order for Friday, the latest they can put in their order is at 8:00pm on Wednesday
-                         </span>
+                      <span class="lableSubtext mb-2">
+                        Use in conjunction with the above option to ensure customers must place orders before a certain
+                        time on the last pre-order day. For example, if you set the cut off to 8:00pm and you require
+                        orders 2 day's in advance. For a customer to order for Friday, the latest they can put in their
+                        order is at 8:00pm on Wednesday
+                      </span>
                     </div>
                   </div>
 
@@ -265,57 +263,52 @@
                       <ng-select formControlName="pre_order_applicable_service" [items]="servicesOptions"
                         [searchable]="true" [multiple]="true" bindLabel="name" bindValue="id"
                         placeholder="Select or type to search"></ng-select>
-                         <span class="lableSubtext mb-5">
-                        Select services which pre-order restrictions will be applied to. If no services selected, pre-order settings are applicable for all services</span>
+                      <span class="lableSubtext mb-5">
+                        Select services which pre-order restrictions will be applied to. If no services selected,
+                        pre-order settings are applicable for all services</span>
                     </div>
                   </div>
 
                   <div class="col-12">
                     <div class="input-box">
-                         <div class="row">
-                          <div class="col-6 ">
-                      <h6>Hide Restriction Warning</h6>
+                      <div class="row">
+                        <div class="col-6 ">
+                          <h6>Hide Restriction Warning</h6>
+                        </div>
+                        <div class="col-6 text-end">
+                          <div class="form-switch d-inline-block">
+                            <input type="checkbox" class="form-check-input" formControlName="hide_restriction_warning">
                           </div>
-                          <div class="col-6 text-end">
-                            <div class="form-switch d-inline-block">
-                              <input 
-                                type="checkbox" 
-                                class="form-check-input" 
-                                formControlName="hide_restriction_warning">
-                            </div>
-                   
+
+                        </div>
+
+                        <span class="lableSubtext mb-5">
+                          Toggling will hide the description of the restrictions in the online store</span>
                       </div>
-                         
-                       <span class="lableSubtext mb-5">
-                    Toggling will hide the description of the restrictions in the online store</span>
-                    </div>
                     </div>
                   </div>
 
                   <div class="col-12">
                     <div class="input-box">
-                
-                        <div class="row">
-                          <div class="col-6 ">
-                           <h6>Hide If Unavailable</h6>
+
+                      <div class="row">
+                        <div class="col-6 ">
+                          <h6>Hide If Unavailable</h6>
+                        </div>
+                        <div class="col-6 text-end">
+                          <div class="form-switch d-inline-block">
+                            <input type="checkbox" class="form-check-input" formControlName="hide_if_unavailable">
                           </div>
-                          <div class="col-6 text-end">
-                            <div class="form-switch d-inline-block">
-                              <input 
-                                type="checkbox" 
-                                class="form-check-input" 
-                                formControlName="hide_if_unavailable">
-                            </div>
-                          </div>
-                             
-                          </div>
-                       <span class="lableSubtext mb-2">
-                         Toggling on will hide this if it is not available for ordering </span>
+                        </div>
+
+                      </div>
+                      <span class="lableSubtext mb-2">
+                        Toggling on will hide this if it is not available for ordering </span>
                     </div>
                   </div>
 
 
-                     
+
                 </div>
               </div>
             </ng-template>
@@ -324,45 +317,42 @@
           <li [ngbNavItem]="3" class="nav-item m-0">
             <button ngbNavLink class="nav-link" type="button">POS</button>
             <ng-template ngbNavContent>
-                <div class="input-items">
-              <div class="row">
-                <div class="col-12">
-                  <div class="input-box">
-                    <h6>POS Display Name</h6>
-                    <input type="text" formControlName="POS_display_name" />
-                    <span class="lableSubtext mb-2">
-                     Will override the unique name in your POS
-  </span>
+              <div class="input-items">
+                <div class="row">
+                  <div class="col-12">
+                    <div class="input-box">
+                      <h6>POS Display Name</h6>
+                      <input type="text" formControlName="POS_display_name" />
+                      <span class="lableSubtext mb-2">
+                        Will override the unique name in your POS
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <div class="col-12">
-                  <div class="input-box">
-                    <h6>POS Color Code</h6>
-                    <input type="text" formControlName="pos_color_code" />
-                    <span class="lableSubtext mb-2">
-                       Easily identify this category in your POS</span>
+                  <div class="col-12">
+                    <div class="input-box">
+                      <h6>POS Color Code</h6>
+                      <input type="text" formControlName="pos_color_code" />
+                      <span class="lableSubtext mb-2">
+                        Easily identify this category in your POS</span>
+                    </div>
                   </div>
-                </div>
-                 <div class="col-12">
-                   <div class="input-items">
-                        <div class="row">
-                          <div class="col-6 ">
-                            <h6 style="font-weight: 700;">Hide Category In POS</h6>
-                          </div>
-                          <div class="col-6 text-end">
-                            <div class="form-switch d-inline-block">
-                              <input 
-                                type="checkbox" 
-                                class="form-check-input" 
-                                formControlName="hide_category_in_POS">
-                            </div>
-                          </div>
-                                <span class="lableSubtext mb-2">
-                       Toggling this will hide the category in your POS</span>
+                  <div class="col-12">
+                    <div class="input-items">
+                      <div class="row">
+                        <div class="col-6 ">
+                          <h6 style="font-weight: 700;">Hide Category In POS</h6>
+                        </div>
+                        <div class="col-6 text-end">
+                          <div class="form-switch d-inline-block">
+                            <input type="checkbox" class="form-check-input" formControlName="hide_category_in_POS">
                           </div>
                         </div>
+                        <span class="lableSubtext mb-2">
+                          Toggling this will hide the category in your POS</span>
                       </div>
-                <!-- <div class="col-12">
+                    </div>
+                  </div>
+                  <!-- <div class="col-12">
                        <div class="col-6">
                   <div class="input-box">
                     <h6>Hide Category In POS</h6>
@@ -380,7 +370,7 @@
                     <span class="lableSubtext mb-2">
                       Toggling this will hide the category in your POS </span>
                 </div> -->
-              </div>
+                </div>
               </div>
             </ng-template>
           </li>
@@ -388,43 +378,44 @@
           <li [ngbNavItem]="4" class="nav-item m-0">
             <button ngbNavLink class="nav-link" type="button">Surcharge</button>
             <ng-template ngbNavContent>
-                   <div class="input-items">
-              <div class="row">
-                <div class="col-12">
-                  <div class="input-box">
-                    <h6>Pickup Surcharge</h6>
-                    <input type="text" formControlName="pickup_surcharge" />
-                    <span class="lableSubtext mb-2">
-                       Additional % to apply to item prices for pickup sales </span>
+              <div class="input-items">
+                <div class="row">
+                  <div class="col-12">
+                    <div class="input-box">
+                      <h6>Pickup Surcharge</h6>
+                      <input type="text" formControlName="pickup_surcharge" />
+                      <span class="lableSubtext mb-2">
+                        Additional % to apply to item prices for pickup sales </span>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="input-box">
+                      <h6>Delivery Surcharge</h6>
+                      <input type="text" formControlName="delivery_surcharge" />
+                      <span class="lableSubtext mb-2">
+                        Additional % to apply to item prices for delivery sales
+                      </span>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="input-box">
+                      <h6>Managed Delivery Surcharge</h6>
+                      <input type="text" formControlName="managed_delivery_surcharge" />
+                      <span class="lableSubtext mb-2">
+                        Additional % to apply to item prices for managed delivery sales where we supply drivers
+                      </span>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="input-box">
+                      <h6>Dine-In Surcharge</h6>
+                      <input type="text" formControlName="dine_in_surcharge" />
+                      <span class="lableSubtext mb-2">
+                        Additional % to apply to item prices for dine-in sales </span>
+                    </div>
                   </div>
                 </div>
-                <div class="col-12">
-                  <div class="input-box">
-                    <h6>Delivery Surcharge</h6>
-                    <input type="text" formControlName="delivery_surcharge" />
-                    <span class="lableSubtext mb-2">
-                       Additional % to apply to item prices for delivery sales
-                         </span>
-                  </div>
-                </div>
-                <div class="col-12">
-                  <div class="input-box">
-                    <h6>Managed Delivery Surcharge</h6>
-                    <input type="text" formControlName="managed_delivery_surcharge" />
-                    <span class="lableSubtext mb-2">
-                      Additional % to apply to item prices for managed delivery sales where we supply drivers
-                         </span>
-                  </div>
-                </div>
-                <div class="col-12">
-                  <div class="input-box">
-                    <h6>Dine-In Surcharge</h6>
-                    <input type="text" formControlName="dine_in_surcharge" />
-                    <span class="lableSubtext mb-2">
-                       Additional % to apply to item prices for dine-in sales  </span>
-                  </div>
-                </div>
-              </div></div>
+              </div>
             </ng-template>
           </li>
         </ul>
@@ -432,11 +423,11 @@
         <div [ngbNavOutlet]="nav"></div>
       </div>
     </div>
-@if(type !='View'){
+    @if(type !='View'){
     <div class="modal-footer">
       <button class="btn btn-cancel" type="button" (click)="modal.dismissAll()">Cancel</button>
       <button class="btn btn-submit" (click)="addCategory()">Save</button>
     </div>
-  }
+    }
   </div>
 </form>

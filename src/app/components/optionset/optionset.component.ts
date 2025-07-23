@@ -77,39 +77,41 @@ export class OptionsetComponent implements OnInit {
         return `${day} ${month} ${year} ${hours}:${minutes}${ampm}`;
       }
     }
-    , {
-      headerName: "Status",
-      field: "status",
-      cellRenderer: (params: any) => {
-        let statusClass = "";
-        if (params.value === "Active") {
-          statusClass = "status-active";
-        } else if (params.value === "No Stock") {
-          statusClass = "status-no-stock";
-        } else if (params.value === "Hide") {
-          statusClass = "status-hide";
-        }
-        if (params.value === "") {
-          return `
-             <select class="status-dropdown" onchange="updateStatus(event, ${params.rowIndex})">
-                 <option value="">Select Status</option>
-               <option value="Active">Active</option>
-               <option value="No Stock">No Stock</option>
-               <option value="Hide">Hide</option>
-             </select>
-           `;
-        }
-        return `<div class="status-badge ${statusClass}">${params.value}</div>`;
-      },
-      editable: true,
-      cellEditor: "agSelectCellEditor",
-      cellEditorParams: {
-        values: ["Active", "No Stock", "Hide"],
-      },
-      suppressMenu: true,
-      unSortIcon: true,
-    },
+    , 
+    
+    {
+  headerName: 'Status',
+  field: 'status',
+  cellRenderer: (params: any) => {
+    const select = document.createElement('select');
+    select.className = 'custom-select';
+  
 
+    const options = ['Active','Hide', 'Hide Online', 'Hide POS'];
+    const selected = params.value || '';
+
+    options.forEach((opt) => {
+      const option = document.createElement('option');
+      option.value = opt;
+      option.text = opt;
+      if (opt === selected) {
+        option.selected = true;
+      }
+      select.appendChild(option);
+    });
+
+      const rowData = params.data;
+    // Handle the change event
+    select.addEventListener('change', (event) => {
+      const newValue = (event.target as HTMLSelectElement).value;
+      params.setValue(newValue); // Updates the grid's value
+      console.log('Dropdown changed to:', newValue);
+      console.log(rowData,'rowData')
+    });
+
+    return select;
+  }
+},
 
     {
       headerName: "Actions",
@@ -140,12 +142,13 @@ export class OptionsetComponent implements OnInit {
   ];
   optSetDetails: RowData[] =[];
   optSetRowData: any;
+  optSetDetailsLeng: any =0;
 
   constructor(private fb: FormBuilder, private modal: NgbModal, private apis: ApisService, private sessionStorage: SessionStorageService) {
     this.searchForm = this.fb.group({
       name: [''],
       displayName: [''],
-      status: ['']
+      status: [null]
     });
   }
 
@@ -162,6 +165,7 @@ export class OptionsetComponent implements OnInit {
           item.status=item.status ==1?'Active':item.status ==0?'Inactive':'--'
          })
         this.optSetDetails = data.data
+         this.optSetDetailsLeng = data.data.length
       }
     })
   }
@@ -210,6 +214,7 @@ this.optSetRowData=event.data
   },
   (reason) => {
     console.log("Modal dismissed", reason);
+     this.getOptionSets();
   }
 );
 

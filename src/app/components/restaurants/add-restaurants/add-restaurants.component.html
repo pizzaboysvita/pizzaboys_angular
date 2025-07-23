@@ -132,8 +132,12 @@
             <h6 class="font-family">Upload Images </h6>
             <!-- <span class="choose-img-box font-family" > -->
             
-               <input autocomplete="off" id="fileInput" type="file" accept="image/*" (change)="onSelectFile($event)"
-        >
+               <input autocomplete="off" formControlName="image" id="fileInput" type="file" accept="image/*" (change)="onSelectFile($event)"
+        >    @if(storeForm.get('image')?.touched && storeForm.get('image')?.hasError('required')){
+                    <div class="text-danger">
+                      Image is required
+                    </div>
+                    }
             <!-- </span> -->
           </div>
         </div>

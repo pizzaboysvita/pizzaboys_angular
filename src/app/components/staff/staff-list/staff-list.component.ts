@@ -29,7 +29,8 @@ interface RowData {
   phone_number: number;
   fullname: string;
   status: string
-  address: string
+  address: string;
+  store_name:string
 }
 
 @Component({
@@ -106,6 +107,13 @@ export class StaffListComponent {
       }
     }
     ,
+ {
+      field: 'store_name',
+      headerName: 'Store Name',
+      suppressMenu: true,
+      unSortIcon: true,
+         tooltipValueGetter: (p: ITooltipParams) =>p.value,
+    },
     {
       field: 'user_email',
       headerName: 'Email-Id',

@@ -31,7 +31,7 @@ interface RowData {
 
 @Component({
   selector: "app-add-menus",
-  imports: [CardComponent, AgGridAngular, NgSelectModule,FormsModule,ReactiveFormsModule],
+  imports: [CardComponent, AgGridAngular, NgSelectModule, FormsModule, ReactiveFormsModule],
   templateUrl: "./add-menus.component.html",
   styleUrl: "./add-menus.component.scss",
   providers: [DatePipe]
@@ -42,7 +42,7 @@ export class AddMenusComponent {
   public products = ProductsList;
   stausList = ["Active", "In-Active", "Pending"];
 
-    menuSearchForm: FormGroup;
+  menuSearchForm: FormGroup;
   columnDefs: ColDef<RowData>[] = [
     // <-- Important to give <RowData> here!
     {
@@ -93,38 +93,38 @@ export class AddMenusComponent {
       }
     },
     {
-  headerName: 'Status',
-  field: 'status',
-  cellRenderer: (params: any) => {
-    const select = document.createElement('select');
-    select.className = 'custom-select';
-  
+      headerName: 'Status',
+      field: 'status',
+      cellRenderer: (params: any) => {
+        const select = document.createElement('select');
+        select.className = 'custom-select';
 
-    const options = ['Active', 'Inactive', 'Pending'];
-    const selected = params.value || '';
 
-    options.forEach((opt) => {
-      const option = document.createElement('option');
-      option.value = opt;
-      option.text = opt;
-      if (opt === selected) {
-        option.selected = true;
+        const options = ['Active', 'Inactive', 'Pending'];
+        const selected = params.value || '';
+
+        options.forEach((opt) => {
+          const option = document.createElement('option');
+          option.value = opt;
+          option.text = opt;
+          if (opt === selected) {
+            option.selected = true;
+          }
+          select.appendChild(option);
+        });
+
+        const rowData = params.data;
+        // Handle the change event
+        select.addEventListener('change', (event) => {
+          const newValue = (event.target as HTMLSelectElement).value;
+          params.setValue(newValue); // Updates the grid's value
+          console.log('Dropdown changed to:', newValue);
+          console.log(rowData, 'rowData')
+        });
+
+        return select;
       }
-      select.appendChild(option);
-    });
-
-      const rowData = params.data;
-    // Handle the change event
-    select.addEventListener('change', (event) => {
-      const newValue = (event.target as HTMLSelectElement).value;
-      params.setValue(newValue); // Updates the grid's value
-      console.log('Dropdown changed to:', newValue);
-      console.log(rowData,'rowData')
-    });
-
-    return select;
-  }
-},
+    },
 
     {
       headerName: "Actions",
@@ -172,16 +172,16 @@ delete
   menuItemsSortingList: any;
   constructor(public modal: NgbModal, private datePipe: DatePipe, private fb: FormBuilder, private apis: ApisService, private session: SessionStorageService, private modalService: NgbModal) { }
 
-getFrom(){
-   this.menuSearchForm = this.fb.group({
+  getFrom() {
+    this.menuSearchForm = this.fb.group({
       store: [null],
       menuName: [''],
-status: ['']
+      status: ['']
     })
-}
+  }
 
   ngOnInit() {
-   this.getFrom()
+    this.getFrom()
     this.getStoreList()
   }
   getStoreList() {
@@ -349,22 +349,22 @@ status: ['']
 
   }
   search() {
-console.log(this.menuItemsSortingList,this.menuSearchForm.value,this.menuSearchForm.value.store)
+    console.log(this.menuItemsSortingList, this.menuSearchForm.value, this.menuSearchForm.value.store)
     this.menuItemsList = this.menuItemsSortingList.filter((store: any) => {
       return (
         (
-  (!this.menuSearchForm.value.store || store.store_id.toString().includes(this.menuSearchForm.value.store.toString()))
-  && (!this.menuSearchForm.value.menuName || store.name.toLowerCase().includes(this.menuSearchForm.value.menuName.toLowerCase()))
-  && (!this.menuSearchForm.value.status || store.status.toLowerCase().includes(this.menuSearchForm.value.status.toLowerCase()))
-)
+          (!this.menuSearchForm.value.store || store.store_id.toString().includes(this.menuSearchForm.value.store.toString()))
+          && (!this.menuSearchForm.value.menuName || store.name.toLowerCase().includes(this.menuSearchForm.value.menuName.toLowerCase()))
+          && (!this.menuSearchForm.value.status || store.status.toLowerCase().includes(this.menuSearchForm.value.status.toLowerCase()))
+        )
       )
 
     });
     console.log(this.menuItemsSortingList)
   }
-  reset(){
+  reset() {
     // this.menuSearchForm.reset()
-     this.getFrom()
+    this.getFrom()
     this.getmenuList()
 
   }

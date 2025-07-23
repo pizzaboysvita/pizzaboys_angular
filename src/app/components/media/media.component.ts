@@ -112,7 +112,7 @@ scrollRight() {
     }
 
     this.apiService
-      .getApi(`/api/category?user_id=1`)
+      .getApi(`/api/category?user_id=`+userId)
       .subscribe((res: any) => {
 
         console.log(res, 'categories response');
@@ -131,7 +131,7 @@ scrollRight() {
       const loginRaw = this.commonService.getsessionStorage("loginDetails");
     const loginData = loginRaw ? JSON.parse(loginRaw) : null;
     const userId = loginData?.user?.user_id;
-    this.apiService.getApi(AppConstants.api_end_points.dish + '?user_id=1' ).subscribe((dish:any)=>{
+    this.apiService.getApi(AppConstants.api_end_points.dish + '?user_id='+userId ).subscribe((dish:any)=>{
       console.log(dish)
       if(dish.code ==1){
         this.dishList =dish.data
