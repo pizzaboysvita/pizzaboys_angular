@@ -37,7 +37,7 @@
                     <div class="input-box">
                       <div class="d-flex align-items-center justify-content-between mb-2">
                         <h6>Display Name</h6>
-                        <span class="optional-tag">OPTIONAL</span>
+                        <!-- <span class="optional-tag">OPTIONAL</span> -->
                       </div>
                       <input type="text" placeholder="Enter Display Name" formControlName="displayName">
                       <span class="lableSubtext">Overrides unique name in your store</span>
@@ -48,7 +48,7 @@
                     <div class="input-box">
                       <div class="d-flex align-items-center justify-content-between mb-2">
                         <h6>Description</h6>
-                        <span class="optional-tag">OPTIONAL</span>
+                        <!-- <span class="optional-tag">OPTIONAL</span> -->
                       </div>
                       <textarea placeholder="Enter Description" formControlName="description"></textarea>
                       <span class="lableSubtext">Optional description for the menu</span>
@@ -134,7 +134,7 @@
                     <div class="input-box position-relative">
                       <div class="d-flex align-items-center justify-content-between mb-2">
                         <h6>Store</h6>
-                        <span class="optional-tag">OPTIONAL</span>
+                        <span class="optional-tag">Required</span>
                       </div>
                       <ng-select [items]="storeList" [searchable]="true" [multiple]="true" bindLabel="store_name"
                         bindValue="store_id" placeholder="Select from the dropdown or type to search..."
@@ -156,7 +156,7 @@
                     <div class="input-box position-relative">
                       <div class="d-flex align-items-center justify-content-between mb-2">
                         <h6>Order Times</h6>
-                        <span class="optional-tag">OPTIONAL</span>
+                        <!-- <span class="optional-tag">OPTIONAL</span> -->
                       </div>
                       <ng-select [items]="orderTimesOptions" [searchable]="true" [multiple]="false" bindLabel="name"
                         bindValue="id" placeholder="Select from the dropdown or type to search..."
@@ -173,7 +173,7 @@
                     <div class="input-box position-relative">
                       <div class="d-flex align-items-center justify-content-between mb-2">
                         <h6>Services</h6>
-                        <span class="optional-tag">OPTIONAL</span>
+                        <!-- <span class="optional-tag">OPTIONAL</span> -->
                       </div>
                       <ng-select [items]="servicesOptions" [searchable]="true" [multiple]="true" bindLabel="name"
                         bindValue="id" placeholder="Select from the dropdown or type to search..."
@@ -190,7 +190,7 @@
                     <div class="input-box position-relative">
                       <div class="d-flex align-items-center justify-content-between mb-2">
                         <h6>Applicable Hours</h6>
-                        <span class="optional-tag">OPTIONAL</span>
+                        <!-- <span class="optional-tag">OPTIONAL</span> -->
                       </div>
                       <!-- <button type="button" class="btn btn-outline-primary btn-sm" (click)="addTimeSlot()">Add Time Slot</button> -->
                       <button type="button" class="add-time-slot-btn" (click)="addNewRow()">
@@ -252,7 +252,7 @@
                     <div class="input-box position-relative">
                       <div class="d-flex align-items-center justify-content-between mb-2">
                         <h6>Pre-order Days In Advance</h6>
-                        <span class="optional-tag">OPTIONAL</span>
+                        <!-- <span class="optional-tag">OPTIONAL</span> -->
                       </div>
                       <input type="number" placeholder="0" formControlName="preOrderDays">
                       <span class="lableSubtext">
@@ -266,7 +266,7 @@
                     <div class="input-box position-relative">
                       <div class="d-flex align-items-center justify-content-between mb-2">
                         <h6>Pre-order Cutoff Time (24H Format)</h6>
-                        <span class="optional-tag">OPTIONAL</span>
+                        <!-- <span class="optional-tag">OPTIONAL</span> -->
                       </div>
                       <input type="time" placeholder="00:00" formControlName="preOrderCutoffTime">
                       <span class="lableSubtext">
@@ -280,7 +280,7 @@
                     <div class="input-box position-relative">
                       <div class="d-flex align-items-center justify-content-between mb-2">
                         <h6>Pre-Order Applicable Services</h6>
-                        <span class="optional-tag">OPTIONAL</span>
+                        <!-- <span class="optional-tag">OPTIONAL</span> -->
                       </div>
                       <ng-select [items]="preOrderServicesOptions" [searchable]="true" [multiple]="true"
                         bindLabel="name" bindValue="id" placeholder="Select from the dropdown or type to search..."
@@ -338,7 +338,7 @@
                     <div class="input-box">
                       <div class="d-flex align-items-center justify-content-between mb-2">
                         <h6>POS Display Name</h6>
-                        <span class="optional-tag">OPTIONAL</span>
+                        <!-- <span class="optional-tag">OPTIONAL</span> -->
                       </div>
                       <input type="text" placeholder="Enter Name" formControlName="posDispalyname">
                       <span class="lableSubtext">Will override the unique name in your POS</span>
@@ -377,7 +377,7 @@
                     <div class="input-box position-relative">
                       <div class="d-flex align-items-center justify-content-between mb-2">
                         <h6>{{ surcharge.label }}</h6>
-                        <span class="optional-tag">OPTIONAL</span>
+                        <!-- <span class="optional-tag">OPTIONAL</span> -->
                       </div>
                       <input type="number" [formControlName]="surcharge.controlName" placeholder="%">
                       <span class="lableSubtext">{{ surcharge.subtext }}</span>

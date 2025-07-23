@@ -8,6 +8,7 @@ import Swal from 'sweetalert2';
 import { AgGridAngular } from '@ag-grid-community/angular';
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { ColDef, ITooltipParams, ModuleRegistry } from "@ag-grid-community/core";
+import { ToastrService } from 'ngx-toastr';
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 @Component({
   selector: 'app-add-menu-modal',
@@ -144,7 +145,7 @@ isHide=false
   reqbody:any
   file: File;
   uploadImagUrl: string | ArrayBuffer | null;
-  constructor(private fb: FormBuilder, public modal: NgbModal, private apis: ApisService) {
+  constructor(private fb: FormBuilder, public modal: NgbModal, private apis: ApisService,private toastr: ToastrService ) {
     this.menuForm = this.fb.group({
       name: ['',Validators.required],
       displayName: [''],
@@ -159,7 +160,7 @@ isHide=false
     });
 
     this.conditionForm = this.fb.group({
-      orderTimes: [''],
+      orderTimes: [null],
       services: [''],
       store: ['',Validators.required],
       preOrderServices: [''],
@@ -243,6 +244,18 @@ isHide=false
 
   saveMenu() {
     console.log('Saving menu', this.menuForm.value,this.conditionForm.value);
+       if (this.menuForm.invalid || this.conditionForm.invalid) {
+      Object.keys(this.menuForm.controls).forEach(key => {
+        this.menuForm.get(key)?.markAsTouched();
+            this.toastr.error('All required fields must be filled.', 'Error');
+      });
+        Object.keys(this.conditionForm.controls).forEach(key => {
+        this.conditionForm.get(key)?.markAsTouched();
+      });
+      // this.showToast('error', 'Validation Error', 'Please fill required fields correctly.');
+      // this.messageService.add({ 'error', 'Validation Error','Please fill required fields correctly.'});
+      return;
+    }else{
     if(this.type =='Edit'){
  this.reqbody = {
       "type": "update",
@@ -282,7 +295,7 @@ isHide=false
       "disable_dish_notes": this.menuForm.value.disableDishNotes == true ? 1 : 0,
       "re_stock_menu_daily": this.menuForm.value.restockMenuDaily == true ? 1 : 0,
       "hide_menu": this.menuForm.value.hideMenu == true ? 1 : 0,
-      "order_times": this.conditionForm.value.orderTimes ==''?null:this.conditionForm.value.orderTimes.toString(),
+      "order_times": (this.conditionForm.value.orderTimes =='' ||this.conditionForm.value.orderTimes ==null) ?null:this.conditionForm.value.orderTimes.toString(),
       "services": this.conditionForm.value.services==''?null: this.conditionForm.value.services.toString(),
       "applicable_hours":this.rowData.length ==0?'':JSON.parse(this.rowData),
       "mark_as_age_restricted": this.conditionForm.value.ageRestricted == true ? 1 : 0,
@@ -302,17 +315,7 @@ isHide=false
       "created_by": 1
     }
   }
-     if (this.menuForm.invalid || this.conditionForm.invalid) {
-      Object.keys(this.menuForm.controls).forEach(key => {
-        this.menuForm.get(key)?.markAsTouched();
-      });
-        Object.keys(this.conditionForm.controls).forEach(key => {
-        this.conditionForm.get(key)?.markAsTouched();
-      });
-      // this.showToast('error', 'Validation Error', 'Please fill required fields correctly.');
-      // this.messageService.add({ 'error', 'Validation Error','Please fill required fields correctly.'});
-      return;
-    }else{
+  
     console.log(this.reqbody)
    const formData = new FormData();
     formData.append("image", this.file); // Attach Blob with a filename

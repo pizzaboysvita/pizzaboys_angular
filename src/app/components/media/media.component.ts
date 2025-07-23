@@ -172,6 +172,7 @@ export class MediaComponent {
       console.error("No user ID found in session. Using dummy user_id=1 for API call.");
     }
 
+
     this.apiService.getApi(`/api/category?user_id=1`).subscribe((res: any) => {
       console.log(res, "categories response");
       if (res.code === "1") {
@@ -184,6 +185,7 @@ export class MediaComponent {
       }
     });
   }
+
 
   getdishlist() {
     const loginRaw = this.commonService.getsessionStorage("loginDetails");
@@ -206,6 +208,20 @@ export class MediaComponent {
         }
       });
   }
+
+  getdishlist(){
+      const loginRaw = this.commonService.getsessionStorage("loginDetails");
+    const loginData = loginRaw ? JSON.parse(loginRaw) : null;
+    const userId = loginData?.user?.user_id;
+    this.apiService.getApi(AppConstants.api_end_points.dish + '?user_id='+userId ).subscribe((dish:any)=>{
+      console.log(dish)
+      if(dish.code ==1){
+        this.dishList =dish.data
+      }
+    })
+  }
+
+
 
   searchTerm(term: string) {
     // Implement search logic here if needed
