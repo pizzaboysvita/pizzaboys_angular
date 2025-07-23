@@ -48,7 +48,7 @@ export class OrderDetailsComponent {
       },
     });
   }
-  cartItems: CartItem[] = [];
+  cartItems:any= [];
 
 
   @ViewChild(GoogleMap) map!: GoogleMap;
@@ -60,8 +60,9 @@ export class OrderDetailsComponent {
 //     { name: 'Salad', price: 80.36, quantity: 2,  img: '/assets/food/salads.png' },
     
 //   ];
-  addToCart(item: CartItem) {
-    const existingItem = this.cartItems.find(cartItem => cartItem.name === item.name);
+  addToCart(item: any) {
+    console.log(item)
+    const existingItem = this.cartItems.find((cartItem:any) => cartItem.dish_id === item.dish_id);
   
     if (existingItem) {
       // If item already exists in the cart, just update the quantity
@@ -69,17 +70,19 @@ export class OrderDetailsComponent {
     } else {
       // If item doesn't exist, add a new item to the cart
       this.cartItems.push({ ...item, quantity: 1 });
+     
     }
+     console.log(  this.cartItems,'  this.cartItems')
   }
   decreaseFromCart(item: CartItem) {
-  const existingItem = this.cartItems.find(cartItem => cartItem.name === item.name);
+  const existingItem = this.cartItems.find((cartItem:any) => cartItem.name === item.name);
 
   if (existingItem) {
     if (existingItem.quantity > 1) {
       existingItem.quantity--;
     } else {
       // Remove from cart if quantity is 0 or 1
-      this.cartItems = this.cartItems.filter(cartItem => cartItem.name !== item.name);
+      this.cartItems = this.cartItems.filter((cartItem:any) => cartItem.name !== item.name);
     }
   }
 }
@@ -95,7 +98,7 @@ export class OrderDetailsComponent {
   //   return this.subtotal * 0.20;  // 20% discount
   // }
 get subtotal(): number {
-  return this.cartItems.reduce((sum, item) => sum + item.quantity * item.price, 0);
+  return this.cartItems.reduce((sum:any, item:any) => sum + item.quantity * item.dish_price, 0);
 }
 
 get tax(): number {
@@ -106,7 +109,7 @@ get tax(): number {
 //   return +(this.subtotal + this.tax).toFixed(2);
 // }
   get total() {
-    return this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    return this.cartItems.reduce((sum:any, item:any) => sum + (item.dish_price * item.quantity), 0);
     // return this.subtotal + this.tax - this.discount;
   }
 
@@ -121,7 +124,7 @@ get tax(): number {
   }
 
   removeItem(item: CartItem) {
-    this.cartItems = this.cartItems.filter(i => i !== item);
+    this.cartItems = this.cartItems.filter((i:any) => i !== item);
   }
 }
 export interface CartItem {

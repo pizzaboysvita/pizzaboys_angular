@@ -20,6 +20,7 @@ import { FormsModule } from "@angular/forms";
 import { DishSelectorComponent } from "./dish-selector/dish-selector.component";
 import { ApisService } from "../../shared/services/apis.service";
 import { AppConstants } from "../../app.constants";
+import { forkJoin } from "rxjs";
 
 // Define interfaces for better type safety and clarity
 interface Option {
@@ -145,8 +146,8 @@ export class MediaComponent {
   ) {}
 
   ngOnInit() {
-    this.fetchCategories();
-    this.getdishlist();
+    this.getDishslist();
+ 
   }
 
   scrollLeft() {
@@ -163,63 +164,25 @@ export class MediaComponent {
     });
   }
 
-  fetchCategories(): void {
-    const loginRaw = this.commonService.getsessionStorage("loginDetails");
-    const loginData = loginRaw ? JSON.parse(loginRaw) : null;
-    const userId = loginData?.user?.user_id;
-
-    if (!userId) {
-      console.error("No user ID found in session. Using dummy user_id=1 for API call.");
-    }
-
-
-    this.apiService.getApi(`/api/category?user_id=1`).subscribe((res: any) => {
-      console.log(res, "categories response");
-      if (res.code === "1") {
-        this.categoriesList = res.categories;
-        if (this.categoriesList && this.categoriesList.length > 0) {
-          this.selectCategory(this.categoriesList[0]);
-        }
-      } else {
-        console.error("Failed to load categories:", res.message);
-      }
-    });
-  }
-
-
-  getdishlist() {
-    const loginRaw = this.commonService.getsessionStorage("loginDetails");
-    const loginData = loginRaw ? JSON.parse(loginRaw) : null;
-    const userId = loginData?.user?.user_id;
-
-    this.apiService
-      .getApi(AppConstants.api_end_points.dish + "?user_id=1")
-      .subscribe((dish: any) => {
-        console.log("Dish list response:", dish);
-        if (dish.code == 1) {
-          this.dishList = dish.data.map((item: any) => ({
-            ...item,
-            // Convert numeric status (0, 1) to string status ('Available', 'Not Available')
-            status: item.status === 1 ? "Available" : "Not Available",
-            quantity: item.quantity || 0,
-          }));
-        } else {
-          console.error("Failed to load dishes:", dish.message);
-        }
-      });
-  }
-
-  getdishlist(){
-      const loginRaw = this.commonService.getsessionStorage("loginDetails");
-    const loginData = loginRaw ? JSON.parse(loginRaw) : null;
-    const userId = loginData?.user?.user_id;
-    this.apiService.getApi(AppConstants.api_end_points.dish + '?user_id='+userId ).subscribe((dish:any)=>{
-      console.log(dish)
-      if(dish.code ==1){
-        this.dishList =dish.data
-      }
-    })
-  }
+getDishslist(){
+    const userId = JSON.parse(this.commonService.getsessionStorage('loginDetails') as any).user.user_id;
+      const categoryApi = this.apiService.getApi(`/api/category?user_id=` + userId);
+      const dishApi = this.apiService.getApi(AppConstants.api_end_points.dish + '?user_id=' + userId);
+  
+      forkJoin([categoryApi, dishApi]).subscribe(
+        ([categoryRes, dishRes]: any) => {
+          const resi = this.apiService.posMenuTree(categoryRes.categories, dishRes.data)
+      this.categoriesList=resi
+      this.dishList=resi[0].dishes
+      this.selectedCategory =resi[0]
+})
+}
+selectCategory(category: any) {
+  console.log(category)
+    this.dishList=category.dishes
+    this.selectedCategory =category
+}
+ 
 
 
 
@@ -302,25 +265,6 @@ export class MediaComponent {
     item.quantity++;
     this.itemAdded.emit(item);
   }
-
-  selectCategory(category: any) {
-    this.apiService
-      .getApi(AppConstants.api_end_points.dish + "?user_id=1&category_id=" + category.category_id)
-      .subscribe((dish: any) => {
-        if (dish.code == 1) {
-          this.dishList = dish.data.map((item: any) => ({
-            ...item,
-            status: item.status === 1 ? "Available" : "Not Available",
-            quantity: item.quantity || 0,
-          }));
-        } else {
-          console.error("Failed to load dishes for category:", dish.message);
-        }
-      });
-    this.selectedCategory = category;
-  }
-
-  // --- MODAL RELATED LOGIC ---
 
   openIngredientsPopup(item: any) {
     if (item.status === "Available") { // Check for string "Available" after mapping

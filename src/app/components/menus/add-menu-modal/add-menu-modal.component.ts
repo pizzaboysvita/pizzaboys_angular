@@ -350,6 +350,7 @@ isHide=false
     console.log(input.files[0])
     this.file = input.files[0];
     console.log()
+     this.menuForm.get('image')?.setValue(this.file);
     const reader = new FileReader();
 
     reader.onload = () => {

@@ -15,6 +15,7 @@ import Swal from "sweetalert2";
 import { ColDef, ITooltipParams, ModuleRegistry } from "@ag-grid-community/core";
 import { AgGridAngular } from "@ag-grid-community/angular";
 import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
+import { ToastrService } from "ngx-toastr";
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 @Component({
   selector: "app-add-category",
@@ -118,7 +119,7 @@ isHide=false
   constructor(
     private fb: FormBuilder,
     public modal: NgbModal,
-    private apis: ApisService,
+    private apis: ApisService,private toastr: ToastrService, 
     private session: SessionStorageService
   ) {}
 
@@ -224,12 +225,13 @@ isHide=false
 
   if (this.menuForm.invalid) {
       console.log('validation required fields');
-      // const controls = this.menuForm.controls;
-      // Object.keys(controls).forEach(key => {
-      //   controls[key].markAsTouched();
-      // });
-      // return
-        this.menuForm.markAllAsTouched(); 
+      const controls = this.menuForm.controls;
+      Object.keys(controls).forEach(key => {
+        controls[key].markAsTouched();
+      });
+       this.toastr.error('All required fields must be filled.', 'Error');
+
+        // this.menuForm.markAllAsTouched(); 
     } else {
   
 const reqbody={
@@ -289,14 +291,7 @@ console.log(reqbody)
   if (input.files && input.files[0]) {
     console.log(input.files[0])
     this.file = input.files[0];
-    console.log()
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      this.uploadImagUrl = reader.result; // this will update the image source
-    };
-
-    reader.readAsDataURL(this.file); // convert image to base64 URL
+   this.menuForm.get('image')?.setValue(this.file);
   }
 }
 onCellClicked(params: any) {

@@ -286,14 +286,8 @@ export class AddDishsComponent {
     if (input.files && input.files[0]) {
       console.log(input.files[0])
       this.file = input.files[0];
-      console.log()
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        this.uploadImagUrl = reader.result; // this will update the image source
-      };
-
-      reader.readAsDataURL(this.file); // convert image to base64 URL
+  this.menuForm.get('image')?.setValue(this.file);
+  
     }
   }
 }
