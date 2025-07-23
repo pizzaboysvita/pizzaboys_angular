@@ -1,249 +1,208 @@
-<div class="row" >
-    <div class="col-sm-12">
-      <app-card [body]="true">
-        <div body class="row row-cols-xl-12 row-cols-md-5 row-cols-sm-3 row-cols-2 g-sm-3 g-2 media-library-sec ratio_landscape">
-            <div class="input-box search-icon" >
-                <i class="ri-search-line"></i>
-                <input class="search-box" type="search" placeholder="What are you looking for?" [(ngModel)]="searchText"
-                    name="search" (keyup)="searchTerm(searchText)" style="flex: 1; border: none; outline: none; background: transparent;">
-            </div>
-       <!-- categories -->
+<div class="row">
+  <div class="col-sm-12">
+    <app-card [body]="true">
+      <div body
+        class="row row-cols-xl-12 row-cols-md-5 row-cols-sm-3 row-cols-2 g-sm-3 g-2 media-library-sec ratio_landscape">
+        <div class="input-box search-icon">
+          <i class="ri-search-line"></i>
+          <input class="search-box" type="search" placeholder="What are you looking for?" [(ngModel)]="searchText"
+            name="search" (keyup)="searchTerm(searchText)"
+            style="flex: 1; border: none; outline: none; background: transparent;">
+        </div>
         <div class=" w-100">
-<div class="mb-4 position-relative">
-  <h5 class="mb-3 fw-bold">Categories</h5>
-  <!-- Scroll arrows -->
-  <button class="scroll-btn start" (click)="scrollLeft()">
-    ‹
-  </button>
-  <button class="scroll-btn end" (click)="scrollRight()">
-    ›
-  </button>
+          <div class="mb-4 position-relative">
+            <h5 class="mb-3 fw-bold">Categories</h5>
+            <button class="scroll-btn start" (click)="scrollLeft()">
+              ‹
+            </button>
+            <button class="scroll-btn end" (click)="scrollRight()">
+              ›
+            </button>
 
-  <!-- Scrollable category container -->
-  <div #scrollContainer class="d-flex gap-3 pb-2 px-3" style="scroll-behavior: smooth; overflow: hidden;">
-      @for (category of categories; track category) {
-    <div class="d-flex align-items-center px-3 py-2 bg-white shadow-sm rounded-4 flex-shrink-0 "  [ngClass]="{ 'border-primary border-2': selectedCategory === category }" style="min-width: 120px;" (click)="selectCategory(category)">
-      <img [src]="category.image" alt="{{ category.name }}"   style="width: 25px; height: 25px;border-radius: 50%;" class="me-3">
-      <div>
-        <div class="fw-semibold">{{ category.name }}</div>
-        <div class="text-muted small">{{ category.count }} items</div>
+            <div #scrollContainer class="d-flex gap-3 pb-2 px-3" style="scroll-behavior: smooth; overflow: hidden;">
+              @for (category of categoriesList; track category) {
+              <div class="d-flex align-items-center px-3 py-2 bg-white shadow-sm rounded-4 flex-shrink-0 "
+                [ngClass]="{ 'border-primary border-2': selectedCategory === category }" style="min-width: 120px;"
+                (click)="selectCategory(category)">
+                <img [src]="category.image" alt="{{ category.name }}"
+                  style="width: 25px; height: 25px;border-radius: 50%;" class="me-3">
+                <div>
+                  <div class="fw-semibold">{{ category.name }}</div>
+                  <div class="text-muted small">{{ category.count }} items</div>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+
+          <div class="row gx-2 gy-0">
+            @for (item of dishList; track item) {
+            <div class="col-md-3" style="margin-top: -15px !important;">
+              <div class="card flex-row align-items-center p-2 shadow-sm h-100" style="height: 110px !important;"
+                (click)="openIngredientsPopup(item)">
+
+                <img [src]="item.dish_image" alt="{{ item.dish_name }}" class="img-thumbnail me-3"
+                  style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+
+                <div class="flex-grow-1">
+                  <h6 class="mb-1">{{ item.dish_name }}</h6>
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="fw-bold">${{ item.dish_price }}</span>
+                  </div>
+                  <div class="d-flex align-items-end gap-1 quantity-controls" style="justify-content: end;">
+                    <button *ngIf="!item.quantity || item.quantity === 0" class="qty-btn"
+                      (click)="addItem(item); $event.stopPropagation()">
+                      +
+                    </button>
+
+                    <ng-container *ngIf="item.quantity > 0">
+                      <button class="qty-btn" (click)="decreaseItem(item); $event.stopPropagation()">-</button>
+                      <span class="qty-count">{{ item.quantity }}</span>
+                      <button class="qty-btn" (click)="increaseItem(item); $event.stopPropagation()">+</button>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
       </div>
-    </div>
-  }
+    </app-card>
   </div>
 </div>
 
-<!-- Most Ordered -->
-<!-- <h5 class="mb-4 fw-bold">Most Ordered</h5>
-<div class="row gx-2 gy-0">
-  @for (item of itemsList; track item) {
-    <div class="col-md-4" style="margin-top: -15px !important;">
-      <div class="card flex-row align-items-center shadow-sm h-100"  style="height: 100px !important;">
-        
-        <img [src]="item.img" alt="{{ item.name }}" 
-             class="img-thumbnail me-3" 
-             style="width: 95px; height: 95px; object-fit: cover; border-radius: 5px;">
-        
-        <div class="flex-grow-1">
-          <h6 class="mb-1">{{ item.name }}</h6>
-          <div class="d-flex justify-content-between align-items-center">
-            <span class="fw-bold">${{ item.price }}</span>
-            <div class="d-flex align-items-center gap-1">
-              <button class="btn btn-sm btn-outline-secondary">-</button>
-              <span>1</span>
-              <button class="btn btn-sm btn-outline-secondary">+</button>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  }
-</div> -->
-<!-- <h5 class="mb-4 fw-bold">Most Ordered</h5>
-<div class="row gx-2 gy-0">
-  @for (item of itemsList; track item) {
-    <div class="col-md-3" style="margin-top: -15px !important;">
-      <div class="card flex-row align-items-center p-2 shadow-sm h-100"  style="height: 110px !important;" (click)="openIngredientsPopup(item)">
-         -->
-        <!-- Left Side: Image -->
-        <!-- <img [src]="item.img" alt="{{ item.name }}" 
-             class="img-thumbnail me-3" 
-             style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
-         -->
-        <!-- Right Side: Text and Actions -->
-        <!-- <div class="flex-grow-1">
-          <h6 class="mb-1">{{ item.name }}</h6>
-          <div class="d-flex justify-content-between align-items-center">
-            <span class="fw-bold">${{ item.price }}</span> -->
-
-            <!-- Quantity -->
-             <!-- <div class="d-flex align-items-center gap-1"> -->
-              <!-- Show only + if quantity is 0 or undefined -->
-              <!-- <button 
-                *ngIf="!item.quantity || item.quantity === 0" 
-                class="btn btn-sm btn-outline-secondary btn-size"
-                (click)="addItem(item)" [disabled]="item.status !== 'Available'">
-                +
-              </button> -->
-              <!-- Show - qty + when quantity > 0 -->
-              <!-- <ng-container *ngIf="item.quantity > 0">
-                <button class="btn btn-sm btn-outline-secondary btn-size" (click)="decreaseItem(item)">-</button>
-                <span>{{ item.quantity }}</span>
-                <button class="btn btn-sm btn-outline-secondary btn-size" (click)="increaseItem(item)">+</button>
-              </ng-container>
-
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  }
-</div> -->
-
-<!-- Popular Dishes -->
-<!-- <h5 class="mb-4 fw-bold">Popular Dishes</h5> -->
-<div class="row gx-2 gy-0">
-  @for (item of dishList; track item) {
-    <div class="col-md-3" style="margin-top: -15px !important;">
-      <div class="card flex-row align-items-center p-2 shadow-sm h-100"  style="height: 110px !important;">
-        
-        <!-- Left Side: Image -->
-        <img [src]="item.dish_image" alt="{{ item.dish_name }}" 
-             class="img-thumbnail me-3" 
-             style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
-        
-        <!-- Right Side: Text and Actions -->
-        <div class="flex-grow-1">
-          <h6 class="mb-1">{{ item.dish_name }}</h6>
-          <div class="d-flex justify-content-between align-items-center mb-1">
-            <span class="fw-bold">${{ item.dish_price }}</span>
-
-            <!-- Quantity -->
-             <!-- <div class="d-flex align-items-center gap-1 maerail-btn-icons">
-              <button 
-                *ngIf="!item.quantity || item.quantity === 0" 
-                class="btn btn-sm btn-outline-secondary btn-size"
-                (click)="addItem(item)">
-                +
-              </button>
-              <ng-container *ngIf="item.quantity > 0">
-                <button class="btn btn-sm btn-outline-secondary btn-size" (click)="decreaseItem(item)">-</button>
-                <span>{{ item.quantity }}</span>
-                <button class="btn btn-sm btn-outline-secondary btn-size" (click)="increaseItem(item)">+</button>
-              </ng-container>
-
-            </div> -->
-           
-
-          </div>
-           <div class="d-flex align-items-end gap-1 quantity-controls" style="justify-content: end;">
-  <!-- Show only + if quantity is 0 or undefined -->
-  <button 
-    *ngIf="!item.quantity || item.quantity === 0" 
-    class="qty-btn"
-    (click)="addItem(item)">
-    +
-  </button>
-
-  <!-- Show - qty + when quantity > 0 -->
-  <ng-container *ngIf="item.quantity > 0">
-    <button class="qty-btn" (click)="decreaseItem(item)">-</button>
-    <span class="qty-count">{{ item.quantity }}</span>
-    <button class="qty-btn" (click)="increaseItem(item)">+</button>
-  </ng-container>
-</div>
-        </div>
-
-      </div>
-    </div>
-  }
-</div>
-</div>
-</div>   
- </app-card>  
-    </div>
-  </div>
 @if (showPopup) {
-  <div
-  class="modal fade show d-block modal-overlay"
-  tabindex="-1"
-  role="dialog"
->
+<div class="modal fade show d-block modal-overlay" tabindex="-1" role="dialog">
   <div class="modal-dialog" style="margin: 0 auto; max-width: 500px; width: 100%;">
     <div class="modal-content shadow-sm rounded-3 border-0">
-      
-      <!-- Header -->
-      <div class="modal-header d-flex justify-content-between align-items-center border-0" style="color: black;font-size: x-large !important;">
+
+      <div class="modal-header d-flex justify-content-between align-items-center border-0"
+        style="color: black;font-size: x-large !important;">
         <h5 class="modal-title mb-0 fw-bold " style="font-size: x-large;">{{ selectedItem.name }}</h5>
         <div class="d-flex align-items-center gap-3">
-      <button type="button" class="btn-close" style="top: 5px !important; font-size: 16px !important;" aria-label="Close" (click)="closePopup()"></button>
-
-          <span class="text-dark fw-bold ">${{ selectedItem.price }}</span>
-          <!-- <button
-            type="button"
-            class="btn-close"
-            aria-label="Close"
-            (click)="closePopup()"
-          ></button> -->
-
+          <button type="button" class="btn-close" style="top: 5px !important; font-size: 16px !important;"
+            aria-label="Close" (click)="closePopup()"></button>
+          <span class="text-dark fw-bold ">${{ selectedItem.currentCalculatedPrice | number:'1.2-2' }}</span>
         </div>
       </div>
 
-      <!-- Pizza Items -->
       <div class="modal-body pb-0">
-        <div *ngFor="let pizza of selectedItem.pizzas; let i = index" class="border-bottom py-2">
-            <!-- (click)="toggleExpand(i)" -->
-            <div
-            class="d-flex justify-content-between align-items-center"
-            (click)="pizza.type ? toggleExpand(i) : dishSelector(i)"
-            style="cursor: pointer;"
-          >
-            <span class="fw-bold" style="font-size: medium; color: black;">
-              {{ pizza.name }} {{ selectedDishes[i] || '' }}
-            </span>
-            <span class="material-symbols-outlined text-muted">
-              {{ expandedIndex === i ? 'expand_less' : 'chevron_right' }}
-            </span>
-          </div>
-          
-            <!-- Collapsible content -->
-            <div *ngIf="expandedIndex === i" class="mt-2 ps-3  fw-bold" style="font-size: large;">
-              <!-- You can replace this with real options like toppings, size, etc. -->
-              <div>• Size: Large</div>
-              <div>• Crust: Thin</div>
-              <div>• Extra Cheese: Yes</div>
-            </div>
-          </div>
 
-        <!-- Notes Input -->
+        <div class="border-bottom py-2">
+          <div class="d-flex justify-content-between align-items-center" (click)="toggleExpand(0)"
+            style="cursor: pointer;">
+            <span class="fw-bold" style="font-size: medium; color: black;">Base</span>
+            <span class="text-muted small">Select one (Required)</span>
+            <span class="material-symbols-outlined text-muted">
+              {{ expandedIndex === 0 ? 'expand_less' : 'expand_more' }}
+            </span>
+          </div>
+          <div *ngIf="expandedIndex === 0" class="mt-2 ps-3">
+            @for (baseOption of selectedItem.base.options; track baseOption.name) {
+            <div class="d-flex justify-content-between align-items-center py-1">
+              <span>{{ baseOption.name }}</span>
+              <div class="d-flex align-items-center">
+                <span *ngIf="baseOption.price > 0" class="me-2">${{ baseOption.price | number:'1.2-2' }}</span>
+                <div class="form-check form-switch mb-0">
+                  <input class="form-check-input" type="radio" [name]="'baseOption'"
+                    [value]="baseOption.name"
+                    [checked]="selectedItem.base.selectedBase?.name === baseOption.name"
+                    (change)="selectBase(baseOption)">
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+
+        <div class="border-bottom py-2">
+          <div class="d-flex justify-content-between align-items-center" (click)="toggleExpand(1)"
+            style="cursor: pointer;">
+            <span class="fw-bold" style="font-size: medium; color: black;">Extra Toppings</span>
+            <span class="text-muted small">Select up to {{selectedItem.extraToppings.maxSelect || 0}} (Optional)</span>
+            <span class="material-symbols-outlined text-muted">
+              {{ expandedIndex === 1 ? 'expand_less' : 'expand_more' }}
+            </span>
+          </div>
+          <div *ngIf="expandedIndex === 1" class="mt-2 ps-3">
+            @for (topping of selectedItem.extraToppings.options; track topping.name) {
+            <div class="d-flex justify-content-between align-items-center py-1">
+              <span>{{ topping.name }}</span>
+              <div class="d-flex align-items-center">
+                <span *ngIf="topping.price !== undefined" class="me-2">${{ topping.price | number:'1.2-2' }}</span>
+                <div class="form-check form-switch mb-0">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="topping.selected"
+                    [disabled]="(selectedItem.extraToppings.selectedCount || 0) >= (selectedItem.extraToppings.maxSelect || 0) && !topping.selected"
+                    (change)="toggleTopping(topping)">
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+
+        <div class="border-bottom py-2">
+          <div class="d-flex justify-content-between align-items-center" (click)="toggleExpand(2)"
+            style="cursor: pointer;">
+            <span class="fw-bold" style="font-size: medium; color: black;">Extra Swirls / Sauces</span>
+            <span class="text-muted small">Select up to {{selectedItem.extraSwirlsSauces.maxSelect || 0}} (Optional)</span>
+            <span class="material-symbols-outlined text-muted">
+              {{ expandedIndex === 2 ? 'expand_less' : 'expand_more' }}
+            </span>
+          </div>
+          <div *ngIf="expandedIndex === 2" class="mt-2 ps-3">
+            @for (sauce of selectedItem.extraSwirlsSauces.options; track sauce.name) {
+            <div class="d-flex justify-content-between align-items-center py-1">
+              <span>{{ sauce.name }}</span>
+              <div class="d-flex align-items-center">
+                <span *ngIf="sauce.price !== undefined" class="me-2">${{ sauce.price | number:'1.2-2' }}</span>
+                <div class="form-check form-switch mb-0">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="sauce.selected"
+                    [disabled]="(selectedItem.extraSwirlsSauces.selectedCount || 0) >= (selectedItem.extraSwirlsSauces.maxSelect || 0) && !sauce.selected"
+                    (change)="toggleSauce(sauce)">
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+
+        <div class="border-bottom py-2">
+          <div class="d-flex justify-content-between align-items-center" (click)="toggleExpand(3)"
+            style="cursor: pointer;">
+            <span class="fw-bold" style="font-size: medium; color: black;">Ingredients</span>
+            <span class="text-muted small">Un-check to remove</span>
+            <span class="material-symbols-outlined text-muted">
+              {{ expandedIndex === 3 ? 'expand_less' : 'expand_more' }}
+            </span>
+          </div>
+          <div *ngIf="expandedIndex === 3" class="mt-2 ps-3">
+            @for (ingredient of selectedItem.ingredients.options; track ingredient.name) {
+            <div class="d-flex justify-content-between align-items-center py-1">
+              <span>{{ ingredient.name }}</span>
+              <div class="form-check form-switch mb-0">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="ingredient.selected">
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+
+
         <div class="mt-3">
           <label class="form-label fw-semibold mb-1" style="font-size: medium;color: black;"> Notes</label>
-          <input
-            type="text"
-            class="form-control"
-            [(ngModel)]="selectedItem.notes"
-            placeholder="Add a note..." style="min-height: 100px;"
-          />
+          <input type="text" class="form-control" [(ngModel)]="selectedItem.notes" placeholder="Add a note..."
+            style="min-height: 100px;" />
         </div>
       </div>
 
-      <!-- Footer with quantity and add button -->
       <div class="modal-footer d-flex justify-content-between align-items-center border-0 mt-3">
         <div class="input-group w-auto">
           <button class="btn btn-outline-warning " (click)="decreaseQty()" style="font-size: large;">−</button>
-          <input
-            type="text"
-            class="form-control text-center"
-            style="width: 50px"
-            [value]="quantity"
-            readonly
-          />
+          <input type="text" class="form-control text-center" style="width: 50px" [value]="quantity" readonly />
           <button class="btn btn-outline-warning" (click)="increaseQty()" style="font-size: large;">+</button>
         </div>
-        <button class="btn btn-warning text-white fw-bold px-5" (click)="addDish()">Close</button>
-
         <button class="btn btn-warning text-white fw-bold px-7" (click)="addDish()">ADD DISH</button>
       </div>
 
@@ -251,6 +210,3 @@
   </div>
 </div>
 }
-
-
-  
