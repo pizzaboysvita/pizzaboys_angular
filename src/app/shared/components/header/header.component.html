@@ -15,7 +15,12 @@
             </a>
         </div>
     </div>
+      <!-- <a href="" class="logo-login"><img src="assets/pizzaImg/pizza-black-1.png" class="img-fluid" alt=""></a> -->
     <div class="welcome-title">
+        @if(ishidepos == 'true'){
+          <a href="" class="logo-login"><img src="assets/pizzaImg/pizza-black-1.png" class="img-fluid" alt=""></a>
+        }
+@if(ishidepos != 'true'){
         <h5>
             Food that's you loved!
             <img src="assets/images/header.gif" alt="">
@@ -23,6 +28,7 @@
         <span style="font-style: italic;">
             Delight your taste with our most famous food !!
         </span>
+    }
     </div>
     <div class="nav-right col-xl-6 col-5 pull-right right-header p-0">
         <ul class="nav-menus icon-color">

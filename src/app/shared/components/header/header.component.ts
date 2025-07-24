@@ -35,6 +35,7 @@ export class HeaderComponent {
   public searchResult: boolean = false;
   public searchResultEmpty: boolean = false;
   users: any;
+  ishidepos:any;
 
   constructor(public navService: NavService,private sessionStorageService:SessionStorageService,public router: Router) { 
     this.navService.items.subscribe(
@@ -50,7 +51,10 @@ export class HeaderComponent {
         }
   }
 
+ngOnInit(){
+   this.ishidepos=this.sessionStorageService.getsessionStorage('Pos')
 
+}
   onToggle() {
     this.isOn = !this.isOn;
     this.toggle.emit(this.isOn);
