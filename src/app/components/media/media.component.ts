@@ -1,119 +1,121 @@
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
   Output,
   ViewChild,
+  HostListener,
+  OnInit,
 } from "@angular/core";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { CardComponent } from "../../shared/components/card/card.component";
-import { MediaLibrary, media } from "../../shared/data/media";
-import { ClickOutsideDirective } from "../../shared/directive/click-outside.directive";
-import { AddMediaComponent } from "./add-media/add-media.component";
-import { OrderDetailsComponent } from "../orders/order-details/order-details.component";
-import { CommonService } from "../../shared/services/common.service";
 import { SessionStorageService } from "../../shared/services/session-storage.service";
-import { FeatherIconsComponent } from "../../shared/components/feather-icons/feather-icons.component";
-import { CommonModule, NgIf, DecimalPipe } from "@angular/common"; // Removed NgFor as it's not explicitly used with @for syntax
+import { CommonModule, NgIf, DecimalPipe } from "@angular/common";
 import { FormsModule } from "@angular/forms";
-import { DishSelectorComponent } from "./dish-selector/dish-selector.component";
 import { ApisService } from "../../shared/services/apis.service";
 import { AppConstants } from "../../app.constants";
 import { forkJoin } from "rxjs";
+import { filter } from "rxjs/operators";
 
-// Define interfaces for better type safety and clarity
-interface Option {
+export interface Option {
   name: string;
-  price?: number; // Make price optional for options that might not have it (like ingredients)
+  price?: number;
   selected: boolean;
 }
 
-interface BaseOption {
+export interface BaseOption {
   name: string;
-  price: number; // Price is required for base options
+  price: number;
   selected: boolean;
 }
 
-interface ItemOptions {
-  maxSelect?: number; // Optional for max selections (e.g., toppings)
-  selectedCount?: number; // Optional to track current selections
-  options: Option[]; // Use only Option, now that price is optional
+export interface ItemOptions {
+  maxSelect?: number;
+  selectedCount?: number;
+  options: Option[];
 }
 
-interface SelectedDishItem {
+export interface SelectedDishItem {
   name: string;
   basePrice: number;
   currentCalculatedPrice: number;
   notes: string;
+  originalDishId?: number;
   base: {
     selectedBase: BaseOption | null;
     options: BaseOption[];
+    required?: boolean;
   };
   extraToppings: ItemOptions;
   extraSwirlsSauces: ItemOptions;
-  ingredients: ItemOptions; // Changed to ItemOptions (which uses Option[])
+  ingredients: ItemOptions;
+}
+
+export interface DishFromAPI {
+  dish_id: number;
+  dish_menu_id: number;
+  dish_category_id: number;
+  dish_type: string;
+  dish_name: string;
+  dish_price: string;
+  dish_image: string;
+  status: string | number;
+  description?: string;
+  notes?: string;
+  dish_ingredients_json?: string;
+  dish_option_set_json?: string;
+  category_name?: string;
+  quantity?: number;
+  [key: string]: any;
+}
+
+export interface CartItem {
+  name: string;
+  price: number;
+  quantity: number;
+  Ingredients: string;
+  title: string;
+  status: string | number;
+  dishId?: number;
+  selectedBaseOption?: { name: string; price: number };
+  selectedToppings?: { name: string; price?: number }[];
+  selectedSwirlsSauces?: { name: string; price?: number }[];
+  removedIngredients?: { name: string }[];
+  notes?: string;
 }
 
 @Component({
   selector: "app-media",
   templateUrl: "./media.component.html",
-  styleUrl: "./media.component.scss",
-  styles: [`
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 1050;
-    }
-
-    /* Custom styles for the toggle switches if needed to match screenshot */
-    .form-switch .form-check-input {
-      width: 3em; /* Adjust width as needed */
-      height: 1.5em; /* Adjust height as needed */
-      margin-left: -2em; /* Adjust margin to align properly */
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%236c757d'/%3e%3c/svg%3e");
-      transition: background-position .15s ease-in-out;
-    }
-
-    .form-switch .form-check-input:checked {
-      background-position: right center;
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
-      background-color: #ffc107; /* Warning color for checked state */
-      border-color: #ffc107;
-    }
-  `],
-  // Removed NgFor as it's not explicitly used with @for syntax. NgIf and DecimalPipe are fine.
+  styleUrls: ["./media.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CardComponent, CommonModule, FormsModule, NgIf, DecimalPipe],
+  standalone: true,
 })
-export class MediaComponent {
+export class MediaComponent implements OnInit {
   public searchText: string = "";
   public isSearch: boolean = false;
   public searchResult: boolean = false;
   public searchResultEmpty: boolean = false;
   showPopup: boolean = false;
-  public MediaLibrary = MediaLibrary;
   public url: string[] = [];
   selectedTitle1: any = "";
   quantity = 1;
   expandedIndex: number | null = null;
+
   @Output() itemAdded = new EventEmitter<CartItem>();
   @Output() itemDecreased = new EventEmitter<CartItem>();
 
-  itemsList: CartItem[] = [];
+  itemsList: DishFromAPI[] = [];
   @ViewChild("scrollContainer", { static: false }) scrollContainer!: ElementRef;
-  selectedCategory: any;
-  categoriesList: any;
-  dishList: any[] = [];
+  @ViewChild("modalContent") modalContent!: ElementRef;
 
-  // Initialize selectedItem with a default structure
-  // This initialization ensures all nested properties are defined, preventing 'possibly undefined' errors
+  selectedCategory: any;
+  categoriesList: any[] = [];
+  dishList: DishFromAPI[] = [];
+
   selectedItem: SelectedDishItem = {
     name: "",
     basePrice: 0,
@@ -125,12 +127,12 @@ export class MediaComponent {
     },
     extraToppings: {
       maxSelect: 0,
-      selectedCount: 0, // Ensure selectedCount is initialized
+      selectedCount: 0,
       options: [],
     },
     extraSwirlsSauces: {
       maxSelect: 0,
-      selectedCount: 0, // Ensure selectedCount is initialized
+      selectedCount: 0,
       options: [],
     },
     ingredients: {
@@ -141,269 +143,416 @@ export class MediaComponent {
   constructor(
     public modal: NgbModal,
     private apiService: ApisService,
-    private commonService: SessionStorageService,
+    private sessionStorageService: SessionStorageService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     this.getDishslist();
- 
+  }
+
+  @HostListener("document:click", ["$event"])
+  clickout(event: Event) {
+    if (
+      this.showPopup &&
+      this.modalContent &&
+      !this.modalContent.nativeElement.contains(event.target)
+    ) {
+      const clickedElement = event.target as HTMLElement;
+      const isDishCard = clickedElement.closest(".card.flex-row");
+      if (!isDishCard) {
+        this.closePopup();
+      }
+    }
   }
 
   scrollLeft() {
-    this.scrollContainer.nativeElement.scrollBy({
-      left: -150,
-      behavior: "smooth",
-    });
+    if (this.scrollContainer) {
+      this.scrollContainer.nativeElement.scrollBy({
+        left: -150,
+        behavior: "smooth",
+      });
+    }
   }
 
   scrollRight() {
-    this.scrollContainer.nativeElement.scrollBy({
-      left: 150,
-      behavior: "smooth",
-    });
+    if (this.scrollContainer) {
+      this.scrollContainer.nativeElement.scrollBy({
+        left: 150,
+        behavior: "smooth",
+      });
+    }
   }
 
-getDishslist(){
-    const userId = JSON.parse(this.commonService.getsessionStorage('loginDetails') as any).user.user_id;
-      const categoryApi = this.apiService.getApi(`/api/category?user_id=` + userId);
-      const dishApi = this.apiService.getApi(AppConstants.api_end_points.dish + '?user_id=' + userId);
-  
-      forkJoin([categoryApi, dishApi]).subscribe(
-        ([categoryRes, dishRes]: any) => {
-          const resi = this.apiService.posMenuTree(categoryRes.categories, dishRes.data)
-      this.categoriesList=resi
-      this.dishList=resi[0].dishes
-      this.selectedCategory =resi[0]
-})
-}
-selectCategory(category: any) {
-  console.log(category)
-    this.dishList=category.dishes
-    this.selectedCategory =category
-}
- 
+  getDishslist() {
+    const userId = JSON.parse(
+      this.sessionStorageService.getsessionStorage("loginDetails") as any
+    ).user.user_id;
 
+    const categoryApi = this.apiService.getApi(
+      `/api/category?user_id=` + userId
+    );
+    const dishApi = this.apiService.getApi(
+      AppConstants.api_end_points.dish + "?user_id=" + userId
+    );
 
+    forkJoin([categoryApi, dishApi]).subscribe(
+      ([categoryRes, dishRes]: any) => {
+        const processedMenu = this.apiService.posMenuTree(
+          categoryRes.categories,
+          dishRes.data
+        );
+
+        this.categoriesList = processedMenu;
+        if (this.categoriesList && this.categoriesList.length > 0) {
+          this.selectedCategory = this.categoriesList[0];
+          this.dishList = this.selectedCategory.dishes;
+        }
+        this.loadItemsBySelectedTitle();
+        this.cdr.detectChanges();
+      },
+      (error) => {
+        console.error("Error fetching dish list or categories:", error);
+      }
+    );
+  }
+
+  selectCategory(category: any) {
+    console.log("Selected category:", category);
+    this.dishList = category.dishes;
+    this.selectedCategory = category;
+    this.cdr.detectChanges();
+  }
 
   searchTerm(term: string) {
-    // Implement search logic here if needed
+    this.cdr.detectChanges();
   }
 
   loadItemsBySelectedTitle() {
-    // Your existing logic here.
-    // Ensure that `items` is populated or replaced by `dishList` if `items` is no longer needed.
     const navigationState = history.state;
-    const savedTitle = this.commonService.getSelectedMenuTitle();
+    const savedTitle = this.sessionStorageService.getSelectedMenuTitle();
+
+    let targetCategory = null;
 
     if (navigationState && navigationState.title) {
       this.selectedTitle1 = navigationState.title;
-      // Note: `this.items` was a hardcoded list in your original code.
-      // Filter `this.dishList` here instead, as that's your API data source.
-      this.itemsList = this.dishList.filter(
-        (item) => item.category_name && item.category_name.trim() === navigationState.title.trim()
+      targetCategory = this.categoriesList.find(
+        (cat) => cat.name && cat.name.trim() === navigationState.title.trim()
       );
-      this.commonService.setSelectedMenuTitle(navigationState.title);
+      this.sessionStorageService.setSelectedMenuTitle(navigationState.title);
       history.replaceState({}, "");
     } else if (savedTitle) {
       this.selectedTitle1 = savedTitle;
-      this.itemsList = this.dishList.filter(
-        (item) => item.category_name && item.category_name.trim() === savedTitle.trim()
+      targetCategory = this.categoriesList.find(
+        (cat) => cat.name && cat.name.trim() === savedTitle.trim()
       );
-    } else {
-      this.selectedTitle1 = "Classic Range Pizzas"; // or any default
-      this.itemsList = this.dishList.filter(
-        (item) => item.category_name && item.category_name.trim() === this.selectedTitle1
-      );
-      this.commonService.setSelectedMenuTitle(this.selectedTitle1);
+    } else if (this.categoriesList && this.categoriesList.length > 0) {
+      this.selectedTitle1 = this.categoriesList[0].name;
+      targetCategory = this.categoriesList[0];
+      this.sessionStorageService.setSelectedMenuTitle(this.selectedTitle1);
     }
 
-    this.commonService.selectedMenuTitle$.subscribe((title) => {
-      if (title && title.trim()) {
+    if (targetCategory) {
+      this.selectedCategory = targetCategory;
+      this.dishList = targetCategory.dishes;
+    } else {
+      this.dishList = [];
+    }
+
+    this.sessionStorageService.selectedMenuTitle$
+      .pipe(filter((title) => !!title && title.trim() !== this.selectedTitle1))
+      .subscribe((title) => {
         this.selectedTitle1 = title;
-        this.itemsList = this.dishList.filter(
-          (item) => item.category_name && item.category_name.trim() === title.trim()
+        const changedCategory = this.categoriesList.find(
+          (cat) => cat.name && cat.name.trim() === title.trim()
+        );
+        if (changedCategory) {
+          this.selectedCategory = changedCategory;
+          this.dishList = changedCategory.dishes;
+        } else {
+          this.dishList = [];
+        }
+        this.cdr.detectChanges();
+      });
+
+    console.log(
+      "Selected Title (after loadItemsBySelectedTitle):",
+      this.selectedTitle1
+    );
+    this.cdr.detectChanges();
+  }
+
+  addItem(item: DishFromAPI) {
+    if (item.status === 1 || item.status === "Available") {
+      item.quantity = (item.quantity || 0) + 1;
+      this.cdr.detectChanges();
+    }
+  }
+
+  decreaseItem(item: DishFromAPI) {
+    if (item.quantity && item.quantity > 0) {
+      item.quantity--;
+      this.cdr.detectChanges();
+    }
+  }
+
+  increaseItem(item: DishFromAPI) {
+    if (item.status === 1 || item.status === "Available") {
+      item.quantity = (item.quantity || 0) + 1;
+      this.cdr.detectChanges();
+    }
+  }
+
+  /**
+   * Attempts to parse a JSON string. If parsing fails, it logs the error
+   * and returns a default value to prevent the application from crashing.
+   * This version does NOT attempt to "fix" malformed JSON internally,
+   * as robust fixing is often impossible without knowledge of the intended structure.
+   * Instead, it logs the error and returns the provided default value.
+   * @param jsonString The JSON string to parse.
+   * @param defaultValue The value to return if parsing fails.
+   * @param propertyName The name of the property being parsed (for logging).
+   * @returns Parsed JSON object or the defaultValue on error.
+   */
+  private safelyParseJson<T>(
+    jsonString: string | undefined,
+    defaultValue: T,
+    propertyName: string
+  ): T {
+    if (!jsonString || jsonString.trim() === "") {
+      // console.log(`${propertyName} is empty or null, returning default.`);
+      return defaultValue;
+    }
+    try {
+      return JSON.parse(jsonString);
+    } catch (e) {
+      console.error(
+        `Failed to parse ${propertyName}. Returning default value. Error:`,
+        e,
+        "Raw string:",
+        jsonString
+      );
+      return defaultValue; // Return default value on any parsing error
+    }
+  }
+
+  openIngredientsPopup(item: DishFromAPI) {
+    console.log("--- Opening Ingredients Popup ---");
+    console.log("Item received:", item);
+    console.log("Raw dish_ingredients_json:", item.dish_ingredients_json);
+    console.log("Raw dish_option_set_json:", item.dish_option_set_json);
+
+    if (item.status === "Available" || item.status === 1) {
+      console.log("Item is available, proceeding to show popup.");
+
+      let parsedOptions: any = {
+        base: { options: [], required: false },
+        extraToppings: { maxSelect: 0, options: [] },
+        extraSwirlsSauces: { maxSelect: 0, options: [] },
+      };
+      let parsedIngredients: Option[] = [];
+
+      // Safely parse dish_option_set_json
+      const optionSets = this.safelyParseJson(
+        item.dish_option_set_json,
+        [], // Default to an empty array if parsing fails
+        "dish_option_set_json"
+      );
+
+      console.log("Parsed optionSets:", optionSets);
+
+      if (Array.isArray(optionSets)) {
+        const findAndParseOptionSet = (sets: any[], names: string[]) => {
+          const foundSet = sets.find((set: any) =>
+            names.some(
+              (name) =>
+                set.dispaly_name?.toLowerCase() === name ||
+                (set.option_set_name &&
+                  set.option_set_name.toLowerCase().includes(name))
+            )
+          );
+          if (foundSet) {
+            // Safely parse nested option_set_combo_json
+            const options = this.safelyParseJson(
+              foundSet.option_set_combo_json,
+              [], // Default to an empty array
+              `option_set_combo_json for ${
+                foundSet.dispaly_name || foundSet.option_set_name
+              }`
+            );
+            if (Array.isArray(options)) {
+              return { set: foundSet, options: options };
+            } else {
+              console.warn(
+                `option_set_combo_json parsing resulted in non-array for ${
+                  foundSet.dispaly_name || foundSet.option_set_name
+                }, defaulting to empty.`
+              );
+            }
+          }
+          return null;
+        };
+
+        const baseData = findAndParseOptionSet(optionSets, [
+          "base",
+          "pizza base",
+          "base - online",
+          "pizza of week base - online",
+        ]);
+        if (baseData) {
+          console.log("Base Options Raw Data:", baseData.options);
+          parsedOptions.base = {
+            type: "radio",
+            required: baseData.set.required === 1 || false,
+            options: baseData.options.map((opt: any) => ({
+              name: opt.name,
+              price: parseFloat(opt.price) || 0,
+              selected: false,
+            })),
+          };
+          if (
+            parsedOptions.base.required &&
+            parsedOptions.base.options.length > 0
+          ) {
+            parsedOptions.base.options[0].selected = true;
+          }
+        }
+
+        const toppingsData = findAndParseOptionSet(optionSets, [
+          "extra toppings",
+          "toppings",
+        ]);
+        if (toppingsData) {
+          console.log("Toppings Options Raw Data:", toppingsData.options);
+          parsedOptions.extraToppings = {
+            type: "checkbox",
+            maxSelect:
+              toppingsData.set.max_options_allowed > 0
+                ? toppingsData.set.max_options_allowed
+                : 5, // Default if max_options_allowed is not valid
+            options: toppingsData.options.map((opt: any) => ({
+              name: opt.name,
+              price: parseFloat(opt.price) || 0,
+              selected: false,
+            })),
+          };
+        }
+
+        const swirlsSaucesData = findAndParseOptionSet(optionSets, [
+          "extra swirls / sauces",
+          "swirls",
+          "sauces",
+        ]);
+        if (swirlsSaucesData) {
+          console.log(
+            "Swirls/Sauces Options Raw Data:",
+            swirlsSaucesData.options
+          );
+          parsedOptions.extraSwirlsSauces = {
+            type: "checkbox",
+            maxSelect:
+              swirlsSaucesData.set.max_options_allowed > 0
+                ? swirlsSaucesData.set.max_options_allowed
+                : 3, // Default if max_options_allowed is not valid
+            options: swirlsSaucesData.options.map((opt: any) => ({
+              name: opt.name,
+              price: parseFloat(opt.price) || 0,
+              selected: false,
+            })),
+          };
+        }
+      } else {
+        console.warn(
+          "dish_option_set_json parsed to a non-array (or failed), skipping option set processing."
         );
       }
-    });
-    console.log("Selected Title:", this.selectedTitle1);
-  }
 
-  open(data: media) {
-    this.MediaLibrary.forEach((item) => {
-      if (data.id === item.id) {
-        item.active = !item.active;
+      // Safely parse dish_ingredients_json
+      const ingredientsArray = this.safelyParseJson(
+        item.dish_ingredients_json,
+        [], // Default to an empty array if parsing fails
+        "dish_ingredients_json"
+      );
+
+      if (Array.isArray(ingredientsArray)) {
+        parsedIngredients = ingredientsArray.map((ing: any) => ({
+          name: ing.name,
+          selected: ing.selected !== undefined ? ing.selected : true,
+          price: 0,
+        }));
+        console.log("Parsed Ingredients:", parsedIngredients);
       } else {
-        item.active = false;
+        console.warn(
+          "dish_ingredients_json parsed to a non-array (or failed), defaulting to empty ingredients."
+        );
       }
-    });
-  }
 
-  addMedia() {
-    this.modal.open(AddMediaComponent, {
-      windowClass: "media-modal theme-modal",
-      size: "xl",
-    });
-  }
-
-  addItem(item: CartItem) {
-    item.quantity = 1;
-    this.itemAdded.emit(item);
-  }
-
-  decreaseItem(item: CartItem) {
-    if (item.quantity && item.quantity > 1) {
-      item.quantity--;
-      this.itemDecreased.emit(item);
-    } else {
-      item.quantity = 0;
-      this.itemDecreased.emit(item);
-    }
-  }
-
-  increaseItem(item: CartItem) {
-    item.quantity++;
-    this.itemAdded.emit(item);
-  }
-
-  openIngredientsPopup(item: any) {
-    if (item.status === "Available") { // Check for string "Available" after mapping
       this.selectedItem = {
         name: item.dish_name,
-        basePrice: item.dish_price,
-        currentCalculatedPrice: item.dish_price, // Will be recalculated immediately
+        basePrice: parseFloat(item.dish_price),
+        currentCalculatedPrice: parseFloat(item.dish_price),
         notes: item.notes || "",
+        originalDishId: item.dish_id,
+
         base: {
-          selectedBase: { name: "Small", price: 0, selected: true }, // Default selection
-          options: [
-            { name: "Small", price: 0, selected: true },
-            { name: "Large", price: 3.00, selected: false },
-            { name: "Thin Base Large", price: 4.00, selected: false },
-            { name: "Gluten Free Base Large", price: 6.00, selected: false },
-          ],
+          selectedBase: null,
+          options: parsedOptions.base.options,
+          required: parsedOptions.base.required,
         },
         extraToppings: {
-          maxSelect: 5,
-          selectedCount: 0, // Ensure this is explicitly set
-          options: [
-            { name: "Mozzarella", price: 3.00, selected: false },
-            { name: "Paneer", price: 3.00, selected: false },
-            { name: "Chicken", price: 3.00, selected: false },
-            { name: "Ham", price: 3.00, selected: false },
-            { name: "Bacon", price: 3.00, selected: false },
-            { name: "Pepperoni", price: 3.00, selected: false },
-            { name: "Prawns", price: 3.00, selected: false },
-            { name: "Salmon", price: 3.00, selected: false },
-            { name: "Anchovies", price: 3.00, selected: false },
-            { name: "Pineapple", price: 3.00, selected: false },
-            { name: "Mushrooms", price: 2.00, selected: false },
-            { name: "Sweet corn", price: 1.00, selected: false },
-            { name: "Black Olives", price: 1.00, selected: false },
-            { name: "Coriander", price: 1.00, selected: false },
-            { name: "Capsicum", price: 1.00, selected: false },
-            { name: "Onions", price: 1.00, selected: false },
-            { name: "Jalapeños", price: 1.00, selected: false },
-          ],
+          maxSelect: parsedOptions.extraToppings.maxSelect,
+          selectedCount: 0,
+          options: parsedOptions.extraToppings.options,
         },
         extraSwirlsSauces: {
-          maxSelect: 3,
-          selectedCount: 0, // Ensure this is explicitly set
-          options: [
-            { name: "Butter Sauce", price: 0.90, selected: false },
-            { name: "Peri Peri Sauce", price: 0.90, selected: false },
-            { name: "Hot Chili Sauce", price: 0.90, selected: false },
-            { name: "Chipotle Sauce", price: 0.90, selected: false },
-            { name: "Garlic Aioli", price: 0.90, selected: false },
-            { name: "Mayonnaise", price: 0.90, selected: false },
-            { name: "BBQ Sauce", price: 0.90, selected: false },
-            { name: "Hollandaise Sauce", price: 0.90, selected: false },
-            { name: "Sweet Chili Sauce", price: 0.90, selected: false },
-            { name: "Tomato Sauce", price: 0.90, selected: false },
-          ],
+          maxSelect: parsedOptions.extraSwirlsSauces.maxSelect,
+          selectedCount: 0,
+          options: parsedOptions.extraSwirlsSauces.options,
         },
         ingredients: {
-          options: [
-            { name: "Tomato Base", selected: true }, // No price needed for ingredients, as per new Option interface
-            { name: "Ham Slices", selected: true },
-            { name: "Pineapple", selected: true },
-            { name: "Mozzarella", selected: true },
-            { name: "Bacon", selected: true },
-          ],
+          options: parsedIngredients,
         },
       };
-      this.quantity = 1; // Reset quantity when opening new modal
-      this.recalculatePrice(); // Calculate initial price
-      this.expandedIndex = null; // No sections expanded by default
+
+      // Set initial selected base if available
+      if (
+        this.selectedItem.base.options.length > 0 &&
+        !this.selectedItem.base.selectedBase
+      ) {
+        const preSelectedBase =
+          this.selectedItem.base.options.find((opt) => opt.selected) ||
+          this.selectedItem.base.options[0];
+        if (preSelectedBase) {
+          preSelectedBase.selected = true;
+          this.selectedItem.base.selectedBase = preSelectedBase;
+        }
+      }
+
+      this.quantity = 1;
+      this.recalculatePrice();
+      this.expandedIndex = null;
       this.showPopup = true;
       this.cdr.detectChanges();
+      console.log("Final selectedItem state:", this.selectedItem);
     } else {
       this.showPopup = false;
-      console.warn(`Cannot open modal for "${item.dish_name}" as it is "${item.status}".`);
+      console.warn(
+        `Cannot open modal for "${item.dish_name}" as it is "${item.status}".`
+      );
     }
   }
 
   closePopup() {
     this.showPopup = false;
-    this.expandedIndex = null; // Reset expanded state on close
+    this.expandedIndex = null;
+    this.cdr.detectChanges();
   }
 
-  // Method to handle base option selection (radio-like behavior)
-  selectBase(selectedBaseOption: BaseOption) {
-    this.selectedItem.base.options.forEach(option => {
-      option.selected = (option.name === selectedBaseOption.name);
-    });
-    this.selectedItem.base.selectedBase = selectedBaseOption; // Set the actual selected object
-    this.recalculatePrice();
+  toggleExpand(index: number) {
+    this.expandedIndex = this.expandedIndex === index ? null : index;
+    this.cdr.detectChanges();
   }
 
-  // Method to handle topping selection (checkbox-like behavior with max limit)
-  toggleTopping(topping: Option) {
-    if (topping.selected) {
-      this.selectedItem.extraToppings.selectedCount = (this.selectedItem.extraToppings.selectedCount || 0) + 1;
-    } else {
-      this.selectedItem.extraToppings.selectedCount = (this.selectedItem.extraToppings.selectedCount || 0) - 1;
-    }
-    this.recalculatePrice();
-  }
-
-  // Method to handle sauce selection (checkbox-like behavior with max limit)
-  toggleSauce(sauce: Option) {
-    if (sauce.selected) {
-      this.selectedItem.extraSwirlsSauces.selectedCount = (this.selectedItem.extraSwirlsSauces.selectedCount || 0) + 1;
-    } else {
-      this.selectedItem.extraSwirlsSauces.selectedCount = (this.selectedItem.extraSwirlsSauces.selectedCount || 0) - 1;
-    }
-    this.recalculatePrice();
-  }
-
-  // Recalculates the total price based on selections and quantity
-  recalculatePrice() {
-    let totalPrice = this.selectedItem.basePrice;
-
-    // Add selected base price
-    if (this.selectedItem.base.selectedBase) {
-      totalPrice += this.selectedItem.base.selectedBase.price;
-    }
-
-    // Add selected toppings prices
-    this.selectedItem.extraToppings.options.forEach((topping: Option) => {
-      if (topping.selected && topping.price !== undefined) { // Check for undefined price
-        totalPrice += topping.price;
-      }
-    });
-
-    // Add selected swirls/sauces prices
-    this.selectedItem.extraSwirlsSauces.options.forEach((sauce: Option) => {
-      if (sauce.selected && sauce.price !== undefined) { // Check for undefined price
-        totalPrice += sauce.price;
-      }
-    });
-
-    // Apply quantity to the total price
-    this.selectedItem.currentCalculatedPrice = totalPrice * this.quantity;
-  }
-
-  // Override existing quantity methods to also call recalculatePrice
   increaseQty() {
     this.quantity++;
     this.recalculatePrice();
@@ -416,70 +565,144 @@ selectCategory(category: any) {
     }
   }
 
-  addDish() {
-    // This is where you would collect all selected options and the final price
-    // and add the item to the cart/order.
-    console.log("Dish to add:", JSON.parse(JSON.stringify(this.selectedItem))); // Deep copy for log
-    console.log("Quantity:", this.quantity);
+  selectBase(selectedBaseOption: BaseOption) {
+    if (this.selectedItem.base.selectedBase === selectedBaseOption) {
+      return;
+    }
 
-    // Example of constructing a simpler cart item from selectedItem
+    this.selectedItem.base.options.forEach((option) => {
+      option.selected = false;
+    });
+
+    selectedBaseOption.selected = true;
+    this.selectedItem.base.selectedBase = selectedBaseOption;
+
+    this.recalculatePrice();
+  }
+
+  toggleTopping(topping: Option) {
+    topping.selected = !topping.selected;
+
+    this.selectedItem.extraToppings.selectedCount =
+      this.selectedItem.extraToppings.options.filter((t) => t.selected).length;
+
+    const max = this.selectedItem.extraToppings.maxSelect || 0;
+
+    if (
+      topping.selected &&
+      max > 0 &&
+      this.selectedItem.extraToppings.selectedCount > max
+    ) {
+      topping.selected = false;
+      this.selectedItem.extraToppings.selectedCount--;
+      console.warn(`Cannot select more than ${max} extra toppings.`);
+    }
+    this.recalculatePrice();
+  }
+
+  toggleSauce(sauce: Option) {
+    sauce.selected = !sauce.selected;
+
+    this.selectedItem.extraSwirlsSauces.selectedCount =
+      this.selectedItem.extraSwirlsSauces.options.filter(
+        (s) => s.selected
+      ).length;
+
+    const max = this.selectedItem.extraSwirlsSauces.maxSelect || 0;
+
+    if (
+      sauce.selected &&
+      max > 0 &&
+      this.selectedItem.extraSwirlsSauces.selectedCount > max
+    ) {
+      sauce.selected = false;
+      this.selectedItem.extraSwirlsSauces.selectedCount--;
+      console.warn(`Cannot select more than ${max} extra swirls/sauces.`);
+    }
+    this.recalculatePrice();
+  }
+
+  recalculatePrice() {
+    let totalPrice = 0;
+
+    if (this.selectedItem.base.selectedBase) {
+      totalPrice = this.selectedItem.base.selectedBase.price;
+    } else {
+      totalPrice = this.selectedItem.basePrice;
+    }
+
+    this.selectedItem.extraToppings.options.forEach((topping: Option) => {
+      if (topping.selected && typeof topping.price === "number") {
+        totalPrice += topping.price;
+      }
+    });
+
+    this.selectedItem.extraSwirlsSauces.options.forEach((sauce: Option) => {
+      if (sauce.selected && typeof sauce.price === "number") {
+        totalPrice += sauce.price;
+      }
+    });
+
+    this.selectedItem.currentCalculatedPrice = totalPrice * this.quantity;
+    this.cdr.detectChanges();
+  }
+
+  addDish() {
+    const selectedToppings = this.selectedItem.extraToppings.options.filter(
+      (t) => t.selected
+    );
+    const selectedSwirlsSauces =
+      this.selectedItem.extraSwirlsSauces.options.filter((s) => s.selected);
+    const removedIngredients = this.selectedItem.ingredients.options.filter(
+      (i) => !i.selected
+    );
+
+    const ingredientsSummary =
+      `Base: ${this.selectedItem.base.selectedBase?.name || "N/A"}` +
+      (selectedToppings.length > 0
+        ? `, Toppings: ${selectedToppings.map((t) => t.name).join(", ")}`
+        : "") +
+      (selectedSwirlsSauces.length > 0
+        ? `, Sauces: ${selectedSwirlsSauces.map((s) => s.name).join(", ")}`
+        : "") +
+      (removedIngredients.length > 0
+        ? `, Removed: ${removedIngredients.map((i) => i.name).join(", ")}`
+        : "");
+
     const cartItem: CartItem = {
       name: this.selectedItem.name,
       price: this.selectedItem.currentCalculatedPrice,
       quantity: this.quantity,
-      Ingredients: "Customized " + this.selectedItem.name, // Or build a detailed string
-      title: "Custom Order",
-      status: "Available", // Assuming a custom item is available
-      // Add other relevant properties from selectedItem if needed for your cart
-      // e.g., selected toppings, base, notes etc.
+      Ingredients: ingredientsSummary,
+      title: this.selectedCategory
+        ? this.selectedCategory.name
+        : "Custom Order",
+      status: "Available",
+      dishId: this.selectedItem.originalDishId,
+      notes: this.selectedItem.notes,
+      selectedBaseOption: this.selectedItem.base.selectedBase
+        ? {
+            name: this.selectedItem.base.selectedBase.name,
+            price: this.selectedItem.base.selectedBase.price,
+          }
+        : undefined,
+      selectedToppings: selectedToppings.map((t) => ({
+        name: t.name,
+        price: t.price,
+      })),
+      selectedSwirlsSauces: selectedSwirlsSauces.map((s) => ({
+        name: s.name,
+        price: s.price,
+      })),
+      removedIngredients: removedIngredients.map((i) => ({ name: i.name })),
     };
 
-    this.itemAdded.emit(cartItem); // Emit the customized item
-    this.closePopup(); // Close the modal after adding
+    this.itemAdded.emit(cartItem);
+    this.closePopup();
+    console.log("Dish added to cart:", cartItem);
   }
 
-  toggleExpand(index: number) {
-    this.expandedIndex = this.expandedIndex === index ? null : index;
-  }
+  addMedia() {}
 
-  // This method and `selectedDishes` array are typically used with NgbModal,
-  // not directly with the custom `showPopup` modal.
-  // Keeping it for now as it was in your original code, but it's not directly
-  // used by the new modal structure we implemented.
-  dishSelector(i: number) {
-    const modalRef = this.modal.open(DishSelectorComponent, {
-      windowClass: "theme-modal",
-      centered: true,
-    });
-
-    modalRef.result.then(
-      (dish: string) => {
-        // This line is only relevant if you want to store the selected dish from DishSelectorComponent
-        // this.selectedDishes[i] = dish;
-      },
-      (reason) => {
-        // Handle modal dismiss/cancel
-      }
-    );
-  }
-}
-
-// Updated CartItem interface to reflect potential new data coming from dishList
-export interface CartItem {
-  name: string;
-  price: number;
-  quantity: number;
-  img?: string;
-  Ingredients: string;
-  title: string;
-  status: string | number; // Updated to accept number for status
-  dish_name?: string;
-  dish_price?: number;
-  dish_image?: string;
-  category_name?: string;
-  // Potentially add more properties if you want to store the selected options in your cart item
-  // selectedBaseOption?: BaseOption;
-  // selectedToppings?: Option[];
-  // selectedSauces?: Option[];
-  // notes?: string;
+  dishSelector(i: number) {}
 }
