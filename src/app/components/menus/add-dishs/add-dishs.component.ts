@@ -51,6 +51,7 @@ export class AddDishsComponent {
       printName: [''],
       posName: [''],
       description: [''],
+      optionSet:[''],
       subtitle: [''],
       storeName: [null, Validators.required]
 
@@ -88,8 +89,8 @@ export class AddDishsComponent {
         posName: this.myData.pos_name,
         description: this.myData.description,
         subtitle: this.myData.subtitle,
-        storeName: this.myData.store_id
-
+        storeName: this.myData.store_id,
+// optionSet:JSON.parse(dish_option_set_json)
       });
       //  this.Ingredients=JSON.parse(this.myData)
       // this.selectedSubcategories=JSON.parse(dish_option_set_json)
@@ -222,7 +223,7 @@ export class AddDishsComponent {
         "subtitle": this.menuForm.value.subtitle,
         "store_id": this.menuForm.value.storeName,
         // "created_by": 1,
-        "dish_option_set_json": JSON.stringify(this.selectedSubcategories as any),
+        "dish_option_set_json": this.menuForm.value.optionSet,
         "dish_ingredients_json": JSON.stringify(this.Ingredients as any),
         "dish_choices_json": JSON.stringify(this.choices),
       }
@@ -245,7 +246,7 @@ export class AddDishsComponent {
         "subtitle": this.menuForm.value.subtitle,
         "store_id": this.menuForm.value.storeName,
         // "created_by": 1,
-        "dish_option_set_json": JSON.stringify(this.selectedSubcategories as any),
+        "dish_option_set_json": JSON.stringify(this.menuForm.value.optionSet),
         "dish_ingredients_json": JSON.stringify(this.Ingredients as any),
         "dish_choices_json": JSON.stringify(this.choices),
       }

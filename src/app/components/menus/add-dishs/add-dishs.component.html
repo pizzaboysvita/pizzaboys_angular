@@ -7,11 +7,12 @@
   </div>
   <div class="modal-body pt-0">
     <div class="col-12">
+        <form [formGroup]="menuForm">
       <ul class="nav nav-pills flex-nowrap mb-3" ngbNav #nav="ngbNav" [(activeId)]="active">
         <li [ngbNavItem]="1" class="nav-item m-0">
           <button ngbNavLink class="nav-link" type="button">General</button>
           <ng-template ngbNavContent>
-            <form [formGroup]="menuForm">
+          
               <div class="input-items">
                 <div class="row gy-3">
                   <div class="col-12">
@@ -192,7 +193,7 @@
 
                 </div>
               </div>
-            </form>
+          
 
           </ng-template>
         </li>
@@ -207,7 +208,7 @@
                     <h6>Option Sets</h6>
                     <ng-select [items]="optSetDetails" [searchable]="true" [multiple]="true" bindLabel="option_set_name"
                       placeholder="Select from the dropdown or type to search"
-                      [(ngModel)]="selectedSubcategories"></ng-select>
+                       formControlName="optionSet"></ng-select>
                   </div>
                   <span class="lableSubtext">Select option sets to be applied to the dish. Option sets
                     are ordered according to how they are listed on the option set page, not by the
@@ -387,6 +388,7 @@
         </li>
         }
       </ul>
+      </form>
     </div>
     <div class="col-12" [ngbNavOutlet]="nav"></div>
   </div>

@@ -78,18 +78,73 @@ export class ApisService {
     });
   }
 
-  posMenuTree(categories: any[],
-    dishes: any[]) {
+//   posMenuTree(categories: any[],
+//     dishes: any[]) {
      
-   return categories.map(category => {
-  const filteredDishes = dishes.filter(d => d.dish_category_id === category.id);
-  return {
-    ...category, // Spread category fields (e.g., id, name, image, etc.)
-    dishes: filteredDishes.map(d => ({
-      ...d, // Spread dish fields
+//    return categories.map(category => {
+//   const filteredDishes = dishes.filter(d => d.dish_category_id === category.id);
+//   filteredDishes.forEach(dishes =>{
+//     dishes.dish_option_set_array=JSON.parse(dishes.dish_option_set_json)
+//     if(dishes.dish_option_set_array.length >0){
+//       console.log(dishes.dish_option_set_array,'opt set')
+//       dishes.dish_option_set_array.forEach((opt_set:any)=>{
+//         console.log(opt_set,'opt set 2')
+//         opt_set.option_set_array=JSON.parse(opt_set.option_set_combo_json)
+//       })
+//     }
+//   })
+//   console.log(filteredDishes,'filteredDishes')
+  
+//   return {
+//     ...category, // Spread category fields (e.g., id, name, image, etc.)
+//     dishes: filteredDishes.map(d => ({
+//       ...d, // Spread dish fields
     
-    }))
-  };
-});
-  }
+//     }))
+//   };
+// });
+//   }
+posMenuTree(categories: any[], dishes: any[]) {
+  return categories.map(category => {
+    // Filter dishes by category ID
+    const filteredDishes = dishes
+      .filter(d => d.dish_category_id === category.id)
+      .map(dish => {
+        // Initialize option set array
+        let dish_option_set_array = [];
+
+        try {
+          // Parse dish_option_set_json if present
+          dish_option_set_array = JSON.parse(dish.dish_option_set_json ?? '[]');
+
+          // Parse inner option_set_combo_json
+          dish_option_set_array = dish_option_set_array.map((optSet: any) => {
+            let option_set_array = [];
+            try {
+              option_set_array = JSON.parse(optSet.option_set_combo_json ?? '[]');
+            } catch (e) {
+              console.error('Invalid option_set_combo_json:', optSet.option_set_combo_json, e);
+            }
+            return {
+              ...optSet,
+              option_set_array
+            };
+          });
+        } catch (e) {
+          console.error('Invalid dish_option_set_json:', dish.dish_option_set_json, e);
+        }
+
+        return {
+          ...dish,
+          dish_option_set_array
+        };
+      });
+
+    return {
+      ...category,
+      dishes: filteredDishes
+    };
+  });
+}
+
 }

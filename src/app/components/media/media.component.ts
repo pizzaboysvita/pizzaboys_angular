@@ -116,29 +116,7 @@ export class MediaComponent implements OnInit {
   categoriesList: any[] = [];
   dishList: DishFromAPI[] = [];
 
-  selectedItem: SelectedDishItem = {
-    name: "",
-    basePrice: 0,
-    currentCalculatedPrice: 0,
-    notes: "",
-    base: {
-      selectedBase: null,
-      options: [],
-    },
-    extraToppings: {
-      maxSelect: 0,
-      selectedCount: 0,
-      options: [],
-    },
-    extraSwirlsSauces: {
-      maxSelect: 0,
-      selectedCount: 0,
-      options: [],
-    },
-    ingredients: {
-      options: [],
-    },
-  };
+  selectedItem:any
 
   constructor(
     public modal: NgbModal,
@@ -303,243 +281,18 @@ export class MediaComponent implements OnInit {
     }
   }
 
-  /**
-   * Attempts to parse a JSON string. If parsing fails, it logs the error
-   * and returns a default value to prevent the application from crashing.
-   * This version does NOT attempt to "fix" malformed JSON internally,
-   * as robust fixing is often impossible without knowledge of the intended structure.
-   * Instead, it logs the error and returns the provided default value.
-   * @param jsonString The JSON string to parse.
-   * @param defaultValue The value to return if parsing fails.
-   * @param propertyName The name of the property being parsed (for logging).
-   * @returns Parsed JSON object or the defaultValue on error.
-   */
-  private safelyParseJson<T>(
-    jsonString: string | undefined,
-    defaultValue: T,
-    propertyName: string
-  ): T {
-    if (!jsonString || jsonString.trim() === "") {
-      // console.log(`${propertyName} is empty or null, returning default.`);
-      return defaultValue;
-    }
-    try {
-      return JSON.parse(jsonString);
-    } catch (e) {
-      console.error(
-        `Failed to parse ${propertyName}. Returning default value. Error:`,
-        e,
-        "Raw string:",
-        jsonString
-      );
-      return defaultValue; // Return default value on any parsing error
-    }
-  }
+
+
 
   openIngredientsPopup(item: DishFromAPI) {
     console.log("--- Opening Ingredients Popup ---");
     console.log("Item received:", item);
     console.log("Raw dish_ingredients_json:", item.dish_ingredients_json);
     console.log("Raw dish_option_set_json:", item.dish_option_set_json);
-
-    if (item.status === "Available" || item.status === 1) {
-      console.log("Item is available, proceeding to show popup.");
-
-      let parsedOptions: any = {
-        base: { options: [], required: false },
-        extraToppings: { maxSelect: 0, options: [] },
-        extraSwirlsSauces: { maxSelect: 0, options: [] },
-      };
-      let parsedIngredients: Option[] = [];
-
-      // Safely parse dish_option_set_json
-      const optionSets = this.safelyParseJson(
-        item.dish_option_set_json,
-        [], // Default to an empty array if parsing fails
-        "dish_option_set_json"
-      );
-
-      console.log("Parsed optionSets:", optionSets);
-
-      if (Array.isArray(optionSets)) {
-        const findAndParseOptionSet = (sets: any[], names: string[]) => {
-          const foundSet = sets.find((set: any) =>
-            names.some(
-              (name) =>
-                set.dispaly_name?.toLowerCase() === name ||
-                (set.option_set_name &&
-                  set.option_set_name.toLowerCase().includes(name))
-            )
-          );
-          if (foundSet) {
-            // Safely parse nested option_set_combo_json
-            const options = this.safelyParseJson(
-              foundSet.option_set_combo_json,
-              [], // Default to an empty array
-              `option_set_combo_json for ${
-                foundSet.dispaly_name || foundSet.option_set_name
-              }`
-            );
-            if (Array.isArray(options)) {
-              return { set: foundSet, options: options };
-            } else {
-              console.warn(
-                `option_set_combo_json parsing resulted in non-array for ${
-                  foundSet.dispaly_name || foundSet.option_set_name
-                }, defaulting to empty.`
-              );
-            }
-          }
-          return null;
-        };
-
-        const baseData = findAndParseOptionSet(optionSets, [
-          "base",
-          "pizza base",
-          "base - online",
-          "pizza of week base - online",
-        ]);
-        if (baseData) {
-          console.log("Base Options Raw Data:", baseData.options);
-          parsedOptions.base = {
-            type: "radio",
-            required: baseData.set.required === 1 || false,
-            options: baseData.options.map((opt: any) => ({
-              name: opt.name,
-              price: parseFloat(opt.price) || 0,
-              selected: false,
-            })),
-          };
-          if (
-            parsedOptions.base.required &&
-            parsedOptions.base.options.length > 0
-          ) {
-            parsedOptions.base.options[0].selected = true;
-          }
-        }
-
-        const toppingsData = findAndParseOptionSet(optionSets, [
-          "extra toppings",
-          "toppings",
-        ]);
-        if (toppingsData) {
-          console.log("Toppings Options Raw Data:", toppingsData.options);
-          parsedOptions.extraToppings = {
-            type: "checkbox",
-            maxSelect:
-              toppingsData.set.max_options_allowed > 0
-                ? toppingsData.set.max_options_allowed
-                : 5, // Default if max_options_allowed is not valid
-            options: toppingsData.options.map((opt: any) => ({
-              name: opt.name,
-              price: parseFloat(opt.price) || 0,
-              selected: false,
-            })),
-          };
-        }
-
-        const swirlsSaucesData = findAndParseOptionSet(optionSets, [
-          "extra swirls / sauces",
-          "swirls",
-          "sauces",
-        ]);
-        if (swirlsSaucesData) {
-          console.log(
-            "Swirls/Sauces Options Raw Data:",
-            swirlsSaucesData.options
-          );
-          parsedOptions.extraSwirlsSauces = {
-            type: "checkbox",
-            maxSelect:
-              swirlsSaucesData.set.max_options_allowed > 0
-                ? swirlsSaucesData.set.max_options_allowed
-                : 3, // Default if max_options_allowed is not valid
-            options: swirlsSaucesData.options.map((opt: any) => ({
-              name: opt.name,
-              price: parseFloat(opt.price) || 0,
-              selected: false,
-            })),
-          };
-        }
-      } else {
-        console.warn(
-          "dish_option_set_json parsed to a non-array (or failed), skipping option set processing."
-        );
-      }
-
-      // Safely parse dish_ingredients_json
-      const ingredientsArray = this.safelyParseJson(
-        item.dish_ingredients_json,
-        [], // Default to an empty array if parsing fails
-        "dish_ingredients_json"
-      );
-
-      if (Array.isArray(ingredientsArray)) {
-        parsedIngredients = ingredientsArray.map((ing: any) => ({
-          name: ing.name,
-          selected: ing.selected !== undefined ? ing.selected : true,
-          price: 0,
-        }));
-        console.log("Parsed Ingredients:", parsedIngredients);
-      } else {
-        console.warn(
-          "dish_ingredients_json parsed to a non-array (or failed), defaulting to empty ingredients."
-        );
-      }
-
-      this.selectedItem = {
-        name: item.dish_name,
-        basePrice: parseFloat(item.dish_price),
-        currentCalculatedPrice: parseFloat(item.dish_price),
-        notes: item.notes || "",
-        originalDishId: item.dish_id,
-
-        base: {
-          selectedBase: null,
-          options: parsedOptions.base.options,
-          required: parsedOptions.base.required,
-        },
-        extraToppings: {
-          maxSelect: parsedOptions.extraToppings.maxSelect,
-          selectedCount: 0,
-          options: parsedOptions.extraToppings.options,
-        },
-        extraSwirlsSauces: {
-          maxSelect: parsedOptions.extraSwirlsSauces.maxSelect,
-          selectedCount: 0,
-          options: parsedOptions.extraSwirlsSauces.options,
-        },
-        ingredients: {
-          options: parsedIngredients,
-        },
-      };
-
-      // Set initial selected base if available
-      if (
-        this.selectedItem.base.options.length > 0 &&
-        !this.selectedItem.base.selectedBase
-      ) {
-        const preSelectedBase =
-          this.selectedItem.base.options.find((opt) => opt.selected) ||
-          this.selectedItem.base.options[0];
-        if (preSelectedBase) {
-          preSelectedBase.selected = true;
-          this.selectedItem.base.selectedBase = preSelectedBase;
-        }
-      }
-
-      this.quantity = 1;
-      this.recalculatePrice();
-      this.expandedIndex = null;
-      this.showPopup = true;
-      this.cdr.detectChanges();
-      console.log("Final selectedItem state:", this.selectedItem);
-    } else {
-      this.showPopup = false;
-      console.warn(
-        `Cannot open modal for "${item.dish_name}" as it is "${item.status}".`
-      );
-    }
+    this.selectedItem=item
+    console.log(this.selectedItem)
+this.showPopup=true
+   
   }
 
   closePopup() {
@@ -570,7 +323,7 @@ export class MediaComponent implements OnInit {
       return;
     }
 
-    this.selectedItem.base.options.forEach((option) => {
+    this.selectedItem.base.options.forEach((option:any) => {
       option.selected = false;
     });
 
@@ -584,7 +337,7 @@ export class MediaComponent implements OnInit {
     topping.selected = !topping.selected;
 
     this.selectedItem.extraToppings.selectedCount =
-      this.selectedItem.extraToppings.options.filter((t) => t.selected).length;
+      this.selectedItem.extraToppings.options.filter((t:any) => t.selected).length;
 
     const max = this.selectedItem.extraToppings.maxSelect || 0;
 
@@ -605,7 +358,7 @@ export class MediaComponent implements OnInit {
 
     this.selectedItem.extraSwirlsSauces.selectedCount =
       this.selectedItem.extraSwirlsSauces.options.filter(
-        (s) => s.selected
+        (s:any) => s.selected
       ).length;
 
     const max = this.selectedItem.extraSwirlsSauces.maxSelect || 0;
@@ -649,24 +402,24 @@ export class MediaComponent implements OnInit {
 
   addDish() {
     const selectedToppings = this.selectedItem.extraToppings.options.filter(
-      (t) => t.selected
+      (t:any) => t.selected
     );
     const selectedSwirlsSauces =
-      this.selectedItem.extraSwirlsSauces.options.filter((s) => s.selected);
+      this.selectedItem.extraSwirlsSauces.options.filter((s:any) => s.selected);
     const removedIngredients = this.selectedItem.ingredients.options.filter(
-      (i) => !i.selected
+      (i:any) => !i.selected
     );
 
     const ingredientsSummary =
       `Base: ${this.selectedItem.base.selectedBase?.name || "N/A"}` +
       (selectedToppings.length > 0
-        ? `, Toppings: ${selectedToppings.map((t) => t.name).join(", ")}`
+        ? `, Toppings: ${selectedToppings.map((t:any) => t.name).join(", ")}`
         : "") +
       (selectedSwirlsSauces.length > 0
-        ? `, Sauces: ${selectedSwirlsSauces.map((s) => s.name).join(", ")}`
+        ? `, Sauces: ${selectedSwirlsSauces.map((s:any) => s.name).join(", ")}`
         : "") +
       (removedIngredients.length > 0
-        ? `, Removed: ${removedIngredients.map((i) => i.name).join(", ")}`
+        ? `, Removed: ${removedIngredients.map((i:any) => i.name).join(", ")}`
         : "");
 
     const cartItem: CartItem = {
@@ -686,15 +439,15 @@ export class MediaComponent implements OnInit {
             price: this.selectedItem.base.selectedBase.price,
           }
         : undefined,
-      selectedToppings: selectedToppings.map((t) => ({
+      selectedToppings: selectedToppings.map((t:any) => ({
         name: t.name,
         price: t.price,
       })),
-      selectedSwirlsSauces: selectedSwirlsSauces.map((s) => ({
+      selectedSwirlsSauces: selectedSwirlsSauces.map((s:any) => ({
         name: s.name,
         price: s.price,
       })),
-      removedIngredients: removedIngredients.map((i) => ({ name: i.name })),
+      removedIngredients: removedIngredients.map((i:any) => ({ name: i.name })),
     };
 
     this.itemAdded.emit(cartItem);
