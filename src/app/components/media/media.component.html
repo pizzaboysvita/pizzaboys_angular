@@ -7,7 +7,7 @@
           <i class="ri-search-line"></i>
           <input class="search-box" type="search" placeholder="What are you looking for?" [(ngModel)]="searchText"
             name="search" (keyup)="searchTerm(searchText)"
-            style="flex: 1; border: none; outline: none; background: transparent" />
+            style="flex: 1; border: none; outline: none; background: transparent;" />
         </div>
 
         <div class="w-100">
@@ -16,14 +16,14 @@
             <button class="scroll-btn start" (click)="scrollLeft()">‹</button>
             <button class="scroll-btn end" (click)="scrollRight()">›</button>
 
-            <div #scrollContainer class="d-flex gap-3 pb-2 px-3" style="scroll-behavior: smooth; overflow: hidden">
+            <div #scrollContainer class="d-flex gap-3 pb-2 px-3" style="scroll-behavior: smooth; overflow: hidden;">
               @for (category of categoriesList; track category.category_id) {
               <div class="d-flex align-items-center px-3 py-2 bg-white shadow-sm rounded-4 flex-shrink-0"
                 (click)="selectCategory(category)" [ngClass]="{
-                  'border-primary border-2': selectedCategory === category
-                }" style="min-width: 120px">
+                                    'border-primary border-2': selectedCategory === category
+                                }" style="min-width: 120px;">
                 <img [src]="category.category_image" alt="{{ category.name }}"
-                  style="width: 25px; height: 25px; border-radius: 50%" class="me-3" />
+                  style="width: 25px; height: 25px; border-radius: 50%;" class="me-3" />
                 <div>
                   <div class="fw-semibold">{{ category.name }}</div>
                   <div class="text-muted small">
@@ -35,22 +35,20 @@
             </div>
           </div>
 
-
           <div class="row gx-2 gy-0">
             @for (item of dishList; track item.dish_id) {
-            <div class="col-md-3" style="margin-top: -15px !important">
-              <div class="card card1 flex-row align-items-center p-2 shadow-sm h-100" style="height: 110px !important"
+            <div class="col-md-3" style="margin-top: -15px !important;">
+              <div class="card flex-row align-items-center p-2 shadow-sm h-100" style="height: 110px !important;cursor: pointer;"
                 (click)="openIngredientsPopup(item)">
                 <img [src]="item.dish_image" alt="{{ item.dish_name }}" class="img-thumbnail me-3"
-                  style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px" />
-
+                  style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;" />
 
                 <div class="flex-grow-1">
                   <h6 class="mb-1">{{ item.dish_name }}</h6>
                   <div class="d-flex justify-content-between align-items-center mb-1">
-                    <span class="fw-bold">{{ item.dish_price | currency: 'INR' : 'symbol' : '1.2-2' }}</span>
+                    <span class="fw-bold">${{ item.dish_price }}</span>
                   </div>
-                  <div class="d-flex align-items-end gap-1 quantity-controls" style="justify-content: end">
+                  <div class="d-flex align-items-end gap-1 quantity-controls" style="justify-content: end;">
                     <button *ngIf="!item.quantity || item.quantity === 0" class="qty-btn"
                       (click)="addItem(item); $event.stopPropagation()">
                       +
@@ -58,11 +56,11 @@
 
                     <ng-container *ngIf="item.quantity as currentQuantity">
                       <ng-container *ngIf="currentQuantity > 0">
-                        <button class="qty-btn" (click)="decreaseItem(item); $event.stopPropagation()">
+                        <!-- <button class="qty-btn" >
                           -
-                        </button>
-                        <span class="qty-count">{{ currentQuantity }}</span>
-                        <button class="qty-btn" (click)="increaseItem(item); $event.stopPropagation()">
+                        </button> -->
+                        <!-- <span class="qty-count">{{ item.quantity }}</span> -->
+                        <button class="qty-btn"  >
                           +
                         </button>
                       </ng-container>
@@ -75,7 +73,6 @@
           </div>
         </div>
       </div>
-
     </app-card>
   </div>
 </div>
@@ -83,317 +80,110 @@
 @if (showPopup) {
 <div class="modal fade show d-block modal-overlay" tabindex="-1" role="dialog" aria-labelledby="ingredientsModalLabel"
   aria-hidden="true">
+
+@for(dishDetails of cartItems;track dishDetails){
   <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content-custom" #modalContent>
-      <ng-container *ngIf="selectedItem">
-        <div class="modal-header-sticky">
-          <div class="modal-dish-header">
-            <span class="fw-bold fs-4">{{ selectedItem.display_name }}</span>
-            <span class="float-end fw-bold fs-4">{{ selectedItem.currentCalculatedPrice | currency: 'INR' : 'symbol' :
-              '1.2-2'
-              }}</span>
-          </div>
-        </div>
+    <div class="modal-content" #modalContent>
+      <div class="modal-header">
+        <h4 class="modal-title w-100" id="ingredientsModalLabel">
+          <span class="fw-bold fs-4">{{ dishDetails.display_name }}</span>
+          <span class="float-end fw-bold fs-4">${{ totalPrice
+            }}</span>
+        </h4>
+      </div>
 
-        <div class="modal-body-scrollable">
-          <div class="accordion custom-accordion" id="modalAccordion">
-            @if (selectedItem.base.options && selectedItem.base.options.length > 0) {
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="headingOne">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
-                  aria-expanded="true" aria-controls="collapseOne">
-                  <span class="header-title">
-                    {{ selectedItem.base.displayName || 'Base Options' }}
-                    <span class="text-danger ms-2" *ngIf="selectedItem.base.required">*Required</span>
-                  </span>
-                </button>
-              </h2>
-              <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
-                data-bs-parent="#modalAccordion">
-                <div class="accordion-body">
-                  @for (baseOption of selectedItem.base.options; track baseOption.name) {
-                  <div class="option-list-item d-flex justify-content-between align-items-center mb-2">
-                    <span class="fw-normal option-name-text">{{
-                      baseOption.name
-                      }}</span>
-                    <div class="option-price-toggle-group d-flex align-items-center">
-                      @if (baseOption.price > 0) {
-                      <span class="price-display me-2">+{{ baseOption.price | currency: 'INR' : 'symbol' : '1.2-2'
-                        }}</span>
-                      }
-                      <div class="form-check form-check-inline mb-0 custom-toggle-radio">
-                        <input class="form-check-input" type="radio" [name]="'baseOptionGroup'"
-                          [id]="'baseOption-' + $index" [checked]="baseOption.selected"
-                          (change)="selectBase(baseOption)" />
-                        <label class="form-check-label" [for]="'baseOption-' + $index"></label>
-                      </div>
-                    </div>
-                  </div>
-                  } @empty {
-                  <p class="text-muted text-center py-2">
-                    No base options available.
-                  </p>
-                  }
-                </div>
-              </div>
-            </div>
-            } @if (selectedItem.extraToppings.options && selectedItem.extraToppings.options.length > 0) {
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="headingTwo">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                  data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                  <span class="header-title">
-                    {{ selectedItem.extraToppings.displayName || 'Extra Toppings' }}
-                    <span class="ms-1 text-muted"
-                      *ngIf="selectedItem.extraToppings.maxSelect && selectedItem.extraToppings.maxSelect > 0">
-                      ({{ selectedItem.extraToppings.selectedCount || 0 }} /
-                      {{ selectedItem.extraToppings.maxSelect }})
-                    </span>
-                  </span>
-                </button>
-              </h2>
-              <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
-                data-bs-parent="#modalAccordion">
-                <div class="accordion-body">
-                  @for (topping of selectedItem.extraToppings.options; track topping.name) {
-                  <div class="option-list-item d-flex justify-content-between align-items-center mb-2">
-                    <span class="fw-normal option-name-text">{{
-                      topping.name
-                      }}</span>
-                    <div class="option-price-toggle-group d-flex align-items-center">
-                      @if (topping.price !== undefined && topping.price > 0) {
-                      <span class="price-display me-2">+{{ topping.price | currency: 'INR' : 'symbol' : '1.2-2'
-                        }}</span>
-                      }
-                      <div class="form-check form-check-inline mb-0 custom-toggle-checkbox">
-                        <input class="form-check-input" type="checkbox" [(ngModel)]="topping.selected"
-                          [id]="'topping-' + $index" [disabled]="
-                            (selectedItem.extraToppings.selectedCount || 0) >=
-                              (selectedItem.extraToppings.maxSelect || 0) &&
-                            !topping.selected
-                          " (change)="toggleTopping(topping)" />
-                        <label class="form-check-label" [for]="'topping-' + $index"></label>
-                      </div>
-                    </div>
-                  </div>
-                  } @empty {
-                  <p class="text-muted text-center py-2">
-                    No extra toppings available.
-                  </p>
-                  }
-                </div>
-              </div>
-            </div>
-            } @if (selectedItem.extraSwirlsSauces.options && selectedItem.extraSwirlsSauces.options.length > 0) {
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="headingThree">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                  data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                  <span class="header-title">
-                    {{ selectedItem.extraSwirlsSauces.displayName || 'Extra Swirls / Sauces' }}
-                    <span class="ms-1 text-muted"
-                      *ngIf="selectedItem.extraSwirlsSauces.maxSelect && selectedItem.extraSwirlsSauces.maxSelect > 0">
-                      ({{ selectedItem.extraSwirlsSauces.selectedCount || 0 }} /
-                      {{ selectedItem.extraSwirlsSauces.maxSelect }})
-                    </span>
-                  </span>
-                </button>
-              </h2>
-              <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
-                data-bs-parent="#modalAccordion">
-                <div class="accordion-body">
-                  @for (sauce of selectedItem.extraSwirlsSauces.options; track sauce.name) {
-                  <div class="option-list-item d-flex justify-content-between align-items-center mb-2">
-                    <span class="fw-normal option-name-text">{{
-                      sauce.name
-                      }}</span>
-                    <div class="option-price-toggle-group d-flex align-items-center">
-                      @if (sauce.price !== undefined && sauce.price > 0) {
-                      <span class="price-display me-2">+{{ sauce.price | currency: 'INR' : 'symbol' : '1.2-2' }}</span>
-                      }
-                      <div class="form-check form-switch mb-0">
-                        <input class="form-check-input" type="checkbox" [(ngModel)]="sauce.selected" [disabled]="
-                            (selectedItem.extraSwirlsSauces.selectedCount || 0) >=
-                              (selectedItem.extraSwirlsSauces.maxSelect || 0) &&
-                            !sauce.selected
-                          " [id]="'sauce-' + $index" (change)="toggleSauce(sauce)" />
-                        <label class="form-check-label" [for]="'sauce-' + $index"></label>
-                      </div>
-                    </div>
-                  </div>
-                  } @empty {
-                  <p class="text-muted text-center py-2">
-                    No extra swirls/sauces available.
-                  </p>
-                  }
-                </div>
-              </div>
-            </div>
-            } @if (selectedItem.ingredients.options && selectedItem.ingredients.options.length > 0) {
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="headingFour">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                  data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                  <span class="header-title">{{ selectedItem.ingredients.displayName || 'Ingredients (Uncheck to
-                    remove)' }}</span>
-                </button>
-              </h2>
-              <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
-                data-bs-parent="#modalAccordion">
-                <div class="accordion-body">
-                  @for (ingredient of selectedItem.ingredients.options; track ingredient.name) {
-                  <div class="option-list-item d-flex justify-content-between align-items-center mb-2">
-                    <span class="fw-normal option-name-text">{{
-                      ingredient.name
-                      }}</span>
-                    <div class="option-price-toggle-group">
-                      @if (ingredient.price !== undefined && ingredient.price > 0) {
-                      <span class="price-display me-2">+{{ ingredient.price | currency: 'INR' : 'symbol' : '1.2-2'
-                        }}</span>
-                      }
-                      <div class="form-check form-switch mb-0">
-                        <input class="form-check-input" type="checkbox" [(ngModel)]="ingredient.selected"
-                          [id]="'ingredient-' + $index" />
-                        <label class="form-check-label" [for]="'ingredient-' + $index"></label>
-                      </div>
-                    </div>
-                  </div>
-                  } @empty {
-                  <p class="text-muted text-center py-2">
-                    No ingredients listed.
-                  </p>
-                  }
-                </div>
-              </div>
-            </div>
-            }
-=======
-    </div>
-  }
-</div>
-
-<!-- Popular Dishes -->
-<h5 class="mb-4 fw-bold">Popular Dishes</h5>
-<div class="row gx-2 gy-0">
-  @for (item of itemsList; track item) {
-    <div class="col-md-3" style="margin-top: -15px !important;">
-      <div class="card flex-row align-items-center p-2 shadow-sm h-100"  style="height: 110px !important;">
-        
-        <!-- Left Side: Image -->
-        <img [src]="item.img" alt="{{ item.name }}" 
-             class="img-thumbnail me-3" 
-             style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
-        
-        <!-- Right Side: Text and Actions -->
-        <div class="flex-grow-1">
-          <h6 class="mb-1">{{ item.name }}</h6>
-          <div class="d-flex justify-content-between align-items-center mb-1">
-            <span class="fw-bold">${{ item.price }}</span>
-
-            <!-- Quantity -->
-             <!-- <div class="d-flex align-items-center gap-1 maerail-btn-icons">
-              <button 
-                *ngIf="!item.quantity || item.quantity === 0" 
-                class="btn btn-sm btn-outline-secondary btn-size"
-                (click)="addItem(item)">
-                +
+      <div class="modal-body">
+        <div class="accordion" id="accordionExample">
+          @for (optSet of dishDetails.dish_option_set_array; track optSet; let i = $index) {
+          <div class="accordion-item">
+            <h2 class="accordion-header" [id]="'heading-' + i">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                [attr.data-bs-target]="'#collapse-' + i" [attr.aria-controls]="'collapse-' + i"
+                [class.collapsed]="i !== 0" [attr.aria-expanded]="i === 0 ? 'true' : 'false'">
+                <strong>{{ optSet.dispaly_name }}</strong>
               </button>
-              <ng-container *ngIf="item.quantity > 0">
-                <button class="btn btn-sm btn-outline-secondary btn-size" (click)="decreaseItem(item)">-</button>
-                <span>{{ item.quantity }}</span>
-                <button class="btn btn-sm btn-outline-secondary btn-size" (click)="increaseItem(item)">+</button>
-              </ng-container>
+            </h2>
+            <div [id]="'collapse-' + i" class="accordion-collapse collapse" [class.show]="i === 0"
+              [attr.aria-labelledby]="'heading-' + i" data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+         @for (option of optSet.option_set_array; track option; let j = $index) {
 
-            </div> -->
-           
+                <div class="option-list-item d-flex justify-content-between align-items-center mb-2">
+                  <span class="fw-normal option-name-text">{{option.name}}</span>
+                  <div class="option-price-toggle-group d-flex align-items-center">
+                    <!-- @if (baseOption.price > 0) { -->
+                    <span class="price-display">+${{option.price}}</span>
+                    <!-- } -->
+                     <div >
+        
+   <input [type]="optSet.display_name === 'Base' ? 'radio' : 'checkbox'"
+ id="checkbox-{{ j }}" class="form-check-input me-2" [checked]="option.selected"   [name]="'baseOptionGroup'"   (change)="updateItem('option',dishDetails, option )" 
+                    />
+                  <label for="checkbox-{{ j }}" class="form-check-label mb-0" style="font-size: 0.92rem;">
+                  </label>
 
-          </div>
-           <div class="d-flex align-items-end gap-1 quantity-controls" style="justify-content: end;">
-  <!-- Show only + if quantity is 0 or undefined -->
-  <button 
-    *ngIf="!item.quantity || item.quantity === 0" 
-    class="qty-btn"
-    (click)="addItem(item)">
-    +
-  </button>
+                      </div>
+                  </div>
+                </div>
 
-  <!-- Show - qty + when quantity > 0 -->
-  <ng-container *ngIf="item.quantity > 0">
-    <button class="qty-btn" (click)="decreaseItem(item)">-</button>
-    <span class="qty-count">{{ item.quantity }}</span>
-    <button class="qty-btn" (click)="increaseItem(item)">+</button>
-  </ng-container>
-</div>
-        </div>
+              }
 
-      </div>
-    </div>
-  }
-</div>
-</div>
-</div>   
- </app-card>  
-    </div>
-  </div>
-@if (showPopup) {
-  <div
-  class="modal fade show d-block modal-overlay"
-  tabindex="-1"
-  role="dialog"
->
-  <div class="modal-dialog" style="margin: 0 auto; max-width: 500px; width: 100%;">
-    <div class="modal-content shadow-sm rounded-3 border-0">
-      
-      <!-- Header -->
-      <div class="modal-header d-flex justify-content-between align-items-center border-0" style="color: black;font-size: x-large !important;">
-        <h5 class="modal-title mb-0 fw-bold " style="font-size: x-large;">{{ selectedItem.name }}</h5>
-        <div class="d-flex align-items-center gap-3">
-      <button type="button" class="btn-close" style="top: 5px !important; font-size: 16px !important;" aria-label="Close" (click)="closePopup()"></button>
 
-          <span class="text-dark fw-bold ">${{ selectedItem.price }}</span>
-          <!-- <button
-            type="button"
-            class="btn-close"
-            aria-label="Close"
-            (click)="closePopup()"
-          ></button> -->
 
-        </div>
-      </div>
 
-            <div class="notes-section">
-              <label class="form-label fw-semibold mb-1 option-section-title">
-                Notes
-              </label>
-              <textarea class="form-control" [(ngModel)]="selectedItem.notes" placeholder="Add a note..."></textarea>
+
+
+
+
+              </div>
             </div>
           </div>
+          }
         </div>
-        <div class="modal-footer">
-          <div class="input-group quantity-control">
-            <button class="btn btn-outline-warning" (click)="decreaseQty()">
-              −
-            </button>
-            <input type="text" class="form-control text-center quantity-input" [value]="quantity" readonly />
-            <button class="btn btn-outline-warning" (click)="increaseQty()">
-              +
-            </button>
-            <button class="btn btn-outline-secondary ms-2">
-              <i class="ri-file-copy-line"></i>
-            </button>
-            <button class="btn btn-outline-secondary">
-              <i class="ri-price-tag-3-line"></i>
-            </button>
-            <button class="btn btn-warning text-white fw-bold px-4" (click)="addDish()">
-              ADD DISH
-              <span class="ms-2">
-                {{ selectedItem.currentCalculatedPrice | currency:'INR':'symbol':'1.2-2' }}
-              </span>
-            </button>
-          </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <div class="notes-section">
+          <label class="form-label fw-semibold mb-1 option-section-title">
+            Notes
+          </label>
+          <textarea class="form-control" [(ngModel)]="selectedItem.notes" placeholder="Add a note..."></textarea>
         </div>
-      </ng-container>
+      </div>
+
+      <div class="modal-footer">
+        <div class="input-group quantity-control">
+          <button class="btn btn-outline-warning" (click)="updateItem('decrease',dishDetails,'')">
+            −
+          </button>
+          <input type="text" class="form-control text-center quantity-input" [value]="dishDetails.quantity" readonly />
+          <button class="btn btn-outline-warning"  (click)="updateItem('increase',dishDetails,'')">
+            +
+          </button>
+          <button class="btn btn-outline-secondary ms-2">
+            <i class="ri-file-copy-line"></i>
+          </button>
+          <button class="btn btn-outline-secondary">
+            <i class="ri-price-tag-3-line"></i>
+          </button>
+          <button class="btn btn-warning text-white fw-bold px-4" (click)="addDish(dishDetails)">
+            ADD DISH
+          </button>
+        </div>
+
+      </div>
     </div>
   </div>
+}
 </div>
 }

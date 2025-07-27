@@ -6,8 +6,8 @@ import { BehaviorSubject, Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class ApisService {
-  basesurl='http://78.142.47.247:3003'
-  // basesurl = 'http://localhost:3003'
+  // basesurl='http://78.142.47.247:3003'
+  basesurl = 'http://localhost:3003'
   private change$ = new BehaviorSubject<boolean>(false);
   poschanges$ = this.change$.asObservable();
   constructor() { }
@@ -116,12 +116,17 @@ posMenuTree(categories: any[], dishes: any[]) {
         try {
           // Parse dish_option_set_json if present
           dish_option_set_array = JSON.parse(dish.dish_option_set_json ?? '[]');
-
+//  dish_option_set_array.forEach((element:any)=>{
+//                 element.quantity=1
+//               })
           // Parse inner option_set_combo_json
           dish_option_set_array = dish_option_set_array.map((optSet: any) => {
             let option_set_array = [];
             try {
               option_set_array = JSON.parse(optSet.option_set_combo_json ?? '[]');
+              option_set_array.forEach((element:any)=>{
+                element.selected=false
+              })
             } catch (e) {
               console.error('Invalid option_set_combo_json:', optSet.option_set_combo_json, e);
             }
@@ -145,6 +150,14 @@ posMenuTree(categories: any[], dishes: any[]) {
       dishes: filteredDishes
     };
   });
+}
+getItemSubtotal(item: any): number {
+  console.log(item)
+  const optionsTotal = item.dish_option_set_array
+    .flatMap((optSet: any) => optSet.option_set_array) // flatten all options
+    .filter((option: any) => option.selected)          // only selected
+    .reduce((sum: number, option: any) => sum + Number(option.price), 0); // sum price
+  return (Number(item.duplicate_dish_price) + Number(optionsTotal)) * Number(item.quantity);
 }
 
 }

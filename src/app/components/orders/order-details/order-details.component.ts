@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { GoogleMap, GoogleMapsModule } from '@angular/google-maps';
 import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { CardComponent } from "../../../shared/components/card/card.component";
@@ -6,12 +6,14 @@ import { DetailsComponent } from "./details/details.component";
 import { OrderStatusComponent } from "./order-status/order-status.component";
 import { MediaComponent } from '../../media/media.component';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ApisService } from '../../../shared/services/apis.service';
 
 @Component({
     selector: 'app-order-details',
     templateUrl: './order-details.component.html',
     styleUrl: './order-details.component.scss',
-    imports: [NgbNavModule,MediaComponent,
+    imports: [NgbNavModule,MediaComponent,FormsModule,
          GoogleMapsModule,CommonModule]
 })
 
@@ -20,8 +22,9 @@ export class OrderDetailsComponent {
   public active = 1;
   public markers: any[];
   public zoom: number;
+  totalPrice: any =0;
 
-  constructor() {
+  constructor(private apiService:ApisService, private cdr: ChangeDetectorRef) {
     this.markers = [];
     this.zoom = 3;
   }
@@ -68,9 +71,14 @@ export class OrderDetailsComponent {
       // If item already exists in the cart, just update the quantity
       existingItem.quantity++;
     } else {
-      // If item doesn't exist, add a new item to the cart
-      this.cartItems.push({ ...item, quantity: 1 });
-     
+
+      this.cartItems.push({ ...item });
+      console.log( this.cartItems)
+      this.totalPrice =  this.cartItems
+    .reduce((sum :any, item :any) => sum + this.apiService.getItemSubtotal(item), 0)
+  console.log( this.cartItems)
+
+console.log(this.totalPrice,'oppppppppppp')
     }
      console.log(  this.cartItems,'  this.cartItems')
   }
@@ -86,19 +94,10 @@ export class OrderDetailsComponent {
     }
   }
 }
-  // get subtotal() {
-  //   return this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  // }
-
-  // get tax() {
-  //   return this.subtotal * 0.10;  // 10% tax
-  // }
-
-  // get discount() {
-  //   return this.subtotal * 0.20;  // 20% discount
-  // }
+ 
 get subtotal(): number {
-  return this.cartItems.reduce((sum:any, item:any) => sum + item.quantity * item.dish_price, 0);
+  console.log(this.cartItems,'<<<<<<<<<<<------------------this.cartItems.')
+  return this.cartItems.reduce((sum:any, item:any) => sum + item.subtotal , 0);
 }
 
 get tax(): number {
@@ -113,19 +112,57 @@ get tax(): number {
     // return this.subtotal + this.tax - this.discount;
   }
 
-  increaseQuantity(item: CartItem) {
+
+
+  removeItem(item: CartItem) {
+    this.cartItems = this.cartItems.filter((i:any) => i !== item);
+     this.totalPrice =  this.cartItems
+    .reduce((sum :any, item :any) => sum + this.apiService.getItemSubtotal(item), 0)
+  console.log( this.cartItems)
+  }
+
+
+
+  
+  updateItem(action: 'increase' | 'decrease' | 'option', item: any, option?: any) {
+
+    console.log(action,item,option,'>>>>>>>>>>>>>>>>>>>step 1')
+  // For quantity
+  if (action === 'increase') {
     item.quantity++;
   }
 
-  decreaseQuantity(item: CartItem) {
+  if (action === 'decrease') {
     if (item.quantity > 1) {
       item.quantity--;
     }
   }
 
-  removeItem(item: CartItem) {
-    this.cartItems = this.cartItems.filter((i:any) => i !== item);
+  // For option (ingredient) toggle
+  if (action === 'option' && option) {
+    option.selected = !option.selected;
   }
+
+  // Update total after any change
+  this.calculateTotal();
+}
+calculateTotal() {
+   this.totalPrice = this.cartItems
+    .reduce((sum :any, item :any) => sum + this.apiService.getItemSubtotal(item), 0);
+//   this.cartItems.forEach((item:any)=>{
+// // console.log(this.apiService.getItemSubtotal(item))
+// item.subtotal= this.totalPrice 
+//   })
+     // this.loadItemsBySelectedTitle();
+        this.cdr.detectChanges();
+  
+//   this.totalPrice = this.cartItems
+//     .reduce((sum :any, item :any) => sum + this.apiService.getItemSubtotal(item), 0);
+//    this.cartItems.forEach((item:any)=>{
+// item.subtotal=this.totalPrice
+//    })
+   console.log(  this.totalPrice,'<-------------------------this.getItemSubtotal(item)--------')
+}
 }
 export interface CartItem {
   name: string;      // Item name
