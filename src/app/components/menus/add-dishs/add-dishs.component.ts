@@ -42,7 +42,7 @@ export class AddDishsComponent {
     this.menuForm = this.fb.group({
       menuType: [null, Validators.required],
       categoryType: [null, Validators.required],
-      dishType: ['Veg'], // Default selected
+      dishType: ['standard'], // Default selected
       firstName: ['', Validators.required],
       image: [null, Validators.required],
       price: [''],
@@ -51,7 +51,7 @@ export class AddDishsComponent {
       printName: [''],
       posName: [''],
       description: [''],
-      optionSet:[''],
+      // optionSet:[''],
       subtitle: [''],
       storeName: [null, Validators.required]
 
@@ -77,10 +77,12 @@ export class AddDishsComponent {
 
     console.log(this.myData, this.type, 'opennnnnnnnnnnnn')
     if (this.type == 'Edit' || this.type == 'View') {
+      this.menuForm.get('image')?.clearValidators();
+this.menuForm.get('image')?.updateValueAndValidity();
       this.menuForm.patchValue({
         menuType: this.myData.dish_menu_id,
         categoryType: this.myData.dish_category_id,
-        dishType: ['standard'], // Default selected
+        dishType: this.myData.dish_type, // Default selected
         firstName: this.myData.dish_name,
         price: this.myData.dish_price,
         priceSuffix: this.myData.price_suffix,
@@ -90,10 +92,13 @@ export class AddDishsComponent {
         description: this.myData.description,
         subtitle: this.myData.subtitle,
         storeName: this.myData.store_id,
+       
 // optionSet:JSON.parse(dish_option_set_json)
       });
       //  this.Ingredients=JSON.parse(this.myData)
-      // this.selectedSubcategories=JSON.parse(dish_option_set_json)
+      this.selectedSubcategories=JSON.parse(this.myData.dish_option_set_json)
+      this.Ingredients=JSON.parse(this.myData.dish_ingredients_json)
+      this.choices=JSON.parse(this.myData.dish_choices_json)
       // dish_choices_json
     }
   }
@@ -222,9 +227,10 @@ export class AddDishsComponent {
         "description": this.menuForm.value.description,
         "subtitle": this.menuForm.value.subtitle,
         "store_id": this.menuForm.value.storeName,
+         dish_image:this.myData.dish_image,
         // "created_by": 1,
-        "dish_option_set_json": this.menuForm.value.optionSet,
-        "dish_ingredients_json": JSON.stringify(this.Ingredients as any),
+        "dish_option_set_json": JSON.stringify(this.selectedSubcategories),
+        "dish_ingredients_json": JSON.stringify(this.Ingredients),
         "dish_choices_json": JSON.stringify(this.choices),
       }
     } else {
@@ -246,7 +252,7 @@ export class AddDishsComponent {
         "subtitle": this.menuForm.value.subtitle,
         "store_id": this.menuForm.value.storeName,
         // "created_by": 1,
-        "dish_option_set_json": JSON.stringify(this.menuForm.value.optionSet),
+        "dish_option_set_json": JSON.stringify(this.selectedSubcategories),
         "dish_ingredients_json": JSON.stringify(this.Ingredients as any),
         "dish_choices_json": JSON.stringify(this.choices),
       }
@@ -291,4 +297,5 @@ export class AddDishsComponent {
   
     }
   }
+ 
 }
