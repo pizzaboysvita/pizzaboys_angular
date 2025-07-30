@@ -7,12 +7,12 @@
   </div>
   <div class="modal-body pt-0">
     <div class="col-12">
-        <form [formGroup]="menuForm">
+      
       <ul class="nav nav-pills flex-nowrap mb-3" ngbNav #nav="ngbNav" [(activeId)]="active">
         <li [ngbNavItem]="1" class="nav-item m-0">
           <button ngbNavLink class="nav-link" type="button">General</button>
           <ng-template ngbNavContent>
-          
+            <form [formGroup]="menuForm">
               <div class="input-items">
                 <div class="row gy-3">
                   <div class="col-12">
@@ -78,7 +78,7 @@
                     <div class="input-box">
                       <h6>Dish Type</h6>
                       <div class="btn-group w-auto" role="group" aria-label="Dish Type" style="height: 44px;">
-                        <input type="radio" class="btn-check" formControlName="dishType" value="Veg" id="standard"
+                        <input type="radio" class="btn-check" formControlName="dishType" value="standard" id="standard"
                           autocomplete="off">
                         <label class="btn btn-style" for="standard">Standard</label>
 
@@ -193,11 +193,11 @@
 
                 </div>
               </div>
-          
+          </form>
 
           </ng-template>
         </li>
-        @if(menuForm.value.dishType =='Veg'){
+        @if(menuForm.value.dishType =='standard'){
         <li [ngbNavItem]="2" class="nav-item m-0">
           <button ngbNavLink class="nav-link" type="button">Options & ingeration</button>
           <ng-template ngbNavContent>
@@ -208,7 +208,7 @@
                     <h6>Option Sets</h6>
                     <ng-select [items]="optSetDetails" [searchable]="true" [multiple]="true" bindLabel="option_set_name"
                       placeholder="Select from the dropdown or type to search"
-                       formControlName="optionSet"></ng-select>
+                       [(ngModel)]="selectedSubcategories"></ng-select>
                   </div>
                   <span class="lableSubtext">Select option sets to be applied to the dish. Option sets
                     are ordered according to how they are listed on the option set page, not by the
@@ -228,7 +228,7 @@
                 </div>
                 <div class="col-12">
                   <div class="input-box">
-                    <h6>Primary Option Set</h6>
+                    <!-- <h6>Primary Option Set</h6> -->
                     <div class="mb-2 mt-2">
                       <button class="btn addChoice-button" type="button" (click)="addIngredients()">Add
                         Ingredient</button>
@@ -388,7 +388,7 @@
         </li>
         }
       </ul>
-      </form>
+    
     </div>
     <div class="col-12" [ngbNavOutlet]="nav"></div>
   </div>
