@@ -18,6 +18,7 @@ import { ApisService } from "../../shared/services/apis.service";
 import { AppConstants } from "../../app.constants";
 import { forkJoin } from "rxjs";
 import { filter } from "rxjs/operators";
+import { NgbDropdownModule } from "@ng-bootstrap/ng-bootstrap";
 
 export interface Option {
   name: string;
@@ -96,10 +97,53 @@ export interface CartItem {
   templateUrl: "./media.component.html",
   styleUrls: ["./media.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CardComponent, CommonModule, FormsModule, NgIf, DecimalPipe],
+  imports: [
+    CardComponent,
+    CommonModule,
+    FormsModule,
+    NgIf,
+    DecimalPipe,
+    NgbDropdownModule,
+  ],
   standalone: true,
 })
 export class MediaComponent implements OnInit {
+  menuTitle = "DESIGN & DEVELOPMENT";
+
+  menu = [
+    {
+      label: "Web",
+      children: [
+        "Ultimate UI for Uno",
+        "Ultimate UI for UWP",
+        "Ultimate UI for WinUI",
+        "Ultimate UI for Xamarin",
+      ],
+    },
+    {
+      label: "Desktop",
+      children: [
+        "Ultimate UI for Uno",
+        "Ultimate UI for UWP",
+        "Ultimate UI for WinUI",
+        "Ultimate UI for Xamarin",
+      ],
+    },
+    {
+      label: "Cross Platform",
+      children: [
+        "Ultimate UI for Uno",
+        "Ultimate UI for UWP",
+        "Ultimate UI for WinUI",
+        "Ultimate UI for Xamarin",
+      ],
+    },
+  ];
+
+  onItemClick(label: string) {
+    this.menuTitle = label;
+    alert(`Clicked: ${label}`);
+  }
   public searchText: string = "";
   showPopup: boolean = false;
 

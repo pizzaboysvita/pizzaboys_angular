@@ -1,21 +1,13 @@
 <div class="row">
   <div class="col-sm-12">
     <app-card [body]="true">
-      <div
-        body
-        class="row row-cols-xl-12 row-cols-md-5 row-cols-sm-3 row-cols-2 g-sm-3 g-2 media-library-sec ratio_landscape"
-      >
+      <div body
+        class="row row-cols-xl-12 row-cols-md-5 row-cols-sm-3 row-cols-2 g-sm-3 g-2 media-library-sec ratio_landscape">
         <div class="input-box search-icon">
           <i class="ri-search-line"></i>
-          <input
-            class="search-box"
-            type="search"
-            placeholder="What are you looking for?"
-            [(ngModel)]="searchText"
-            name="search"
-            (keyup)="searchTerm(searchText)"
-            style="flex: 1; border: none; outline: none; background: transparent"
-          />
+          <input class="search-box" type="search" placeholder="What are you looking for?" [(ngModel)]="searchText"
+            name="search" (keyup)="searchTerm(searchText)"
+            style="flex: 1; border: none; outline: none; background: transparent" />
         </div>
 
         <div class="w-100">
@@ -24,27 +16,15 @@
             <button class="scroll-btn start" (click)="scrollLeft()">‹</button>
             <button class="scroll-btn end" (click)="scrollRight()">›</button>
 
-            <div
-              #scrollContainer
-              class="d-flex gap-3 pb-2 px-3"
-              style="scroll-behavior: smooth; overflow: hidden"
-            >
+            <div #scrollContainer class="d-flex gap-3 pb-2 px-3" style="scroll-behavior: smooth; overflow: hidden">
               @for (category of categoriesList; track category.category_id) {
-              <div
-                class="d-flex align-items-center px-3 py-2 bg-white shadow-sm rounded-4 flex-shrink-0"
-                (click)="selectCategory(category)"
-                [ngClass]="{
+              <div class="d-flex align-items-center px-3 py-2 bg-white shadow-sm rounded-4 flex-shrink-0"
+                (click)="selectCategory(category)" [ngClass]="{
                   'border-primary border-2':
                     selectedCategory?.category_id === category.category_id
-                }"
-                style="min-width: 120px"
-              >
-                <img
-                  [src]="category.category_image"
-                  alt="{{ category.name }}"
-                  style="width: 25px; height: 25px; border-radius: 50%"
-                  class="me-3"
-                />
+                }" style="min-width: 120px">
+                <img [src]="category.category_image" alt="{{ category.name }}"
+                  style="width: 25px; height: 25px; border-radius: 50%" class="me-3" />
                 <div>
                   <div class="fw-semibold">{{ category.name }}</div>
                   <div class="text-muted small">
@@ -59,54 +39,32 @@
           <div class="row gx-2 gy-0">
             @for (item of dishList; track item.dish_id) {
             <div class="col-md-3" style="margin-top: -15px !important">
-              <div
-                class="card flex-row align-items-center p-2 shadow-sm h-100"
-                style="height: 110px !important; cursor: pointer"
-                (click)="openIngredientsPopup(item)"
-              >
-                <img
-                  [src]="item.dish_image"
-                  alt="{{ item.dish_name }}"
-                  class="img-thumbnail me-3"
-                  style="
+              <div class="card flex-row align-items-center p-2 shadow-sm h-100"
+                style="height: 110px !important; cursor: pointer" (click)="openIngredientsPopup(item)" >
+                <img [src]="item.dish_image" alt="{{ item.dish_name }}" class="img-thumbnail me-3" style="
                     width: 80px;
                     height: 80px;
                     object-fit: cover;
                     border-radius: 8px;
-                  "
-                />
+                  " />
 
                 <div class="flex-grow-1">
                   <h6 class="mb-1">{{ item.dish_name }}</h6>
-                  <div
-                    class="d-flex justify-content-between align-items-center mb-1"
-                  >
+                  <div class="d-flex justify-content-between align-items-center mb-1">
                     <span class="fw-bold">${{ item.dish_price }}</span>
                   </div>
-                  <div
-                    class="d-flex align-items-end gap-1 quantity-controls"
-                    style="justify-content: end"
-                  >
-                    <button
-                      *ngIf="!item.quantity || item.quantity === 0"
-                      class="qty-btn"
-                      (click)="openIngredientsPopup(item); $event.stopPropagation()"
-                    >
+                  <div class="d-flex align-items-end gap-1 quantity-controls" style="justify-content: end">
+                    <button *ngIf="!item.quantity || item.quantity === 0" class="qty-btn"
+                      (click)="openIngredientsPopup(item); $event.stopPropagation()">
                       +
                     </button>
 
                     <ng-container *ngIf="item.quantity && item.quantity > 0">
-                      <button
-                        class="qty-btn"
-                        (click)="decreaseItem(item); $event.stopPropagation()"
-                      >
+                      <button class="qty-btn" (click)="decreaseItem(item); $event.stopPropagation()">
                         -
                       </button>
                       <span class="qty-count">{{ item.quantity }}</span>
-                      <button
-                        class="qty-btn"
-                        (click)="addItem(item); $event.stopPropagation()"
-                      >
+                      <button class="qty-btn" (click)="addItem(item); $event.stopPropagation()">
                         +
                       </button>
                     </ng-container>
@@ -129,168 +87,131 @@
       <div class="modal-header">
         <h4 class="modal-title w-100">
           <span class="fw-bold fs-4">{{ selectedItemForModal.name }}</span>
-          <span class="float-end fw-bold fs-4"
-            >${{ selectedItemForModal.currentCalculatedPrice | number : "1.2-2" }}</span
-          >
+          <span class="float-end fw-bold fs-4">${{ selectedItemForModal.currentCalculatedPrice | number : "1.2-2"
+            }}</span>
         </h4>
-        <button
-          type="button"
-          class="btn-close"
-          aria-label="Close"
-          (click)="closePopup()"
-        ></button>
+        <button type="button" class="btn-close" aria-label="Close" (click)="closePopup()"></button>
       </div>
 
       <div class="modal-body p-4">
+        
+<div class="align-content-center justify-content-center " style="padding-bottom: 100px;">
+  <div ngbDropdown class="dropdown menu-wrapper">
+    <button ngbDropdownToggle class="menu-btn">{{ menuTitle }}</button>
+
+    <ul ngbDropdownMenu class="main-menu shadow">
+      <li *ngFor="let item of menu" class="dropdown-submenu" [class.has-children]="item.children.length">
+        <a href="#" class="dropdown-item"
+          (click)="item.children.length ? $event.preventDefault() : onItemClick(item.label)">
+          {{ item.label }}
+        </a>
+
+        <ul class="dropdown-menu submenu" *ngIf="item.children.length">
+          <li *ngFor="let sub of item.children">
+            <a class="dropdown-item" (click)="onItemClick(sub)">
+              {{ sub }}
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</div>
         @for (choice of pizzaChoices; track $index) {
-          <div
-            class="choice-item border mb-0"
-            [ngClass]="{
+        <div class="choice-item border mb-0" [ngClass]="{
               'border-primary border-2': selectedExpandedChoice === choice,
               'rounded-top': $first,
               'rounded-bottom': $last && selectedExpandedChoice !== choice,
               'mb-2': selectedExpandedChoice !== choice
-            }"
-          >
-            <button
-              class="btn btn-block w-100 text-start py-2 px-3 d-flex justify-content-between align-items-center"
-              type="button"
-              (click)="selectExpandedChoice(choice)"
-            >
-              <span class="fw-semibold">{{ choice }}</span>
-              <i
-                class="ri-arrow-down-s-fill fs-4"
-                [ngClass]="{ 'rotate-up': selectedExpandedChoice === choice }"
-              ></i>
-            </button>
+            }">
+          <button class="btn btn-block w-100 text-start py-2 px-3 d-flex justify-content-between align-items-center"
+            type="button" (click)="selectExpandedChoice(choice)">
+            <span class="fw-semibold">{{ choice }}</span>
+            <i class="ri-arrow-down-s-fill fs-4" [ngClass]="{ 'rotate-up': selectedExpandedChoice === choice }"></i>
+          </button>
 
-            @if (selectedExpandedChoice === choice) {
-            <div
-              class="config-section p-3 border-start border-end border-bottom rounded-bottom"
-              style="background-color: #f0f8ff"
-            >
-              @if (selectedItemForModal.baseOptions.options.length > 0) {
-              <div class="mb-3">
-                <label class="form-label fw-semibold mb-1"
-                  >Base
-                  <span class="text-muted small">(Select one)</span></label
-                >
-                @for (option of selectedItemForModal.baseOptions.options; track option.uniqueId) {
-                <div class="d-flex justify-content-between align-items-center py-1">
-                  <span class="form-check-label me-auto">{{ option.name }}</span>
-                  <span
-                    class="text-muted small me-2"
-                    *ngIf="option.price && option.price > 0"
-                    >+${{ option.price | number : "1.2-2" }}</span
-                  >
-                  <input
-                    type="radio"
-                    class="form-check-input"
-                    [checked]="option.selected"
-                    (change)="updateOptionSelection('baseOptions', option)"
-                    [name]="'baseOptionGroup'"
-                    [id]="'base-' + option.uniqueId"
-                  />
-                  <label class="form-check-label" [for]="'base-' + option.uniqueId"></label>
-                </div>
-                }
+          @if (selectedExpandedChoice === choice) {
+          <div class="config-section p-3 border-start border-end border-bottom rounded-bottom"
+            style="background-color: #f0f8ff">
+            @if (selectedItemForModal.baseOptions.options.length > 0) {
+            <div class="mb-3">
+              <label class="form-label fw-semibold mb-1">Base
+                <span class="text-muted small">(Select one)</span></label>
+              @for (option of selectedItemForModal.baseOptions.options; track option.uniqueId) {
+              <div class="d-flex justify-content-between align-items-center py-1">
+                <span class="form-check-label me-auto">{{ option.name }}</span>
+                <span class="text-muted small me-2" *ngIf="option.price && option.price > 0">+${{ option.price | number
+                  : "1.2-2" }}</span>
+                <input type="radio" class="form-check-input" [checked]="option.selected"
+                  (change)="updateOptionSelection('baseOptions', option)" [name]="'baseOptionGroup'"
+                  [id]="'base-' + option.uniqueId" />
+                <label class="form-check-label" [for]="'base-' + option.uniqueId"></label>
               </div>
               }
+            </div>
+            }
 
-              @if (selectedItemForModal.extraToppingsOptions.options.length > 0) {
-              <div class="mb-3">
-                <label class="form-label fw-semibold mb-1"
-                  >Extra Toppings
-                  <span class="text-muted small"
-                    >(Select up to
-                    {{ selectedItemForModal.extraToppingsOptions.maxSelect || 'unlimited' }})</span
-                  ></label
-                >
-                @for (option of selectedItemForModal.extraToppingsOptions.options; track option.uniqueId) {
-                <div class="d-flex justify-content-between align-items-center py-1">
-                  <span class="form-check-label me-auto">{{ option.name }}</span>
-                  <span
-                    class="text-muted small me-2"
-                    *ngIf="option.price && option.price > 0"
-                    >+${{ option.price | number : "1.2-2" }}</span
-                  >
-                  <input
-                    type="checkbox"
-                    class="form-check-input"
-                    [checked]="option.selected"
-                    (change)="updateOptionSelection('extraToppingsOptions', option)"
-                    [id]="'topping-' + option.uniqueId"
-                  />
-                  <label class="form-check-label" [for]="'topping-' + option.uniqueId"></label>
-                </div>
-                }
+            @if (selectedItemForModal.extraToppingsOptions.options.length > 0) {
+            <div class="mb-3">
+              <label class="form-label fw-semibold mb-1">Extra Toppings
+                <span class="text-muted small">(Select up to
+                  {{ selectedItemForModal.extraToppingsOptions.maxSelect || 'unlimited' }})</span></label>
+              @for (option of selectedItemForModal.extraToppingsOptions.options; track option.uniqueId) {
+              <div class="d-flex justify-content-between align-items-center py-1">
+                <span class="form-check-label me-auto">{{ option.name }}</span>
+                <span class="text-muted small me-2" *ngIf="option.price && option.price > 0">+${{ option.price | number
+                  : "1.2-2" }}</span>
+                <input type="checkbox" class="form-check-input" [checked]="option.selected"
+                  (change)="updateOptionSelection('extraToppingsOptions', option)"
+                  [id]="'topping-' + option.uniqueId" />
+                <label class="form-check-label" [for]="'topping-' + option.uniqueId"></label>
               </div>
               }
+            </div>
+            }
 
-              @if (selectedItemForModal.extraSwirlsSaucesOptions.options.length > 0) {
-              <div class="mb-3">
-                <label class="form-label fw-semibold mb-1"
-                  >Extra Swirls / Sauces
-                  <span class="text-muted small"
-                    >(Select up to
-                    {{ selectedItemForModal.extraSwirlsSaucesOptions.maxSelect || 'unlimited' }})</span
-                  ></label
-                >
-                @for (option of selectedItemForModal.extraSwirlsSaucesOptions.options; track option.uniqueId) {
-                <div class="d-flex justify-content-between align-items-center py-1">
-                  <span class="form-check-label me-auto">{{ option.name }}</span>
-                  <span
-                    class="text-muted small me-2"
-                    *ngIf="option.price && option.price > 0"
-                    >+${{ option.price | number : "1.2-2" }}</span
-                  >
-                  <input
-                    type="checkbox"
-                    class="form-check-input"
-                    [checked]="option.selected"
-                    (change)="updateOptionSelection('extraSwirlsSaucesOptions', option)"
-                    [id]="'sauce-' + option.uniqueId"
-                  />
-                  <label class="form-check-label" [for]="'sauce-' + option.uniqueId"></label>
-                </div>
-                }
+            @if (selectedItemForModal.extraSwirlsSaucesOptions.options.length > 0) {
+            <div class="mb-3">
+              <label class="form-label fw-semibold mb-1">Extra Swirls / Sauces
+                <span class="text-muted small">(Select up to
+                  {{ selectedItemForModal.extraSwirlsSaucesOptions.maxSelect || 'unlimited' }})</span></label>
+              @for (option of selectedItemForModal.extraSwirlsSaucesOptions.options; track option.uniqueId) {
+              <div class="d-flex justify-content-between align-items-center py-1">
+                <span class="form-check-label me-auto">{{ option.name }}</span>
+                <span class="text-muted small me-2" *ngIf="option.price && option.price > 0">+${{ option.price | number
+                  : "1.2-2" }}</span>
+                <input type="checkbox" class="form-check-input" [checked]="option.selected"
+                  (change)="updateOptionSelection('extraSwirlsSaucesOptions', option)"
+                  [id]="'sauce-' + option.uniqueId" />
+                <label class="form-check-label" [for]="'sauce-' + option.uniqueId"></label>
               </div>
               }
+            </div>
+            }
 
-              @if (selectedItemForModal.ingredientsOptions.options.length > 0) {
-              <div class="mb-3">
-                <label class="form-label fw-semibold mb-1"
-                  >Ingredients
-                  <span class="text-muted small">(Un-check to remove)</span></label
-                >
-                @for (option of selectedItemForModal.ingredientsOptions.options; track option.uniqueId) {
-                <div class="d-flex justify-content-between align-items-center py-1">
-                  <span class="form-check-label me-auto">{{ option.name }}</span>
-                  <input
-                    type="checkbox"
-                    class="form-check-input"
-                    [checked]="option.selected"
-                    (change)="updateOptionSelection('ingredientsOptions', option)"
-                    [id]="'ingredient-' + option.uniqueId"
-                  />
-                  <label class="form-check-label" [for]="'ingredient-' + option.uniqueId"></label>
-                </div>
-                }
+            @if (selectedItemForModal.ingredientsOptions.options.length > 0) {
+            <div class="mb-3">
+              <label class="form-label fw-semibold mb-1">Ingredients
+                <span class="text-muted small">(Un-check to remove)</span></label>
+              @for (option of selectedItemForModal.ingredientsOptions.options; track option.uniqueId) {
+              <div class="d-flex justify-content-between align-items-center py-1">
+                <span class="form-check-label me-auto">{{ option.name }}</span>
+                <input type="checkbox" class="form-check-input" [checked]="option.selected"
+                  (change)="updateOptionSelection('ingredientsOptions', option)"
+                  [id]="'ingredient-' + option.uniqueId" />
+                <label class="form-check-label" [for]="'ingredient-' + option.uniqueId"></label>
               </div>
               }
             </div>
             }
           </div>
+          }
+        </div>
         }
         <div class="mb-3">
           <label for="modalNotes" class="form-label fw-semibold">Notes</label>
-          <textarea
-            id="modalNotes"
-            class="form-control"
-            rows="3"
-            placeholder="Add any special instructions here..."
-            [(ngModel)]="modalNotes"
-          ></textarea>
+          <textarea id="modalNotes" class="form-control" rows="3" placeholder="Add any special instructions here..."
+            [(ngModel)]="modalNotes"></textarea>
         </div>
       </div>
 
@@ -299,12 +220,7 @@
           <button class="btn btn-outline-warning" (click)="decreaseModalQuantity()">
             −
           </button>
-          <input
-            type="text"
-            class="form-control text-center quantity-input"
-            [value]="modalQuantity"
-            readonly
-          />
+          <input type="text" class="form-control text-center quantity-input" [value]="modalQuantity" readonly />
           <button class="btn btn-outline-warning" (click)="increaseModalQuantity()">
             +
           </button>
