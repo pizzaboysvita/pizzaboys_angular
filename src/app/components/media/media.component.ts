@@ -18,39 +18,44 @@ import { ApisService } from "../../shared/services/apis.service";
 import { AppConstants } from "../../app.constants";
 import { forkJoin } from "rxjs";
 import { filter } from "rxjs/operators";
+import { NgbDropdownModule } from "@ng-bootstrap/ng-bootstrap";
 
 export interface Option {
   name: string;
   price?: number;
   selected: boolean;
+  uniqueId?: string;
 }
 
 export interface BaseOption {
   name: string;
   price: number;
   selected: boolean;
+  uniqueId?: string;
 }
 
 export interface ItemOptions {
   maxSelect?: number;
   selectedCount?: number;
   options: Option[];
+  required?: boolean;
 }
 
-export interface SelectedDishItem {
+export interface SelectedDishItemForModal {
   name: string;
   basePrice: number;
   currentCalculatedPrice: number;
   notes: string;
   originalDishId?: number;
-  base: {
-    selectedBase: BaseOption | null;
-    options: BaseOption[];
-    required?: boolean;
-  };
-  extraToppings: ItemOptions;
-  extraSwirlsSauces: ItemOptions;
-  ingredients: ItemOptions;
+  quantity: number;
+
+  baseOptions: ItemOptions;
+  extraToppingsOptions: ItemOptions;
+  extraSwirlsSaucesOptions: ItemOptions;
+  ingredientsOptions: ItemOptions;
+
+  parsedOptionSets?: any[];
+  parsedIngredients?: any[];
 }
 
 export interface DishFromAPI {
@@ -84,6 +89,7 @@ export interface CartItem {
   selectedSwirlsSauces?: { name: string; price?: number }[];
   removedIngredients?: { name: string }[];
   notes?: string;
+  modalSelectedBaseChoice?: string;
 }
 
 @Component({
@@ -91,24 +97,59 @@ export interface CartItem {
   templateUrl: "./media.component.html",
   styleUrls: ["./media.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CardComponent, CommonModule, FormsModule],
+  imports: [
+    CardComponent,
+    CommonModule,
+    FormsModule,
+    NgIf,
+    DecimalPipe,
+    NgbDropdownModule,
+  ],
   standalone: true,
 })
 export class MediaComponent implements OnInit {
+  menuTitle = "DESIGN & DEVELOPMENT";
+
+  menu = [
+    {
+      label: "Web",
+      children: [
+        "Ultimate UI for Uno",
+        "Ultimate UI for UWP",
+        "Ultimate UI for WinUI",
+        "Ultimate UI for Xamarin",
+      ],
+    },
+    {
+      label: "Desktop",
+      children: [
+        "Ultimate UI for Uno",
+        "Ultimate UI for UWP",
+        "Ultimate UI for WinUI",
+        "Ultimate UI for Xamarin",
+      ],
+    },
+    {
+      label: "Cross Platform",
+      children: [
+        "Ultimate UI for Uno",
+        "Ultimate UI for UWP",
+        "Ultimate UI for WinUI",
+        "Ultimate UI for Xamarin",
+      ],
+    },
+  ];
+
+  onItemClick(label: string) {
+    this.menuTitle = label;
+    alert(`Clicked: ${label}`);
+  }
   public searchText: string = "";
-  public isSearch: boolean = false;
-  public searchResult: boolean = false;
-  public searchResultEmpty: boolean = false;
   showPopup: boolean = false;
-  public url: string[] = [];
-  selectedTitle1: any = "";
-  quantity = 1;
-  expandedIndex: number | null = null;
 
   @Output() itemAdded = new EventEmitter<CartItem>();
   @Output() itemDecreased = new EventEmitter<CartItem>();
 
-  itemsList: DishFromAPI[] = [];
   @ViewChild("scrollContainer", { static: false }) scrollContainer!: ElementRef;
   @ViewChild("modalContent") modalContent!: ElementRef;
 
@@ -116,9 +157,20 @@ export class MediaComponent implements OnInit {
   categoriesList: any[] = [];
   dishList: DishFromAPI[] = [];
 
-  selectedItem:any
-  totalPrice: any;
-  cartItems: any=[];
+  selectedItemForModal: SelectedDishItemForModal | null = null;
+  selectedDishFromList: DishFromAPI | null = null;
+
+  pizzaChoices: string[] = [
+    "Large Pizza Choice #1",
+    "Large Pizza Choice #2",
+    "Large Pizza Choice #3",
+  ];
+  selectedExpandedChoice: string = "";
+
+  modalNotes: string = "";
+  modalQuantity: number = 1;
+
+  expandedIndex: number | null = null;
 
   constructor(
     public modal: NgbModal,
@@ -178,6 +230,9 @@ export class MediaComponent implements OnInit {
 
     forkJoin([categoryApi, dishApi]).subscribe(
       ([categoryRes, dishRes]: any) => {
+        console.log("Category API Response:", categoryRes);
+        console.log("Dish API Response:", dishRes);
+
         const processedMenu = this.apiService.posMenuTree(
           categoryRes.categories,
           dishRes.data
@@ -188,7 +243,6 @@ export class MediaComponent implements OnInit {
           this.selectedCategory = this.categoriesList[0];
           this.dishList = this.selectedCategory.dishes;
         }
-        // this.loadItemsBySelectedTitle();
         this.cdr.detectChanges();
       },
       (error) => {
@@ -198,7 +252,6 @@ export class MediaComponent implements OnInit {
   }
 
   selectCategory(category: any) {
-    console.log("Selected category:", category);
     this.dishList = category.dishes;
     this.selectedCategory = category;
     this.cdr.detectChanges();
@@ -208,54 +261,208 @@ export class MediaComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-
-
   addItem(item: DishFromAPI) {
     if (item.status === 1 || item.status === "Available") {
       item.quantity = (item.quantity || 0) + 1;
       this.cdr.detectChanges();
+      const simplifiedCartItem: CartItem = {
+        name: item.dish_name,
+        price: parseFloat(item.dish_price),
+        quantity: item.quantity,
+        Ingredients: "",
+        title: this.selectedCategory ? this.selectedCategory.name : "Unknown",
+        status: item.status,
+        dishId: item.dish_id,
+        notes: item.notes || "",
+      };
+      this.itemAdded.emit(simplifiedCartItem);
     }
   }
 
-  // decreaseItem(item: DishFromAPI) {
-  //   if (item.quantity && item.quantity > 0) {
-  //     item.quantity--;
-  //     this.cdr.detectChanges();
-  //   }
-  // }
-
-  // increaseItem(item: DishFromAPI) {
-  //   if (item.status === 1 || item.status === "Available") {
-  //     item.quantity = (item.quantity || 0) + 1;
-  //     this.cdr.detectChanges();
-  //   }
-  // }
-
-
-
+  decreaseItem(item: DishFromAPI): void {
+    if (item.quantity && item.quantity > 0) {
+      item.quantity--;
+      this.cdr.detectChanges();
+      const simplifiedCartItem: CartItem = {
+        name: item.dish_name,
+        price: parseFloat(item.dish_price),
+        quantity: item.quantity,
+        Ingredients: "",
+        title: this.selectedCategory ? this.selectedCategory.name : "Unknown",
+        status: item.status,
+        dishId: item.dish_id,
+        notes: item.notes || "",
+      };
+      this.itemDecreased.emit(simplifiedCartItem);
+    }
+  }
 
   openIngredientsPopup(item: DishFromAPI) {
-    console.log("--- Opening Ingredients Popup ---");
-    console.log("Item received:", item);
-    console.log("Raw dish_ingredients_json:", item.dish_ingredients_json);
-    console.log("Raw dish_option_set_json:", item.dish_option_set_json);
-    item.quantity=0
-this.cartItems=[item]
+    this.selectedDishFromList = item;
+    this.modalQuantity = 1;
+    this.modalNotes = "";
+    this.selectedExpandedChoice = "";
+    this.expandedIndex = null;
 
-console.log(this.cartItems,',--------------------------cartItems-----------------')
+    this.selectedItemForModal = {
+      name: item.dish_name,
+      basePrice: parseFloat(item.dish_price),
+      currentCalculatedPrice: parseFloat(item.dish_price),
+      notes: item.notes || "",
+      originalDishId: item.dish_id,
+      quantity: 1,
 
-    this.selectedItem=item
-     this.selectedItem.quantity=1
-     this.totalPrice=item.dish_price
-    this.selectedItem.duplicate_dish_price=item.dish_price
-    console.log(this.selectedItem)
-this.showPopup=true
-   
+      baseOptions: { options: [] },
+      extraToppingsOptions: { options: [] },
+      extraSwirlsSaucesOptions: { options: [] },
+      ingredientsOptions: { options: [] },
+    };
+
+    try {
+      if (
+        item.dish_option_set_json &&
+        (item.dish_option_set_json.startsWith("[") ||
+          item.dish_option_set_json.startsWith("{"))
+      ) {
+        const optionSets = JSON.parse(item.dish_option_set_json);
+        this.selectedItemForModal.parsedOptionSets = optionSets;
+
+        optionSets.forEach((set: any) => {
+          let comboOptionsArray: any[] = [];
+          if (
+            set.option_set_combo_json &&
+            (set.option_set_combo_json.startsWith("[") ||
+              set.option_set_combo_json.startsWith("{"))
+          ) {
+            try {
+              comboOptionsArray = JSON.parse(set.option_set_combo_json);
+              if (!Array.isArray(comboOptionsArray)) {
+                console.warn(
+                  `Dish ${item.dish_name} (ID: ${item.dish_id}): option_set_combo_json for "${set.display_name}" parsed to non-array. Value:`,
+                  comboOptionsArray
+                );
+                comboOptionsArray = [];
+              }
+            } catch (e) {
+              console.error(
+                `Dish ${item.dish_name} (ID: ${item.dish_id}): Error parsing option_set_combo_json for "${set.display_name}":`,
+                e,
+                "Raw JSON:",
+                set.option_set_combo_json
+              );
+              comboOptionsArray = [];
+            }
+          } else if (set.option_set_combo_json) {
+            console.warn(
+              `Dish ${item.dish_name} (ID: ${item.dish_id}): option_set_combo_json for "${set.display_name}" is malformed (not starting with [ or {): "${set.option_set_combo_json}"`
+            );
+          }
+
+          const mappedOptions: Option[] = comboOptionsArray.map(
+            (opt: any, index: number) => ({
+              name: opt.name,
+              price: parseFloat(opt.price || "0"),
+              selected: opt.selected || false,
+              uniqueId: `${set.display_name}-${opt.name}-${index}`,
+            })
+          );
+
+          if (set.display_name === "Base") {
+            this.selectedItemForModal!.baseOptions = {
+              options: mappedOptions,
+              maxSelect: set.max_select || 1,
+              selectedCount: 0,
+              required: set.required || false,
+            };
+            if (
+              set.required &&
+              mappedOptions.length > 0 &&
+              !mappedOptions.some((opt) => opt.selected)
+            ) {
+              mappedOptions[0].selected = true;
+            }
+          } else if (set.display_name === "Extra Toppings") {
+            this.selectedItemForModal!.extraToppingsOptions = {
+              options: mappedOptions,
+              maxSelect: set.max_select || Infinity,
+              selectedCount: 0,
+              required: set.required || false,
+            };
+          } else if (set.display_name === "Extra Swirls / Sauces") {
+            this.selectedItemForModal!.extraSwirlsSaucesOptions = {
+              options: mappedOptions,
+              maxSelect: set.max_select || Infinity,
+              selectedCount: 0,
+              required: set.required || false,
+            };
+          }
+          mappedOptions.forEach((opt) => {
+            if (opt.selected) {
+              if (set.display_name === "Base")
+                this.selectedItemForModal!.baseOptions.selectedCount!++;
+              else if (set.display_name === "Extra Toppings")
+                this.selectedItemForModal!.extraToppingsOptions
+                  .selectedCount!++;
+              else if (set.display_name === "Extra Swirls / Sauces")
+                this.selectedItemForModal!.extraSwirlsSaucesOptions
+                  .selectedCount!++;
+            }
+          });
+        });
+      } else if (item.dish_option_set_json) {
+        console.warn(
+          `Dish ${item.dish_name} (ID: ${item.dish_id}) has malformed dish_option_set_json (not starting with [ or {): "${item.dish_option_set_json}"`
+        );
+      }
+
+      if (
+        item.dish_ingredients_json &&
+        (item.dish_ingredients_json.startsWith("[") ||
+          item.dish_ingredients_json.startsWith("{"))
+      ) {
+        const ingredients = JSON.parse(item.dish_ingredients_json);
+        this.selectedItemForModal.parsedIngredients = ingredients;
+
+        if (Array.isArray(ingredients)) {
+          this.selectedItemForModal.ingredientsOptions = {
+            options: ingredients.map((ing: any, index: number) => ({
+              name: ing.name,
+              price: 0,
+              selected: ing.selected || true,
+              uniqueId: `ingredient-${ing.name}-${index}`,
+            })),
+          };
+        } else {
+          console.warn(
+            `Dish ${item.dish_name} (ID: ${item.dish_id}): dish_ingredients_json parsed to non-array:`,
+            ingredients
+          );
+        }
+      } else if (item.dish_ingredients_json) {
+        console.warn(
+          `Dish ${item.dish_name} (ID: ${item.dish_id}) has malformed dish_ingredients_json (not starting with [ or {): "${item.dish_ingredients_json}"`
+        );
+      }
+    } catch (e) {
+      console.error(
+        "Error parsing dish JSONs (outer try-catch caught syntax error or unexpected structure):",
+        e
+      );
+    }
+
+    this.calculateModalPrice();
+    this.showPopup = true;
+    this.cdr.detectChanges();
   }
 
   closePopup() {
     this.showPopup = false;
+    this.selectedDishFromList = null;
+    this.selectedItemForModal = null;
+    this.modalNotes = "";
+    this.modalQuantity = 1;
     this.expandedIndex = null;
+    this.selectedExpandedChoice = "";
     this.cdr.detectChanges();
   }
 
@@ -264,103 +471,192 @@ this.showPopup=true
     this.cdr.detectChanges();
   }
 
-
-
-  
-
-  addDish(cartItem:any) {
-    // const selectedToppings = this.selectedItem.extraToppings.options.filter(
-    //   (t:any) => t.selected
-    // );
-    // const selectedSwirlsSauces =
-    //   this.selectedItem.extraSwirlsSauces.options.filter((s:any) => s.selected);
-    // const removedIngredients = this.selectedItem.ingredients.options.filter(
-    //   (i:any) => !i.selected
-    // );
-
-    // const ingredientsSummary =
-    //   `Base: ${this.selectedItem.base.selectedBase?.name || "N/A"}` +
-    //   (selectedToppings.length > 0
-    //     ? `, Toppings: ${selectedToppings.map((t:any) => t.name).join(", ")}`
-    //     : "") +
-    //   (selectedSwirlsSauces.length > 0
-    //     ? `, Sauces: ${selectedSwirlsSauces.map((s:any) => s.name).join(", ")}`
-    //     : "") +
-    //   (removedIngredients.length > 0
-    //     ? `, Removed: ${removedIngredients.map((i:any) => i.name).join(", ")}`
-    //     : "");
-
-    // const cartItem: CartItem = {
-    //   name: this.selectedItem.name,
-    //   price: this.selectedItem.currentCalculatedPrice,
-    //   quantity: this.quantity,
-    //   Ingredients: ingredientsSummary,
-    //   title: this.selectedCategory
-    //     ? this.selectedCategory.name
-    //     : "Custom Order",
-    //   status: "Available",
-    //   dishId: this.selectedItem.originalDishId,
-    //   notes: this.selectedItem.notes,
-    //   selectedBaseOption: this.selectedItem.base.selectedBase
-    //     ? {
-    //         name: this.selectedItem.base.selectedBase.name,
-    //         price: this.selectedItem.base.selectedBase.price,
-    //       }
-    //     : undefined,
-    //   selectedToppings: selectedToppings.map((t:any) => ({
-    //     name: t.name,
-    //     price: t.price,
-    //   })),
-    //   selectedSwirlsSauces: selectedSwirlsSauces.map((s:any) => ({
-    //     name: s.name,
-    //     price: s.price,
-    //   })),
-    //   removedIngredients: removedIngredients.map((i:any) => ({ name: i.name })),
-    // };
-    cartItem.seleted_ingredient=cartItem.dish_option_set_array.flatMap((optSet: any) => optSet.option_set_array)
-    console.log("Dish added to cart:", cartItem);
-    this.itemAdded.emit(cartItem);
-    this.closePopup();
-
+  selectExpandedChoice(choice: string): void {
+    if (this.selectedExpandedChoice === choice) {
+      this.selectedExpandedChoice = "";
+    } else {
+      this.selectedExpandedChoice = choice;
+    }
+    this.cdr.detectChanges();
   }
 
-  
-  
-  
+  updateOptionSelection(
+    optionSetType: keyof SelectedDishItemForModal,
+    option: Option
+  ): void {
+    if (!this.selectedItemForModal) return;
 
+    const optionSet = this.selectedItemForModal[optionSetType] as ItemOptions;
 
-  updateItem(action: 'increase' | 'decrease' | 'option', item: any, option?: any) {
+    if (!optionSet || !optionSet.options) return;
 
-    console.log(action,item,option,'>>>>>>>>>>>>>>>>>>>step 1')
-  // For quantity
-  if (action === 'increase') {
-    item.quantity++;
+    if (optionSetType === "baseOptions") {
+      optionSet.options.forEach((o) => (o.selected = false));
+      option.selected = true;
+      optionSet.selectedCount = 1;
+    } else {
+      if (option.selected) {
+        option.selected = false;
+        optionSet.selectedCount = (optionSet.selectedCount || 0) - 1;
+      } else {
+        if (
+          optionSet.maxSelect &&
+          (optionSet.selectedCount || 0) >= optionSet.maxSelect
+        ) {
+          console.warn(
+            `Cannot select more than ${optionSet.maxSelect} options for ${optionSetType}`
+          );
+          return;
+        }
+        option.selected = true;
+        optionSet.selectedCount = (optionSet.selectedCount || 0) + 1;
+      }
+    }
+    this.calculateModalPrice();
+    this.cdr.detectChanges();
   }
 
-  if (action === 'decrease') {
-    if (item.quantity > 1) {
-      item.quantity--;
+  decreaseModalQuantity(): void {
+    if (this.modalQuantity > 1) {
+      this.modalQuantity--;
+      this.calculateModalPrice();
+      this.cdr.detectChanges();
     }
   }
 
-  // For option (ingredient) toggle
-  if (action === 'option' && option) {
-    option.selected = !option.selected;
+  increaseModalQuantity(): void {
+    this.modalQuantity++;
+    this.calculateModalPrice();
+    this.cdr.detectChanges();
   }
 
-  // Update total after any change
-  this.calculateTotal();
-}
+  calculateModalPrice(): void {
+    if (!this.selectedItemForModal) {
+      return;
+    }
 
+    let currentPrice = this.selectedItemForModal.basePrice;
 
+    const selectedBase = this.selectedItemForModal.baseOptions.options.find(
+      (opt) => opt.selected
+    );
+    if (selectedBase && selectedBase.price !== undefined) {
+      currentPrice += selectedBase.price;
+    }
 
-calculateTotal() {
-  this.totalPrice = this.cartItems
-    .reduce((sum :any, item :any) => sum + this.apiService.getItemSubtotal(item), 0);
-   this.cartItems.forEach((item:any)=>{
-item.subtotal=this.totalPrice
-   })
-   console.log(  this.totalPrice,'<-------------------------this.getItemSubtotal(item)--------')
-}
+    this.selectedItemForModal.extraToppingsOptions.options.forEach((opt) => {
+      if (opt.selected && opt.price !== undefined) {
+        currentPrice += opt.price;
+      }
+    });
 
+    this.selectedItemForModal.extraSwirlsSaucesOptions.options.forEach(
+      (opt) => {
+        if (opt.selected && opt.price !== undefined) {
+          currentPrice += opt.price;
+        }
+      }
+    );
+
+    this.selectedItemForModal.currentCalculatedPrice =
+      currentPrice * this.modalQuantity;
+    this.cdr.detectChanges();
+  }
+
+  addConfiguredDish(): void {
+    if (!this.selectedItemForModal || !this.selectedDishFromList) {
+      console.error("No item selected for configuration.");
+      return;
+    }
+
+    const hasBaseSelected =
+      this.selectedItemForModal.baseOptions.required &&
+      this.selectedItemForModal.baseOptions.options.length > 0 &&
+      !this.selectedItemForModal.baseOptions.options.some(
+        (opt) => opt.selected
+      );
+
+    if (hasBaseSelected) {
+      console.warn("Please select a base option.");
+      return;
+    }
+
+    let ingredientsSummary = "";
+    const selectedBase = this.selectedItemForModal.baseOptions.options.find(
+      (opt) => opt.selected
+    );
+    if (selectedBase) {
+      ingredientsSummary += `Base: ${selectedBase.name}`;
+    }
+
+    const selectedToppings =
+      this.selectedItemForModal.extraToppingsOptions.options.filter(
+        (opt) => opt.selected
+      );
+    if (selectedToppings.length > 0) {
+      ingredientsSummary += `${
+        ingredientsSummary ? ", " : ""
+      }Toppings: ${selectedToppings.map((t) => t.name).join(", ")}`;
+    }
+
+    const selectedSwirlsSauces =
+      this.selectedItemForModal.extraSwirlsSaucesOptions.options.filter(
+        (opt) => opt.selected
+      );
+    if (selectedSwirlsSauces.length > 0) {
+      ingredientsSummary += `${
+        ingredientsSummary ? ", " : ""
+      }Swirls/Sauces: ${selectedSwirlsSauces.map((s) => s.name).join(", ")}`;
+    }
+
+    const removedIngredients =
+      this.selectedItemForModal.ingredientsOptions.options.filter(
+        (opt) => !opt.selected
+      );
+    if (removedIngredients.length > 0) {
+      ingredientsSummary += `${
+        ingredientsSummary ? ", " : ""
+      }Removed: ${removedIngredients.map((r) => r.name).join(", ")}`;
+    }
+
+    const configuredCartItem: CartItem = {
+      name: this.selectedItemForModal.name,
+      price: this.selectedItemForModal.currentCalculatedPrice,
+      quantity: this.modalQuantity,
+      Ingredients: ingredientsSummary,
+      title: this.selectedCategory ? this.selectedCategory.name : "Custom Dish",
+      status: this.selectedDishFromList.status,
+      dishId: this.selectedItemForModal.originalDishId,
+      notes: this.modalNotes,
+      modalSelectedBaseChoice: this.selectedExpandedChoice,
+      selectedBaseOption: selectedBase
+        ? { name: selectedBase.name, price: selectedBase.price || 0 }
+        : undefined,
+      selectedToppings: selectedToppings.map((t) => ({
+        name: t.name,
+        price: t.price,
+      })),
+      selectedSwirlsSauces: selectedSwirlsSauces.map((s) => ({
+        name: s.name,
+        price: s.price,
+      })),
+      removedIngredients: removedIngredients.map((r) => ({ name: r.name })),
+    };
+
+    console.log("Configured dish added to cart:", configuredCartItem);
+    this.itemAdded.emit(configuredCartItem);
+    this.closePopup();
+  }
+
+  trackByCategory(index: number, category: any): number {
+    return category.category_id;
+  }
+
+  trackByDish(index: number, dish: DishFromAPI): number {
+    return dish.dish_id;
+  }
+
+  trackByOption(index: number, option: Option): string {
+    return option.uniqueId || index.toString();
+  }
 }
