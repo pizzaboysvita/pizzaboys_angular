@@ -111,6 +111,7 @@ posMenuTree(categories: any[], dishes: any[]) {
       .filter(d => d.dish_category_id === category.id)
       .map(dish => {
         // Initialize option set array
+        dish.dish_ingredient_array =JSON.parse(dish.dish_ingredients_json);
         let dish_option_set_array = [];
 
         try {
@@ -126,6 +127,7 @@ posMenuTree(categories: any[], dishes: any[]) {
               option_set_array = JSON.parse(optSet.option_set_combo_json ?? '[]');
               option_set_array.forEach((element:any)=>{
                 element.selected=false
+                element.quantity=0
               })
             } catch (e) {
               console.error('Invalid option_set_combo_json:', optSet.option_set_combo_json, e);
@@ -152,12 +154,18 @@ posMenuTree(categories: any[], dishes: any[]) {
   });
 }
 getItemSubtotal(item: any): number {
-  console.log(item)
+  // Sum (price * quantity) for each selected option
+   console.log(item, 'optionsTotal')
   const optionsTotal = item.dish_option_set_array
-    .flatMap((optSet: any) => optSet.option_set_array) // flatten all options
-    .filter((option: any) => option.selected)          // only selected
-    .reduce((sum: number, option: any) => sum + Number(option.price), 0); // sum price
-  return (Number(item.duplicate_dish_price) + Number(optionsTotal)) * Number(item.quantity);
+    .flatMap((optSet: any) => optSet.option_set_array)
+    .filter((option: any) => option.selected )
+    .reduce((sum: number, option: any) => {
+      const price = Number(option.price) || 0;
+      const qty = Number(option.quantity) || 0;
+      return sum + (price * qty);
+    }, 0);
+    console.log(optionsTotal, 'optionsTotal')
+  return (Number(item.dish_price) + optionsTotal) * Number(item.dish_quantity);
 }
 
 }

@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-xl-9">
-       <app-media (itemAdded)="addToCart($event)" (itemDecreased)="decreaseFromCart($event)"></app-media>
+       <app-media (itemAdded)="addToCart($event)"></app-media>
     </div>
     <div class="col-xl-3">
 <!-- <div class="card">
@@ -91,45 +91,33 @@
       <li class="mb-3">
         <div class="horizontal-product-box">
           <div class="row g-0 align-items-start">
-
             <!-- Left: Image + Quantity -->
             <div class="col-auto text-center">
               <img [src]="item.dish_image" alt="{{ item.dish_name }}" width="70" height="60" class="rounded" style="object-fit: cover;">
-              
-                <div class="like-box d-flex justify-content-center align-items-center gap-2 mt-2">
-          <i class="ri-subtract-line"style="cursor: pointer;" (click)="updateItem('decrease',item,'')" ></i>
-          <span>{{item.quantity}}</span>
-          <i class="ri-add-line" style="cursor: pointer;" (click)="updateItem('increase',item,'')" ></i>
-             <i  class="ri-delete-bin-line text-danger"style="cursor: pointer;" (click)="removeItem(item)" ></i>
-        </div>
-          
- 
-
-
+              <div class="like-box d-flex justify-content-center align-items-center gap-1 mt-2">
+                <i class="ri-subtract-line" style="cursor: pointer;" (click)="decreaseModalQuantity(item)"></i>
+                <span>{{item.dish_quantity}}</span>
+                <i class="ri-add-line" style="cursor: pointer;"  (click)="increaseModalQuantity(item)"></i>
+                <i class="ri-delete-bin-line text-danger" style="cursor: pointer;" (click)="removeItem(item)"></i>
+              </div>
             </div>
-
             <!-- Right: Dish Info -->
-            <div class="col">
+            <div class="col"style="margin-left: 10px;">
               <!-- Dish Name and Price -->
               <div class="d-flex justify-content-between">
-                <h6 class="mb-0">{{ item.dish_name }}</h6>
-                <h6 class="product-price mb-0">${{ item.dish_price }}</h6>
+                <h6 class="mb-0" style="text-align:left;">{{ item.dish_name }}</h6>
+                <h6 class="product-price mb-0" style="text-align:right;">${{ item.dish_price }}</h6>
               </div>
-
               <!-- Ingredients and their prices -->
-              <div *ngFor="let ingredient of item.seleted_ingredient">
-                <div class="d-flex justify-content-between" *ngIf="ingredient.selected">
-                  <small class="text-muted">{{ ingredient.name }}</small>
-                  <strong>${{ ingredient.price }}</strong>
+              <div *ngFor="let ingredient of item.selectedOptions">
+                <div class="d-flex align-items-center" style="justify-content: space-between; min-height: 24px;">
+                  <span class="text-dark" style="font-size: 15px;">{{ ingredient.name }}</span>
+                  <span class="fw-bold" style="font-size: 15px;">
+                    ${{ ingredient.price  | number:'1.2-2' }}
+                    <!-- <span *ngIf="ingredient.quantity && ingredient.quantity > 1" class="text-muted small ms-1">({{ ingredient.price }} x {{ ingredient.quantity }})</span> -->
+                  </span>
                 </div>
               </div>
-
-              <!-- Total Price (optional, if needed) -->
-              <!-- <div class="d-flex justify-content-between mt-2">
-                <small class="text-muted">Total:</small>
-                <strong>${{ getItemSubtotal(item) }}</strong>
-              </div> -->
-
             </div>
           </div>
         </div>
@@ -145,7 +133,7 @@
   <div class="pt-3">
     <div class="d-flex justify-content-between mb-1">
       <span class="text-muted">Subtotal</span>
-      <span class="fw-semibold">${{ totalPrice }}</span>
+      <span class="fw-semibold">${{ subtotal.toFixed(2)  }}</span>
     </div>
     <div class="d-flex justify-content-between mb-2">
       <span class="text-muted">Tax 10%</span>

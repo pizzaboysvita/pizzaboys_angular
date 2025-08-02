@@ -252,7 +252,7 @@ this.menuForm.get('image')?.updateValueAndValidity();
         "subtitle": this.menuForm.value.subtitle,
         "store_id": this.menuForm.value.storeName,
         // "created_by": 1,
-        "dish_option_set_json": JSON.stringify(this.selectedSubcategories),
+        "dish_option_set_json": this.selectedSubcategories,
         "dish_ingredients_json": JSON.stringify(this.Ingredients as any),
         "dish_choices_json": JSON.stringify(this.choices),
       }
