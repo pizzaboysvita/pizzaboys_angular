@@ -182,16 +182,16 @@ this.menuForm.get('image')?.updateValueAndValidity();
       }
     }
   }
-  onSubcategoryToggle(sub: any) {
-    console.log(sub)
-    const isChecked = sub.checked;
+  // onSubcategoryToggle(sub: any) {
+  //   console.log(sub)
+  //   const isChecked = sub.checked;
 
-    if (sub.dishes && sub.dishes.length > 0) {
-      for (let subsub of sub.dishes) {
-        subsub.checked = isChecked;
-      }
-    }
-  }
+  //   if (sub.dishes && sub.dishes.length > 0) {
+  //     for (let subsub of sub.dishes) {
+  //       subsub.checked = isChecked;
+  //     }
+  //   }
+  // }
   toggleExpand(index: number) {
     this.choices[index].expanded = !this.choices[index].expanded;
   }
@@ -252,7 +252,7 @@ this.menuForm.get('image')?.updateValueAndValidity();
         "subtitle": this.menuForm.value.subtitle,
         "store_id": this.menuForm.value.storeName,
         // "created_by": 1,
-        "dish_option_set_json": this.selectedSubcategories,
+        "dish_option_set_json": JSON.stringify(this.selectedSubcategories ),
         "dish_ingredients_json": JSON.stringify(this.Ingredients as any),
         "dish_choices_json": JSON.stringify(this.choices),
       }
@@ -298,4 +298,74 @@ this.menuForm.get('image')?.updateValueAndValidity();
     }
   }
  
+
+
+
+
+
+
+
+
+  onMenuToggle(menu:any, menuList:any) {
+  menu.checked = !menu.checked;
+  menu.indeterminate = false;
+  if (menu.categories) {
+    menu.categories.forEach((sub:any) => {
+      sub.checked = menu.checked;
+      sub.indeterminate = false;
+      if (sub.dishes) {
+        sub.dishes.forEach((dish:any) => dish.checked = menu.checked);
+      }
+    });
+  }
+  this.updateParentState(menuList);
+}
+
+onSubcategoryToggle(sub:any, subList:any, menu:any) {
+  sub.checked = !sub.checked;
+  sub.indeterminate = false;
+  if (sub.dishes) {
+    sub.dishes.forEach((dish:any) => dish.checked = sub.checked);
+  }
+  this.updateSubcategoryState(subList, menu);
+}
+
+onDishToggle(dish:any, dishList:any, sub:any, subList:any, menu:any) {
+  dish.checked = !dish.checked;
+  this.updateDishState(dishList, sub, subList, menu);
+}
+
+updateDishState(dishList:any, sub:any, subList:any, menu:any) {
+  const checked = dishList.filter((d:any) => d.checked).length;
+  if (checked === dishList.length) {
+    sub.checked = true;
+    sub.indeterminate = false;
+  } else if (checked === 0) {
+    sub.checked = false;
+    sub.indeterminate = false;
+  } else {
+    sub.checked = false;
+    sub.indeterminate = true;
+  }
+  this.updateSubcategoryState(subList, menu);
+}
+
+updateSubcategoryState(subList:any, menu:any) {
+  const checked = subList.filter((s:any) => s.checked).length;
+  const indeterminate = subList.filter((s:any) => s.indeterminate).length;
+  if (checked === subList.length) {
+    menu.checked = true;
+    menu.indeterminate = false;
+  } else if (checked === 0 && indeterminate === 0) {
+    menu.checked = false;
+    menu.indeterminate = false;
+  } else {
+    menu.checked = false;
+    menu.indeterminate = true;
+  }
+}
+
+updateParentState(menuList:any) {
+  // If you have a parent above menu, update its state here
+}
 }

@@ -90,7 +90,7 @@
       <div class="modal-header">
         <h4 class="modal-title w-100">
           <span class="fw-bold fs-4">{{ selectedDishFromList.dish_name }}</span>
-          <span class="float-end fw-bold fs-4">${{ selectedDishFromList.duplicate_dish_price
+          <span class="float-end fw-bold fs-4" >${{ selectedDishFromList.duplicate_dish_price
             }}</span>
             
         </h4>
@@ -100,116 +100,133 @@
       <div class="modal-body p-4" style="z-index: 1060 !important">
 
         @if(selectedDishFromList.dish_type === 'combo') {
-@for (combo_dish of selectedDishFromList.dish_choices_json_array; track combo_dish) {
-        <div class="accordion" id="accordionExample">
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="headingOne">
+@for (combo_dish of selectedDishFromList.dish_choices_json_array; track combo_dish; let comboIndex = $index) {
+  <div class="accordion" id="accordionExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header" [id]="'heading' + comboIndex">
+        <div (mouseenter)="hoveredComboIndex = comboIndex"
+             (mouseleave)="hoveredComboIndex = null"
+             class="position-relative">
 
-              <div (mouseenter)="showMenuPopup = true" (mouseleave)="showMenuPopup = false" style="position: relative;">
-                <button class="accordion-button" (click)="accordionOpen = !accordionOpen"
-                  [attr.aria-expanded]="accordionOpen" type="button">
-                  <strong>{{combo_dish.name}}</strong>
-                </button>
-                <!-- Hover menu -->
-                <div *ngIf="showMenuPopup">
-                  <ng-container >
-                    <div class="menu-popup-wrapper" style="position: absolute; min-width: 340px; z-index: 100;">
-                      <div class="menu-card border rounded-4 shadow-sm"
-                        style="background: #fff; border: 2px solid #e0c6ff; padding: 0;">
-                        <ul class="main-menu list-unstyled m-0 p-0">
-                          <li *ngFor="let item of mainItems; let i = index" class="dropdown-submenu position-relative"
-                            [class.has-children]="item.children?.length" (mouseenter)="expandedParentIndex = i"
-                            (mouseleave)="expandedParentIndex = null">
-                            <div
-                              class="dropdown-item px-4 py-3 fw-semibold d-flex justify-content-between align-items-center"
-                              style="cursor: pointer; color: #6c6c6c; font-size: 14px;">
-                              {{ item.label }}
-                              <span *ngIf="item.children?.length" class="ms-auto" style="color: #a0a0a0;">&#8250;</span>
-                            </div>
-                            <!-- Child flyout menu -->
-                            <ul *ngIf="expandedParentIndex === i && item.children?.length"
-                              class="submenu position-absolute shadow rounded-1 gap-1 active-child"
-                              style="left: 100%; top: 0; min-width: 240px; background: #fff; z-index: 10; border: 2px solid #e0c6ff;">
-                              <li *ngFor="let sub of item.children" (click)="accordionOpen = !accordionOpen">
-                                <div class="dropdown-item px-4 py-3 d-flex align-items-center"
-                                  style="cursor: pointer; color: #6c6c6c; font-size: 14px;"
-                                  (click)="selectChild(i, sub)">
-                                  <span>{{ sub }}</span>
-                                  <span *ngIf="selectedChildIndex === i && selectedChildLabel === sub"
-                                    class="ms-auto text-success">&#10003;</span>
-                                </div>
-                              </li>
-                            </ul>
-                          </li>
-                        </ul>
+          <button class="accordion-button"
+                  (click)="openComboIndex = openComboIndex === comboIndex ? null : comboIndex"
+                  [attr.aria-expanded]="openComboIndex === comboIndex"
+                  [attr.aria-controls]="'collapse' + comboIndex"
+                  type="button">
+            <strong>{{ combo_dish.name }} <span *ngIf="comboDishDetails.length > 0">({{ comboDishDetails[0].display_name }})</span></strong>
+          </button>
+
+          <!-- Hover popup menu -->
+          <div *ngIf="hoveredComboIndex === comboIndex" class="menu-popup-wrapper"
+               style="position: absolute; min-width: 340px; z-index: 100;">
+            <div class="menu-card border rounded-4 shadow-sm"
+                 style="background: #fff; border: 2px solid #e0c6ff; padding: 0;">
+              <ul class="main-menu list-unstyled m-0 p-0">
+                @for (combo_dish_cat of combo_dish.menuItems[0].categories; track combo_dish_cat; let comboIndexCat = $index) {
+                  <li class="dropdown-submenu position-relative"
+                      [class.has-children]="combo_dish_cat.children?.length"
+                      (mouseenter)="expandedParentIndex = comboIndexCat"
+                      (mouseleave)="expandedParentIndex = null">
+                    <div class="dropdown-item px-4 py-3 fw-semibold d-flex justify-content-between align-items-center"
+                         style="cursor: pointer; color: #6c6c6c; font-size: 14px;">
+                      {{ combo_dish_cat.categoryName }}
+                      <span *ngIf="combo_dish_cat.dishes?.length" class="ms-auto" style="color: #a0a0a0;">&#8250;</span>
+                    </div>
+
+                    <!-- Child flyout menu -->
+                    <ul *ngIf="expandedParentIndex === comboIndexCat && combo_dish_cat.dishes?.length"
+                        class="submenu position-absolute shadow rounded-1 gap-1 active-child"
+                        style="left: 100%; top: 0; min-width: 240px; background: #fff; z-index: 10; border: 2px solid #e0c6ff;">
+                      @for (combo_dish_cat_dish of combo_dish_cat.dishes; track combo_dish_cat_dish; let combo_dish_index = $index) {
+                        <li>
+                          <div class="dropdown-item px-4 py-3 d-flex align-items-center"
+                               style="cursor: pointer; color: #6c6c6c; font-size: 14px;"
+                               (click)="selectChild(combo_dish_index, combo_dish_cat_dish)">
+                            <span>{{ combo_dish_cat_dish.dishName }}</span>
+                            <span *ngIf="selectedChildIndex === combo_dish_index && selectedChildLabel === combo_dish_cat_dish"
+                                  class="ms-auto text-success">&#10003;</span>
+                          </div>
+                        </li>
+                      }
+                    </ul>
+                  </li>
+                }
+              </ul>
+            </div>
+          </div>
+        </div>
+      </h2>
+
+      <div [id]="'collapse' + comboIndex"
+           class="accordion-collapse collapse"
+           [class.show]="openComboIndex === comboIndex"
+           [attr.aria-labelledby]="'heading' + comboIndex"
+           data-bs-parent="#accordionExample">
+
+        <div class="accordion-body">
+          <ng-container>
+            @if (comboDishDetails.length > 0) {
+              @for (dishOption of comboDishDetails[0].dish_option_set_array; track dishOption; let i = $index) {
+                <div class="option-section">
+                  <div class="section-title">
+                    {{ dishOption.dispaly_name }}
+                  </div>
+
+                  <!-- Radio group -->
+                  <ng-container *ngIf="dishOption.type === 'radio'">
+                    <div *ngFor="let option of dishOption.option_set_array" class="option-row">
+                      <span>{{ option.name }}</span>
+                      <span *ngIf="option.price">- R{{ option.price | number:'1.2-2' }}</span>
+                      <input type="radio"
+                             class="custom-radio"
+                             [name]="dishOption.title"
+                             [checked]="dishOption.selected === option"
+                             (change)="selectRadio(dishOption, option)">
+                    </div>
+                  </ng-container>
+
+                  <!-- Counter group -->
+                  <ng-container *ngIf="dishOption.type === 'counter'">
+                    <div *ngFor="let option of dishOption.option_set_array" class="option-row">
+                      <span>{{ option.name }}</span>
+                      <span *ngIf="option.price">+R{{ option.price | number:'1.2-2' }}</span>
+                      <div class="counter-group" *ngIf="option.count > 0">
+                        <button class="counter-btn" (click)="decrement(option)">-</button>
+                        <span class="counter-value">{{ option.count }}</span>
+                        <button class="counter-btn" (click)="increment(option)">+</button>
                       </div>
+                      <button *ngIf="!option.count" class="plus-btn" (click)="increment(option)">+</button>
+                    </div>
+                  </ng-container>
+
+                  <!-- Checkbox group -->
+                  <ng-container *ngIf="dishOption.type === 'checkbox'">
+                    <div *ngFor="let option of dishOption.option_set_array" class="option-row">
+                      <span>{{ option.name }}</span>
+                      <span *ngIf="option.price">R{{ option.price | number:'1.2-2' }}</span>
+                      <label class="custom-checkbox">
+                        <input type="checkbox" [checked]="option.selected" (change)="toggleCheckbox(option)">
+                        <span class="checkmark"></span>
+                      </label>
                     </div>
                   </ng-container>
                 </div>
+              }
+            } @else {
+              <div class="menu-popup-wrapper" style="position: relative; min-width: 340px;">
+                <div class="menu-card border rounded-4 shadow-sm d-flex align-items-center justify-content-center"
+                     style="background: #fff; border: 2px solid #e0c6ff; padding: 40px 0; min-height: 80px;">
+                  <span class="text-muted">Please select a dish to see options.</span>
+                </div>
               </div>
-            </h2>
-            <div id="collapseOne" class="accordion-collapse collapse" [class.show]="accordionOpen"
-              aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-              <div class="accordion-body">
-                <ng-container *ngIf="accordionOpen">
-                  <ng-container *ngIf="selectedItemForModal; else emptyAccordion">
-                    <!-- Show base/options cards if dish is selected -->
-                    <div *ngFor="let group of optionGroups" class="option-section">
-                      <div class="section-title">
-                        {{ group.title }}
-                        <span *ngIf="group.required" class="badge badge-required ms-2"><i
-                            class="ri-information-line"></i> Required</span>
-                        <span *ngIf="group.subtitle" class="section-subtitle ms-2">{{ group.subtitle }}</span>
-                      </div>
-                      <!-- Radio group -->
-                      <ng-container *ngIf="group.type === 'radio'">
-                        <div *ngFor="let option of group.options" class="option-row">
-                          <span>{{ option.name }}</span>
-                          <span *ngIf="option.price">- R{{ option.price | number:'1.2-2' }}</span>
-                          <input type="radio" class="custom-radio" [name]="group.title"
-                            [checked]="group.selected === option" (change)="selectRadio(group, option)">
-                        </div>
-                      </ng-container>
-                      <!-- Counter group -->
-                      <ng-container *ngIf="group.type === 'counter'">
-                        <div *ngFor="let option of group.options" class="option-row">
-                          <span>{{ option.name }}</span>
-                          <span *ngIf="option.price">+R{{ option.price | number:'1.2-2' }}</span>
-                          <div class="counter-group" *ngIf="option.count > 0">
-                            <button class="counter-btn" (click)="decrement(option)">-</button>
-                            <span class="counter-value">{{ option.count }}</span>
-                            <button class="counter-btn" (click)="increment(option)">+</button>
-                          </div>
-                          <button *ngIf="!option.count" class="plus-btn" (click)="increment(option)">+</button>
-                        </div>
-                      </ng-container>
-                      <!-- Checkbox group -->
-                      <ng-container *ngIf="group.type === 'checkbox'">
-                        <div *ngFor="let option of group.options" class="option-row">
-                          <span>{{ option.name }}</span>
-                          <span *ngIf="option.price">R{{ option.price | number:'1.2-2' }}</span>
-                          <label class="custom-checkbox">
-                            <input type="checkbox" [checked]="option.selected" (change)="toggleCheckbox(option)">
-                            <span class="checkmark"></span>
-                          </label>
-                        </div>
-                      </ng-container>
-                    </div>
-                  </ng-container>
-                  <ng-template #emptyAccordion>
-                    <div class="menu-popup-wrapper" style="position: relative; min-width: 340px;">
-                      <div class="menu-card border rounded-4 shadow-sm d-flex align-items-center justify-content-center"
-                        style="background: #fff; border: 2px solid #e0c6ff; padding: 40px 0; min-height: 80px;">
-                        <span class="text-muted">Please select a dish to see options.</span>
-                      </div>
-                    </div>
-                  </ng-template>
-                </ng-container>
-              </div>
-            </div>
-          </div>
-        </div><br>
-      }
+            }
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div><br>
+}
+
         } @else{
 
 

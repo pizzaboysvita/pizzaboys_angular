@@ -137,6 +137,8 @@ export class MediaComponent implements OnInit {
   cartItems: DishFromAPI[];
   totalPrice: any;
     activeSubmenu: any;
+    openComboIndex: number | null = null;
+    hoveredComboIndex: number | null = null;
       mainItems = [
     { label: 'Web', children: ['Angular', 'React'] },
     { label: 'Desktop', children: ['WPF', 'WinForms'] },
@@ -182,6 +184,8 @@ export class MediaComponent implements OnInit {
       ]
     }
   ];
+  comboDishDetails: any=[];
+  totalDishList: any[];
   constructor(
     public modal: NgbModal,
     private apiService: ApisService,
@@ -214,8 +218,9 @@ export class MediaComponent implements OnInit {
           categoryRes.categories,
           dishRes.data
         );
-
+console.log("Processed Menu:", processedMenu);
         this.categoriesList = processedMenu;
+        this.totalDishList = dishRes.data;
         if (this.categoriesList && this.categoriesList.length > 0) {
           this.selectedCategory = this.categoriesList[0];
           this.dishList = this.selectedCategory.dishes;
@@ -277,8 +282,9 @@ export class MediaComponent implements OnInit {
    
 
     if(item.dish_type === 'combo'){
+      this.comboDishDetails=[]
  console.log(item.dish_choices_json, "openIngredientsPopup combo");
- item.dish_choices_json_array= JSON.parse(item.dish_choices_json);
+ item.dish_choices_json_array= this.filterIndeterminateCategories(JSON.parse(item.dish_choices_json));
  this.selectedDishFromList = item;
   item['dish_quantity'] = 1; // Ensure quantity is set
     this.selectedDishFromList = item;
@@ -299,6 +305,40 @@ export class MediaComponent implements OnInit {
     this.cdr.detectChanges();
   }
   }
+   filterIndeterminateCategories(menuData: any[]) {
+  return menuData.map(menuGroup => ({
+    ...menuGroup,
+    menuItems: menuGroup.menuItems.map((menu: any) => ({
+      ...menu,
+      categories: menu.categories
+        .map((cat: any) => {
+          const checkedDishes = cat.dishes.filter((dish: any) => dish.checked);
+          const isIndeterminate = checkedDishes.length > 0 && checkedDishes.length < cat.dishes.length;
+          const isChecked = checkedDishes.length === cat.dishes.length && checkedDishes.length > 0;
+          return {
+            ...cat,
+            dishes: checkedDishes,
+            indeterminate: isIndeterminate,
+            checked: isChecked
+          };
+        })
+        .filter((cat: any) => cat.indeterminate || cat.checked)
+    }))
+  }));
+}
+  selectChild(parentIndex: number, dish: any,) {
+     this.comboDishDetails=[]
+    console.log("Selected child:", parentIndex, dish,this.dishList);
+   this.comboDishDetails=this.totalDishList.filter((d: any) => d.dish_id == dish.dishId)
+// this.openComboIndex = comboIndex;
+  this.comboDishDetails.forEach((comboDish: any, idx: number) => {
+  this.comboDishDetails[idx] = this.apiService.convertDishObject(comboDish);
+});
+      console.log(this.comboDishDetails,dish.dishId,this.totalDishList ,'comboDishDetails')
+    this.selectedChildIndex = parentIndex;
+    this.selectedChildLabel = dish;
+        this.cdr.detectChanges();
+  }
   closePopup() {
     this.showPopup = false;
     this.selectedDishFromList = null;
@@ -309,10 +349,7 @@ export class MediaComponent implements OnInit {
     this.cdr.detectChanges();
   }
  
-  selectChild(parentIndex: number, label: string) {
-    this.selectedChildIndex = parentIndex;
-    this.selectedChildLabel = label;
-  }
+
 
   increaseModalQuantity(item: any) {
     item['dish_quantity']++;

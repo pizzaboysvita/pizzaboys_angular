@@ -1,3 +1,4 @@
+
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -104,6 +105,42 @@ export class ApisService {
 //   };
 // });
 //   }
+// Converts a single dish object to the same structure as in posMenuTree, without category context
+convertDishObject(dish: any) {
+  // Initialize option set array
+  dish.dish_ingredient_array = JSON.parse(dish.dish_ingredients_json);
+  let dish_option_set_array = [];
+  try {
+    // Parse dish_option_set_json if present
+    dish_option_set_array = JSON.parse(dish.dish_option_set_json ?? '[]');
+    // Parse inner option_set_combo_json
+    dish_option_set_array = dish_option_set_array.map((optSet: any) => {
+      console.log(optSet, 'optSet')
+      let option_set_array = [];
+      try {
+        option_set_array = JSON.parse(optSet.option_set_combo_json ?? '[]');
+        option_set_array.forEach((element: any) => {
+          element.selected = false;
+        });
+      } catch (e) {
+        console.error('Invalid option_set_combo_json:', optSet.option_set_combo_json, e);
+      }
+
+      const type = optSet.display_name === 'Base' ? 'radio' : 'counter';
+  return {
+        ...optSet,
+        option_set_array,
+        type
+      };
+    });
+  } catch (e) {
+    console.error('Invalid dish_option_set_json:', dish.dish_option_set_json, e);
+  }
+  return {
+    ...dish,
+    dish_option_set_array
+  };
+}
 posMenuTree(categories: any[], dishes: any[]) {
   return categories.map(category => {
     // Filter dishes by category ID

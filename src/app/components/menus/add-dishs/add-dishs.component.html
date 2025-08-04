@@ -7,7 +7,7 @@
   </div>
   <div class="modal-body pt-0">
     <div class="col-12">
-      
+
       <ul class="nav nav-pills flex-nowrap mb-3" ngbNav #nav="ngbNav" [(activeId)]="active">
         <li [ngbNavItem]="1" class="nav-item m-0">
           <button ngbNavLink class="nav-link" type="button">General</button>
@@ -179,7 +179,7 @@
                         <h6>Upload Images</h6>
                         <span class="optional-tag">Required</span>
                       </div>
-                      <input autocomplete="off" id="fileInput"  type="file" accept="image/*"
+                      <input autocomplete="off" id="fileInput" type="file" accept="image/*"
                         (change)="onSelectFile($event)">
                       @if((menuForm.get('image')?.touched ||menuForm.get('image')?.dirty) &&
                       menuForm.get('image')?.hasError('required')){
@@ -193,7 +193,7 @@
 
                 </div>
               </div>
-          </form>
+            </form>
 
           </ng-template>
         </li>
@@ -208,7 +208,7 @@
                     <h6>Option Sets</h6>
                     <ng-select [items]="optSetDetails" [searchable]="true" [multiple]="true" bindLabel="option_set_name"
                       placeholder="Select from the dropdown or type to search"
-                       [(ngModel)]="selectedSubcategories"></ng-select>
+                      [(ngModel)]="selectedSubcategories"></ng-select>
                   </div>
                   <span class="lableSubtext">Select option sets to be applied to the dish. Option sets
                     are ordered according to how they are listed on the option set page, not by the
@@ -334,51 +334,58 @@
 
               @if (choice.expanded) {
               <!-- Menu Toggle -->
-              @for (menu of choice.menuItems; track menu; let j = $index){
+            @for (menu of choice.menuItems; track menu; let j = $index) {
+  <div class="row ps-4 py-1" style="font-size: 0.92rem;">
+    <div class="col d-flex align-items-center">
+      <i class="me-2" [ngClass]="menu.takeawayExpanded ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"
+        (click)="menu.takeawayExpanded = !menu.takeawayExpanded"
+        style="cursor: pointer; font-size: 1.3rem; color: black;"></i>
 
-              <div class="row ps-4 py-1" style="font-size: 0.92rem;">
-                <div class="col d-flex align-items-center">
-                  <i class="me-2" [ngClass]="menu.takeawayExpanded ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"
-                    (click)="menu.takeawayExpanded = !menu.takeawayExpanded"
-                    style="cursor: pointer; font-size: 1.3rem; color: black;"></i>
-
-                  <input type="checkbox" id="checkbox-{{ j }}" class="form-check-input me-2" [(ngModel)]="menu.checked"
-                    (change)="onChoiceToggle(menu)" />
-                  <label for="checkbox-{{ j }}" class="form-check-label mb-0" style="font-size: 0.92rem;">
-                    <!-- Takeaway Menu -->
-                    {{menu.menuName}}
-                  </label>
-                </div>
-              </div>
-              @if (menu.takeawayExpanded) {
-              <!-- Subcategories -->
-              @for (sub of menu.categories; track sub; let k = $index) {
-              <div class="row ps-5 pb-0" style="font-size: 0.92rem; font-weight: normal;">
-                <div class="col d-flex align-items-center">
-                  <i class="me-2" [ngClass]="sub.expanded ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"
-                    (click)="sub.expanded = !sub.expanded"
-                    style="cursor: pointer; font-size: 1.3rem; color: black;"></i>
-                  <input type="checkbox" class="form-check-input me-2" [(ngModel)]="sub.checked"
-                    (change)="onSubcategoryToggle(sub)" />
-                  <label class="form-check-label mb-0 subcat-label">{{ sub.categoryName }}</label>
-                </div>
-              </div>
-
-              <!-- Sub-subcategories -->
-              @if (sub.expanded && sub.dishes?.length) {
-              @for (subsub of sub.dishes; track subsub; let l = $index) {
-              <div class="row ps-5 pb-1">
-                <div class="col d-flex align-items-center" style="font-size: 0.92rem;margin-left: 2.5rem;">
-                  <!-- <i class="ri-checkbox-blank-line me-2 text-muted" style="font-size: 0.8rem;"></i> -->
-                  <input type="checkbox" class="form-check-input me-2" [(ngModel)]="subsub.checked" />
-                  <label class="form-check-label mb-0 subcat-label">{{ subsub.dishName }}</label>
-                </div>
-              </div>
-              }
-              }
-              }
-              }
-              }
+      <input type="checkbox"
+        id="checkbox-{{ j }}"
+        class="form-check-input me-2"
+        [checked]="menu.checked"
+        [indeterminate]="menu.indeterminate"
+        (change)="onMenuToggle(menu, choice.menuItems)"
+      />
+      <label for="checkbox-{{ j }}" class="form-check-label mb-0" style="font-size: 0.92rem;">
+        {{menu.menuName}}
+      </label>
+    </div>
+  </div>
+  @if (menu.takeawayExpanded) {
+    @for (sub of menu.categories; track sub; let k = $index) {
+      <div class="row ps-5 pb-0" style="font-size: 0.92rem; font-weight: normal;">
+        <div class="col d-flex align-items-center">
+          <i class="me-2" [ngClass]="sub.expanded ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"
+            (click)="sub.expanded = !sub.expanded"
+            style="cursor: pointer; font-size: 1.3rem; color: black;"></i>
+          <input type="checkbox"
+            class="form-check-input me-2"
+            [checked]="sub.checked"
+            [indeterminate]="sub.indeterminate"
+            (change)="onSubcategoryToggle(sub, menu.categories, menu)"
+          />
+          <label class="form-check-label mb-0 subcat-label">{{ sub.categoryName }}</label>
+        </div>
+      </div>
+      @if (sub.expanded && sub.dishes?.length) {
+        @for (subsub of sub.dishes; track subsub; let l = $index) {
+          <div class="row ps-5 pb-1">
+            <div class="col d-flex align-items-center" style="font-size: 0.92rem;margin-left: 2.5rem;">
+              <input type="checkbox"
+                class="form-check-input me-2"
+                [checked]="subsub.checked"
+                (change)="onDishToggle(subsub, sub.dishes, sub, menu.categories, menu)"
+              />
+              <label class="form-check-label mb-0 subcat-label">{{ subsub.dishName }}</label>
+            </div>
+          </div>
+        }
+      }
+    }
+  }
+}
 
               }
             </div>
@@ -388,7 +395,7 @@
         </li>
         }
       </ul>
-    
+
     </div>
     <div class="col-12" [ngbNavOutlet]="nav"></div>
   </div>
