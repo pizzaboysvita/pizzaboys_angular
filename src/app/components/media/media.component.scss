@@ -309,6 +309,8 @@ $transition-speed: 0.2s ease-in-out;
 }
 
 .modal-footer {
+  border-top:none!important;
+  padding: 5px 5px;
   // background-color: white;
   // border-top: 1px solid $border-color-light !important;
   // // padding: 15px 20px;
@@ -624,14 +626,14 @@ $transition-speed: 0.2s ease-in-out;
 .option-section {
   background: #fff;
   border-radius: 12px;
-  padding: 18px 20px;
+  padding: 5px 10px;
   margin-bottom: 16px;
   border: 1px solid #000;
 }
 .section-title {
   font-weight: bold;
   font-size: 1.2rem;
-  margin-bottom: 12px;
+  // margin-bottom: 12px;
   color: #000;
   display: flex;
   align-items: center;
@@ -656,7 +658,7 @@ $transition-speed: 0.2s ease-in-out;
   align-items: center;
   justify-content: space-between;
   color: #000;
-  padding: 8px 0;
+  padding: 5px 0;
 }
 .custom-radio {
   accent-color: #fff;
@@ -670,7 +672,7 @@ $transition-speed: 0.2s ease-in-out;
   gap: 6px;
 }
 .counter-btn, .plus-btn {
-  background: #2d6cdf;
+  background: #f44336;
   color: #fff;
   border: none;
   border-radius: 50%;
@@ -710,8 +712,8 @@ $transition-speed: 0.2s ease-in-out;
   border-radius: 6px;
 }
 .custom-checkbox input:checked ~ .checkmark {
-  background: #2d6cdf;
-  border-color: #2d6cdf;
+  background: #f44336;
+  border-color: #f44336;
 }
 .custom-checkbox input:checked ~ .checkmark:after {
   content: "";
@@ -724,4 +726,15 @@ $transition-speed: 0.2s ease-in-out;
 }
 .custom-checkbox {
   border: 2px solid #dedbdb !important;
+}
+.driver-badge {
+  background-color: #f44336;        /* Bright red */
+  color: white;                     /* White text */
+  padding: 8px 16px;                /* Inner spacing */
+     border-radius: 5px 20px 20px 5px;    /* Rounded on left only */
+  font-weight: bold;                /* Bold text */
+  display: inline-block;            /* Don't stretch full width */
+  font-size: 14px;     
+   text-align: left;    
+       min-width: 70px;          /* Adjust font size as needed */
 }

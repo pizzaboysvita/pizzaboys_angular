@@ -326,13 +326,15 @@ console.log("Processed Menu:", processedMenu);
     }))
   }));
 }
-  selectChild(parentIndex: number, dish: any,) {
+selectedChildPerCombo: { [comboIndex: number]: any } = {};
+  selectChild(parentIndex: number, dish: any,comboIndex: number) {
      this.comboDishDetails=[]
     console.log("Selected child:", parentIndex, dish,this.dishList);
    this.comboDishDetails=this.totalDishList.filter((d: any) => d.dish_id == dish.dishId)
 // this.openComboIndex = comboIndex;
   this.comboDishDetails.forEach((comboDish: any, idx: number) => {
-  this.comboDishDetails[idx] = this.apiService.convertDishObject(comboDish);
+  this.selectedChildPerCombo[comboIndex] = this.apiService.convertDishObject(comboDish);
+  console.log(this.selectedChildPerCombo, 'selectedChildPerCombo')
 });
       console.log(this.comboDishDetails,dish.dishId,this.totalDishList ,'comboDishDetails')
     this.selectedChildIndex = parentIndex;

@@ -87,15 +87,23 @@
 <div class="modal fade show d-block modal-overlay" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content" #modalContent>
-      <div class="modal-header">
-        <h4 class="modal-title w-100">
-          <span class="fw-bold fs-4">{{ selectedDishFromList.dish_name }}</span>
-          <span class="float-end fw-bold fs-4" >${{ selectedDishFromList.duplicate_dish_price
-            }}</span>
-            
-        </h4>
-        <button type="button" class="btn-close" aria-label="Close" (click)="closePopup()"></button>
-      </div>
+    <div class="modal-header d-flex align-items-center justify-content-between" style="padding: 10px 10px;cursor: pointer;">
+  <span class="fw-bold fs-4">{{ selectedDishFromList.dish_name }}</span>
+  
+  <div class="d-flex align-items-center gap-3">
+    <span class="fw-bold fs-4">${{ selectedDishFromList.duplicate_dish_price }}</span>
+    <span (click)="closePopup()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <g id="close_icon" transform="translate(-763 -18)">
+    <circle id="Ellipse_319" data-name="Ellipse 319" cx="12" cy="12" r="12" transform="translate(763 18)" fill="#f44336"/>
+    <path id="Path_12276" data-name="Path 12276" d="M20633.156-4238.165l-3.152-3.153-3.158,3.153a.549.549,0,0,1-.783,0l-.9-.892a.559.559,0,0,1,0-.788l3.154-3.153-3.154-3.159a.552.552,0,0,1,0-.782l.9-.9a.54.54,0,0,1,.391-.161.557.557,0,0,1,.393.161l3.158,3.159,3.152-3.159a.552.552,0,0,1,.785,0l.895.9a.545.545,0,0,1,0,.782l-3.152,3.159,3.152,3.153a.552.552,0,0,1,0,.788l-.895.892a.544.544,0,0,1-.391.164A.556.556,0,0,1,20633.156-4238.165Z" transform="translate(-19855.004 4273.001)" fill="#fff"/>
+  </g>
+</svg>
+
+    </span>
+  </div>
+</div>
+
 
       <div class="modal-body p-4" style="z-index: 1060 !important">
 
@@ -113,7 +121,7 @@
                   [attr.aria-expanded]="openComboIndex === comboIndex"
                   [attr.aria-controls]="'collapse' + comboIndex"
                   type="button">
-            <strong>{{ combo_dish.name }} <span *ngIf="comboDishDetails.length > 0">({{ comboDishDetails[0].display_name }})</span></strong>
+            <strong>{{ combo_dish.name }} <span *ngIf="selectedChildPerCombo[comboIndex]">({{ selectedChildPerCombo[comboIndex].display_name }})</span></strong>
           </button>
 
           <!-- Hover popup menu -->
@@ -141,7 +149,7 @@
                         <li>
                           <div class="dropdown-item px-4 py-3 d-flex align-items-center"
                                style="cursor: pointer; color: #6c6c6c; font-size: 14px;"
-                               (click)="selectChild(combo_dish_index, combo_dish_cat_dish)">
+                               (click)="selectChild(combo_dish_index, combo_dish_cat_dish,comboIndex)">
                             <span>{{ combo_dish_cat_dish.dishName }}</span>
                             <span *ngIf="selectedChildIndex === combo_dish_index && selectedChildLabel === combo_dish_cat_dish"
                                   class="ms-auto text-success">&#10003;</span>
@@ -165,18 +173,18 @@
 
         <div class="accordion-body">
           <ng-container>
-            @if (comboDishDetails.length > 0) {
-              @for (dishOption of comboDishDetails[0].dish_option_set_array; track dishOption; let i = $index) {
+            @if (selectedChildPerCombo[comboIndex]) {
+              @for (dishOption of selectedChildPerCombo[comboIndex].dish_option_set_array; track dishOption; let i = $index) {
                 <div class="option-section">
-                  <div class="section-title">
+                  <div class="section-title driver-badge ">
                     {{ dishOption.dispaly_name }}
                   </div>
 
                   <!-- Radio group -->
                   <ng-container *ngIf="dishOption.type === 'radio'">
                     <div *ngFor="let option of dishOption.option_set_array" class="option-row">
-                      <span>{{ option.name }}</span>
-                      <span *ngIf="option.price">- R{{ option.price | number:'1.2-2' }}</span>
+                      <span>{{ option.name }} ( <b>${{ option.price | number:'1.2-2' }}</b>)</span>
+                      <!-- <span *ngIf="option.price">- R{{ option.price | number:'1.2-2' }}</span> -->
                       <input type="radio"
                              class="custom-radio"
                              [name]="dishOption.title"
@@ -188,8 +196,8 @@
                   <!-- Counter group -->
                   <ng-container *ngIf="dishOption.type === 'counter'">
                     <div *ngFor="let option of dishOption.option_set_array" class="option-row">
-                      <span>{{ option.name }}</span>
-                      <span *ngIf="option.price">+R{{ option.price | number:'1.2-2' }}</span>
+                      <span>{{ option.name }} ( <b>${{ option.price | number:'1.2-2' }}</b>)</span>
+                      <!-- <span *ngIf="option.price">+R{{ option.price | number:'1.2-2' }}</span> -->
                       <div class="counter-group" *ngIf="option.count > 0">
                         <button class="counter-btn" (click)="decrement(option)">-</button>
                         <span class="counter-value">{{ option.count }}</span>
@@ -202,8 +210,8 @@
                   <!-- Checkbox group -->
                   <ng-container *ngIf="dishOption.type === 'checkbox'">
                     <div *ngFor="let option of dishOption.option_set_array" class="option-row">
-                      <span>{{ option.name }}</span>
-                      <span *ngIf="option.price">R{{ option.price | number:'1.2-2' }}</span>
+                      <span>{{ option.name }} ( <b>${{ option.price | number:'1.2-2' }}</b>)</span>
+                      <!-- <span *ngIf="option.price">R{{ option.price | number:'1.2-2' }}</span> -->
                       <label class="custom-checkbox">
                         <input type="checkbox" [checked]="option.selected" (change)="toggleCheckbox(option)">
                         <span class="checkmark"></span>
@@ -235,7 +243,7 @@
             @for(dish_option of selectedDishFromList.dish_option_set_array; track dish_option) {
             <!-- Show base/options cards if dish is selected -->
             <div class="option-section">
-              <div class="section-title">
+              <div class="section-title driver-badge">
                 {{ dish_option.dispaly_name }}
                 <!-- <span *ngIf="group.required" class="badge badge-required ms-2"><i
                             class="ri-information-line"></i> Required</span> -->
@@ -280,7 +288,7 @@
     
             <div class="option-section">
                      
-              <div class="section-title">
+              <div class="section-title driver-badge">
                Ingredients
              
               </div>
@@ -317,7 +325,7 @@
 
 
         <!-- Modal Footer -->
-        <div class="modal-footer d-flex justify-content-between align-items-center">
+        <div class="modal-footer d-flex justify-content-between align-items-center" style="width: 103%;">
           <div class="input-group quantity-control flex-grow-1 me-3" style="max-width: 180px">
             <button class="btn btn-outline-secondary" (click)="decreaseModalQuantity(selectedDishFromList)">-</button>
             <input type="text" class="form-control text-center quantity-input"
@@ -326,14 +334,14 @@
           </div>
           <div class="d-flex gap-2">
             <button class="btn btn-outline-warning"
-              style="border: 1.5px solid #ff9100; color: #ff9100; background: #fff;">
+              style="border: 1.5px solid #f44336; color: #f44336; background: #fff;">
               <i class="ri-node-tree"></i>
             </button>
             <button class="btn btn-outline-warning"
-              style="border: 1.5px solid #ff9100; color: #ff9100; background: #fff;">
+              style="border: 1.5px solid #f44336; color: #f44336; background: #fff;">
               <i class="ri-price-tag-3-line"></i>
             </button>
-            <button class="btn fw-bold text-white" style="background: #ff7900; min-width: 180px;"
+            <button class="btn fw-bold text-white" style="background: #f44336; min-width: 180px;"
               (click)="addItemToCart(selectedDishFromList); closePopup()">
               ADD DISH ( ${{ selectedDishFromList.duplicate_dish_price }} )
             </button>
