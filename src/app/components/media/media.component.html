@@ -21,7 +21,7 @@
               <div class="d-flex align-items-center px-3 py-2 bg-white shadow-sm rounded-4 flex-shrink-0"
                 (click)="selectCategory(category)" [ngClass]="{
                   'border-primary border-2':
-                    selectedCategory?.category_id === category.category_id
+                    selectedCategory === category
                 }" style="min-width: 120px">
                 <img [src]="category.category_image" alt="{{ category.name }}"
                   style="width: 25px; height: 25px; border-radius: 50%" class="me-3" />

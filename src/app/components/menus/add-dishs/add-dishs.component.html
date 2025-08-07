@@ -171,25 +171,44 @@
 
 
 
-                  <div class="col-12">
-                    <div class="input-box">
-                      <!-- <h6 class="font-family">Upload Images </h6> -->
-                      <!-- <span class="choose-img-box font-family" > -->
-                      <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h6>Upload Images</h6>
-                        <span class="optional-tag">Required</span>
-                      </div>
-                      <input autocomplete="off" id="fileInput" type="file" accept="image/*"
-                        (change)="onSelectFile($event)">
-                      @if((menuForm.get('image')?.touched ||menuForm.get('image')?.dirty) &&
-                      menuForm.get('image')?.hasError('required')){
-                      <div class="text-danger">
-                        Image is required
-                      </div>
-                      }
-                      <!-- </span> -->
-                    </div>
-                  </div>
+              <div class="col-12">
+ <div class="input-box">
+  <h6 class="mb-2">Upload Images</h6>
+
+  <!-- Preview Section -->
+  <div *ngIf="previewUrl; else uploadInput" class="image-preview-container">
+    <img
+      #previewImage
+      [src]="previewUrl"
+      alt="Preview"
+      class="preview-img"
+    
+    />
+
+    <!-- Delete Icon -->
+    <!-- <button class="icon-button delete" (click)="removeImage()" title="Delete">❌</button> -->
+  <!-- <button class="icon-button" >×</button> -->
+  <button class="icon-button"(click)="removeImage()">✕</button>
+    <!-- File name -->
+    <!-- <div class="file-name text-center mt-1">
+      {{ getCleanFileName() }}
+    </div> -->
+
+  
+  </div>
+
+  <!-- File input (shown when no preview) -->
+  <ng-template #uploadInput>
+    <input
+      type="file"
+      accept="image/*"
+      (change)="onSelectFile($event)"
+    />
+  </ng-template>
+</div>
+
+</div>
+
 
                 </div>
               </div>

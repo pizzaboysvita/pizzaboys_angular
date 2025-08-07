@@ -68,17 +68,39 @@
                     <span class="lableSubtext">Toggling this will hide the category from your store</span>
                   </div>
                   <div class="col-12">
-                    <div class="input-box">
-                      <!-- <h6 class="font-family">Upload Images </h6> -->
-                      <!-- <span class="choose-img-box font-family" > -->
-                      <div class="d-flex align-items-center justify-content-between mb-1">
-                        <h6>Upload Images</h6>
-                        <span class="optional-tag">Required</span>
-                      </div>
-                      <input autocomplete="off"  id="fileInput" type="file" accept="image/*"
-                        (change)="onSelectFile($event)">
-                      <!-- </span> -->
-                    </div>
+                   <div class="input-box">
+  <h6 class="mb-2">Upload Images</h6>
+
+  <!-- Preview Section -->
+   @if(previewUrl){
+  <div  class="image-preview-container">
+    <img
+      #previewImage
+      [src]="previewUrl"
+      alt="Preview"
+      class="preview-img"
+    
+    />
+
+    <!-- Delete Icon -->
+    <!-- <button class="icon-button delete" (click)="removeImage()" title="Delete">❌</button> -->
+  <!-- <button class="icon-button" >×</button> -->
+  <button class="icon-button"(click)="removeImage()">✕</button>
+  
+
+  
+  </div>
+   }@else{
+  <!-- File input (shown when no preview) -->
+  <!-- <ng-template #uploadInput> -->
+    <input
+      type="file"
+      accept="image/*"
+      (change)="onSelectFile($event)"
+    />
+  }
+  <!-- </ng-template> -->
+</div>
                     @if(menuForm.get('image')?.touched && menuForm.get('image')?.hasError('required')){
                     <div class="text-danger">
                       Image is required

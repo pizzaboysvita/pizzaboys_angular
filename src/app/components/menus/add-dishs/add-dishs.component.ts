@@ -36,6 +36,7 @@ export class AddDishsComponent {
   reqbody: any
   uploadImagUrl: string | ArrayBuffer | null;
   file: File;
+previewUrl: string | ArrayBuffer | null = null;
   constructor(private fb: FormBuilder, public modal: NgbModal, private router: Router, private apiService: ApisService, private sessionStorage: SessionStorageService) { }
 
   ngOnInit() {
@@ -99,6 +100,7 @@ this.menuForm.get('image')?.updateValueAndValidity();
       this.selectedSubcategories=JSON.parse(this.myData.dish_option_set_json)
       this.Ingredients=JSON.parse(this.myData.dish_ingredients_json)
       this.choices=JSON.parse(this.myData.dish_choices_json)
+      this.previewUrl=this.myData.dish_image;
       // dish_choices_json
     }
   }
@@ -285,21 +287,32 @@ this.menuForm.get('image')?.updateValueAndValidity();
   }
 
 
+selectedFile: File | null = null;
 
+onSelectFile(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files.length > 0) {
+    const file = input.files[0];
+    this.selectedFile = file;
 
-  onSelectFile(event: Event): void {
-    const input = event.target as HTMLInputElement;
+    // Manually update form value (not bound to input)
+    this.menuForm.get('image')?.setValue(file);
+    this.menuForm.get('image')?.markAsTouched();
 
-    if (input.files && input.files[0]) {
-      console.log(input.files[0])
-      this.file = input.files[0];
-  this.menuForm.get('image')?.setValue(this.file);
-  
-    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.previewUrl = reader.result;
+    };
+    reader.readAsDataURL(file);
   }
+}
  
 
-
+removeImage(): void {
+  this.previewUrl = null;
+    this.selectedFile = null;
+  this.menuForm.get('image')?.reset();  // Reset form control
+}
 
 
 

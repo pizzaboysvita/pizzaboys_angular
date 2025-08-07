@@ -285,15 +285,42 @@ console.log(reqbody)
     });
   }
   }
-     onSelectFile(event: Event): void {
-  const input = event.target as HTMLInputElement;
+//      onSelectFile(event: Event): void {
+//   const input = event.target as HTMLInputElement;
 
-  if (input.files && input.files[0]) {
-    console.log(input.files[0])
-    this.file = input.files[0];
-   this.menuForm.get('image')?.setValue(this.file);
+//   if (input.files && input.files[0]) {
+//     console.log(input.files[0])
+//     this.file = input.files[0];
+//    this.menuForm.get('image')?.setValue(this.file);
+//   }
+// }
+selectedFile: File | null = null;
+previewUrl: string | ArrayBuffer | null = null;
+onSelectFile(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files.length > 0) {
+    const file = input.files[0];
+    this.selectedFile = file;
+
+    // Manually update form value (not bound to input)
+    this.menuForm.get('image')?.setValue(file);
+    this.menuForm.get('image')?.markAsTouched();
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.previewUrl = reader.result;
+    };
+    reader.readAsDataURL(file);
   }
 }
+ 
+
+removeImage(): void {
+  this.previewUrl = null;
+    this.selectedFile = null;
+  this.menuForm.get('image')?.reset();  // Reset form control
+}
+
 onCellClicked(params: any) {
     const rowIndex = params.rowIndex;
     const actionTarget = params.event.target as HTMLElement;
