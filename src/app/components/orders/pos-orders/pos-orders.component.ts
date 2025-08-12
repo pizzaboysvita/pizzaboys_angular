@@ -1,15 +1,10 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { CardComponent } from "../../../shared/components/card/card.component";
-import { TableConfig } from '../../../shared/interface/table.interface';
-import { TableComponent } from "../../widgets/table/table.component";
-import { ApisService } from '../../../shared/services/apis.service';
-import { SessionStorageService } from '../../../shared/services/session-storage.service';
-
 import { AgGridAngular } from "@ag-grid-community/angular";
 import { ColDef, ITooltipParams, ModuleRegistry } from "@ag-grid-community/core";
 import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
 import { AppConstants } from '../../../app.constants';
+import { ApisService } from '../../../shared/services/apis.service';
+import { SessionStorageService } from '../../../shared/services/session-storage.service';
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
   user_email: string;
@@ -21,30 +16,16 @@ interface RowData {
   store_name:string
 }
 @Component({
-  selector: 'app-order-list',
-  templateUrl: './order-list.component.html',
-  styleUrl: './order-list.component.scss',
-  imports: [CardComponent, RouterModule,AgGridAngular]
+  selector: 'app-pos-orders',
+  imports: [AgGridAngular],
+  templateUrl: './pos-orders.component.html',
+  styleUrl: './pos-orders.component.scss'
 })
-
-
-export class OrderListComponent {
-
-  gridOptions = {
+export class PosOrdersComponent {
+   gridOptions = {
     pagination: true,
     rowHeight: 60
   };
-  orderSummaryCards = [
-    { icon: 'https://foxpixel.vercel.app/metor/assets/images/food-icon/i-2.png', label: 'Total Orders', count: 80 },
-    { icon: 'https://foxpixel.vercel.app/metor/assets/images/food-icon/i-3.png', label: 'Cancelled', count: 21 },
-    { icon: 'https://foxpixel.vercel.app/metor/assets/images/food-icon/i-1.png', label: 'Confirm', count: 78 },
-    { icon: 'https://foxpixel.vercel.app/metor/assets/images/food-icon/i-4.png', label: 'Preparing', count: 48 },
-    { icon: 'https://foxpixel.vercel.app/metor/assets/images/food-icon/i-5.png', label: 'Ready For Delivery', count: 42 },
-    { icon: 'https://cdn-icons-png.freepik.com/512/7541/7541708.png', label: 'Order On Its Way', count: 20 },
-    { icon: 'https://foxpixel.vercel.app/metor/assets/images/food-icon/i-8.png', label: 'Pending Orders', count: 30 },
-    { icon: 'https://foxpixel.vercel.app/metor/assets/images/food-icon/i-9.png', label: 'Delivered Order', count: 25 },
-  ];
-
   tableConfig: ColDef<RowData>[] = [
     // {
     //   field: 'user_id',
@@ -219,50 +200,31 @@ export class OrderListComponent {
       flex: 1,
     },
   ];
-
-
-  categoriesList: any;
   staff_list: any;
   staffListSorting: any;
-  constructor(private apiService:ApisService,  private sessionStorage: SessionStorageService){}
-
-  ngOnInit() {
- this.getStaffList();
-  }
-    getStaffList() {
-  
-      this.apiService.getApi(AppConstants.api_end_points.staff+"?user_id=-1").subscribe((data: any) => {
-        if (data) {
-  
-          data.data.forEach((element: any) => {
-            // element.option=''
-            element.user_image = null,
-              element.fullname = element.first_name + ' ' + element.last_name
-            element.status = element.status == 1 ? 'Active' : element.status == 0 ? 'Inactive' : ''
-          })
-          this.staff_list = data.data
-          this.staffListSorting = data.data
-        }
-      })
-    }
-   onCellClicked(event: any): void {
+     onCellClicked(event: any): void {
     let target = event.event?.target as HTMLElement;
+     }
+      constructor(private apiService:ApisService,  private sessionStorage: SessionStorageService){}
+     
+       ngOnInit() {
+      this.getStaffList();
+       }
+         getStaffList() {
+       
+           this.apiService.getApi(AppConstants.api_end_points.staff+"?user_id=-1").subscribe((data: any) => {
+             if (data) {
+       
+               data.data.forEach((element: any) => {
+                 // element.option=''
+                 element.user_image = null,
+                   element.fullname = element.first_name + ' ' + element.last_name
+                 element.status = element.status == 1 ? 'Active' : element.status == 0 ? 'Inactive' : ''
+               })
+               this.staff_list = data.data
+               this.staffListSorting = data.data
+             }
+           })
+         }
 
-    // Traverse up the DOM to find the element with data-action
-    while (target && !target.dataset?.['action'] && target !== document.body) {
-      target = target.parentElement as HTMLElement;
-    }
-   
-    const action = target?.getAttribute("data-action");
-     console.log(event.data, 'target action')
-    const staffId = event.data?.user_id;
-    console.log(action, staffId)
-    if (action === "view") {
-      // this.router.navigate([`/staff/view/${staffId}`]);
-    } else if (action === "edit") {
-      // this.router.navigate([`/staff/edit/${staffId}`]);
-    } else if (action === "delete") {
-      // this.delete(event.data);
-    }
-  }
 }

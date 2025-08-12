@@ -7,8 +7,8 @@ import { BehaviorSubject, Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class ApisService {
-  basesurl='http://78.142.47.247:3003'
-  // basesurl = 'http://localhost:3003'
+  // basesurl='http://78.142.47.247:3003'
+  basesurl = 'http://localhost:3003'
   private change$ = new BehaviorSubject<boolean>(false);
   poschanges$ = this.change$.asObservable();
   constructor() { }
@@ -121,12 +121,13 @@ convertDishObject(dish: any) {
         option_set_array = JSON.parse(optSet.option_set_combo_json ?? '[]');
         option_set_array.forEach((element: any) => {
           element.selected = false;
+          element.quantity = 0;
         });
       } catch (e) {
         console.error('Invalid option_set_combo_json:', optSet.option_set_combo_json, e);
       }
 
-      const type = optSet.display_name === 'Base' ? 'radio' : 'counter';
+      const type = optSet.dispaly_name === 'Base' ? 'radio' : 'counter';
   return {
         ...optSet,
         option_set_array,
@@ -205,4 +206,31 @@ getItemSubtotal(item: any): number {
   return (Number(item.dish_price) + optionsTotal) * Number(item.dish_quantity);
 }
 
+combotItemSubtotal(fullcomboDetails: any): number {
+  let grandTotal: number = 0;
+  console.log(fullcomboDetails, 'fullcomboDetails')
+  if (fullcomboDetails && typeof fullcomboDetails.comboDishList === 'object') {
+ grandTotal = Object.values(fullcomboDetails.comboDishList)
+  .flatMap((dish: any) => dish.dish_option_set_array)
+  .flatMap((optSet: any) => optSet.option_set_array)
+  .filter((option: any) => option.selected === true)
+  .reduce((sum: number, option: any) => {
+    const price = Number(option.price) || 0;
+    const qty = Number(option.quantity) || 0;
+    return sum + (price * qty);
+  }, 0);
+}
+console.log(grandTotal, 'grandTotal')
+return (Number(fullcomboDetails.dish_price) + grandTotal) * Number(fullcomboDetails.dish_quantity);
+}
+orderItemSubtotal(item: any) {
+  console.log(item, 'orderItemSubtotal')
+  const optionsTotal = item.selectedOptions.filter((option: any) => option.selected === true)
+    .reduce((sum: number, option: any) => {
+      const price = Number(option.price) || 0;
+      const qty = Number(option.quantity) || 0;
+      return sum + (price * qty);
+    }, 0);
+ return (Number(item.dish_price) + optionsTotal) * Number(item.dish_quantity);
+}
 }

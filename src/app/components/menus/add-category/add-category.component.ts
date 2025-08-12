@@ -115,6 +115,7 @@ isHide=false
   storeList: any;
   uploadImagUrl: string | ArrayBuffer | null;
   file: File;
+  reqbody: any
 
   constructor(
     private fb: FormBuilder,
@@ -233,8 +234,39 @@ isHide=false
 
         // this.menuForm.markAllAsTouched(); 
     } else {
-  
-const reqbody={
+  if( this.type == 'Edit') {
+ this.reqbody={
+    "type": "update",
+    "id": this.myData.id,
+    "name": this.menuForm.value.name,
+    "dish_menu_id": this.menuForm.value.dish_menu_id,
+    "display_name":this.menuForm.value.display_name,
+    "description":this.menuForm.value.description,
+    "hide_category":this.menuForm.value.hide_category ==true?1:0,
+    "order_times": this.menuForm.value.order_times.toString(),
+    "services": this.menuForm.value.services.toString(),
+    "applicable_hours":this.rowData.length ==0?"":JSON.stringify(this.rowData),
+    "mark_as_age_restricted":this.menuForm.value.mark_as_age_restricted ==true?1:0,
+    "enable_pre_orders_only":this.menuForm.value.enable_pre_orders_only ==true?1:0,
+    "pre_order_days_in_advance": this.menuForm.value.pre_order_days_in_advance,
+    "pre_order_cutoff_time": this.menuForm.value.pre_order_cutoff_time,
+    "pre_order_applicable_service": this.menuForm.value.pre_order_applicable_service.toString(),
+    "hide_restriction_warning": this.menuForm.value.hide_restriction_warning ==true?1:0,
+    "hide_if_unavailable": this.menuForm.value.hide_if_unavailable ==true?1:0,
+    "POS_display_name": this.menuForm.value.POS_display_name,
+    "pos_color_code": "#00AA00",
+    "hide_category_in_POS": this.menuForm.value.hide_category_in_POS ==true?1:0,
+    "pickup_surcharge": this.menuForm.value.pickup_surcharge,
+    "delivery_surcharge": this.menuForm.value.delivery_surcharge,
+    "managed_delivery_surcharge": this.menuForm.value.managed_delivery_surcharge,
+    "dine_in_surcharge":this.menuForm.value.dine_in_surcharge,
+    "store_id": this.menuForm.value.store.toString(),
+    "status": 1,
+    "created_by": 1,
+    "updated_by": 1
+}
+  }else{
+    this.reqbody={
     "type": "insert",
     "name": this.menuForm.value.name,
     "dish_menu_id": this.menuForm.value.dish_menu_id,
@@ -263,10 +295,11 @@ const reqbody={
     "created_by": 10,
     "updated_by": 10
 }
-console.log(reqbody)
+  }
+console.log(this.reqbody)
     const formData = new FormData();
     formData.append("image", this.file); // Attach Blob with a filename
-    formData.append("body", JSON.stringify(reqbody));
+    formData.append("body", JSON.stringify(this.reqbody));
     this.apis.postApi("/api/category", formData).subscribe((res: any) => {
       if (res.code === "1") {
     
@@ -301,7 +334,7 @@ onSelectFile(event: Event): void {
   if (input.files && input.files.length > 0) {
     const file = input.files[0];
     this.selectedFile = file;
-
+  this.file = file;
     // Manually update form value (not bound to input)
     this.menuForm.get('image')?.setValue(file);
     this.menuForm.get('image')?.markAsTouched();

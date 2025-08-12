@@ -36,7 +36,9 @@ export class AddDishsComponent {
   reqbody: any
   uploadImagUrl: string | ArrayBuffer | null;
   file: File;
-previewUrl: string | ArrayBuffer | null = null;
+  previewUrl: string | ArrayBuffer | null = null;
+  selectedFile: File | null = null;
+  checkedDishString: string;
   constructor(private fb: FormBuilder, public modal: NgbModal, private router: Router, private apiService: ApisService, private sessionStorage: SessionStorageService) { }
 
   ngOnInit() {
@@ -79,7 +81,7 @@ previewUrl: string | ArrayBuffer | null = null;
     console.log(this.myData, this.type, 'opennnnnnnnnnnnn')
     if (this.type == 'Edit' || this.type == 'View') {
       this.menuForm.get('image')?.clearValidators();
-this.menuForm.get('image')?.updateValueAndValidity();
+      this.menuForm.get('image')?.updateValueAndValidity();
       this.menuForm.patchValue({
         menuType: this.myData.dish_menu_id,
         categoryType: this.myData.dish_category_id,
@@ -93,14 +95,14 @@ this.menuForm.get('image')?.updateValueAndValidity();
         description: this.myData.description,
         subtitle: this.myData.subtitle,
         storeName: this.myData.store_id,
-       
-// optionSet:JSON.parse(dish_option_set_json)
+
+        // optionSet:JSON.parse(dish_option_set_json)
       });
       //  this.Ingredients=JSON.parse(this.myData)
-      this.selectedSubcategories=JSON.parse(this.myData.dish_option_set_json)
-      this.Ingredients=JSON.parse(this.myData.dish_ingredients_json)
-      this.choices=JSON.parse(this.myData.dish_choices_json)
-      this.previewUrl=this.myData.dish_image;
+      this.selectedSubcategories = JSON.parse(this.myData.dish_option_set_json)
+      this.Ingredients = JSON.parse(this.myData.dish_ingredients_json)
+      this.choices = JSON.parse(this.myData.dish_choices_json)
+      this.previewUrl = this.myData.dish_image;
       // dish_choices_json
     }
   }
@@ -209,10 +211,28 @@ this.menuForm.get('image')?.updateValueAndValidity();
     this.Ingredients.splice(index, 1);
   }
   insertDishData() {
-    console.log("innnnnnnnnnnnn", this.Ingredients, this.selectedSubcategories, this.choices)
+    console.log("innnnnnnnnnnnn", this.choices)
+    if (this.menuForm.value.dishType == 'combo') {
+    this.checkedDishString = [
+  ...new Set(
+    this.choices.flatMap(side =>
+      side.menuItems.flatMap((menuItem:any) =>
+        menuItem.categories.flatMap((category:any) =>
+          category.dishes
+            .filter((dish:any) => dish.checked)
+            .map((dish:any) => dish.dishId)
+        )
+      )
+    )
+  )
+]
+.map(id => `${id},1`)
+.join('|');
+    }
     if (this.type == 'Edit') {
       this.reqbody = {
         "type": "update",
+            combo_dish_id_csv: this.checkedDishString,
         "dish_id": this.myData?.dish_id,
         "dish_menu_id": this.menuForm.value.menuType,
         "dish_category_id": this.menuForm.value.categoryType,
@@ -229,8 +249,8 @@ this.menuForm.get('image')?.updateValueAndValidity();
         "description": this.menuForm.value.description,
         "subtitle": this.menuForm.value.subtitle,
         "store_id": this.menuForm.value.storeName,
-         dish_image:this.myData.dish_image,
-        // "created_by": 1,
+        dish_image: this.myData.dish_image,
+        "created_by": 1,
         "dish_option_set_json": JSON.stringify(this.selectedSubcategories),
         "dish_ingredients_json": JSON.stringify(this.Ingredients),
         "dish_choices_json": JSON.stringify(this.choices),
@@ -238,6 +258,7 @@ this.menuForm.get('image')?.updateValueAndValidity();
     } else {
       this.reqbody = {
         "type": "insert",
+        combo_dish_id_csv: this.checkedDishString,
         "dish_menu_id": this.menuForm.value.menuType,
         "dish_category_id": this.menuForm.value.categoryType,
         "dish_type": this.menuForm.value.dishType,
@@ -253,8 +274,8 @@ this.menuForm.get('image')?.updateValueAndValidity();
         "description": this.menuForm.value.description,
         "subtitle": this.menuForm.value.subtitle,
         "store_id": this.menuForm.value.storeName,
-        // "created_by": 1,
-        "dish_option_set_json": JSON.stringify(this.selectedSubcategories ),
+        "created_by": 1,
+        "dish_option_set_json": JSON.stringify(this.selectedSubcategories),
         "dish_ingredients_json": JSON.stringify(this.Ingredients as any),
         "dish_choices_json": JSON.stringify(this.choices),
       }
@@ -287,98 +308,98 @@ this.menuForm.get('image')?.updateValueAndValidity();
   }
 
 
-selectedFile: File | null = null;
 
-onSelectFile(event: Event): void {
-  const input = event.target as HTMLInputElement;
-  if (input.files && input.files.length > 0) {
-    const file = input.files[0];
-    this.selectedFile = file;
 
-    // Manually update form value (not bound to input)
-    this.menuForm.get('image')?.setValue(file);
-    this.menuForm.get('image')?.markAsTouched();
+  onSelectFile(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.file = input.files[0];
+      this.selectedFile = this.file;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.previewUrl = reader.result;
-    };
-    reader.readAsDataURL(file);
+      // Manually update form value (not bound to input)
+      this.menuForm.get('image')?.setValue(this.file);
+      this.menuForm.get('image')?.markAsTouched();
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.previewUrl = reader.result;
+      };
+      reader.readAsDataURL(this.file);
+    }
   }
-}
- 
 
-removeImage(): void {
-  this.previewUrl = null;
+
+  removeImage(): void {
+    this.previewUrl = null;
     this.selectedFile = null;
-  this.menuForm.get('image')?.reset();  // Reset form control
-}
+    this.menuForm.get('image')?.reset();  // Reset form control
+  }
 
 
 
 
 
 
-  onMenuToggle(menu:any, menuList:any) {
-  menu.checked = !menu.checked;
-  menu.indeterminate = false;
-  if (menu.categories) {
-    menu.categories.forEach((sub:any) => {
-      sub.checked = menu.checked;
+  onMenuToggle(menu: any, menuList: any) {
+    menu.checked = !menu.checked;
+    menu.indeterminate = false;
+    if (menu.categories) {
+      menu.categories.forEach((sub: any) => {
+        sub.checked = menu.checked;
+        sub.indeterminate = false;
+        if (sub.dishes) {
+          sub.dishes.forEach((dish: any) => dish.checked = menu.checked);
+        }
+      });
+    }
+    this.updateParentState(menuList);
+  }
+
+  onSubcategoryToggle(sub: any, subList: any, menu: any) {
+    sub.checked = !sub.checked;
+    sub.indeterminate = false;
+    if (sub.dishes) {
+      sub.dishes.forEach((dish: any) => dish.checked = sub.checked);
+    }
+    this.updateSubcategoryState(subList, menu);
+  }
+
+  onDishToggle(dish: any, dishList: any, sub: any, subList: any, menu: any) {
+    dish.checked = !dish.checked;
+    this.updateDishState(dishList, sub, subList, menu);
+  }
+
+  updateDishState(dishList: any, sub: any, subList: any, menu: any) {
+    const checked = dishList.filter((d: any) => d.checked).length;
+    if (checked === dishList.length) {
+      sub.checked = true;
       sub.indeterminate = false;
-      if (sub.dishes) {
-        sub.dishes.forEach((dish:any) => dish.checked = menu.checked);
-      }
-    });
+    } else if (checked === 0) {
+      sub.checked = false;
+      sub.indeterminate = false;
+    } else {
+      sub.checked = false;
+      sub.indeterminate = true;
+    }
+    this.updateSubcategoryState(subList, menu);
   }
-  this.updateParentState(menuList);
-}
 
-onSubcategoryToggle(sub:any, subList:any, menu:any) {
-  sub.checked = !sub.checked;
-  sub.indeterminate = false;
-  if (sub.dishes) {
-    sub.dishes.forEach((dish:any) => dish.checked = sub.checked);
+  updateSubcategoryState(subList: any, menu: any) {
+    const checked = subList.filter((s: any) => s.checked).length;
+    const indeterminate = subList.filter((s: any) => s.indeterminate).length;
+    if (checked === subList.length) {
+      menu.checked = true;
+      menu.indeterminate = false;
+    } else if (checked === 0 && indeterminate === 0) {
+      menu.checked = false;
+      menu.indeterminate = false;
+    } else {
+      menu.checked = false;
+      menu.indeterminate = true;
+    }
   }
-  this.updateSubcategoryState(subList, menu);
-}
 
-onDishToggle(dish:any, dishList:any, sub:any, subList:any, menu:any) {
-  dish.checked = !dish.checked;
-  this.updateDishState(dishList, sub, subList, menu);
-}
-
-updateDishState(dishList:any, sub:any, subList:any, menu:any) {
-  const checked = dishList.filter((d:any) => d.checked).length;
-  if (checked === dishList.length) {
-    sub.checked = true;
-    sub.indeterminate = false;
-  } else if (checked === 0) {
-    sub.checked = false;
-    sub.indeterminate = false;
-  } else {
-    sub.checked = false;
-    sub.indeterminate = true;
+  updateParentState(menuList: any) {
+    // If you have a parent above menu, update its state here
   }
-  this.updateSubcategoryState(subList, menu);
-}
-
-updateSubcategoryState(subList:any, menu:any) {
-  const checked = subList.filter((s:any) => s.checked).length;
-  const indeterminate = subList.filter((s:any) => s.indeterminate).length;
-  if (checked === subList.length) {
-    menu.checked = true;
-    menu.indeterminate = false;
-  } else if (checked === 0 && indeterminate === 0) {
-    menu.checked = false;
-    menu.indeterminate = false;
-  } else {
-    menu.checked = false;
-    menu.indeterminate = true;
-  }
-}
-
-updateParentState(menuList:any) {
-  // If you have a parent above menu, update its state here
-}
 }

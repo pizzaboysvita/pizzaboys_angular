@@ -145,13 +145,15 @@ ngOnInit(): void {
   const menuApi = this.apiService.getApi(AppConstants.api_end_points.menu + '?user_id=' + userId);
   const categoryApi = this.apiService.getApi(`/api/category?user_id=` + userId);
   const dishApi = this.apiService.getApi(AppConstants.api_end_points.dish + '?user_id=' + userId);
-
-  forkJoin([menuApi, categoryApi, dishApi]).subscribe(
-    ([menuRes, categoryRes, dishRes]: any) => {
-// dishRes.data.forEach((elemet:any)=>{
-//   elemet.image_url='assets/pizzaImg/menus/3.png'
-// })
-      console.log(menuRes.data,categoryRes,dishRes)
+    const comboDishApi = this.apiService.getApi(
+      '/api/dish?user_id='+userId+'&typeOfDish=combo'
+    );
+  forkJoin([menuApi, categoryApi, dishApi, comboDishApi]).subscribe(
+    ([menuRes, categoryRes, dishRes, comboDishRes]: any) => {
+      // dishRes.data.forEach((elemet:any)=>{
+      //   elemet.image_url='assets/pizzaImg/menus/3.png'
+      // })
+      console.log(menuRes.data, categoryRes, dishRes, comboDishRes);
       this.menuList=menuRes.data
       console.log(this.menuList[0])
       this.selectedMenuId=this.menuList[0]

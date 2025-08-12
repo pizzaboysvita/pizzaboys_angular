@@ -132,14 +132,14 @@ export class MediaComponent implements OnInit {
   selectedChildLabel: string | null = null;
   public searchText: string = "";
   showPopup: boolean = false;
-    accordionOpen = false;
+  accordionOpen = false;
   overlaySettings!: OverlaySettings;
   cartItems: DishFromAPI[];
   totalPrice: any;
-    activeSubmenu: any;
-    openComboIndex: number | null = null;
-    hoveredComboIndex: number | null = null;
-      mainItems = [
+  activeSubmenu: any;
+  openComboIndex: number | null = null;
+  hoveredComboIndex: number | null = null;
+  mainItems = [
     { label: 'Web', children: ['Angular', 'React'] },
     { label: 'Desktop', children: ['WPF', 'WinForms'] },
     {
@@ -184,7 +184,7 @@ export class MediaComponent implements OnInit {
       ]
     }
   ];
-  comboDishDetails: any=[];
+  comboDishDetails: any = [];
   totalDishList: any[];
   constructor(
     public modal: NgbModal,
@@ -208,17 +208,19 @@ export class MediaComponent implements OnInit {
     const dishApi = this.apiService.getApi(
       AppConstants.api_end_points.dish + "?user_id=" + userId
     );
+ 
 
     forkJoin([categoryApi, dishApi]).subscribe(
       ([categoryRes, dishRes]: any) => {
         console.log("Category API Response:", categoryRes);
         console.log("Dish API Response:", dishRes);
+        // console.log("Combo Dish API Response:", comboDishRes);
 
         const processedMenu = this.apiService.posMenuTree(
           categoryRes.categories,
           dishRes.data
         );
-console.log("Processed Menu:", processedMenu);
+        console.log("Processed Menu:", processedMenu);
         this.categoriesList = processedMenu;
         this.totalDishList = dishRes.data;
         if (this.categoriesList && this.categoriesList.length > 0) {
@@ -260,7 +262,7 @@ console.log("Processed Menu:", processedMenu);
     this.cdr.detectChanges();
   }
 
- decreaseItem(item: DishFromAPI): void {
+  decreaseItem(item: DishFromAPI): void {
     if (item.quantity && item.quantity > 0) {
       item.quantity--;
       this.cdr.detectChanges();
@@ -279,67 +281,79 @@ console.log("Processed Menu:", processedMenu);
   }
 
   openIngredientsPopup(item: any) {
-   
 
-    if(item.dish_type === 'combo'){
-      this.comboDishDetails=[]
- console.log(item.dish_choices_json, "openIngredientsPopup combo");
- item.dish_choices_json_array= this.filterIndeterminateCategories(JSON.parse(item.dish_choices_json));
- this.selectedDishFromList = item;
-  item['dish_quantity'] = 1; // Ensure quantity is set
-    this.selectedDishFromList = item;
-    this.selectedDishFromList.duplicate_dish_price = item.dish_price
-    this.cartItems = [item]
-    this.showPopup = true;
-    console.log(this.selectedDishFromList, 'selectedDishFromList 123 456')
-    }else{
-    this.cartItems = []
-    item['dish_option_set_array'].forEach((optionSet: any) => {
-      optionSet.option_type = optionSet.dispaly_name == "Base" ? "radio" : optionSet.dispaly_name == "Extra Meat Toppings" ? "counter" : "counter";
-    })
-    item['dish_quantity'] = 1; // Ensure quantity is set
-    this.selectedDishFromList = item;
-    this.selectedDishFromList.duplicate_dish_price = item.dish_price
-    this.cartItems = [item]
-    this.showPopup = true;
-    this.cdr.detectChanges();
+
+    if (item.dish_type === 'combo') {
+
+      this.comboDishDetails = []
+      
+      item.dish_choices_json_array = this.filterIndeterminateCategories(JSON.parse(item.dish_choices_json));
+      this.selectedDishFromList = item;
+      item['dish_quantity'] = 1; // Ensure quantity is set
+      this.selectedDishFromList = item;
+      this.selectedDishFromList.duplicate_dish_price = item.dish_price
+      this.cartItems = [item]
+      this.showPopup = true;
+      
+      console.log("Opening combo ingredients popup for item:", item);
+      console.log(this.selectedDishFromList, 'selectedDishFromList 123 456')
+    } else {
+      this.cartItems = []
+      item['dish_option_set_array'].forEach((optionSet: any) => {
+        optionSet.option_type = optionSet.dispaly_name == "Base" ? "radio" : optionSet.dispaly_name == "Extra Meat Toppings" ? "counter" : "counter";
+      })
+      item['dish_quantity'] = 1; // Ensure quantity is set
+      this.selectedDishFromList = item;
+      this.selectedDishFromList.duplicate_dish_price = item.dish_price
+      this.cartItems = [item]
+      this.showPopup = true;
+      this.cdr.detectChanges();
+    }
   }
+  filterIndeterminateCategories(menuData: any[]) {
+    return menuData.map(menuGroup => ({
+      ...menuGroup,
+      menuItems: menuGroup.menuItems.map((menu: any) => ({
+        ...menu,
+        categories: menu.categories
+          .map((cat: any) => {
+            const checkedDishes = cat.dishes.filter((dish: any) => dish.checked);
+            const isIndeterminate = checkedDishes.length > 0 && checkedDishes.length < cat.dishes.length;
+            const isChecked = checkedDishes.length === cat.dishes.length && checkedDishes.length > 0;
+            return {
+              ...cat,
+              dishes: checkedDishes,
+              indeterminate: isIndeterminate,
+              checked: isChecked
+            };
+          })
+          .filter((cat: any) => cat.indeterminate || cat.checked)
+      }))
+    }));
   }
-   filterIndeterminateCategories(menuData: any[]) {
-  return menuData.map(menuGroup => ({
-    ...menuGroup,
-    menuItems: menuGroup.menuItems.map((menu: any) => ({
-      ...menu,
-      categories: menu.categories
-        .map((cat: any) => {
-          const checkedDishes = cat.dishes.filter((dish: any) => dish.checked);
-          const isIndeterminate = checkedDishes.length > 0 && checkedDishes.length < cat.dishes.length;
-          const isChecked = checkedDishes.length === cat.dishes.length && checkedDishes.length > 0;
-          return {
-            ...cat,
-            dishes: checkedDishes,
-            indeterminate: isIndeterminate,
-            checked: isChecked
-          };
-        })
-        .filter((cat: any) => cat.indeterminate || cat.checked)
-    }))
-  }));
-}
-selectedChildPerCombo: { [comboIndex: number]: any } = {};
-  selectChild(parentIndex: number, dish: any,comboIndex: number) {
-     this.comboDishDetails=[]
-    console.log("Selected child:", parentIndex, dish,this.dishList);
-   this.comboDishDetails=this.totalDishList.filter((d: any) => d.dish_id == dish.dishId)
-// this.openComboIndex = comboIndex;
-  this.comboDishDetails.forEach((comboDish: any, idx: number) => {
-  this.selectedChildPerCombo[comboIndex] = this.apiService.convertDishObject(comboDish);
-  console.log(this.selectedChildPerCombo, 'selectedChildPerCombo')
-});
-      console.log(this.comboDishDetails,dish.dishId,this.totalDishList ,'comboDishDetails')
+  selectedChildPerCombo: { [comboIndex: number]: any } = {};
+  selectChild(parentIndex: number, dish: any, comboIndex: number) {
+    this.comboDishDetails = []
+    console.log("Selected child:", parentIndex, dish, comboIndex);
+    this.comboDishDetails = this.totalDishList.filter((d: any) => d.dish_id == dish.dishId)
+    // this.openComboIndex = comboIndex;
+    this.comboDishDetails.forEach((comboDish: any, idx: number) => {
+      this.selectedChildPerCombo[comboIndex] = this.apiService.convertDishObject(comboDish);
+      console.log(this.selectedChildPerCombo, 'selectedChildPerCombo')
+    });
+    // this.selectedDishFromList.comboDishList=this.selectedChildPerCombo;
+
+
+
+      this.selectedDishFromList = {
+    ...this.selectedDishFromList,
+    comboDishList: this.selectedChildPerCombo
+  };
+    console.log(this.comboDishDetails, dish.dishId, this.totalDishList, 'comboDishDetails')
     this.selectedChildIndex = parentIndex;
     this.selectedChildLabel = dish;
-        this.cdr.detectChanges();
+    console.log("Selected child New:", this.selectedDishFromList);
+    this.cdr.detectChanges();
   }
   closePopup() {
     this.showPopup = false;
@@ -350,7 +364,7 @@ selectedChildPerCombo: { [comboIndex: number]: any } = {};
     this.expandedIndex = null;
     this.cdr.detectChanges();
   }
- 
+
 
 
   increaseModalQuantity(item: any) {
@@ -419,22 +433,122 @@ selectedChildPerCombo: { [comboIndex: number]: any } = {};
     console.log(this.totalPrice, '<-------------------------this.getItemSubtotal(item)--------')
   }
   // showMenuPopup = false;
- addItemToCart(item: any) {
-  console.log(item)
+  addItemToCart(item: any) {
+    console.log(item)
     const cartItem = this.moveSelectedOptionsToMainObject(item);
     console.log(cartItem, 'cartItem')
     this.itemAdded.emit(cartItem);
   }
-  
-moveSelectedOptionsToMainObject(dish: any): CartItem {
-  console.log(dish, 'moveSelectedOptionsToMainObject');
-  // Collect all options with selected === true from all option sets
-  const selectedOptions: any[] = dish.dish_option_set_array
-    .flatMap((optionSet: any) =>
-      (optionSet.option_set_array).filter((opt: any) => opt.selected === true)
-    );
-    console.log(selectedOptions, 'selectedOptions')
-  dish.selectedOptions = selectedOptions;
-  return dish;
+
+  moveSelectedOptionsToMainObject(dish: any): CartItem {
+    console.log(dish, 'moveSelectedOptionsToMainObject');
+    // Collect all options with selected === true from all option sets
+    const selectedOptions: any[] = dish.dish_option_set_array
+      .flatMap((optionSet: any) =>
+        (optionSet.option_set_array).filter((opt: any) => opt.selected === true)
+      );
+    console.log(selectedOptions   
+      
+      , 'selectedOptions')
+    dish.selectedOptions = selectedOptions;
+    return dish;
+  }
+  combo_selectRadio(option: any, dishOptionSet: any, comboIndex: any, fullcomboDetails: any) {
+        console.log("Selected option in combo:",comboIndex);
+    console.log("Selected option in combo:",this.selectedDishFromList);
+
+   const comboDishDetails=this.selectedDishFromList.comboDishList[comboIndex].dish_option_set_array.filter((optSet: any) => optSet.option_set_id === dishOptionSet.option_set_id)[0].option_set_array;
+   comboDishDetails.forEach((opt: any) => {
+    opt.quantity =1;
+opt.value = option.name; // Ensure the value is set correctly
+      opt.selected = (opt === option);; // Deselect all options in the group
+
+    });
+  const subtotal = this.apiService.combotItemSubtotal(this.selectedDishFromList);
+    console.log(subtotal, 'subtotal for combo')
+    this.selectedDishFromList = {
+      ...this.selectedDishFromList,
+      duplicate_dish_price: subtotal
+    }; 
+  this.cdr.detectChanges();
+  }
+  combo_increment(option: any, dishOptionSet: any, comboDishDetails: any, fullcomboDetails: any) {
+  option.quantity = (option.quantity || 0) + 1;
+    if (option.quantity > 0) {
+      option.selected = true; 
+    }
+      const subtotal = this.apiService.combotItemSubtotal(fullcomboDetails);
+    console.log(subtotal, 'subtotal for combo')
+    this.selectedDishFromList = {
+      ...this.selectedDishFromList,
+      duplicate_dish_price: subtotal
+    };
+    
+    this.cdr.detectChanges();
+    // this.calculateTotal();
+  }
+  combo_decrement(option: any, dishOptionSet: any, comboDishDetails: any, fullcomboDetails: any) {
+    console.log("Decrementing option in combo:", option);
+if (option.quantity > 0) {
+      option.quantity--;
+    }
+    if (option.quantity == 0) {
+      option.selected = false; // Ensure option is selected when incrementing
+
+    }
+      const subtotal = this.apiService.combotItemSubtotal(fullcomboDetails);
+    console.log(subtotal, 'subtotal for combo')
+    this.selectedDishFromList = {
+      ...this.selectedDishFromList,
+      duplicate_dish_price: subtotal
+    };
+
+  }
+  combo_Increment_Quantity(option: any) {
+    console.log("Incrementing combo quantity:", option);
+    option.dish_quantity = (option.dish_quantity || 0) + 1;
+    // if (option.dish_quantity > 0) {
+    //   option.selected = true;
+    // }
+    const subtotal = this.apiService.combotItemSubtotal(option);
+    console.log(subtotal, 'subtotal for combo')
+    this.selectedDishFromList = {
+      ...this.selectedDishFromList,
+      duplicate_dish_price: subtotal
+    };
+    this.cdr.detectChanges();
+  }
+  combo_decrement_Quantity(option: any) {
+    console.log("Decrementing combo quantity:", option);
+    if (option.dish_quantity > 1) {
+      option.dish_quantity--;
+    }
+   
+    const subtotal = this.apiService.combotItemSubtotal(option);
+    console.log(subtotal, 'subtotal for combo')
+    this.selectedDishFromList = {
+      ...this.selectedDishFromList,
+      duplicate_dish_price: subtotal
+    };
+    this.cdr.detectChanges();
+  }
+  comboAddItemToCart(item: any) {
+    console.log(item)
+    const cartItem = this.comboSelectedOptions(item);
+    console.log(cartItem, 'cartItem')
+    this.itemAdded.emit(cartItem);
+  }
+  comboSelectedOptions(fullcomboDetails: any) {
+  let selectedOptions :any
+  console.log(fullcomboDetails, 'fullcomboDetails')
+  if (fullcomboDetails && typeof fullcomboDetails.comboDishList === 'object') {
+selectedOptions = Object.values(fullcomboDetails.comboDishList)
+  .flatMap((dish: any) => dish.dish_option_set_array)
+  .flatMap((optSet: any) => optSet.option_set_array)
+  .filter((option: any) => option.selected === true)
+  }
+  console.log(selectedOptions, 'selectedOptions')
+    fullcomboDetails.selectedOptions = selectedOptions;
+    return fullcomboDetails;
 }
 }

@@ -3,32 +3,7 @@
     <app-media (itemAdded)="addToCart($event)"></app-media>
   </div>
   <div class="col-xl-3">
-    <!-- <div class="card">
-    <div class="row" body>
-        <div class="col-12">
-            <ul class="nav setting-main-box driver-main-box sticky theme-scrollbar" ngbNav #nav="ngbNav"
-                [(activeId)]="active">
-                <li [ngbNavItem]="1">
-                    <button ngbNavLink class="nav-link"><i class="ri-settings-line"></i>Order
-                        Status</button>
-                    <ng-template ngbNavContent>
-                        <app-order-status></app-order-status>
-                    </ng-template>
-                </li>
-                <li [ngbNavItem]="2">
-                    <button ngbNavLink class="nav-link"><i class="ri-information-2-line"></i>Order
-                        Details</button>
-                    <ng-template ngbNavContent>
-                        <app-details></app-details>
-                    </ng-template>
-                </li>
-            </ul>
-        </div>
-        <div class="col-12">
-            <div class="restaurant-tab" [ngbNavOutlet]="nav"></div>
-        </div>
-    </div>
-</div> -->
+
 
     <div class="card p-3 shadow-sm d-flex flex-column"
       style="border-radius: 8px; height: 90vh; overflow: hidden !important;">
@@ -38,93 +13,64 @@
           <h6 class="fw-bold  mb-1">Order Details</h6>
           <!-- <div class="text-muted" style="font-size: 12px;">#ORD-3291</div> -->
         </div>
-        <!-- <div class="maerail-btn-icons">
-    <span class="material-symbols-outlined"  style="font-size: 18px;">more_vert</span>
-</div> -->
-      </div>
-
-      <!-- Dine In / Take Away / Delivery Buttons -->
-      <!-- <div class="btn-group custom-btn-group mb-3 w-100" style="height: 50px;">
-    <button type="button" class="btn w-33" [class.active]="selected === 'dinein'" (click)="selected = 'dinein'">Dine In</button>
-    <button type="button" class="btn w-33" [class.active]="selected === 'takeaway'" (click)="selected = 'takeaway'">Take away</button>
-    <button type="button" class="btn w-33" [class.active]="selected === 'delivery'" (click)="selected = 'delivery'">Delivery</button>
-  </div> -->
-      <!-- Dine In / Take Away / Delivery Buttons -->
-      <div class="btn-group w-100 mb-3 order-type-toggle">
-  <button type="button" 
-          class="toggle-btn" 
-          [class.active]="selected === 'dinein'" 
-          (click)="selected = 'dinein'">
-    Dine in
-  </button>
-  <!-- <button type="button" 
-          class="toggle-btn" 
-          [class.active]="selected === 'takeaway'" 
-          (click)="selected = 'takeaway'">
-    Take away
-  </button> -->
-  <button type="button" 
-          class="toggle-btn" 
-          [class.active]="selected === 'delivery'" 
-          (click)="selected = 'delivery'">
-    Delivery
-  </button>
-</div>
-
-
-      <!-- Customer Info -->
-      <!-- <div class="d-flex justify-content-between align-items-center mb-2">
-    <div>
-      <div style="font-size: 13px; color: #666;">Customer Name</div>
-      <div class="fw-semibold">Jhonatan Andrew</div>
-    </div>
-    <div>
-      <div style="font-size: 13px; color: #666;">Table Number</div>
-      <div class="fw-semibold">17</div>
-    </div>
-  </div> -->
-
-      <!-- Order Items List -->
-      <div  style="height: 400px;">
-        <!-- <div class="checkout-detail p-0"> -->
-          <ul>
-            @for (item of cartItems; track item) {
-            <li class="mb-3">
-  <div class="horizontal-product-box">
-    <div class="row align-items-start">
-      <!-- Left: Image + Quantity -->
-      <div class="col-3 text-center">
-        <img [src]="item.dish_image" alt="{{ item.dish_name }}" width="70" height="60" class="rounded" style="object-fit: cover;">
-        <div class="like-box d-flex justify-content-center mt-2" style="width: 70px;">
-          <i class="ri-subtract-line" style="cursor: pointer;" (click)="decreaseModalQuantity(item)"></i>
-          <span>{{item.dish_quantity}}</span>
-          <i class="ri-add-line" style="cursor: pointer;" (click)="increaseModalQuantity(item)"></i>
-          <i class="ri-delete-bin-line text-danger" style="cursor: pointer;" (click)="removeItem(item)"></i>
+        <div class="maerail-btn-icons" (click)="orderList()">
+          <span class="material-symbols-outlined" style="font-size: 18px;">more_vert</span>
         </div>
       </div>
 
-      <!-- Right: Dish Info -->
-    <!-- Right: Dish Info -->
-<div class="col-9">
-  <!-- Dish Name and Price -->
-  <div class="d-flex justify-content-between">
-    <h6 class="mb-0" style="font-size: 14px;"><b>{{ item.dish_name }}</b></h6>
-    <h6 class="mb-0 fw-bold" style="font-size: 14px;">${{ item.dish_price }}</h6>
-  </div>
+      <!-- Dine In / Take Away / Delivery Buttons -->
+      <div class="btn-group w-100 mb-3 order-type-toggle">
+        <button type="button" class="toggle-btn" [class.active]="selected === 'dinein'" (click)="selected = 'dinein'">
+          Dine in
+        </button>
+        <button type="button" class="toggle-btn" [class.active]="selected === 'delivery'"
+          (click)="selected = 'delivery'">
+          Delivery
+        </button>
+      </div>
 
-  <!-- Ingredients and their prices -->
-  <div *ngFor="let ingredient of item.selectedOptions" class="d-flex justify-content-between">
-    <span style="font-size: 14px;">{{ ingredient.name }}</span>
-    <span  style="font-size: 14px;">${{ ingredient.price | number: '1.2-2' }}</span>
-  </div>
-</div>
+      <!-- Order Items List -->
+      <div style="height: 400px;">
+        <!-- <div class="checkout-detail p-0"> -->
+        <ul>
+          @for (item of cartItems; track item) {
+          <li class="mb-3">
+            <div class="horizontal-product-box">
+              <div class="row align-items-start">
+                <!-- Left: Image + Quantity -->
+                <div class="col-3 text-center">
+                  <img [src]="item.dish_image" alt="{{ item.dish_name }}" width="70" height="60" class="rounded"
+                    style="object-fit: cover;">
+                  <div class="like-box d-flex justify-content-center mt-2" style="width: 70px;">
+                    <i class="ri-subtract-line" style="cursor: pointer;" (click)="decreaseModalQuantity(item)"></i>
+                    <span>{{item.dish_quantity}}</span>
+                    <i class="ri-add-line" style="cursor: pointer;" (click)="increaseModalQuantity(item)"></i>
+                    <i class="ri-delete-bin-line text-danger" style="cursor: pointer;" (click)="removeItem(item)"></i>
+                  </div>
+                </div>
 
-    </div>
-  </div>
-</li>
+                <!-- Right: Dish Info -->
+                <!-- Right: Dish Info -->
+                <div class="col-9">
+                  <!-- Dish Name and Price -->
+                  <div class="d-flex justify-content-between">
+                    <h6 class="mb-0" style="font-size: 14px;"><b>{{ item.dish_name }}</b></h6>
+                    <h6 class="mb-0 fw-bold" style="font-size: 14px;">${{ item.dish_price }}</h6>
+                  </div>
 
-            }
-          </ul>
+                  <!-- Ingredients and their prices -->
+                  <div *ngFor="let ingredient of item.selectedOptions" class="d-flex justify-content-between">
+                    <span style="font-size: 14px;">{{ ingredient.name }}</span>
+                    <span style="font-size: 14px;">${{ ingredient.price | number: '1.2-2' }}</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </li>
+
+          }
+        </ul>
         <!-- </div> -->
 
 
@@ -145,40 +91,11 @@
           <span>${{ total.toFixed(2) }}</span>
         </div>
 
-        <button class="btn btn-primary w-100 fw-bold" style="border-radius: 10px; padding: 12px;">
+        <button class="btn btn-primary w-100 fw-bold" style="border-radius: 10px; padding: 12px;" (click)="submitOrder()">
           Pay ${{ total.toFixed(2) }}
         </button>
       </div>
     </div>
 
-
-
-
-    <!-- <app-card [body]="true">
-            <div class="row" body>
-                <div class="col-12">
-                    <ul class="nav setting-main-box driver-main-box sticky theme-scrollbar" ngbNav #nav="ngbNav"
-                        [(activeId)]="active">
-                        <li [ngbNavItem]="1">
-                            <button ngbNavLink class="nav-link"><i class="ri-settings-line"></i>Order
-                                Status</button>
-                            <ng-template ngbNavContent>
-                                <app-order-status></app-order-status>
-                            </ng-template>
-                        </li>
-                        <li [ngbNavItem]="2">
-                            <button ngbNavLink class="nav-link"><i class="ri-information-2-line"></i>Order
-                                Details</button>
-                            <ng-template ngbNavContent>
-                                <app-details></app-details>
-                            </ng-template>
-                        </li>
-                    </ul>
-                </div>
-                <div class="col-12">
-                    <div class="restaurant-tab" [ngbNavOutlet]="nav"></div>
-                </div>
-            </div>
-        </app-card> -->
   </div>
 </div>
