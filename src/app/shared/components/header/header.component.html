@@ -15,21 +15,45 @@
             </a>
         </div>
     </div>
+      <!-- <a href="" class="logo-login"><img src="assets/pizzaImg/pizza-black-1.png" class="img-fluid" alt=""></a> -->
     <div class="welcome-title">
+        @if(ishidepos == 'true'){
+          <a href="" class="logo-login"><img src="assets/pizzaImg/pizza-black-1.png" class="img-fluid" alt=""></a>
+        }
+@if(ishidepos != 'true'){
         <h5>
             Food that's you loved!
             <img src="assets/images/header.gif" alt="">
         </h5>
-        <span>
+        <span style="font-style: italic;">
             Delight your taste with our most famous food !!
         </span>
+    }
     </div>
     <div class="nav-right col-xl-6 col-5 pull-right right-header p-0">
-        <ul class="nav-menus">
-            <li class="search-icon">
+        <ul class="nav-menus icon-color">
+            <!-- <li class="search-icon">
                 <span class="header-search" (click)="isSearch =!isSearch">
                     <i class="ri-search-line"></i>
                 </span>
+            </li> -->
+            @if (users.name=='customer') {
+            <!-- <li class="d-flex align-items-center me-2"> -->
+                <div class="toggle-container" (click)="onToggle()">
+                    <div class="toggle-switch" [class.active]="isOn">
+                      <div class="label off-label" [class.active]="!isOn">{{ offLabel }}</div>
+                      <div class="slider"></div>
+                      <div class="label on-label" [class.active]="isOn">{{ onLabel }}</div>
+                    </div>
+                  </div>
+                <!-- <label class="custom-switch">
+                  <input type="checkbox" [(ngModel)]="notificationsEnabled">
+                  <span class="slider"></span>
+                </label> -->
+              <!-- </li> -->
+            }
+            <li class="onhover-dropdown" (click)="home()">
+               <i class="fa fa-home"></i>
             </li>
             <li class="onhover-dropdown">
                 <app-notifications></app-notifications>

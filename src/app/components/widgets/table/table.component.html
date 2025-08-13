@@ -1,21 +1,37 @@
-<div class="table-responsive theme-scrollbar">
+<div class="table-responsive theme-scrollbar table-scroll-container">
     <div class="dataTables_wrapper no-footer">
         @if (search) {
         <label>Search:<input type="search" [(ngModel)]="searchText"></label>
         }
-        <table [ngClass]="tableClass ? tableClass:'table category-table dataTable no-footer'">
+        <table class="table-scroll-container" [ngClass]="tableClass ? tableClass:'table category-table dataTable no-footer'">
             <thead>
                 <tr>
-                    @if (hasCheckbox) {
+                  @if (hasCheckbox) {
                     <th>
-                        <input class="custom-checkbox" type="checkbox" name="text" (change)="checkUncheckAll($event)">
+                      <input class="custom-checkbox" type="checkbox" name="text" (change)="checkUncheckAll($event)">
                     </th>
-                    }
-                    @for (columnHead of tableConfig.columns; track columnHead) {
-                    <th>{{columnHead.title}}</th>
-                    }
+                  }
+                  @for (columnHead of tableConfig.columns; track columnHead) {
+                    <th (click)="onSort(columnHead.key)" style="cursor: pointer;">
+                        <span class="header-content">
+                            {{ columnHead.title }}
+                            @if (sortColumn === columnHead.key) {
+                              @if (sortDirection === 'asc') {
+                                <span class="material-symbols-outlined">arrow_upward</span>
+                              }
+                              @else if (sortDirection === 'desc') {
+                                <span class="material-symbols-outlined">arrow_downward</span>
+                              }
+                            }
+                            @else {
+                        <img src="assets/images/up_down_arrow.svg" alt="Steam" class="steam">
+                            }
+                          </span>
+                    </th>
+                  }
                 </tr>
-            </thead>
+              </thead>
+              
             <tbody>
                 @for (columnData of filterData(searchText); track columnData;let ind = $index) {
                 <tr>
@@ -28,10 +44,21 @@
                     @for (columnHead of tableConfig.columns; track columnHead) {
                     @if (columnHead?.type &&columnHead?.type == 'image') {
                     <td>
-                        <div class="table-image">
+                        <!-- <div class="table-image">
                             <img [src]="columnData[columnHead.dataField]" class="img-fluid" [class]="columnHead.class"
                                 alt="">
-                        </div>
+                        </div> -->
+                        <ng-container class="table-image" *ngIf="columnData[columnHead.dataField]; else fallbackInitial">
+                          <img [src]="columnData[columnHead.dataField]" class="img-fluid rounded-circle" [class]="columnHead.class" alt="User" width="40" height="40" />
+                        </ng-container>
+                        <ng-template #fallbackInitial>
+                          <div class="avatar-placeholder rounded-circle text-white d-flex align-items-center justify-content-center"
+                               style="width: 55px; height:55px; font-weight: bold; font-size: 1rem;" [ngStyle]="{ 'background-color': getColorForName(columnData.name) }"
+                               >
+                            {{ columnData.initial || (columnData.name ? columnData.name.charAt(0).toUpperCase() : '?') }}
+                          </div>
+                        </ng-template>
+                    
                     </td>
                     } @else if(columnHead?.type && columnHead?.type == 'rating') {
                     <td>

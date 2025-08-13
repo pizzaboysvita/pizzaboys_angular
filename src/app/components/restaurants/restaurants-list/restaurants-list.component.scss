@@ -1,0 +1,77 @@
+::ng-deep.status-dropdown {
+  width: 100%;
+  height: 30px;
+  padding: 2px;
+  border: 1px solid #d3d3d3;
+  border-radius: 8px;
+  color: #000;
+  font-size: 13px;
+}
+::ng-deep .status-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // width: 100%;
+  // height: 35px; /* or whatever you want */
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  position: relative;
+  // left: 20px;
+}
+::ng-deep .status-active,
+::ng-deep .status-no-stock,
+::ng-deep .status-hide {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 4px;
+  width: 100px; /* fixed width */
+  height: 30px; /* fixed height */
+  padding: 0 8px;
+  text-align: center;
+  white-space: nowrap;
+  // border-radius: 4px;
+
+}
+
+::ng-deep .status-active {
+  background-color: #e6f4ea;
+  color: #28a745;
+  border: 1px solid #28a745;
+  font-weight: 600;
+}
+
+::ng-deep .status-no-stock {
+  background-color: #fff3e0;
+  color: #ff9800;
+  border: 1px solid #ff9800;
+    font-weight: 600;
+}
+
+::ng-deep .status-hide {
+  background-color: #ffebee;
+  color: #f44336;
+  border: 1px solid #f44336;
+}
+
+// .font-family{
+//   font-family: 'Trebuchet MS', sans-serif !important;
+//   //  font-family: 'Rumer', sans-serif !important;
+// }
+// input::placeholder {
+//   font-family: 'Trebuchet MS', sans-serif !important;
+//   font-size: 14px !important; /* optional */
+// }
+// ::ng-deep .ag-theme-alpine .ag-header-cell-label {
+//   font-family: 'Trebuchet MS', sans-serif !important; /* Replace with desired font */
+
+// }
+.swal2-popup {
+  font-size: 0.85rem;
+  padding: 1rem 1.5rem;
+  max-height: 350px; /* max height */
+  overflow-y: auto;  /* scroll if content too big */
+}

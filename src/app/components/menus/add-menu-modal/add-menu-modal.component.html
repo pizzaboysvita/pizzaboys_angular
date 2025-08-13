@@ -1,0 +1,402 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5>{{type}} Menu</h5>
+    <button class="btn-close" type="button" (click)="modal.dismissAll()">
+      <i class="ri-close-line"></i>
+    </button>
+  </div>
+
+  <div class="modal-body pt-0">
+    <div class="col-12">
+      <ul class="nav nav-pills flex-nowrap mb-3" ngbNav #nav="ngbNav" [(activeId)]="active">
+        <li [ngbNavItem]="1" class="nav-item m-0">
+          <button ngbNavLink class="nav-link" type="button">General</button>
+          <ng-template ngbNavContent>
+            <form [formGroup]="menuForm">
+              <div class="input-items">
+                <div class="row gy-3">
+
+                  <div class="col-12">
+                    <div class="input-box">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Name</h6>
+                        <span class="optional-tag">Required</span>
+                      </div>
+                      <input type="text" placeholder="Enter Name" formControlName="name">
+                      @if((menuForm.get('name')?.touched ||menuForm.get('name')?.dirty) &&
+                      menuForm.get('name')?.hasError('required')){
+                      <div class="text-danger">
+                        Name is required
+                      </div>
+                      }
+                      <span class="lableSubtext">Unique menu name</span>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="input-box">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Display Name</h6>
+                        <!-- <span class="optional-tag">OPTIONAL</span> -->
+                      </div>
+                      <input type="text" placeholder="Enter Display Name" formControlName="displayName">
+                      <span class="lableSubtext">Overrides unique name in your store</span>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="input-box">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Description</h6>
+                        <!-- <span class="optional-tag">OPTIONAL</span> -->
+                      </div>
+                      <textarea placeholder="Enter Description" formControlName="description"></textarea>
+                      <span class="lableSubtext">Optional description for the menu</span>
+                    </div>
+                  </div>
+
+
+                  <div class="col-12">
+                    <div class="row g-3 align-items-center">
+                      <div class="col-6">
+                        <h6 class="toggleHeading">Disable Dish Notes</h6>
+                      </div>
+                      <div class="col-6 text-end">
+                        <div class="form-switch d-inline-block">
+                          <input type="checkbox" class="form-check-input" formControlName="disableDishNotes">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="row g-3 align-items-center">
+                      <div class="col-6">
+                        <h6 class="toggleHeading">Re-stock Menu Daily (3am)</h6>
+                      </div>
+                      <div class="col-6 text-end">
+                        <div class="form-switch d-inline-block">
+                          <input type="checkbox" class="form-check-input" formControlName="restockMenuDaily">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="row g-3 align-items-center">
+                      <div class="col-6">
+                        <h6 class="toggleHeading">Hide Menu</h6>
+                      </div>
+                      <div class="col-6 text-end">
+                        <div class="form-switch d-inline-block">
+                          <input type="checkbox" class="form-check-input" formControlName="hideMenu">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="input-box">
+                      <!-- <h6 class="font-family ">Upload Images </h6> -->
+                      <!-- <span class="choose-img-box font-family" > -->
+ <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Upload Images</h6>
+                        <span class="optional-tag">Required</span>
+                      </div>
+                      <input autocomplete="off" id="fileInput"class="mt-1" type="file" accept="image/*"
+                        (change)="onSelectFile($event)">
+                      <!-- </span> -->
+                    </div>
+                       @if((menuForm.get('image')?.touched ||menuForm.get('image')?.dirty) &&
+                      menuForm.get('image')?.hasError('required')){
+                      <div class="text-danger">
+                        Image is required
+                      </div>
+                      }
+                  </div>
+
+
+                </div>
+              </div>
+            </form>
+          </ng-template>
+        </li>
+
+        <!-- @if(menuForm.value.hideMenu == false){ -->
+        <li [ngbNavItem]="2" class="nav-item m-0">
+          <button ngbNavLink class="nav-link" type="button">Conditions</button>
+          <ng-template ngbNavContent>
+            <form [formGroup]="conditionForm">
+              <div class="input-items">
+                <div class="row gy-3">
+                  <!-- Order Times -->
+                  <div class="col-12">
+                    <div class="input-box position-relative">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Store</h6>
+                        <span class="optional-tag">Required</span>
+                      </div>
+                      <ng-select [items]="storeList" [searchable]="true" [multiple]="true" bindLabel="store_name"
+                        bindValue="store_id" placeholder="Select from the dropdown or type to search..."
+                        formControlName="store">
+                      </ng-select>
+                         @if((conditionForm.get('store')?.touched ||conditionForm.get('store')?.dirty) &&
+                      conditionForm.get('store')?.hasError('required')){
+                      <div class="text-danger">
+                        Store is required
+                      </div>
+                      }
+                      <span class="lableSubtext">
+                        Select which Store this menu will be available for. Leave empty for all times.
+                      </span>
+                    </div>
+                  </div>
+                  <!-- Order Times -->
+                  <div class="col-12">
+                    <div class="input-box position-relative">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Order Times</h6>
+                        <!-- <span class="optional-tag">OPTIONAL</span> -->
+                      </div>
+                      <ng-select [items]="orderTimesOptions" [searchable]="true" [multiple]="false" bindLabel="name"
+                        bindValue="id" placeholder="Select from the dropdown or type to search..."
+                        formControlName="orderTimes">
+                      </ng-select>
+                      <span class="lableSubtext">
+                        Select which order times this menu will be available for. Leave empty for all times.
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Services -->
+                  <div class="col-12">
+                    <div class="input-box position-relative">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Services</h6>
+                        <!-- <span class="optional-tag">OPTIONAL</span> -->
+                      </div>
+                      <ng-select [items]="servicesOptions" [searchable]="true" [multiple]="true" bindLabel="name"
+                        bindValue="id" placeholder="Select from the dropdown or type to search..."
+                        formControlName="services">
+                      </ng-select>
+                      <span class="lableSubtext">
+                        Select which services this menu will be available for. Leave empty to apply for all services.
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Applicable Hours -->
+                  <div class="col-12">
+                    <div class="input-box position-relative">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Applicable Hours</h6>
+                        <!-- <span class="optional-tag">OPTIONAL</span> -->
+                      </div>
+                      <!-- <button type="button" class="btn btn-outline-primary btn-sm" (click)="addTimeSlot()">Add Time Slot</button> -->
+                      <button type="button" class="add-time-slot-btn" (click)="addNewRow()">
+                        Add Time Slot
+                      </button>
+
+
+                      @if(isHide){
+                      <ag-grid-angular class="ag-theme-alpine" style="width: 100%; height: 300px" [rowData]="rowData"
+                        [columnDefs]="columnDefs" rowSelection="single" [stopEditingWhenCellsLoseFocus]="true"
+                        (cellClicked)="onCellClicked($event)" [domLayout]="'autoHeight'">
+                      </ag-grid-angular>
+                      }
+                      <span class="lableSubtext">
+                        Set which hours this menu will be available for. If no hours entered, menu applies at all times.
+                        Enter time in 24H format, e.g., 21:00 for 9:00 PM.
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Mark As Age Restricted -->
+                  <div class="col-12">
+                    <div class="row g-3 align-items-center">
+                      <div class="col-6">
+                        <h6 class="toggleHeading">Mark As Age Restricted</h6>
+                      </div>
+                      <div class="col-6 text-end">
+                        <div class="form-switch d-inline-block">
+                          <input type="checkbox" class="form-check-input" formControlName="ageRestricted">
+                        </div>
+                      </div>
+                      <span class="lableSubtext">
+                        This will require customers to confirm they are over 18 before ordering. ID verification may be
+                        needed.
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Enable Pre-orders Only -->
+                  <div class="col-12">
+                    <div class="row g-3 align-items-center">
+                      <div class="col-6">
+                        <h6 class="toggleHeading">Enable Pre-orders Only</h6>
+                      </div>
+                      <div class="col-6 text-end">
+                        <div class="form-switch d-inline-block">
+                          <input type="checkbox" class="form-check-input" formControlName="preOrderOnly">
+                        </div>
+                      </div>
+                      <span class="lableSubtext">
+                        Enabling this will disable immediate orders and require pre-orders according to below
+                        conditions.
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Pre-order Days in Advance -->
+                  <div class="col-12">
+                    <div class="input-box position-relative">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Pre-order Days In Advance</h6>
+                        <!-- <span class="optional-tag">OPTIONAL</span> -->
+                      </div>
+                      <input type="number" placeholder="0" formControlName="preOrderDays">
+                      <span class="lableSubtext">
+                        Customers must pre-order items from this menu a certain number of days in advance.
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Pre-order Cutoff Time -->
+                  <div class="col-12">
+                    <div class="input-box position-relative">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Pre-order Cutoff Time (24H Format)</h6>
+                        <!-- <span class="optional-tag">OPTIONAL</span> -->
+                      </div>
+                      <input type="time" placeholder="00:00" formControlName="preOrderCutoffTime">
+                      <span class="lableSubtext">
+                        Customers must place orders before the cutoff time on the last pre-order day.
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Pre-order Applicable Services -->
+                  <div class="col-12">
+                    <div class="input-box position-relative">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Pre-Order Applicable Services</h6>
+                        <!-- <span class="optional-tag">OPTIONAL</span> -->
+                      </div>
+                      <ng-select [items]="preOrderServicesOptions" [searchable]="true" [multiple]="true"
+                        bindLabel="name" bindValue="id" placeholder="Select from the dropdown or type to search..."
+                        formControlName="preOrderServices">
+                      </ng-select>
+                      <span class="lableSubtext">
+                        Select which services pre-order restrictions will apply to.
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Hide Restriction Warning -->
+                  <div class="col-12">
+                    <div class="row g-3 align-items-center">
+                      <div class="col-6">
+                        <h6 class="toggleHeading">Hide Restriction Warning</h6>
+                      </div>
+                      <div class="col-6 text-end">
+                        <div class="form-switch d-inline-block">
+                          <input type="checkbox" class="form-check-input" formControlName="hideRestrictionWarning">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Hide If Unavailable -->
+                  <div class="col-12">
+                    <div class="row g-3 align-items-center">
+                      <div class="col-6">
+                        <h6 class="toggleHeading">Hide If Unavailable</h6>
+                      </div>
+                      <div class="col-6 text-end">
+                        <div class="form-switch d-inline-block">
+                          <input type="checkbox" class="form-check-input" formControlName="hideIfUnavailable">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </form>
+          </ng-template>
+        </li>
+        <!-- } -->
+
+        <li [ngbNavItem]="3" class="nav-item m-0">
+          <button ngbNavLink class="nav-link" type="button">POS</button>
+          <ng-template ngbNavContent>
+            <form [formGroup]="posForm">
+              <div class="input-items">
+                <div class="row gy-3">
+
+                  <div class="col-12">
+                    <div class="input-box">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>POS Display Name</h6>
+                        <!-- <span class="optional-tag">OPTIONAL</span> -->
+                      </div>
+                      <input type="text" placeholder="Enter Name" formControlName="posDispalyname">
+                      <span class="lableSubtext">Will override the unique name in your POS</span>
+                    </div>
+                  </div>
+
+
+                  <div class="col-12">
+                    <div class="row g-3 align-items-center">
+                      <div class="col-6">
+                        <h6 class="toggleHeading">Hide Menu</h6>
+                      </div>
+                      <div class="col-6 text-end">
+                        <div class="form-switch d-inline-block">
+                          <input type="checkbox" class="form-check-input" formControlName="hideMenu">
+                        </div>
+                      </div>
+                      <span class="lableSubtext">Toggling this will be hide the menu in your POS</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </ng-template>
+        </li>
+
+        <li [ngbNavItem]="4" class="nav-item m-0">
+          <button ngbNavLink class="nav-link" type="button">Surcharge</button>
+          <ng-template ngbNavContent>
+            <div class="input-items">
+              <form [formGroup]="surchargeForm">
+                <div class="row gy-4">
+
+                  @for (surcharge of surchargeFields; track surcharge) {
+                  <div class="col-12">
+                    <div class="input-box position-relative">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>{{ surcharge.label }}</h6>
+                        <!-- <span class="optional-tag">OPTIONAL</span> -->
+                      </div>
+                      <input type="number" [formControlName]="surcharge.controlName" placeholder="%">
+                      <span class="lableSubtext">{{ surcharge.subtext }}</span>
+                    </div>
+                  </div>
+                  }
+                </div>
+              </form>
+            </div>
+          </ng-template>
+        </li>
+      </ul>
+    </div>
+    <div class="col-12" [ngbNavOutlet]="nav"></div>
+  </div>
+  @if(type != 'View'){
+  <div class="modal-footer">
+    <button class="btn btn-cancel" type="button" (click)="modal.dismissAll()">Cancel</button>
+    <button class="btn btn-submit" type="submit" (click)="saveMenu()">Save</button>
+  </div>
+  }
+</div>

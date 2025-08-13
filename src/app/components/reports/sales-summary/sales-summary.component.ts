@@ -12,6 +12,6 @@ import { CardComponent } from "../../../shared/components/card/card.component";
 
 export class SalesSummaryComponent {
 
-  public SalesSummary = SalesSummary ;
+  public SalesSummary = SalesSummary;
 
 }

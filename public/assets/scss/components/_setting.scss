@@ -161,15 +161,48 @@
 
 .save-button {
     float: right;
-    background: $gradient-fill;
+    // background: $gradient-fill;
     color: $white;
     font-size: calc(15px + (16 - 15) * ((100vw - 320px) / (1920 - 320)));
     margin-top: 20px;
-
+    border: 1px solid #ef2917;
+    background: #ef2917;  
+    border-radius: 10px;
     &:hover {
-        color: $white;
+        color: #ef2917;
+        border: 1px solid #ef2917;;
+        background:#fef4e8;;  
+        
     }
+    
 }
+.reset-button {
+    float: right;
+    background: $gradient-fill;
+    color: #ff5454;
+    font-size: calc(15px + (16 - 15) * ((100vw - 320px) / (1920 - 320)));
+    margin-top: 20px;
+    border: 1px solid #ff5454;
+    background: #fff;  
+    border-radius: 10px;
+    &:hover {
+        color: #000;;
+        border: 1px solid #ff5454;
+        background-color:#ff5454;  
+        
+    }
+    
+}
+.export-btn {
+    padding: 8px 12px;
+    // background-color: rgba($light-background, 1);
+    // border: 1px solid $border-color;
+    color: #fff !important;
+    border-radius: 10px;
+    border: 1px solid #ef2917;
+    background: #ef2917;  
+    cursor: pointer;
+  }
 
 .activation {
     display: flex;

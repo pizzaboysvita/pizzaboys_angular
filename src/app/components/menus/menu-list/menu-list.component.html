@@ -1,0 +1,142 @@
+<div class="row">
+    <div class="col-12">
+        <app-card [header]="true" [body]="true" [cardHeaderClass]="'card-no-border'">
+            <!-- <h5 header>Setting</h5> -->
+            <div header class="title-header option-title justify-content-start right-options-height">
+                <!-- <h3 class="p-2">Dishs</h3> -->
+
+                <div class="right-options ms-auto">
+
+                    <ul>
+
+                        <!-- <li>
+                            <a class="btn btn-dashed" (click)="insertMenu()">Add Menu Type</a>
+                        </li>
+                        <li>
+                            <a class="btn btn-dashed" (click)="insertCategory()">Add Category</a>
+                        </li> -->
+                        <li>
+                            <a class="btn btn-dashed" (click)="insertDish('Add')">Add Dish</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row" body>
+                <div class="col-xxl-3 col-xl-3">
+
+                    <ul class="nav setting-main-box sticky theme-scrollbar" style="background-color: rgb(240 240 240);">
+                        <li style="font-weight: 500;"> Menu Type:</li>
+                        <li class="position-relative d-flex align-items-center">
+                            <select class="form-select" [(ngModel)]="selectedMenuId" (change)="menuType_cat(selectedMenuId)" >
+                                @for(item of menuList; track item) {
+                                <option [ngValue]="item">{{ item.name }}</option>
+                                }
+                            </select>
+                        </li>
+
+                        @for (item of categoryList; track item; let i = $index) {
+                        <li>
+                            <button class="nav-link" [class.active]="selectedTabIndex === i"
+                                (click)="selectedTabIndex = i;category_dish(item)">
+                                {{ item.name }}
+                            </button>
+                        </li>
+                        }
+
+                        
+                      
+
+
+                    </ul>
+                </div>
+                <div class="col-xxl-9 col-xl-9">
+                    <div
+                        class="row row-cols-xl-4 row-cols-md-5 row-cols-sm-3 row-cols-2 g-sm-3 g-2 media-library-sec ratio_landscape">
+                        <!-- <div class="setting-box"> -->
+                        @for (item of dishList; track item) {
+                        <div>
+                            <div class="library-box">
+                                <input type="checkbox" [id]="item.id" style="display: none;" />
+                                <label [for]="item.id">
+                                    <div class="b_size_content bg-size"
+                                        [style.background-image]="'url('+item.dish_image+')'" style="background-size: cover;
+                                        background-position: center center;
+                                        background-repeat: no-repeat;
+                                        display: block;">
+                                        <img [src]="item.dish_image" class="img-fluid bg-img bg_size_content" alt=""
+                                            style="display: none;">
+
+                                    </div>
+
+                                    <div class="dropdown" (click)="open(item)" (clickOutside)="item.active = false">
+                                        <a href="javascript:void(0)" [class.show]="item.active">
+                                            <i class="ri-more-fill"></i>
+                                        </a>
+                                        
+                                         <ul class="dropdown-menu dropdown-menu-end mb-10" [class.show]="item.active"  
+                                            style="position: absolute;inset: 0px 0px auto auto; margin: 0px;transform: translate(-5px, 20px);">
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center" (click)="openPopup()">
+                                                    <i class="ri-download-2-line me-2"></i>Action</a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center"
+                                                     (click)="viewDish(item,'view')">
+                                               <i class="ri-eye-line"></i> &nbsp;  View</a>
+                                            </li>
+                                           
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center"
+                                                     (click)="viewDish(item,'edit')">
+                                                   <i class="ri-pencil-line"></i> &nbsp;Edit</a>
+                                            </li>
+                                            <li (click)="dishDelete(item)" class=" mb-10">
+                                                <a class="dropdown-item d-flex align-items-center">
+                                                    <i class="ri-delete-bin-line me-2"></i>Delete</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </label>
+                                <h6 class="f-w-600">{{item.dish_name}}       </h6>
+                                <h6><span style="float: inline-start;">${{item.dish_price}}</span></h6>
+
+                            </div>
+                        </div>
+                        }
+                        <!-- </div> -->
+                    </div>
+                </div>
+            </div>
+            <button class="btn save-button" type="submit">Save</button>
+        </app-card>
+    </div>
+</div>
+
+<ng-template #confirmModal let-modal>
+  <div class="modal-content">
+    <div class="modal-header d-block text-center">
+      <h5 class="modal-title w-100" style="font-size: 20px; font-weight: 600">
+        Confirm Dish Deletion
+      </h5>
+      <button type="button" class="btn-close" (click)="modal.dismiss()">
+        <!-- <i class="fa fa-times"></i> -->
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="text-center">
+        <span style="font-size: 16px">
+          Are you sure you want to delete this Dish?
+        </span>
+        <span class="text-danger fw-bold">This action cannot be undone.</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-sm fw-bold btn-animation" (click)="modal.dismiss()">
+        No
+      </button>
+      <button type="button" class="btn btn-sm fw-bold btn-animation" (click)="onConfirm(modal)">
+        Yes
+      </button>
+    </div>
+  </div>
+</ng-template>

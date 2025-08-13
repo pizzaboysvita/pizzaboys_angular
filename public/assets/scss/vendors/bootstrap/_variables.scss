@@ -464,7 +464,7 @@ $font-sizes: (
 $headings-margin-bottom:      $spacer * .5 !default;
 $headings-font-family:        null !default;
 $headings-font-style:         null !default;
-$headings-font-weight:        500 !default;
+$headings-font-weight:        800 !default;
 $headings-line-height:        1.2 !default;
 $headings-color:              null !default;
 // scss-docs-end headings-variables
@@ -664,7 +664,7 @@ $btn-active-border-tint-amount:   10% !default;
 $form-text-margin-top:                  .25rem !default;
 $form-text-font-size:                   $small-font-size !default;
 $form-text-font-style:                  null !default;
-$form-text-font-weight:                 null !default;
+$form-text-font-weight:                 500 !default;
 $form-text-color:                       $text-muted !default;
 // scss-docs-end form-text-variables
 

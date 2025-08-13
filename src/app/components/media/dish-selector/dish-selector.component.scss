@@ -1,0 +1,111 @@
+/* Modal backdrop: full-screen dark overlay */
+// .modal-backdrop {
+//     position: fixed;
+//     top: 0;
+//     left: 0;
+//     width: 100vw;
+//     height: 100vh;
+//     // background-color: rgba(0, 0, 0, 0.6); /* Slightly darker for better focus */
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     z-index: 1050;
+//     backdrop-filter: blur(2px);
+//   }
+
+  
+  /* Modal content container */
+//   .modal-content {
+//     background-color: #fff;
+//     width: 90%;              // Increased width
+//     max-width: 1000px;       // Larger max width
+//     height: 550px;     
+//     display: flex;
+//     flex-direction: row;
+//     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+//     border-radius: 10px;
+//     overflow: hidden;
+//     z-index: 1051;
+//     transition: transform 0.2s ease-in-out;
+//     color: black;
+//   }
+
+  
+  /* Columns inside modal */
+  .left-column, .right-column {
+    width: 65%;
+    padding: 20px;
+    overflow-y: auto;
+    border-right: 1px solid #e0e0e0;
+  }
+  
+  .right-column {
+    border-right: none;
+    overflow-y: auto;
+
+  }
+  
+
+  
+  /* List styling */
+  ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+
+  /* Headers for category/dish section */
+  .header, .category-name {
+    font-weight: 600 !important;
+    font-size: 18px !important;        // Increased from 16px
+    margin-bottom: 12px !important;
+    color: #333 !important;
+  }
+  /* List items */
+  
+  li {
+    padding: 12px 14px;
+    font-size: 16px !important;        // Larger font for dish items
+    cursor: pointer !important;
+    border-radius: 6px !important;
+    transition: background-color 0.2s;
+  }
+  
+  .modal-header {
+    width: 100%;
+    padding: 16px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .modal-header h3 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+  }
+  
+//   .modal-body {
+//     padding: 20px;
+//   }
+  
+  li:hover {
+    background-color: #f1f1f1;
+  }
+  
+  li.active {
+    background-color: #ffe7b3;
+    font-weight: bold;
+    color: #d35400;
+  }
+  .category-group {
+    margin-bottom: 16px;
+  }
+  
+  .category-name {
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: #444;
+    font-size: 15px;
+  }
+  

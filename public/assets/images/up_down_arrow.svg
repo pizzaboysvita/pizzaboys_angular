@@ -1,0 +1,4 @@
+<svg id="up_down_arrow" xmlns="http://www.w3.org/2000/svg" width="8" height="12" viewBox="0 0 8 12">
+  <path id="down_arrow" d="M1.332,13.5H8.256a.6.6,0,0,1,.379,1.011l-3.46,3.816a.5.5,0,0,1-.761,0L.953,14.511A.6.6,0,0,1,1.332,13.5Z" transform="translate(-0.794 -6.5)" fill="#000000"/>
+  <path id="up_arrow" d="M1.332,18.5H8.256a.6.6,0,0,0,.379-1.011l-3.46-3.816a.5.5,0,0,0-.761,0L.953,17.489A.6.6,0,0,0,1.332,18.5Z" transform="translate(-0.794 -13.5)" fill="#000000"/>
+</svg>

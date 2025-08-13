@@ -1,28 +1,106 @@
-<div class="input-items">
-    <div class="row gy-3">
-        <div class="col-3">
-            <div class="input-box">
-                <h6>First Name</h6>
-                <input type="text" name="text" placeholder="Enter First Name">
-            </div>
-        </div>
-        <div class="col-3">
-            <div class="input-box">
-                <h6>Last Name</h6>
-                <input type="text" name="text" placeholder="Enter Last Name">
-            </div>
-        </div>
-        <div class="col-12">
-            <div class="input-box">
-                <h6>Password</h6>
-                <input type="password" name="password" placeholder="Enter Your Password">
-            </div>
-        </div>
-        <div class="col-12">
-            <div class="input-box">
-                <h6>Confirm Password</h6>
-                <input type="password" name="password" placeholder="Enter Your Confirm Password">
-            </div>
-        </div>
+<div class="input-items" [formGroup]="accountForm">
+  <div class="row gy-3">
+    <!-- First Name -->
+    <div class="col-6">
+      <div class="input-box">
+        <h6>First Name</h6>
+        <input type="text" formControlName="firstName" placeholder="Enter First Name" />
+        @if (accountForm.get('firstName')?.touched && accountForm.get('firstName')?.invalid) {
+          <div class="text-danger">First name is required</div>
+        }
+      </div>
     </div>
+
+    <!-- Last Name -->
+    <div class="col-6">
+      <div class="input-box">
+        <h6>Last Name</h6>
+        <input type="text" formControlName="lastName" placeholder="Enter Last Name" />
+      </div>
+    </div>
+
+    <!-- Phone Number -->
+    <div class="col-6">
+      <div class="input-box">
+        <h6>Phone Number</h6>
+        <input type="text" formControlName="phone" placeholder="Enter Phone Number" />
+        @if (accountForm.get('phone')?.touched && accountForm.get('phone')?.invalid) {
+          <div class="text-danger">Valid 10-digit phone is required</div>
+        }
+      </div>
+    </div>
+
+    <!-- Email -->
+    <div class="col-6">
+      <div class="input-box">
+        <h6>Email</h6>
+        <input type="email" formControlName="email" placeholder="Enter Email" />
+        @if (accountForm.get('email')?.touched && accountForm.get('email')?.invalid) {
+          <div class="text-danger">Valid email is required</div>
+        }
+      </div>
+    </div>
+
+    <!-- Password -->
+    <div class="col-6">
+      <div class="input-box">
+        <h6>Password</h6>
+        <input type="password" formControlName="password" placeholder="Enter Password" />
+        @if (accountForm.get('password')?.touched && accountForm.get('password')?.invalid) {
+          <div class="text-danger">Min 6 characters required</div>
+        }
+      </div>
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="col-6">
+      <div class="input-box">
+        <h6>Confirm Password</h6>
+        <input type="password" formControlName="confirmPassword" placeholder="Enter Confirm Password" />
+        @if (accountForm.get('confirmPassword')?.touched && accountForm.get('confirmPassword')?.invalid) {
+          <div class="text-danger">Passwords must match</div>
+        }
+      </div>
+    </div>
+
+    <!-- Address -->
+    <div class="col-6">
+      <div class="input-box">
+        <h6>Address</h6>
+        <input type="text" formControlName="address" placeholder="Enter Address" />
+      </div>
+    </div>
+
+    <!-- Country -->
+    <div class="col-6">
+      <div class="input-box">
+        <h6>Country</h6>
+        <input type="text" formControlName="country" placeholder="Enter Country" />
+      </div>
+    </div>
+
+    <!-- State -->
+    <div class="col-6">
+      <div class="input-box">
+        <h6>State</h6>
+        <input type="text" formControlName="state" placeholder="Enter State" />
+      </div>
+    </div>
+
+    <!-- City -->
+    <div class="col-6">
+      <div class="input-box">
+        <h6>City</h6>
+        <input type="text" formControlName="city" placeholder="Enter City" />
+      </div>
+    </div>
+
+    <!-- POS Pin -->
+    <div class="col-6">
+      <div class="input-box">
+        <h6>POS Pin Number</h6>
+        <input type="password" formControlName="posPin" placeholder="Enter POS Pin Number" />
+      </div>
+    </div>
+  </div>
 </div>

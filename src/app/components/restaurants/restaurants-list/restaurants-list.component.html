@@ -1,0 +1,134 @@
+<div class="accordion font-family" id="accordionExample">
+
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingOne">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          <strong class="font-family">Search Criteria
+        </strong>
+        </button>
+      </h2>
+      <div id="collapseOne" class="accordion-collapse collapse show"
+           aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+         <form [formGroup]="storeForm">
+            <div class="row">
+                <div class="col-xl-3">
+                    <div class="input-box">
+                        <h6 class="f-w-600 p-1">Store Name</h6>
+                        <input type="text"  formControlName="storeName" placeholder="Search Store Name">
+                    </div>
+                </div>
+                <div class="col-xl-3">
+                    <div class="input-box">
+                        <h6 class="f-w-600 p-1">E-Mail</h6>
+                        <input type="text"  formControlName="email" placeholder=" Search E-Mail">
+                    </div>
+                </div>
+                <div class="col-xl-3">
+                    <div class="input-box">
+                        <h6 class="f-w-600 p-1">Address</h6>
+                        <input type="text"  formControlName="address" placeholder=" Search Address">
+                    </div>
+                </div>
+                <div class="col-xl-3">
+                    <!-- <div class="col-md-6"> -->
+                        <div class="input-box">
+                            <h6 class="f-w-600 p-1">Status</h6>
+                            <select class="form-select"  formControlName="status" name="carlist">
+                              <option value="-1">All</option>
+                                @for (item of stausList; track item) {
+                                <option [value]="item">{{item}}</option>
+                                }
+                            </select>
+                        <!-- </div> -->
+                    </div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="d-flex flex-wrap gap-2">
+                        <button class="btn btn-animation  save-button font-family" type="button" (click)="search()"><i class="ri-search-line"></i>&nbsp; Search</button>
+                        <button class="btn btn-animation  reset-button font-family " type="button" (click)="reset()" ><i class="ri-loop-right-line"></i>&nbsp; Reset</button>
+                     
+                    </div>
+                  </div>
+                  
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+<br>
+
+
+<div class="row font-family">
+    <div class="col-sm-12">
+        <app-card [cardClass]="'card-table'" [body]="true">
+            <div class="title-header option-title d-sm-flex d-block" body>
+                <h5>Stores List</h5>
+                <div class="right-options">
+                    <ul>
+                        <li><span style="font-size: 14px;color: #787c8b;font-weight: 600;">No.of.Stores:{{storeList.length}}</span></li>
+                        <li>
+                            <a class="export-btn font-family" (click)="openNew()">
+                                <i class="ri-add-box-fill" ></i> Add New
+                            </a>
+                        </li>
+                        <li>
+                            <a  class="export-btn font-family" (click)="downloadDevicesExcel()"><i class="ri-export-fill "></i> Export</a>
+                        </li>
+                      
+                    </ul>
+                </div>
+            </div>
+           
+            <div body >
+             
+                <div style="overflow: auto;">
+                   
+
+                 <ag-grid-angular
+  class="ag-theme-alpine font-family"
+    style="width: 100%;" 
+  [columnDefs]="columnDefs"
+  [rowData]="storeList"
+  [domLayout]="'autoHeight'"
+  [pagination]="true"
+  [paginationPageSize]="10"[gridOptions]="gridOptions"
+  [suppressColumnVirtualisation]="true"
+  [defaultColDef]="{ flex: 1, minWidth: 100, sortable: true }"
+  (cellClicked)="onCellClicked($event)">
+</ag-grid-angular>
+
+                  </div>
+                <!-- <app-table [search]="false" [hasCheckbox]="false" [tableConfig]="tableConfig"></app-table> -->
+            </div>
+        </app-card>
+    </div>
+</div>
+
+<ng-template #confirmModal let-modal>
+    
+  <div class="modal-content">
+    <div class="modal-header d-block text-center">
+      <h5 class="modal-title w-100" style="font-size: 20px;font-weight: 600;">Confirm Deletion</h5>
+      <button type="button" class="btn-close" (click)="modal.dismiss()">
+        <!-- <i class="fa fa-times"></i> -->
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="text-center">
+         <span style="font-size: 16px;">
+      Are you sure you want to delete store <strong>{{ storeData.store_name }}</strong>?
+    </span>
+    <span class="text-danger fw-bold">This action cannot be undone.</span>  </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-sm fw-bold btn-animation" (click)="modal.dismiss()">No</button>
+      <button type="button" class="btn btn-sm fw-bold btn-animation" (click)="onConfirm(modal)">Yes</button>
+    </div>
+  </div>
+</ng-template>

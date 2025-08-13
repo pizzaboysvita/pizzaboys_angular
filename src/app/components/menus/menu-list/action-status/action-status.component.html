@@ -1,0 +1,47 @@
+<!-- Action Modal -->
+
+      <div class="modal-content modal-content-font">
+  
+        <div class="modal-header">
+            <h5 class="modal-title fw-bold">Update Item Actions</h5>
+            <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+          </div>
+          
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label fw-bold">STATUS</label>
+              <select class="form-select" [(ngModel)]="status">
+                <option value="">-- Select --</option>
+                <option value="Available">Available</option>
+                <option value="No Stock">No Stock</option>
+                <option value="Hide">Hide</option>
+              </select>
+            </div>
+          
+            <div class="mb-3">
+              <label class="form-label fw-bold">POS</label>
+              <select class="form-select" [(ngModel)]="pos">
+                <option value="">-- Select --</option>
+                <option value="Hide In POS">Hide In POS</option>
+                <option value="Show In POS">Show In POS</option>
+              </select>
+            </div>
+          
+            <div class="mb-3">
+              <label class="form-label fw-bold">MISC</label>
+              <select class="form-select" [(ngModel)]="misc">
+                <option value="">-- Select --</option>
+                <option value="Cancel">Cancel</option>
+                <option value="Delete">Delete</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="modal-footer">
+            <!-- <button type="button" class="btn btn-light" (click)="close()">Close</button> -->
+            <button type="button" class="btn btn-primary" (click)="saveStatus()">Save</button>
+          </div>
+          
+      </div>
+ 
+  

@@ -1,0 +1,188 @@
+.custom-btn-group {
+    border: 0px solid linear-gradient(to right, #f6a700, #f75e5e);
+    border-radius: 15px;
+    overflow: hidden;
+    background-color: #d5e6fd;
+  }
+  
+  .custom-btn-group .btn {
+    border: none;
+    border-radius: 0;
+    color: linear-gradient(to right, #f6a700, #f75e5e);
+    background-color: transparent;
+    font-weight: 500;
+  }
+  
+  .custom-btn-group .btn.active {
+    background: linear-gradient(to right, #f6a700, #f75e5e);
+    color: #fff;
+  }
+  
+  .custom-btn-group .btn:not(.active):hover {
+    background-color: rgba(0, 123, 255, 0.1);
+  }
+  
+  .custom-btn-group .btn:focus {
+    box-shadow: none;
+  }
+  .payment-buttons {
+    display: flex;
+    gap: 10px; /* Space between buttons */
+    margin-top: 10px;
+  }
+  
+  .payment-buttons .btn {
+    flex: 1; /* Make all buttons equal width */
+  }
+  .button-border{
+   border-color: #f6e9f2 !important;
+
+   
+  }
+  .button-color{
+    background-color: #f6e9f2 !important;
+
+   }
+   .full-height {
+    height: 95vh !important; /* Full height of the viewport */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .scrollable-card {
+    flex: 1;
+    overflow-y: auto;
+  }
+  .custom-outline {
+    border: 2px solid transparent;
+    color: white;
+    font-weight: 600;
+    background-image: linear-gradient(to right, #f9a825, #f06292); /* gradient border */
+    padding: 10px;
+    border-radius: 10px;
+    background-clip: padding-box, border-box;
+    background-origin: border-box;
+    background-repeat: no-repeat;
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+    color: black;
+
+  }
+
+  
+  // .custom-outline::before {
+  //   content: "";
+  //   position: absolute;
+  //   top: 2px;
+  //   right: 2px;
+  //   bottom: 2px;
+  //   left: 2px;
+  //   background-color: white;
+  //   border-radius: 8px;
+  //   z-index: -1;
+  //   color: black;
+  // }
+  
+  // .custom-outline:hover {
+  //   color: white;
+  //   background-image: linear-gradient(to right, #f9a825, #f06292);
+  // }
+  
+  // .custom-outline:hover::before {
+  //   background-color: transparent;
+  // }
+  
+  .filter-buttons {
+    padding: 10px 0;
+  }
+  
+  .filter-btn:hover {
+    background-color: #e2e8f0 !important;
+  }
+  .filter-buttons {
+    flex-wrap: nowrap;
+  }
+  
+  .filter-btn {
+    border-radius: 999px;
+    background-color: #f1f3f5;
+    color: #1e293b;
+    padding: 10px 28px;   /* increased padding */
+    font-size: 1rem; 
+    font-weight: 600;
+    border: none;
+  }
+  
+  .filter-btn.active {
+    background-color: #d1fae5; /* light green */
+    color: #047857;
+  }
+  .maerail-btn-icons{
+    // #f5c6cb
+     width: 30px !important;
+       height: 30px !important;
+       display: flex !important;
+       align-items: center !important;
+       justify-content: center !important;
+       border: 1px solid #fff !important;
+       border-radius: 8px;
+       background-color: #fff !important;
+       cursor: pointer !important;
+       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important; /* soft shadow */
+  }
+  .custom-toggle {
+  border: none;
+  background-color: transparent;
+  font-weight: 500;
+  color: #888;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.custom-toggle.active {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #000;
+}
+  .order-type-toggle {
+  display: flex;
+  height: 40px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+
+  .toggle-btn {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: #f8f8f8;
+    color: #aaa;
+    font-weight: 500;
+    transition: background 0.2s ease, color 0.2s ease;
+    height: 100%;
+  }
+
+  .toggle-btn.active {
+    background: #fff;
+    color: #000;
+    font-weight: 600;
+  }
+
+  .toggle-btn:not(:last-child) {
+    border-right: 1px solid #ddd;
+  }
+}
+
+  
+  .like-box {
+  background: #f9f9f9;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.like-count {
+  font-size: 16px;
+  min-width: 30px;
+  text-align: center;
+}

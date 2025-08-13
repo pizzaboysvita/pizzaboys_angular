@@ -112,19 +112,22 @@
                     transition: all .4s ease-in-out;
                     padding: 8px 20px !important;
                     &:first-child{
-                        background-color: transparent;
-                        color: $theme-font-color;
+                        background-color: #fff;
+                        color: #ef2917;
                         transition: all .4s ease-in-out;
+                        border: 1px solid #ef2917;
                         &:hover {
-                            background: linear-gradient(to right, rgba(#F2A93E, 1),rgba(#F07054, 1) );
-                            color: $theme-font-color;
+                            background: #ef2917;
+                            color: #fff;
                         }
                     }
                     &:nth-child(2) {
-                        background: linear-gradient(to right, rgba(#F2A93E, 1),rgba(#F07054, 1) );
+                        background: #ef2917;
                         color: $white;
                         &:hover {
-                            color: $theme-font-color;
+                            color: #ef2917;
+                            background-color: #fff;
+                            border: 1px solid #ef2917;
                         }
                     }
                 }
@@ -134,10 +137,11 @@
     &.add-hours{
         .modal-body{
             select {
-                margin: 20px 0 6px;
+                margin: 1px 0 6px;
                 padding: 4px 8px;
-                width: 30%;
+                width: 100%;
                 border-radius: 4px;
+                height: 47px;
             }
         }
     }

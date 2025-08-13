@@ -1,0 +1,13 @@
+<app-card [header]="true" [body]="true" [cardClass]="'o-hidden pb-0'" [cardHeaderClass]="'border-0 pb-1'"
+    [cardBodyClass]="'p-0'">
+    <div class="card-header-title" header>
+        <h4>Sales Summary</h4>
+    </div>
+    <div id="saler-summary" body> 
+        <apx-chart [series]="SalesSummary.series" [chart]="SalesSummary.chart" [markers]="SalesSummary.markers"
+            [plotOptions]="SalesSummary.plotOptions" [grid]="SalesSummary.grid" [legend]="SalesSummary.legend"
+            [dataLabels]="SalesSummary.dataLabels" [stroke]="SalesSummary.stroke" [colors]="SalesSummary.colors"
+            [tooltip]="SalesSummary.tooltip" [xaxis]="SalesSummary.xaxis" [yaxis]="SalesSummary.yaxis">
+        </apx-chart>
+    </div>
+</app-card>

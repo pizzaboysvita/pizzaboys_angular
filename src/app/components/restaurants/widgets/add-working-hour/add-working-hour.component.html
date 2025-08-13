@@ -1,27 +1,92 @@
 <div class="modal-content">
     <div class="modal-header">
         <h5>Add Working Hour</h5>
-        <button class="btn-close" type="button" (click)="modal.dismissAll()">
+        <button class="btn-close" type="button" (click)="close()">
             <i class="ri-close-line"></i>
         </button>
     </div>
     <div class="modal-body pt-0">
+        <form [formGroup]="addWorkingForm">
         <div class="row">
-            <div class="col-12">
-                <app-dropdown [data]="day"></app-dropdown>
+            <div class="col-4">
+                <label class="f-w-600 text-black">Select Day</label>
+
+               <select class="form-select" name="carlist" formControlName="day">
+              <option value="-1">Select Day</option>
+    @for (item of day; track item) {
+       
+    <option [value]="item.day">{{item.day}}</option>
+    }
+</select>
+  @if (addWorkingForm.get('day')?.touched && addWorkingForm.get('day')?.errors?.['required']) {
+              <div class="text-danger">Day is required</div>
+            }
             </div>
-            <div class="col-6">
-                <label>Form</label>
-                <input type="time" name="time">
+            <div class="col-4">
+                <label class="f-w-600 text-black">Form</label>
+                <input type="time" name="time" formControlName="formtime">
+                  @if (addWorkingForm.get('formtime')?.touched && addWorkingForm.get('formtime')?.errors?.['required']) {
+              <div class="text-danger">Form Time is required</div>
+            }
             </div>
-            <div class="col-6">
-                <label>To</label>
-                <input type="time" name="time">
+            <div class="col-4">
+                <label class="f-w-600 text-black">To</label>
+                <input type="time" name="time" formControlName="to">
+                  @if (addWorkingForm.get('to')?.touched && addWorkingForm.get('to')?.errors?.['required']) {
+              <div class="text-danger">To Time is required</div>
+            }
             </div>
         </div>
+        </form>
     </div>
     <div class="modal-footer">
-        <button class="btn btn-cancel" type="button" (click)="modal.dismissAll()">Cancel</button>
-        <button class="btn btn-submit" type="submit" (click)="modal.dismissAll()">Save</button>
+        <button class="btn btn-cancel" type="button" (click)="Cancel()">Cancel</button>
+        <button class="btn btn-submit" type="submit" (click)="save()" [disabled]="!addWorkingForm.valid">Save</button>
+
     </div>
+    
+<div class="row p-1">
+    <div class="col-sm-12">
+        <app-card [cardClass]="'card-table'" [body]="true">
+            <div class="title-header option-title d-sm-flex d-block" body>
+                <h5>Available Timings</h5>
+            </div>
+            <div body>
+                <div class="table-responsive theme-scrollbar table-scroll-container">
+                <table class="table-scroll-container table category-table dataTable no-footer">
+  <thead>
+    <tr>
+        @for(col of columns;track col){
+      <th >{{ col.title }}</th>
+        }
+        <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for(row of workingHours;track row){
+    <tr >
+        @for(col of columns;track col){
+      <td >{{ row[col.dataField] }}</td>
+        }
+       <td>
+           <ul>
+                            @for (action of rowActions; track action) {
+                            <li>
+                                <a href="javascript:void(0)" (click)="performAction(action,row)">
+                                    <i [class]="action.icon"></i>
+                                </a>
+                            </li>
+                            }
+                        </ul>
+       </td>
+    </tr>
+}
+  </tbody>
+</table>
+                </div>
+                <!-- <app-table [search]="false" [hasCheckbox]="false" [tableConfig]="tableConfig"></app-table> -->
+            </div>
+        </app-card>
+    </div>
+</div>
 </div>

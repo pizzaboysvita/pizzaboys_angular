@@ -43,10 +43,11 @@ export class TableComponent {
   }
 
   performAction(action: { icon: string, permission: string }) {
+    console.log(action,'Deletion Staff')
     if (action.permission === 'show') {
       this.router.navigate(['/orders/order-detail']);
     } else if (action.permission === 'delete') {
-      this.commonService.warningModel()
+      this.commonService.warningModel(action)
     }
   }
 
@@ -69,4 +70,31 @@ export class TableComponent {
       this.selected = this.selected.filter(id => id != Number(value));
     }
   }
+  sortColumn: string = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
+  
+  onSort(columnKey: string): void {
+    if (this.sortColumn === columnKey) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortColumn = columnKey;
+      this.sortDirection = 'asc';
+    }
+  
+    // Optionally trigger actual sorting of data here
+  }
+  getColorForName(name: string): string {
+    if (!name) return '#6c757d'; // default fallback
+  
+    // Hash the name to get a consistent color
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+  
+    // Convert hash to HSL color
+    const hue = hash % 360;
+    return `hsl(${hue}, 60%, 50%)`; // You can tweak saturation/lightness as needed
+  }
+  
 }

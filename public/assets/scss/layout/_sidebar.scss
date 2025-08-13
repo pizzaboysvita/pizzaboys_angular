@@ -229,11 +229,13 @@
                         display: flex;
                         align-items: center;
                         justify-content: center;
+                        border: 1px solid #c1c1c1;
 
                         &:last-child {
                             height: unset;
                             width: unset;
                             background-color: transparent;
+                            border: none;
                         }
 
                         @media only screen and (max-width: 575.98px) {
@@ -868,11 +870,11 @@
                     top: 0;
                     z-index: 7;
                     line-height: inherit;
-                    background-color: rgb(32, 32, 32);
+                    background: linear-gradient(270deg, #151616, #151616);;
                     @include pseudowh($width: 280px, $height: auto);
                     text-align: left;
                     box-shadow: 0 0 21px 0 rgba($semi-dark, 0.1);
-                    background-image: url(../../../assets/images/sidebanner.png);
+                    // background-image: url(../../pizzaImg/main-bg-1.jpg);
                     background-position: bottom;
                     background-size: cover;
                     background-repeat: no-repeat;
@@ -900,7 +902,7 @@
                             display: block;
 
                             img {
-                                width: 58%;
+                                width: 85%;
 
                                 &.main-logo {
                                     width: 94%;
@@ -1452,7 +1454,7 @@
                                         top: 0;
                                         left: 0;
                                         @include pseudowh;
-                                        background-color: rgba($primary-color, 1);
+                                        background-color: #ef2917;
                                         opacity: 0;
                                         z-index: -1;
                                     }
@@ -1481,12 +1483,12 @@
                                         color: $white;
 
                                         &:before {
-                                            opacity: 0.1;
+                                            opacity: 1;
                                         }
 
                                         .according-menu {
                                             i {
-                                                color: $primary-color;
+                                                color: #fff;
 
                                                 [dir="rtl"] & {
                                                     margin-left: unset;
@@ -1497,12 +1499,12 @@
 
                                         svg,
                                         i {
-                                            color: $primary-color;
+                                            color: #fff;
                                             transition: all 0.3s ease-in-out;
                                         }
 
                                         span {
-                                            color: $primary-color;
+                                            color: #fff;
                                             transition: all 0.3s ease-in-out;
                                         }
                                     }

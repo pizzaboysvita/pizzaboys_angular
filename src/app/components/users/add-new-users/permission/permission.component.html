@@ -1,26 +1,51 @@
-@for (item of Permission; track item) {
-<div class="card-header-1">
-    <h5 class="mb-2 mt-2">{{item.title}}</h5>
-</div>
-<div class="input-items">
-    <div class="row gy-3 mb-4">
-        @for (items of item.data; track items) {
-        <div class="col-md-6">
-            <div class="input-box">
-                <h6>{{items.title}}</h6>
-                <div>
-                    <form class="radio-section">
-                         @for (subItem of items.subData; track subItem) {
-                             <label>
-                                 <input type="radio" name="opinion" [checked]="subItem.checked"><i></i>
-                                 <span>{{subItem.title}}</span>
-                             </label>
-                         }
-                    </form>
-                </div>
-            </div>
-        </div>
-        }
+<div [formGroup]="permissionForm">
+  
+  <div class="col-12">
+    <div class="input-box">
+      <h6 class="f-w-600 p-1">Store List</h6>
+      <ng-select 
+        [items]="categoryList" 
+        [searchable]="true" 
+        [multiple]="true"
+        bindLabel="name" 
+        bindValue="id"
+        placeholder="Select from the dropdown or type to search"
+        >
+      </ng-select>
     </div>
+  </div>
+  <h3 class="p-1" style="padding-top: 9px !important;padding-bottom: 9px !important;">Restriction Presets</h3>
+  <div class="presets mb-3 nav-pills">
+    @for (preset of presetList; track preset) {
+    <button type="button" class="mb-3" (click)="applyPreset(preset)" [class.active]="selectedPreset === preset">
+      {{ preset }}
+    </button>
+    }
+  </div>
+
+  @for (section of managementSections; track section) {
+  <div class="management-section nav-pills">
+    <h3 class="p-1" >{{ section.title }}</h3>
+    <div class="section">
+      <div [formGroupName]="section.key" class="permissions">
+        <div class="row gy-3 mb-4">
+          @for (permission of section.permissions; track permission) {
+          <div class="switch-wrapper col-sm-3">
+            <label class="switch">
+              <input type="checkbox" [formControlName]="permission" />
+              <span class="slider round"></span>
+            </label>
+            <span class="label-text">{{ permission }}</span>
+          </div>
+
+          }
+        </div>
+
+      </div>
+      <div class="description">
+        <p>{{ section.description }}</p>
+      </div>
+    </div>
+  </div>
+  }
 </div>
-}

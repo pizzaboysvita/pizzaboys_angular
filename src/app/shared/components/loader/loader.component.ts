@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ApisService } from '../../services/apis.service';
 
 @Component({
     selector: 'app-loader',
@@ -11,10 +12,11 @@ export class LoaderComponent {
 
   public show: boolean = true;
   
-  constructor() {
-    setTimeout(() => {
-      this.show = false;  
-    }, 500);
+  constructor(private apis:ApisService) {
+  this.apis.isLoading.subscribe(data=>{
+  console.log(data,'test')
+  this.show=data
+})
   }
 
 }
