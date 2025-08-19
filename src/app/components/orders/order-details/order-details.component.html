@@ -20,11 +20,12 @@
 
       <!-- Dine In / Take Away / Delivery Buttons -->
       <div class="btn-group w-100 mb-3 order-type-toggle">
-        <button type="button" class="toggle-btn" [class.active]="selected === 'dinein'" (click)="selected = 'dinein'">
+        <button type="button" class="toggle-btn" [class.active]="selected === 'dinein'"
+          (click)="selected = 'dinein' ;openNewModelPopup()">
           Dine in
         </button>
         <button type="button" class="toggle-btn" [class.active]="selected === 'delivery'"
-          (click)="selected = 'delivery'">
+          (click)="selected = 'delivery'; openDeliveryPopup()">
           Delivery
         </button>
       </div>
@@ -91,11 +92,97 @@
           <span>${{ total.toFixed(2) }}</span>
         </div>
 
-        <button class="btn btn-primary w-100 fw-bold" style="border-radius: 10px; padding: 12px;" (click)="submitOrder()">
+        <button class="btn btn-primary w-100 fw-bold" style="border-radius: 10px; padding: 12px;"
+          (click)="submitOrder()">
           Pay ${{ total.toFixed(2) }}
         </button>
       </div>
     </div>
 
+  </div>
+</div>
+
+
+<div class="modal fade show d-block" tabindex="-1" role="dialog" [ngClass]="{ 'show d-block': showNewModelPopup }">
+  <div class="modal-dialog modal-sm  modal-dialog-centered" role="document">
+    <div class="modal-content">
+
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title">Create New Model</h5>
+        <button type="button" class="btn-close" (click)="closeNewModelPopup()"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <form [formGroup]="orderForm">
+
+          <!-- Order Type -->
+          <div class="mb-3">
+            <label class="form-label">Order Type</label>
+            <select class="form-select" formControlName="orderType">
+              <option value="pickup">Pick Up</option>
+              <option value="delivery">Delivery</option>
+            </select>
+          </div>
+
+          <!-- Delivery Address (shown only if Delivery selected) -->
+          <div class="mb-3" *ngIf="orderForm.get('orderType')?.value === 'delivery'">
+            <label class="form-label">Delivery Address</label>
+            <input type="text" #addressInput class="form-control" (input)="getAddressAutocomplete()"
+              placeholder="Search your address" formControlName="deliveryAddress">
+          </div>
+          <div class="mb-3" *ngIf="orderForm.get('deliveryAddress')?.value">
+            <label class="form-label">Street Number</label>
+            <input type="text" class="form-control" formControlName="streetNumber" placeholder="Enter street number" />
+          </div>
+          <div class="mb-3" *ngIf="orderForm.get('deliveryAddress')?.value">
+            <label class="form-label">Unit Number</label>
+            <input type="text" class="form-control" formControlName="unitNumber" placeholder="Enter unit number" />
+          </div>
+          <div class="mb-3" *ngIf="orderForm.get('deliveryAddress')?.value">
+            <label class="form-label">Delivery Note</label>
+            <input type="text" #addressInput class="form-control" formControlName="deliveryNote"
+              placeholder="Enter delivery note" />
+          </div>
+
+          <!-- Selected Address Preview -->
+          <!-- <div *ngIf="selectedAddress" class="alert alert-info"> -->
+
+          <!-- </div> -->
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show d-block" tabindex="-1" role="dialog" [ngClass]="{ 'show d-block': showOrderDuePopup }">
+  <div class="modal-dialog modal-sm  modal-dialog-centered" role="document">
+    <div class="modal-content">
+
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title">Create New Model</h5>
+        <button type="button" class="btn-close" ></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+         <form [formGroup]="orderForm">
+
+          <!-- Order Type -->
+          <div class="mb-3">
+            <label class="form-label">Order Due</label>
+            <select class="form-select" formControlName="orderType">
+              <option value="pickup">ASAP</option>
+              <option value="delivery">Later</option>
+            </select>
+          </div>
+     
+    
+
+         </form>
+      </div>
+    </div>
   </div>
 </div>

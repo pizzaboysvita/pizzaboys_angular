@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { GoogleMap, GoogleMapsModule } from '@angular/google-maps';
 import { NgbModal, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { CardComponent } from "../../../shared/components/card/card.component";
@@ -6,21 +6,29 @@ import { DetailsComponent } from "./details/details.component";
 import { OrderStatusComponent } from "./order-status/order-status.component";
 import { MediaComponent } from '../../media/media.component';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ApisService } from '../../../shared/services/apis.service';
 import { SessionStorageService } from '../../../shared/services/session-storage.service';
 import { ToastrService } from 'ngx-toastr';
 import { PosOrdersComponent } from '../pos-orders/pos-orders.component';
-
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { TimepickerModule } from 'ngx-bootstrap/timepicker';
+// import { DpDatePickerModule } from 'ng2-date-picker';
 @Component({
     selector: 'app-order-details',
     templateUrl: './order-details.component.html',
     styleUrl: './order-details.component.scss',
-    imports: [NgbNavModule,MediaComponent,FormsModule,
+    imports: [NgbNavModule,MediaComponent,FormsModule,ReactiveFormsModule,
+   
          GoogleMapsModule,CommonModule]
 })
 
 export class OrderDetailsComponent {
+  
+  @ViewChild('addressInput', { static: false }) addressInput!: ElementRef;
+  // @ViewChild('modalBody', { static: false }) modalBody!: ElementRef;
+selectedDate!: Date;
+selectedTime!: Date;
   selected: string = 'dinein';
   public active = 1;
   public markers: any[];
@@ -30,8 +38,9 @@ export class OrderDetailsComponent {
   orderDeatils: any;
   orderItemsDeatils: any;
   orderItemsDetails: any;
-
-  constructor(private apiService:ApisService, private modal: NgbModal, private toastr: ToastrService,private cdr: ChangeDetectorRef,private sessionStorageService:SessionStorageService) {
+orderForm:FormGroup
+  showOrderDuePopup: boolean =false;
+  constructor(private apiService:ApisService,private fb:FormBuilder,private el: ElementRef ,private modal: NgbModal, private toastr: ToastrService,private cdr: ChangeDetectorRef,private sessionStorageService:SessionStorageService) {
     this.markers = [];
     this.zoom = 3;
   }
@@ -43,6 +52,14 @@ export class OrderDetailsComponent {
   }
   
   ngOnInit() {
+     this.orderForm = this.fb.group({
+      orderType: ['pickup', Validators.required],
+      deliveryAddress: [''],
+      streetNumber:[''],
+      streetName:[''],
+      unitNumber:[''],
+      deliveryNote:['']
+    });
      const userId = JSON.parse(
       this.sessionStorageService.getsessionStorage("loginDetails") as any
     ).user.user_id;
@@ -149,6 +166,13 @@ get tax(): number {
       size: 'xl'
     });
   }
+  showNewModelPopup = false;
+   openNewModelPopup() {
+    this.showNewModelPopup = true;
+  }
+   closeNewModelPopup() {
+    this.showNewModelPopup = false;
+  }
 submitOrder(){
  this.orderItemsDetails = this.cartItems.map((item: any) => ({
   dish_id: item.dish_id,
@@ -188,8 +212,65 @@ submitOrder(){
     }
   })
 }
-  
+   getAddressAutocomplete() {
+    console.log( 'addressInput')
+const autocomplete = new google.maps.places.Autocomplete(this.addressInput.nativeElement, {
+    componentRestrictions: { country: 'nz' },
+    fields: ['formatted_address', 'geometry']
+  });
 
+  autocomplete.addListener('place_changed', () => {
+    const place = autocomplete.getPlace();
+    if (place?.formatted_address) {
+      // this.addModelForm.patchValue({ address: place.formatted_address });
+    }
+  });
+
+  // Watch for pac-container and force re-position
+  const observer = new MutationObserver(() => {
+    document.querySelectorAll('.pac-item span').forEach((el) => {
+      if (el.textContent && el.textContent.includes(',')) {
+        // Remove everything after the last comma
+        el.textContent = el.textContent.substring(0, el.textContent.lastIndexOf(','));
+      }
+    });
+
+    const pac = document.querySelector('.pac-container') as HTMLElement;
+    if (pac) {
+      pac.style.zIndex = '2000';
+      pac.style.position = 'absolute';
+      pac.style.width = this.addressInput.nativeElement.offsetWidth + 'px';
+      const rect = this.addressInput.nativeElement.getBoundingClientRect();
+      pac.style.top = rect.bottom + 'px';
+      pac.style.left = rect.left + 'px';
+    }
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+  }
+ngAfterViewInit() {
+  
+  const observer = new MutationObserver(() => {
+    const pac = document.querySelector('.pac-container') as HTMLElement;
+    if (pac && this.addressInput) {
+      const rect = this.addressInput.nativeElement.getBoundingClientRect();
+
+      pac.style.zIndex = '2000'; // above modal
+      pac.style.position = 'fixed'; // use fixed for modal positioning
+      pac.style.width = rect.width + 'px';
+      pac.style.top = rect.bottom + 'px';
+      pac.style.left = rect.left + 'px';
+    }
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+  });
+}
+openDeliveryPopup() {
+  this.showOrderDuePopup = true;
+}
 }
 export interface CartItem {
   name: string;      // Item name

@@ -9,6 +9,7 @@ export const AppConstants = {
        menu :'/api/menu',
        category:'/api/category',
        optionSet:'/api/optionset',
-       dish:'/api/dish'
+       dish:'/api/dish',
+       orderList:'/api/order'
     }
     }
