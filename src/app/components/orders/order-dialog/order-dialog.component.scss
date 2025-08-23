@@ -1,0 +1,282 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+
+.order-number {
+  background-color: #f7461a;
+  color: white;
+  padding: 5px 20px;
+  border-radius: 20px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.accordion-header {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  border-bottom: 1px solid #ccc;
+  padding: 8px;
+  font-weight: bold;
+}
+
+.modal-body {
+  padding: 0;
+}
+.accordion-body {
+  padding: 1px;
+}
+.accordion-item {
+  padding: 8px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 0;
+}
+
+.accordion-item.current {
+  background-color: white;
+}
+
+.complete-button {
+  width: 100%;
+  padding: 15px;
+  background-color: #5cb85c;
+  color: white;
+  border: none;
+  font-size: 1.1em;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.tab-header {
+  display: flex;
+  justify-content: space-around;
+  border-bottom: 2px solid white;
+  padding: 5px;
+}
+
+.tab {
+  padding: 10px 0;
+  cursor: pointer;
+  flex-grow: 1;
+  text-align: center;
+  position: relative;
+  transition: color 0.3s;
+}
+
+.tab.active {
+  color: #c27809;
+  font-weight: bold;
+}
+
+.tab.active::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #c77a06;
+}
+
+.tab-content {
+  padding: 20px;
+}
+.row-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  padding: 10px 0;
+}
+
+.row-info p,
+.row-info span {
+  margin: 0;
+  font-size: 14px;
+}
+
+.row-info p {
+  font-weight: 500;
+  color: #333;
+}
+
+.row-info::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  border-bottom: 2px dotted #ccc;
+}
+
+.row-info:last-child::after {
+  display: none;
+}
+
+.row-info span {
+  font-weight: 400;
+  color: #555;
+  text-align: right;
+}
+
+.dishes-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  padding: 10px 0;
+  border-bottom: 2px solid #ccc;
+}
+
+.dishes-header .header-qty {
+  width: 10%;
+}
+
+.dishes-header .header-item {
+  width: 60%;
+}
+
+.dishes-header .header-price {
+  width: 30%;
+  text-align: right;
+}
+
+.dish-item {
+  padding: 10px 0;
+  border-bottom: 2px dotted #ccc;
+}
+
+.item-details-row {
+  display: flex;
+  align-items: flex-start;
+}
+
+.item-details-row .qty {
+  width: 10%;
+  text-align: center;
+  font-weight: bold;
+}
+
+.item-details-row .item-name-details {
+  width: 60%;
+  padding-right: 10px;
+}
+
+.item-name-details .item-name {
+  font-weight: bold;
+  display: block;
+}
+
+.item-details-row .price {
+  width: 30%;
+  text-align: right;
+  font-weight: bold;
+}
+
+.item-mods,
+.item-notes {
+  margin-top: 5px;
+  font-size: 0.9em;
+}
+
+.item-mods p,
+.item-notes p {
+  margin: 0;
+  font-weight: bold;
+}
+
+.bill-summary {
+  padding-top: 15px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+}
+
+.summary-row p {
+  margin: 0;
+}
+
+.summary-row span {
+  font-weight: bold;
+}
+
+.total-row {
+  font-weight: bold;
+  border-top: 2px dotted #ccc;
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
+.payment-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border: 2px solid #ccc;
+  padding: 15px;
+}
+
+.payment-icon {
+  font-size: 2.5em;
+  color: #00b894;
+}
+
+.payment-details {
+  flex-grow: 1;
+}
+
+.payment-details p {
+  font-weight: bold;
+  margin: 0;
+}
+
+.payment-details small {
+  color: #888;
+}
+
+.payment-amount {
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.log-entry {
+  align-items: flex-start;
+  gap: 15px;
+  padding: 10px 0;
+  border-bottom: 2px dotted #ccc;
+}
+
+.log-number {
+  min-width: 25px;
+  min-height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  color: #555;
+  font-weight: bold;
+}
+
+.log-details {
+  flex-grow: 1;
+}
+
+.log-details p {
+  margin: 0;
+  font-weight: 500;
+  color: #333;
+}
+
+.log-details small {
+  color: #888;
+  font-size: 0.8em;
+  display: block;
+}
