@@ -56,7 +56,7 @@ export class AddDishsComponent {
       description: [''],
       // optionSet:[''],
       subtitle: [''],
-      storeName: [null, Validators.required]
+      storeName: [this.myData.store_id, Validators.required]
 
     });
     this.storeList()
@@ -76,8 +76,7 @@ export class AddDishsComponent {
 
   }
   patchValue() {
-    this.getMenuCategoryDishData()
-
+    
     console.log(this.myData, this.type, 'opennnnnnnnnnnnn')
     if (this.type == 'Edit' || this.type == 'View') {
       this.menuForm.controls['menuType'].disable();
@@ -108,6 +107,8 @@ export class AddDishsComponent {
       this.previewUrl = this.myData.dish_image;
       // dish_choices_json
     }
+    this.getMenuCategoryDishData()
+
   }
 
   getMenuCategoryDishData() {

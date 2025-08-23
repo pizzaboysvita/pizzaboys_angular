@@ -26,6 +26,10 @@ interface RowData {
   status: string;
   address: string;
   store_name: string;
+  email:string;
+  order_due:string;
+  payment_method:string;
+  order_due_datetime:string
 }
 
 interface OrderData {
@@ -71,13 +75,37 @@ export class PosOrdersComponent {
     rowHeight: 60,
   };
   tableConfig: ColDef<RowData>[] = [
-    {
-      field: 'order_type',
-      headerName: 'Type',
-      sortable: true,
-      suppressMenu: true,
-      unSortIcon: true,
-    },
+{
+  field: 'order_type',
+  headerName: 'Type',
+  sortable: true,
+  suppressMenu: true,
+  unSortIcon: true,
+  cellRenderer: (params: any):any => {
+    const orderType = params.value;
+  
+    const backgroundColor ='rgb(81, 163, 81)';
+
+    // If order_type = 1 → POS circle with badge
+    if (orderType == 1) {
+      return `
+        <div class="d-flex align-items-center gap-2 position-relative">
+          <div class="rounded-circle d-flex align-items-center justify-content-center"
+               style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
+             <i class="ri-shopping-bag-2-line"></i>
+          </div>
+          
+          <span class="badge bg-primary position-absolute"
+                style="    width: 30px; height: 20px; top: 25px; left: 25px; font-size: 0.65rem;">POS</span>
+        </div>
+      `;
+    }
+
+   
+  }
+}
+,
+
 
     {
 
@@ -124,23 +152,22 @@ export class PosOrdersComponent {
     }
     ,
  {
-      field: 'store_name',
+      field: 'phone_number',
       headerName: 'Phone',
       suppressMenu: true,
       unSortIcon: true,
       tooltipValueGetter: (p: ITooltipParams) => p.value,
     },
     {
-      field: "user_email",
+      field: "email",
       headerName: "Email-Id",
       suppressMenu: true,
       unSortIcon: true,
       tooltipValueGetter: (p: ITooltipParams) => p.value,
     },
     {
-      field: "phone_number",
-      headerName: "Phone Number",
-      field: 'phone_number',
+   
+      field: 'order_due_datetime',
       headerName: 'Due',
       suppressMenu: true,
       unSortIcon: true,
@@ -148,7 +175,7 @@ export class PosOrdersComponent {
     },
     {
 
-      field: 'address',
+      field: 'order_due',
       headerName: 'Placed',
       suppressMenu: true,
       unSortIcon: true,
@@ -164,6 +191,13 @@ export class PosOrdersComponent {
      {
       field: 'total_quantity',
       headerName: '#Items',
+      suppressMenu: true,
+      unSortIcon: true,
+      tooltipValueGetter: (p: ITooltipParams) => p.value,
+    },
+{
+      field: 'payment_method',
+      headerName: 'Payment',
       suppressMenu: true,
       unSortIcon: true,
       tooltipValueGetter: (p: ITooltipParams) => p.value,
@@ -235,34 +269,35 @@ export class PosOrdersComponent {
     //     suppressMenu: true,
     //     unSortIcon: true,
     //   },
-    {
-      headerName: "Actions",
-      cellRenderer: (params: any) => {
-        return `
-        <div style="display: flex; align-items: center; gap:15px">
-          <button class="btn btn-sm p-0" data-action="view" title="View">
-            <span class="material-symbols-outlined text-warning">
-              visibility
-            </span>
-          </button>
-          <button class="btn btn-sm p-0" data-action="edit" title="Edit">
-            <span class="material-symbols-outlined text-success">
-              edit
-            </span>
-          </button>
-          <button class="btn btn-sm p-0" data-action="delete" title="Delete">
-            <span class="material-symbols-outlined text-danger">
-              delete
-            </span>
-          </button>
-        </div>`;
-      },
-      minWidth: 150,
-      flex: 1,
-    },
+    // {
+    //   headerName: "Actions",
+    //   cellRenderer: (params: any) => {
+    //     return `
+    //     <div style="display: flex; align-items: center; gap:15px">
+    //       <button class="btn btn-sm p-0" data-action="view" title="View">
+    //         <span class="material-symbols-outlined text-warning">
+    //           visibility
+    //         </span>
+    //       </button>
+    //       <button class="btn btn-sm p-0" data-action="edit" title="Edit">
+    //         <span class="material-symbols-outlined text-success">
+    //           edit
+    //         </span>
+    //       </button>
+    //       <button class="btn btn-sm p-0" data-action="delete" title="Delete">
+    //         <span class="material-symbols-outlined text-danger">
+    //           delete
+    //         </span>
+    //       </button>
+    //     </div>`;
+    //   },
+    //   minWidth: 150,
+    //   flex: 1,
+    // },
   ];
   staff_list: any;
   staffListSorting: any;
+  orderList: any;
   //  onCellClicked(event: any): void {
   // let target = event.event?.target as HTMLElement;
   //  }
@@ -274,27 +309,20 @@ export class PosOrdersComponent {
 
   ngOnInit() {
     this.getStaffList();
+    this.getOrderList()
   }
 
 
    
-  ];
-  staff_list: any;
-  staffListSorting: any;
-  orderList: any;
-     onCellClicked(event: any): void {
-    let target = event.event?.target as HTMLElement;
-     }
-      constructor(private apiService:ApisService,  private sessionStorage: SessionStorageService){}
-     
-       ngOnInit() {
-      this.getOrderList();
-       }
+
+ 
          getOrderList() {
        
            this.apiService.getApi(AppConstants.api_end_points.orderList).subscribe((data: any) => {
              if (data) {
-
+data.categories.forEach((element: any) => {
+  element.order_master_id = 'P-'+element.order_master_id;
+})
               this.orderList = data.categories
              console.log(data, 'order list data');
              }
@@ -303,16 +331,14 @@ export class PosOrdersComponent {
 
 
   onCellClicked(event: any): void {
-    const isActionColumn = event.colDef.headerName === "Actions";
-    if (isActionColumn) {
-      return;
-    }
-    if (event.node.data) {
+  
+    console.log("PPPPPPPPPPPPPPpppnnnnnnnnnnnnnnnn")
+    // if (event.node.data) {
       const mockOrderData: OrderData = {
         orderNumber: 4800,
         name: event.node.data.fullname,
         email: event.node.data.user_email,
-        phone: event.node.data.phone_number.toString(),
+        phone: event.node.data.phone_number,
         type: "Pickup",
         placed: "22/08/2025 at 05:14 pm",
         due: "Now / ASAP",
@@ -363,7 +389,7 @@ export class PosOrdersComponent {
         centered: true,
       });
       modalRef.componentInstance.data = mockOrderData;
-    }
+    // }
   }
   getStaffList() {
     this.apiService

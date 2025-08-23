@@ -18,13 +18,13 @@
 
                   <div class="col-12">
                     <div class="input-box">
-                   
-                       <div class="d-flex align-items-center justify-content-between mb-2">
+
+                      <div class="d-flex align-items-center justify-content-between mb-2">
                         <h6> Name</h6>
                         <span class="optional-tag">Required</span>
                       </div>
                       <input type="text" placeholder="Enter Name" formControlName="name">
-                        @if((optionSetForm.get('name')?.touched ||optionSetForm.get('name')?.dirty) &&
+                      @if((optionSetForm.get('name')?.touched ||optionSetForm.get('name')?.dirty) &&
                       optionSetForm.get('name')?.hasError('required')){
                       <div class="text-danger">
                         Name is required
@@ -58,29 +58,23 @@
 
                     </div>
                   </div>
- <div class="col-12">
-              <div class="input-box">
-                 <div class="d-flex align-items-center justify-content-between mb-2">
+                  <div class="col-12">
+                    <div class="input-box">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
                         <h6> Option Set Type"</h6>
                         <span class="optional-tag">Required</span>
                       </div>
-                <ng-select
-                  [items]="optType" bindLabel="name"       
-  bindValue="value"  
-                  [searchable]="false"
-                  [clearable]="true" 
-                  placeholder="Select Option Set Type"
-                  formControlName="optionSetType"
-                >
-                </ng-select>
-                   @if((optionSetForm.get('optionSetType')?.touched ||optionSetForm.get('optionSetType')?.dirty) &&
+                      <ng-select [items]="optType" bindLabel="name" bindValue="value" [searchable]="false"
+                        [clearable]="true" placeholder="Select Option Set Type" formControlName="optionSetType">
+                      </ng-select>
+                      @if((optionSetForm.get('optionSetType')?.touched ||optionSetForm.get('optionSetType')?.dirty) &&
                       optionSetForm.get('optionSetType')?.hasError('required')){
                       <div class="text-danger">
                         Option Set Type is required
                       </div>
                       }
-              </div>
-            </div>
+                    </div>
+                  </div>
 
 
                   <div class="col-12">
@@ -100,7 +94,7 @@
 
 
 
-                  
+
                 </div>
               </div>
             </form>
@@ -156,7 +150,8 @@
               </select> -->
               <br>
 
-              <ag-grid-angular class="ag-theme-alpine" [rowData]="rowData"   [stopEditingWhenCellsLoseFocus]="true" [columnDefs]="columnDefs" (cellValueChanged)="onCellValueChanged($event)"
+              <ag-grid-angular class="ag-theme-alpine" [rowData]="rowData" [stopEditingWhenCellsLoseFocus]="true"
+                [columnDefs]="columnDefs" (cellValueChanged)="onCellValueChanged($event)"
                 [defaultColDef]="defaultColDef" [domLayout]="'autoHeight'" (gridReady)="onGridReady($event)">
               </ag-grid-angular>
 
@@ -170,15 +165,31 @@
           <ng-template ngbNavContent>
 
             <div class="input-items">
-                <form [formGroup]="optionSetConditionForm">
-              <div class="row gy-3">
+              <form [formGroup]="optionSetConditionForm">
+                <div class="row gy-3">
 
-                <div class="col-12">
+                  <div class="col-12">
+                    <div class="row g-3 align-items-center">
+                      <div class="col-6">
+                        <h6 style="font-weight: 600;">Required</h6>
+                        <div class="form-switch d-inline-block">
+                          <input type="checkbox" formControlName="required" class="form-check-input">
+                        </div>
+
+
+                      </div>
+                      <span class="lableSubtext">If enabled, a customer must make a choice from this option set
+                      </span>
+
+                    </div>
+
+                  </div>
+
                   <div class="row g-3 align-items-center">
                     <div class="col-6">
-                      <h6 style="font-weight: 600;">Required</h6>
+                      <h6 style="font-weight: 600;">Select Multiple</h6>
                       <div class="form-switch d-inline-block">
-                        <input type="checkbox" formControlName="required" class="form-check-input">
+                        <input type="checkbox" formControlName="SelectMultiple" class="form-check-input">
                       </div>
 
 
@@ -187,56 +198,45 @@
                     </span>
 
                   </div>
-
-                </div>
-
-                <div class="row g-3 align-items-center" >
-                  <div class="col-6">
-                    <h6 style="font-weight: 600;">Select Multiple</h6>
-                    <div class="form-switch d-inline-block">
-                      <input type="checkbox"  formControlName="SelectMultiple"  class="form-check-input">
-                    </div>
-
-
-                  </div>
-                  <span class="lableSubtext">If enabled, a customer must make a choice from this option set
-                  </span>
-
-                </div>
-@if(optionSetConditionForm.value.SelectMultiple){
+                  @if(optionSetConditionForm.value.SelectMultiple){
                   <div class="row  align-items-center">
-                  <div class="col-6">
-                    <h6 style="font-weight: 600;">Enable Option Quantity</h6>
-                    <div class="form-switch d-inline-block">
-                      <input type="checkbox"  formControlName="enableOptionQuantity"  class="form-check-input">
+                    <div class="col-6">
+                      <h6 style="font-weight: 600;">Enable Option Quantity</h6>
+                      <div class="form-switch d-inline-block">
+                        <input type="checkbox" formControlName="enableOptionQuantity" class="form-check-input">
+                      </div>
                     </div>
-                  </div>
-                  <span class="lableSubtext">If enabled, customers can select the quantity of a particular option
-                  </span>
+                    <span class="lableSubtext">If enabled, customers can select the quantity of a particular option
+                    </span>
                     <div class="col-12">
-                    <div class="input-box">
-                      <h6>Min Options Required</h6>
-                      <input type="text" placeholder="Enter Min Options Required" formControlName="MinOptionsRequired">
-                      <span class="lableSubtext">The minimum number of options that must be selected. Leave empty for no minimum</span>
+                      <div class="input-box">
+                        <h6>Min Options Required</h6>
+                        <input type="text" placeholder="Enter Min Options Required"
+                          formControlName="MinOptionsRequired">
+                        <span class="lableSubtext">The minimum number of options that must be selected. Leave empty for
+                          no minimum</span>
+                      </div>
                     </div>
-                  </div>
                     <div class="col-12">
-                    <div class="input-box">
-                      <h6>Max Options Allowed</h6>
-                      <input type="text" placeholder="Enter Name" formControlName="MaxOptionsAllowed">
-                      <span class="lableSubtext">The maximum number of options that can be selected. Leave empty for no limit</span>
+                      <div class="input-box">
+                        <h6>Max Options Allowed</h6>
+                        <input type="text" placeholder="Enter Name" formControlName="MaxOptionsAllowed">
+                        <span class="lableSubtext">The maximum number of options that can be selected. Leave empty for
+                          no limit</span>
+                      </div>
                     </div>
-                  </div>
                     <div class="col-12">
-                    <div class="input-box">
-                      <h6>Free Quantity</h6>
-                      <input type="text" placeholder="Enter Name" formControlName="FreeQuantity">
-                      <span class="lableSubtext">The number of options that can be selected for free. NOTE: If enabled, ensure all your options are the same price otherwise the free options will be credited top to bottom</span>
+                      <div class="input-box">
+                        <h6>Free Quantity</h6>
+                        <input type="text" placeholder="Enter Name" formControlName="FreeQuantity">
+                        <span class="lableSubtext">The number of options that can be selected for free. NOTE: If
+                          enabled, ensure all your options are the same price otherwise the free options will be
+                          credited top to bottom</span>
+                      </div>
                     </div>
                   </div>
+                  }
                 </div>
-              }
-              </div>
               </form>
             </div>
 
@@ -246,62 +246,73 @@
         <li [ngbNavItem]="4" class="nav-item m-0">
           <button ngbNavLink class="nav-link" type="button">Add / Remove From Dishes</button>
           <ng-template ngbNavContent>
+    <div class="col-12">
+                    <div class="input-box">
+                       <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Store Type</h6>
+                        <span class="optional-tag">Required</span>
+                      </div>
+                      <ng-select [items]="storesList" [searchable]="true" [multiple]="false" bindLabel="store_name"
+                   [(ngModel)]="selectedStore" bindValue="store_id" placeholder="Select from the dropdown or type to search"
+                        (change)="getMenuCategoryDishData()">
+                      </ng-select>
+                    
+                    </div>
+                  </div><br>
 
+            <!-- Subcategories -->
+            @for (choice of choices; track choice; let i = $index) {
+            <!-- Main Menu Row -->
 
-  <!-- Subcategories -->
-@for (choice of choices; track choice; let i = $index) {
-    <!-- Main Menu Row -->
+            <div class="choice-container border">
+              <!-- Expanded Section -->
+              <!-- Takeaway toggle -->
+              <div class="row ps-4 py-1" style="font-size: 0.92rem;">
+                <div class="col d-flex align-items-center">
+                  <i class="me-2" [ngClass]="choice.takeawayExpanded ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"
+                    (click)="choice.takeawayExpanded = !choice.takeawayExpanded"
+                    style="cursor: pointer; font-size: 1.3rem; color: black;"></i>
 
-<div class="choice-container border">
-    <!-- Expanded Section -->
-      <!-- Takeaway toggle -->
-      <div class="row ps-4 py-1" style="font-size: 0.92rem;">
-        <div class="col d-flex align-items-center">
-          <i
-            class="me-2"
-            [ngClass]="choice.takeawayExpanded ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"
-            (click)="choice.takeawayExpanded = !choice.takeawayExpanded"
-            style="cursor: pointer; font-size: 1.3rem; color: black;"
-          ></i>
+                  <input type="checkbox" id="checkbox-{{ i }}" class="form-check-input me-2"
+                    style="width: 18px !important;height: 18px !important;" [(ngModel)]="choice.checked"
+                    (change)="onChoiceToggle(choice)" />
+                  <label for="checkbox-{{ i }}" class="form-check-label mb-0">
+                    {{ choice.name }} Items
+                  </label>
+                </div>
+              </div>
 
-          <input type="checkbox" id="checkbox-{{ i }}" class="form-check-input me-2" style="width: 18px !important;height: 18px !important;" [(ngModel)]="choice.checked" (change)="onChoiceToggle(choice)" />
-          <label for="checkbox-{{ i }}" class="form-check-label mb-0">
-            {{ choice.name }} Items
-          </label>
-        </div>
-      </div>
+              @if (choice.takeawayExpanded) {
+              <!-- Subcategories -->
+              @for (sub of choice.subcategories; track sub; let j = $index) {
+              <div class="row ps-5 pb-0" style="font-size: 0.92rem;">
+                <div class="col d-flex align-items-center">
+                  <i class="me-2" [ngClass]="sub.expanded ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"
+                    (click)="sub.expanded = !sub.expanded"
+                    style="cursor: pointer; font-size: 1.3rem; color: black;"></i>
+                  <input type="checkbox" class="form-check-input me-2"
+                    style="width: 18px !important;height: 18px !important;" [(ngModel)]="sub.checked"
+                    (change)="onSubcategoryToggle(sub)" />
+                  <label class="form-check-label mb-0">{{ sub.name }}</label>
+                </div>
+              </div>
 
-      @if (choice.takeawayExpanded) {
-        <!-- Subcategories -->
-        @for (sub of choice.subcategories; track sub; let j = $index) {
-          <div class="row ps-5 pb-0" style="font-size: 0.92rem;">
-            <div class="col d-flex align-items-center">
-              <i
-                class="me-2"
-                [ngClass]="sub.expanded ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"
-                (click)="sub.expanded = !sub.expanded"
-                style="cursor: pointer; font-size: 1.3rem; color: black;"
-              ></i>
-              <input type="checkbox" class="form-check-input me-2" style="width: 18px !important;height: 18px !important;" [(ngModel)]="sub.checked" (change)="onSubcategoryToggle(sub)" />
-              <label class="form-check-label mb-0">{{ sub.name }}</label>
-            </div>
-          </div>
-
-          <!-- Sub-subcategories -->
-          @if (sub.expanded && sub.subSubcategories?.length) {
-            @for (subsub of sub.subSubcategories; track subsub; let k = $index) {
+              <!-- Sub-subcategories -->
+              @if (sub.expanded && sub.subSubcategories?.length) {
+              @for (subsub of sub.subSubcategories; track subsub; let k = $index) {
               <div class="row ps-5 pb-1">
                 <div class="col d-flex align-items-center" style="margin-left: 2.5rem;">
-                  <input type="checkbox" class="form-check-input me-2" [(ngModel)]="subsub.checked" style="width: 18px !important;height: 18px !important;" />
+                  <input type="checkbox" class="form-check-input me-2" [(ngModel)]="subsub.checked"
+                    style="width: 18px !important;height: 18px !important;" />
                   <label class="form-check-label mb-0">{{ subsub.name }}</label>
                 </div>
               </div>
+              }
+              }
+              }
+              }
+            </div>
             }
-          }
-        }
-      }
-    </div>
-}
 
 
             <!-- <div class="tree-view">
@@ -371,23 +382,26 @@
 
             <div class="input-items">
               <div class="row gy-3">
-<form [formGroup]="miscForm">
-                <div class="col-12">
-                  <div class="row g-3 align-items-center">
-                    <div class="col-6">
-                      <h6 style="font-weight: 600;">Inc. Price in Free Quantity Promos</h6>
-                    </div>
-                    <div class="col-6 text-end">
-                      <div class="form-switch d-inline-block">
-                        <input type="checkbox"  formControlName="PriceinFreeQuantityPromos" class="form-check-input">
+                <form [formGroup]="miscForm">
+                  <div class="col-12">
+                    <div class="row g-3 align-items-center">
+                      <div class="col-6">
+                        <h6 style="font-weight: 600;">Inc. Price in Free Quantity Promos</h6>
                       </div>
+                      <div class="col-6 text-end">
+                        <div class="form-switch d-inline-block">
+                          <input type="checkbox" formControlName="PriceinFreeQuantityPromos" class="form-check-input">
+                        </div>
+                      </div>
+                      <span class="lableSubtext">By default, option set prices are not counted towards promos such as
+                        buy
+                        1 get 1 free. For example, if the base dish price is $10 but the customer added an option
+                        costing
+                        $5 extra, total $15, if they buy 2 units, the second will be discounted for the base cost of
+                        $10.
+                        If this setting is enabled, the discount would be valid for up to $15</span>
                     </div>
-                    <span class="lableSubtext">By default, option set prices are not counted towards promos such as buy
-                      1 get 1 free. For example, if the base dish price is $10 but the customer added an option costing
-                      $5 extra, total $15, if they buy 2 units, the second will be discounted for the base cost of $10.
-                      If this setting is enabled, the discount would be valid for up to $15</span>
                   </div>
-                </div>
                 </form>
               </div>
             </div>
@@ -407,4 +421,3 @@
   </div>
   }
 </div>
-

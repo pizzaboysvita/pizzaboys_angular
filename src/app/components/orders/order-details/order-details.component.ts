@@ -67,9 +67,8 @@ orderdueForm:FormGroup
       orderDateTime: ['', Validators.required]
     });
     this.orderDueDetails=this.orderdueForm.value.orderType;
-     const userId = JSON.parse(
-      this.sessionStorageService.getsessionStorage("loginDetails") as any
-    ).user.user_id;
+         const userId = JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).user.store_id;
+
     this.markers.push({
       position: {
         lat: 20.5937,
@@ -84,7 +83,7 @@ orderdueForm:FormGroup
         animation: google.maps.Animation.DROP,
       },
     });
-      this.apiService.getApi('/api/dish?user_id=' + userId + '&typeOfDish=combo').subscribe(
+      this.apiService.getApi('/api/dish?store_id=' + userId + '&typeOfDish=combo').subscribe(
       (res: any) => {
         this.comboDishDetails = res.data;
         console.log(this.comboDishDetails, 'comboDishDetails')
@@ -183,8 +182,10 @@ get tax(): number {
 submitOrder(){
  this.orderItemsDetails = this.cartItems.map((item: any) => ({
   dish_id: item.dish_id,
+  dish_note: item.dishnote,
   quantity: item.dish_quantity,
-  price: item.duplicate_dish_price
+  price: item.duplicate_dish_price,
+
 }));
   let user=JSON.parse(
       this.sessionStorageService.getsessionStorage("loginDetails") as any
@@ -199,10 +200,11 @@ submitOrder(){
     "store_id": user.store_id,
     "order_type": 1,
     "pickup_datetime": new Date(),
-    "delivery_address": null,
+    "delivery_address": this.orderForm.get('deliveryAddress')?.value,
     "delivery_fees": 0.00,
+    is_pos_order:1,
     "delivery_datetime": null,
-    "order_notes": "Please prepare without spice",
+    "order_notes": this.orderForm.get('orderNotes')?.value,
     "order_status": 1,
     "order_created_by": user.store_id,
     "order_details_json": this.orderItemsDetails,

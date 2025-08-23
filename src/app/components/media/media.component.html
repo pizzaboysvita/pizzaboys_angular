@@ -347,7 +347,7 @@
 
 
         }
-
+ <textarea placeholder="Enter dish Note" [(ngModel)]="selectedDishFromList.dishnote"></textarea>
 
 
   @if(selectedDishFromList.dish_type === 'combo') {
@@ -375,6 +375,7 @@
           </div>
         </div>
       } @else {
+         
          <div class="modal-footer d-flex justify-content-between align-items-center" style="width: 103%;">
           <div class="input-group quantity-control flex-grow-1 me-3" style="max-width: 180px">
             <button class="btn btn-outline-secondary" (click)="decreaseModalQuantity(selectedDishFromList)">-</button>

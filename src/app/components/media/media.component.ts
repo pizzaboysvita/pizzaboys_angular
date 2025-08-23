@@ -184,6 +184,7 @@ export class MediaComponent implements OnInit {
       ]
     }
   ];
+  dishnote=''
   comboDishDetails: any = [];
   totalDishList: any[];
   constructor(
@@ -280,7 +281,7 @@ export class MediaComponent implements OnInit {
   }
 
   openIngredientsPopup(item: any) {
-
+item.dishnote=''
 
     if (item.dish_type === 'combo') {
 
