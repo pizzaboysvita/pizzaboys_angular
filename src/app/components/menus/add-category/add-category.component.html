@@ -72,11 +72,11 @@
   <h6 class="mb-2">Upload Images</h6>
 
   <!-- Preview Section -->
-   @if(previewUrl){
+   @if(previewUrl || previewUrlNew){
   <div  class="image-preview-container">
     <img
       #previewImage
-      [src]="previewUrl"
+      [src]="previewUrl || previewUrlNew"
       alt="Preview"
       class="preview-img"
     
@@ -124,7 +124,7 @@
                         <h6>Store</h6>
                         <span class="optional-tag">Required</span>
                       </div>
-                      <ng-select [items]="storeList" [searchable]="true" [multiple]="true" bindLabel="store_name"
+                      <ng-select [items]="storeList" [searchable]="true" [multiple]="false" bindLabel="store_name" (change)="getMenuList()"
                         bindValue="store_id" placeholder="Select from the dropdown or type to search..."
                         formControlName="store">
                       </ng-select>

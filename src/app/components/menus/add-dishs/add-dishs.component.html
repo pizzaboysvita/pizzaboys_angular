@@ -24,7 +24,7 @@
                       </div>
                       <ng-select [items]="storesList" [searchable]="true" [multiple]="false" bindLabel="store_name"
                         bindValue="store_id" placeholder="Select from the dropdown or type to search"
-                        formControlName="storeName" (change)="getCategories($event)">
+                        formControlName="storeName" (change)="getMenu();getMenuCategoryDishData()">
                       </ng-select>
                       @if((menuForm.get('storeName')?.touched ||menuForm.get('storeName')?.dirty) &&
                       menuForm.get('storeName')?.hasError('required')){

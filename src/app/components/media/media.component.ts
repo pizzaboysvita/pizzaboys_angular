@@ -20,7 +20,7 @@ import { forkJoin } from "rxjs";
 import { filter } from "rxjs/operators";
 import { NgbDropdownModule } from "@ng-bootstrap/ng-bootstrap";
 
-import { IgxNavbarComponent, IgxNavbarTitleDirective, IgxButtonDirective, IgxToggleActionDirective, IgxIconComponent, IgxDropDownComponent, IgxDropDownItemComponent, IgxSuffixDirective, IgxNavbarModule, IgxButtonModule, IgxDropDownModule, IgxIconModule, IgxToggleModule, IgxToggleDirective, ISelectionEventArgs, ConnectedPositioningStrategy, OverlaySettings, HorizontalAlignment, VerticalAlignment } from "igniteui-angular";
+// import { IgxNavbarComponent, IgxNavbarTitleDirective, IgxButtonDirective, IgxToggleActionDirective, IgxIconComponent, IgxDropDownComponent, IgxDropDownItemComponent, IgxSuffixDirective, IgxNavbarModule, IgxButtonModule, IgxDropDownModule, IgxIconModule, IgxToggleModule, IgxToggleDirective, ISelectionEventArgs, ConnectedPositioningStrategy, OverlaySettings, HorizontalAlignment, VerticalAlignment } from "igniteui-angular";
 
 
 export interface Option {
@@ -102,10 +102,10 @@ export interface CartItem {
 
   imports: [
     CommonModule,
-    IgxNavbarModule,
-    IgxButtonModule,
-    IgxToggleModule,
-    IgxDropDownModule,
+    // IgxNavbarModule,
+    // IgxButtonModule,
+    // IgxToggleModule,
+    // IgxDropDownModule,
     CardComponent,
     FormsModule,
     NgbDropdownModule,
@@ -133,7 +133,7 @@ export class MediaComponent implements OnInit {
   public searchText: string = "";
   showPopup: boolean = false;
   accordionOpen = false;
-  overlaySettings!: OverlaySettings;
+  // overlaySettings!: OverlaySettings;
   cartItems: DishFromAPI[];
   totalPrice: any;
   activeSubmenu: any;
@@ -198,15 +198,14 @@ export class MediaComponent implements OnInit {
   }
 
   getDishslist() {
-    const userId = JSON.parse(
-      this.sessionStorageService.getsessionStorage("loginDetails") as any
-    ).user.user_id;
+        const storeId = JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).user.store_id;
+
 
     const categoryApi = this.apiService.getApi(
-      `/api/category?user_id=` + userId
+      `/api/category?store_id=` + storeId
     );
     const dishApi = this.apiService.getApi(
-      AppConstants.api_end_points.dish + "?user_id=" + userId
+      AppConstants.api_end_points.dish + "?store_id=" + storeId
     );
  
 

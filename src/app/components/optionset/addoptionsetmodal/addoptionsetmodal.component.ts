@@ -180,7 +180,11 @@ export class AddoptionsetmodalComponent {
     sortable: true,
     resizable: true
   };
-
+optType=[
+  {name: 'Radio', value: 'Radio'},
+  {name: 'Checkbox', value: 'Checkbox'},
+  {name: 'Counter', value: 'Counter'}
+]
   toggleOptions = [
     { key: 'editing', label: 'Hide Editing Mode', enabled: false },
     { key: 'hide', label: 'Hide', enabled: true },
@@ -210,7 +214,7 @@ export class AddoptionsetmodalComponent {
       availability: [[]],
       posName: [''],
       surcharge: [''],
-
+      optionSetType: ['', Validators.required]
     });
     this.optionSetConditionForm = this.fb.group({
       required: [''],
@@ -245,11 +249,10 @@ export class AddoptionsetmodalComponent {
     });
   }
   getMenuCategoryDishData() {
-    const userId = JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id;
 
-    const menuApi = this.apis.getApi(AppConstants.api_end_points.menu + '?user_id=' + userId);
-    const categoryApi = this.apis.getApi(`/api/category?user_id=` + userId);
-    const dishApi = this.apis.getApi(AppConstants.api_end_points.dish + '?user_id=' + userId);
+    const menuApi = this.apis.getApi(AppConstants.api_end_points.menu + '?store_id=' + -1);
+    const categoryApi = this.apis.getApi(`/api/category?store_id=` + -1);
+    const dishApi = this.apis.getApi(AppConstants.api_end_points.dish + '?store_id=' + -1);
 
     forkJoin([menuApi, categoryApi, dishApi]).subscribe(
       ([menuRes, categoryRes, dishRes]: any) => {
@@ -410,7 +413,9 @@ onCellValueChanged(event: any) {
         "free_quantity": this.optionSetConditionForm.value.FreeQuantity,
         "option_set_dishes": JSON.stringify(this.choices),
         "inc_price_in_free": this.miscForm.value.PriceinFreeQuantityPromos = true ? 1 : 0,
-        "cretaed_by": 1011
+        "created_by": JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,
+        "updated_by": JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,
+        "option_type": this.optionSetForm.value.optionSetType
       }
     }
     else {
@@ -430,7 +435,9 @@ onCellValueChanged(event: any) {
         "free_quantity": this.optionSetConditionForm.value.FreeQuantity,
         "option_set_dishes": JSON.stringify(this.choices),
         "inc_price_in_free": this.miscForm.value.PriceinFreeQuantityPromos = true ? 1 : 0,
-        "cretaed_by": 1011
+        "cretaed_by": 1011,
+        
+        "option_type": this.optionSetForm.value.optionSetType
       }
     }
 
@@ -467,7 +474,7 @@ onCellValueChanged(event: any) {
         availability: [[]],
         posName: [''],
         surcharge: [''],
-
+        optionSetType: this.myData.option_type
       });
 
       this.optionSetConditionForm.patchValue({

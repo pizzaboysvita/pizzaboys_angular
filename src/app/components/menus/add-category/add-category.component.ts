@@ -116,6 +116,7 @@ isHide=false
   uploadImagUrl: string | ArrayBuffer | null;
   file: File;
   reqbody: any
+  previewUrlNew: string | ArrayBuffer | null;
 
   constructor(
     private fb: FormBuilder,
@@ -125,8 +126,9 @@ isHide=false
   ) {}
 
   ngOnInit(): void {
+    
     this.initForm();
-    this.getMenuList();
+  
     this.getStoreList()
   
   }
@@ -157,15 +159,22 @@ isHide=false
       managed_delivery_surcharge: [""],
       dine_in_surcharge: [""],
       status: [1],
-      store:['',Validators.required]
+      store:[-1]
     });
+      this.getMenuList();
     if(this.type =='View'|| this.type =='Edit'){
+      //  this.getMenuList();
     this.PatchValuesForm()
     }
   }
   PatchValuesForm()
 {
-  console.log(this.myData,this.type,'viewwwwwwwwwwwwww')
+  //  this.getMenuList();
+  console.log(this.myData.dish_menu_id,this.menuList,'viewwwwwwwwwwwwww 2222222222')
+  this.menuForm.get('image')?.clearValidators();
+  this.menuForm.get('image')?.updateValueAndValidity();
+  this.menuForm.get('store')?.disable();
+   this.menuForm.get('dish_menu_id')?.disable();
   this.menuForm.patchValue({
      dish_menu_id: this.myData.dish_menu_id,
       name: this.myData.name,
@@ -191,22 +200,17 @@ isHide=false
       managed_delivery_surcharge: this.myData.managed_delivery_surcharge,
       dine_in_surcharge: this.myData.dine_in_surcharge,
       status: [1],
-      store:[this.myData.store_id]
+      store:this.myData.store_id
   })
+  this.previewUrl = this.myData.category_image;
 }
   getMenuList(): void {
-    const loginRaw = this.session.getsessionStorage("loginDetails");
-    const loginData = loginRaw ? JSON.parse(loginRaw) : null;
-    const userId = loginData?.user?.user_id;
-
-    if (!userId) {
-      console.error("User ID not found in session storage");
-      return;
-    }
-
-    this.apis.getApi(`/api/menu?user_id=${userId}`).subscribe((res: any) => {
-      if (res.code === "1") {
+  
+console.log(this.menuForm.value.store,'selected store idddddddddddddd')
+    this.apis.getApi(`/api/menu?store_id=${this.menuForm.value.store}`).subscribe((res: any) => {
+      if (res.code == "1") {
         this.menuList = res.data;
+        
       } else {
         console.error("Failed to fetch menus:", res.message);
       }
@@ -215,10 +219,11 @@ isHide=false
     getStoreList() {
       this.apis.getApi(AppConstants.api_end_points.store_list).subscribe((data: any) => {
         console.log(data)
+        data.unshift({ store_id: -1, store_name: 'All Stores' })
         data.forEach((element: any) => {
           element.status = element.status == 1 ? 'Active' : element.status == 0 ? 'Inactive' : element.status
         })
-        this.storeList = data.reverse()
+        this.storeList = data
       })
     }
 
@@ -239,10 +244,10 @@ isHide=false
     "type": "update",
     "id": this.myData.id,
     "name": this.menuForm.value.name,
-    "dish_menu_id": this.menuForm.value.dish_menu_id,
+    "dish_menu_id": this.menuForm.getRawValue().dish_menu_id,
     "display_name":this.menuForm.value.display_name,
     "description":this.menuForm.value.description,
-    "hide_category":this.menuForm.value.hide_category ==true?1:0,
+    "hide_category":this.menuForm.value.hide_category ==true?0:1,
     "order_times": this.menuForm.value.order_times.toString(),
     "services": this.menuForm.value.services.toString(),
     "applicable_hours":this.rowData.length ==0?"":JSON.stringify(this.rowData),
@@ -255,15 +260,16 @@ isHide=false
     "hide_if_unavailable": this.menuForm.value.hide_if_unavailable ==true?1:0,
     "POS_display_name": this.menuForm.value.POS_display_name,
     "pos_color_code": "#00AA00",
-    "hide_category_in_POS": this.menuForm.value.hide_category_in_POS ==true?1:0,
+    "hide_category_in_POS": this.menuForm.value.hide_category_in_POS ==true?0:1,
     "pickup_surcharge": this.menuForm.value.pickup_surcharge,
     "delivery_surcharge": this.menuForm.value.delivery_surcharge,
     "managed_delivery_surcharge": this.menuForm.value.managed_delivery_surcharge,
     "dine_in_surcharge":this.menuForm.value.dine_in_surcharge,
-    "store_id": this.menuForm.value.store.toString(),
+    "store_id": this.menuForm.getRawValue().store,
     "status": 1,
-    "created_by": 1,
-    "updated_by": 1
+    "category_image": this.previewUrl,
+    "created_by": JSON.parse(this.session.getsessionStorage('loginDetails') as any).user.user_id,
+    "updated_by": JSON.parse(this.session.getsessionStorage('loginDetails') as any).user.user_id
 }
   }else{
     this.reqbody={
@@ -285,22 +291,22 @@ isHide=false
     "hide_if_unavailable": this.menuForm.value.hide_if_unavailable ==true?1:0,
     "POS_display_name": this.menuForm.value.POS_display_name,
     "pos_color_code": "#00AA00",
-    "hide_category_in_POS": this.menuForm.value.hide_category_in_POS ==true?1:0,
+    "hide_category_in_POS": this.menuForm.value.hide_category_in_POS ==true?0:1,
     "pickup_surcharge": this.menuForm.value.pickup_surcharge,
     "delivery_surcharge": this.menuForm.value.delivery_surcharge,
     "managed_delivery_surcharge": this.menuForm.value.managed_delivery_surcharge,
     "dine_in_surcharge":this.menuForm.value.dine_in_surcharge,
-    "store_id": this.menuForm.value.store.toString(),
+    "store_id":this.menuForm.value.store.length ==0?this.storeList.map((item:any)=>item.store_id).toString():this.menuForm.value.store,
     "status": 1,
-    "created_by": 10,
-    "updated_by": 10
+    "created_by":  JSON.parse(this.session.getsessionStorage('loginDetails') as any).user.user_id,
+    "updated_by": JSON.parse(this.session.getsessionStorage('loginDetails') as any).user.user_id
 }
   }
 console.log(this.reqbody)
     const formData = new FormData();
     formData.append("image", this.file); // Attach Blob with a filename
     formData.append("body", JSON.stringify(this.reqbody));
-    this.apis.postApi("/api/category", formData).subscribe((res: any) => {
+    this.apis.postApi("/api/categoryV2", formData).subscribe((res: any) => {
       if (res.code === "1") {
     
     Swal.fire('Success!', res.message, 'success').then(
@@ -318,15 +324,6 @@ console.log(this.reqbody)
     });
   }
   }
-//      onSelectFile(event: Event): void {
-//   const input = event.target as HTMLInputElement;
-
-//   if (input.files && input.files[0]) {
-//     console.log(input.files[0])
-//     this.file = input.files[0];
-//    this.menuForm.get('image')?.setValue(this.file);
-//   }
-// }
 selectedFile: File | null = null;
 previewUrl: string | ArrayBuffer | null = null;
 onSelectFile(event: Event): void {
@@ -341,7 +338,7 @@ onSelectFile(event: Event): void {
 
     const reader = new FileReader();
     reader.onload = () => {
-      this.previewUrl = reader.result;
+      this.previewUrlNew = reader.result;
     };
     reader.readAsDataURL(file);
   }
