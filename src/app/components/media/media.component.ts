@@ -198,15 +198,14 @@ export class MediaComponent implements OnInit {
   }
 
   getDishslist() {
-    const userId = JSON.parse(
-      this.sessionStorageService.getsessionStorage("loginDetails") as any
-    ).user.user_id;
+        const storeId = JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).user.store_id;
+
 
     const categoryApi = this.apiService.getApi(
-      `/api/category?user_id=` + userId
+      `/api/category?store_id=` + storeId
     );
     const dishApi = this.apiService.getApi(
-      AppConstants.api_end_points.dish + "?user_id=" + userId
+      AppConstants.api_end_points.dish + "?store_id=" + storeId
     );
  
 

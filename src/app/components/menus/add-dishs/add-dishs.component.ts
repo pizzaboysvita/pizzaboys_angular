@@ -80,6 +80,9 @@ export class AddDishsComponent {
 
     console.log(this.myData, this.type, 'opennnnnnnnnnnnn')
     if (this.type == 'Edit' || this.type == 'View') {
+      this.menuForm.controls['menuType'].disable();
+      this.menuForm.controls['categoryType'].disable();
+      this.menuForm.controls['storeName'].disable();
       this.menuForm.get('image')?.clearValidators();
       this.menuForm.get('image')?.updateValueAndValidity();
       this.menuForm.patchValue({
@@ -109,9 +112,9 @@ export class AddDishsComponent {
 
   getMenuCategoryDishData() {
     const userId = JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id;
-    const menuApi = this.apiService.getApi(AppConstants.api_end_points.menu + '?user_id=' + userId);
-    const categoryApi = this.apiService.getApi(`/api/category?user_id=` + userId);
-    const dishApi = this.apiService.getApi(AppConstants.api_end_points.dish + '?user_id=' + userId);
+    const menuApi = this.apiService.getApi(AppConstants.api_end_points.menu + '?store_id=' + this.menuForm.value.storeName);
+    const categoryApi = this.apiService.getApi(`/api/category?store_id=` + this.menuForm.value.storeName);
+    const dishApi = this.apiService.getApi(AppConstants.api_end_points.dish + '?store_id=' + this.menuForm.value.storeName);
 
     forkJoin([menuApi, categoryApi, dishApi]).subscribe(
       ([menuRes, categoryRes, dishRes]: any) => {
@@ -126,7 +129,7 @@ export class AddDishsComponent {
 
   getOptionSets() {
 
-    this.apiService.getApi('/api/optionset?user_id=' + JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id).subscribe((data: any) => {
+    this.apiService.getApi('/api/optionset?store_id=' + -1).subscribe((data: any) => {
       if (data.code == 1) {
         console.log(data, 'optionnnnnnnn')
         data.data.forEach((item: any) => {
@@ -135,6 +138,14 @@ export class AddDishsComponent {
         this.optSetDetails = data.data
       }
     })
+  }
+
+  getMenu(){
+    this.apiService.getApi(AppConstants.api_end_points.menu + '?store_id=' +this.menuForm.value.storeName).subscribe((data: any) => {
+      if (data.code == 1) {
+        this.menuItemsList = data.data;
+      }
+    });
   }
   getCategories(data: any): void {
     console.log(data.dish_menu_id);
@@ -150,7 +161,7 @@ export class AddDishsComponent {
     }
 
     this.apiService
-      .getApi(`/api/category?user_id=${userId}`)
+      .getApi(`/api/category?store_id=${this.menuForm.value.storeName}`)
       .subscribe((res: any) => {
 
         console.log(res, 'categories response');
@@ -234,8 +245,8 @@ export class AddDishsComponent {
         "type": "update",
             combo_dish_id_csv: this.checkedDishString,
         "dish_id": this.myData?.dish_id,
-        "dish_menu_id": this.menuForm.value.menuType,
-        "dish_category_id": this.menuForm.value.categoryType,
+        "dish_menu_id": this.menuForm.getRawValue().menuType,
+        "dish_category_id": this.menuForm.getRawValue().categoryType,
         "dish_type": this.menuForm.value.dishType,
         "dish_name": this.menuForm.value.firstName,
         "dish_price": this.menuForm.value.price,
@@ -248,7 +259,7 @@ export class AddDishsComponent {
         "pos_name": this.menuForm.value.posName,
         "description": this.menuForm.value.description,
         "subtitle": this.menuForm.value.subtitle,
-        "store_id":  this.menuForm.value.storeName.length ==0?this.storesList.map((item:any)=>item.store_id).toString():this.menuForm.value.storeName,
+        "store_id":this.menuForm.getRawValue().storeName,
         dish_image: this.myData.dish_image,
         "created_by":  JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,
         "dish_option_set_json": JSON.stringify(this.selectedSubcategories),
@@ -289,7 +300,7 @@ export class AddDishsComponent {
       formData.append("image", this.file); // Attach Blob with a filename
       formData.append("body", JSON.stringify(this.reqbody));
       console.log(this.reqbody)
-      this.apiService.postApi(AppConstants.api_end_points.dish, formData).subscribe((res: any) => {
+      this.apiService.postApi(AppConstants.api_end_points.dishV2, formData).subscribe((res: any) => {
         if (res.code === "1") {
           Swal.fire("Success!", res.message, "success").then((result) => {
             if (result) {

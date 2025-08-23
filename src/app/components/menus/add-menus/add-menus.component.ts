@@ -440,6 +440,7 @@ delete
     const reqbody = {
       "type": "delete",
       "menu_id": this.menuData.dish_menu_id.toString(),
+      store_id: this.menuData.store_id
     }
     const formData = new FormData();
     // formData.append("image", this.file); // Attach Blob with a filename

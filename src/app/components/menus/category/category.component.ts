@@ -468,6 +468,7 @@ this.insertCategory("Edit")
 const reqbody={
   "type": "delete",
   "id":this.categoryRowData.id,
+  "store_id": this.categoryRowData.store_id
 
 
 }

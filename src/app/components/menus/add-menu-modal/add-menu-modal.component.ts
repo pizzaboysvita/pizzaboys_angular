@@ -206,6 +206,8 @@ isHide=false
   patchValue() {
     console.log(this.myData, this.type, 'opennnnnnnnnnnnn')
     if (this.type == 'Edit' || this.type == 'View') {
+       this.menuForm.get('image')?.clearValidators();
+      this.menuForm.get('image')?.updateValueAndValidity();
       this.menuForm.patchValue({
 
         name: this.myData.name,
@@ -221,14 +223,14 @@ isHide=false
       })
       this.conditionForm.patchValue({
         store:[this.myData.store_id],
-          services: this.myData.services.split(','),
+          services: this.myData.services !=null?this.myData.services.split(','):[],
         orderTimes: this.myData.order_times,
       
         ageRestricted: this.myData.mark_as_age_restricted ==0?false:this.myData.mark_as_age_restricted ==1? true:'',
         preOrderOnly: this.myData.enable_pre_orders_only ==0?false:this.myData.enable_pre_orders_only ==1?true:'',
         preOrderDays: this.myData.pre_order_days_in_advance,
         preOrderCutoffTime: this.myData.pre_order_cutoff_time,
-        preOrderServices: this.myData.pre_order_applicable_service.split(","),
+        preOrderServices: this.myData.pre_order_applicable_service !=null?this.myData.pre_order_applicable_service.split(","):[],
         hideRestrictionWarning: this.myData.hide_restriction_warning == 0 ? false : this.myData.hide_restriction_warning == 1 ? true : '',
         hideIfUnavailable: this.myData.hide_if_unavailable == 0 ? false : this.myData.hide_if_unavailable == 1 ? true : '',
       })
@@ -242,11 +244,13 @@ isHide=false
         managedDeliverySurcharge:this.myData.managed_delivery_surcharge,
         dineInSurcharge:this.myData.dine_in_surcharge,
        })
+        this.uploadImagUrl = this.myData.menu_image
     }
   }
 
   saveMenu() {
-    console.log('Saving menu', this.menuForm.value,this.conditionForm.value.store.length);
+    
+    console.log('Saving menu', this.menuForm.value,this.conditionForm.getRawValue().store);
        if (this.menuForm.invalid || this.conditionForm.invalid) {
       Object.keys(this.menuForm.controls).forEach(key => {
         this.menuForm.get(key)?.markAsTouched();
@@ -264,7 +268,7 @@ isHide=false
       "type": "update",
         "menu_id":this.myData.dish_menu_id,
       "name": this.menuForm.value.name ,
-      "display_name": this.menuForm.value.displayName =='',
+      "display_name": this.menuForm.value.displayName,
       "description": this.menuForm.value.description,
       "disable_dish_notes": this.menuForm.value.disableDishNotes == true ? 1 : 0,
       "re_stock_menu_daily": this.menuForm.value.restockMenuDaily == true ? 1 : 0,
@@ -285,7 +289,7 @@ isHide=false
       "delivery_surcharge": this.surchargeForm.value.deliverySurcharge,
       "managed_delivery_surcharge": this.surchargeForm.value.managedDeliverySurcharge,
       "dine_in_surcharge": this.surchargeForm.value.dineInSurcharge,
-      "store_id": this.conditionForm.value.store.toString(),
+      "store_id":this.conditionForm.getRawValue().store.toString(),
       "created_by": JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).user.user_id,
     }
   }else{

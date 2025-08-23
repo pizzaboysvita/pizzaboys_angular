@@ -4,16 +4,16 @@
             <!-- <h5 header>Setting</h5> -->
             <div header class="title-header option-title justify-content-start right-options-height">
                 <!-- <h3 class="p-2">Dishs</h3> -->
-                  <div class="col-lg-4">
+                  <div class="col-lg-3">
 <div class="input-box">
                 <!-- <h6 class="fw-bold p-1">Store Name</h6> -->
-                <ng-select
+                <ng-select style="font-size: 14px;font-weight: 600  ;"
                   [items]="storesList"
                   [searchable]="true"
                   [multiple]="false"
                   bindLabel="store_name"
                   bindValue="store_id"
-                  placeholder="Select Store Name"
+                  placeholder="Select Store Name" (change)="getMenuCategoryDishData()"
                  [(ngModel)]="selectedStoreId"
                 >
                 </ng-select>
