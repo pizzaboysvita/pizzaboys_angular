@@ -24,9 +24,9 @@
           (click)="selected = 'dinein' ;openNewModelPopup()">
           Dine in
         </button>
-        <button type="button" class="toggle-btn" [class.active]="selected === 'delivery'"
+        <button type="button" class="toggle-btn" 
           (click)="selected = 'delivery'; openDeliveryPopup()">
-          Delivery
+          {{orderDueDetails}}
         </button>
       </div>
 
@@ -145,7 +145,8 @@
             <input type="text" #addressInput class="form-control" formControlName="deliveryNote"
               placeholder="Enter delivery note" />
           </div>
-
+  <button class="btn fw-bold text-white " style="background: #f44336;margin-left: 30%;" (click)="submitDUeOrder()">Submit</button>
+     
           <!-- Selected Address Preview -->
           <!-- <div *ngIf="selectedAddress" class="alert alert-info"> -->
 
@@ -163,25 +164,30 @@
       <!-- Header -->
       <div class="modal-header">
         <h5 class="modal-title">Create New Model</h5>
-        <button type="button" class="btn-close" ></button>
+        <button type="button" class="btn-close" (click)="closeOrderDuePopup()"></button>
       </div>
 
       <!-- Body -->
       <div class="modal-body">
-         <form [formGroup]="orderForm">
+         <form [formGroup]="orderdueForm">
 
           <!-- Order Type -->
           <div class="mb-3">
             <label class="form-label">Order Due</label>
             <select class="form-select" formControlName="orderType">
-              <option value="pickup">ASAP</option>
-              <option value="delivery">Later</option>
+              <option value="ASAP">ASAP</option>
+              <option value="Later">Later</option>
             </select>
           </div>
-     
+      <div class="mb-3" *ngIf="orderdueForm.get('orderType')?.value == 'Later'">
+            <label class="form-label">Date and Time</label>
+            <input type="datetime-local"
+              placeholder="Select date and Time" formControlName="orderDateTime" />
+          </div>
     
 
          </form>
+         <button class="btn fw-bold text-white " style="background: #f44336;margin-left: 30%;" (click)="submitDUeOrder()">Submit</button>
       </div>
     </div>
   </div>

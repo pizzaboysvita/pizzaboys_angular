@@ -58,7 +58,29 @@
 
                     </div>
                   </div>
-
+ <div class="col-12">
+              <div class="input-box">
+                 <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6> Option Set Type"</h6>
+                        <span class="optional-tag">Required</span>
+                      </div>
+                <ng-select
+                  [items]="optType" bindLabel="name"       
+  bindValue="value"  
+                  [searchable]="false"
+                  [clearable]="true" 
+                  placeholder="Select Option Set Type"
+                  formControlName="optionSetType"
+                >
+                </ng-select>
+                   @if((optionSetForm.get('optionSetType')?.touched ||optionSetForm.get('optionSetType')?.dirty) &&
+                      optionSetForm.get('optionSetType')?.hasError('required')){
+                      <div class="text-danger">
+                        Option Set Type is required
+                      </div>
+                      }
+              </div>
+            </div>
 
 
                   <div class="col-12">

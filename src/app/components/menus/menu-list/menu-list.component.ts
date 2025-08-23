@@ -36,6 +36,9 @@ export class MenuListComponent {
   modelRef: any;
   dishDetails: any;
   dishRowData: any;
+  selectedRowData: any;
+  storesList: any;
+  selectedStoreId:any=''
 constructor(
     public modal: NgbModal,
     private apiService: ApisService,private modalService: NgbModal, 
@@ -113,18 +116,20 @@ constructor(
      insertMenu(){
               this.modal.open(AddMenuModalComponent, { windowClass: 'theme-modal', centered: true, size: 'lg' })
         }
-        openPopup(): void {
+        openPopup(rowData:any): void {
           // Remove focus from dropdown item (important!)
           // (document.activeElement as HTMLElement)?.blur();
-      
+      this.selectedRowData = rowData;
           const modalRef = this.modal.open(ActionStatusComponent, {
             centered: true,
           
           });
+          modalRef.componentInstance.data = rowData
       
           modalRef.result.then(
             (result) => {
               console.log('Modal closed with:', result);
+              this.updateItemStatus(result);
               this.getMenuCategoryDishData()
             },
             () => {
@@ -133,11 +138,23 @@ constructor(
             }
           );
         }
+     
       
 ngOnInit(): void {
     this.getMenuCategoryDishData()
-
+this.storeList()
   
+  }
+   storeList() {
+    this.apiService
+      .getApi(AppConstants.api_end_points.store_list)
+      .subscribe((data) => {
+        if (data) {
+          console.log(data);
+          this.storesList = data;
+        }
+      });
+
   }
   getMenuCategoryDishData() {
   const userId = JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id;
@@ -222,6 +239,25 @@ this.apiService.postApi(AppConstants.api_end_points.dish,formData).subscribe((da
 })
 
   }
+     updateItemStatus(data:any){
+      console.log(data,this.selectedRowData,'data')
+             const reqbody = {
+      "details_type": "dish",
+      "detail_id": this.selectedRowData.dish_id,
+      "action": data.status,
+      "pos": data.pos,
+      "in_web_hide": data.web,
+      "updated_by": JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,
+    };
+    // console.log(reqbody,data,'reqbody')
+ this.apiService.patchStatusApi(reqbody).subscribe((response:any) => {
+      console.log("Status updated successfully:", response);
+    
+    }, (error) => {
+      console.error("Error updating status:", error);
+    });
+  }
+        
 //    getmenuList() {
     
 //         this.apiService.getApi(AppConstants.api_end_points.menu + '?user_id=' + JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id).subscribe((data: any) => {

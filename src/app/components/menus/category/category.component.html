@@ -19,8 +19,24 @@
       data-bs-parent="#accordionExample"
     >
       <div class="accordion-body">
+           <form [formGroup]="categoriesForm">
         <div class="row input-items gy-3">
-          <div class="col-xl-3">
+           <div class="col-xl-3">
+            <div class="input-box">
+                <h6 class="fw-bold p-1">Store Name</h6>
+                <ng-select
+                  [items]="storeList"
+                  [searchable]="true"
+                  [multiple]="false"
+                  bindLabel="store_name"
+                  bindValue="store_id"
+                  placeholder="Select Store Name"
+                 formControlName="store" (change)="getmenuList()"
+                >
+                </ng-select>
+              </div>
+          </div>
+          <!-- <div class="col-xl-3">
             <div class="input-box">
                 <h6>Category Types</h6>
                 <ng-select
@@ -33,24 +49,24 @@
                 >
                 </ng-select>
               </div>
-          </div>
-          <div class="col-xl-3">
+          </div> -->
+          <!-- <div class="col-xl-3">
             <div class="input-box">
               <h6>E-Mail</h6>
               <input type="text" placeholder="E-Mail" />
             </div>
-          </div>
+          </div> -->
           <div class="col-xl-3">
             <div class="input-box">
               <h6>Address</h6>
-              <input type="text" placeholder="E-Mail" />
+              <input type="text" placeholder="E-Mail"   formControlName="address"/>
             </div>
           </div>
           <div class="col-xl-3">
             <!-- <div class="col-md-6"> -->
             <div class="input-box">
               <h6>Status</h6>
-              <select class="form-select" name="carlist">
+              <select class="form-select" name="carlist"   formControlName="status">
                 @for (item of stausList; track item) {
                 <option value="">{{ item }}</option>
                 }
@@ -69,6 +85,7 @@
             </div>
           </div>
         </div>
+        </form>
       </div>
     </div>
   </div>

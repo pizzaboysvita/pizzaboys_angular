@@ -9,6 +9,7 @@ import { AgGridAngular } from '@ag-grid-community/angular';
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { ColDef, ITooltipParams, ModuleRegistry } from "@ag-grid-community/core";
 import { ToastrService } from 'ngx-toastr';
+import { SessionStorageService } from '../../../shared/services/session-storage.service';
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 @Component({
   selector: 'app-add-menu-modal',
@@ -145,7 +146,7 @@ isHide=false
   reqbody:any
   file: File;
   uploadImagUrl: string | ArrayBuffer | null;
-  constructor(private fb: FormBuilder, public modal: NgbModal, private apis: ApisService,private toastr: ToastrService ) {
+  constructor(private fb: FormBuilder, public modal: NgbModal, private apis: ApisService,private toastr: ToastrService,private sessionStorageService:SessionStorageService ) {
     this.menuForm = this.fb.group({
       name: ['',Validators.required],
       displayName: [''],
@@ -162,7 +163,7 @@ isHide=false
     this.conditionForm = this.fb.group({
       orderTimes: [null],
       services: [''],
-      store: ['',Validators.required],
+      store: [''],
       preOrderServices: [''],
       ageRestricted: [false],
       preOrderOnly: [false],
@@ -181,10 +182,12 @@ isHide=false
   getStoreList() {
     this.apis.getApi(AppConstants.api_end_points.store_list).subscribe((data: any) => {
       console.log(data)
+       
       data.forEach((element: any) => {
+
         element.status = element.status == 1 ? 'Active' : element.status == 0 ? 'Inactive' : element.status
       })
-      this.storeList = data.reverse()
+      this.storeList = data
     })
   }
   buildForm() {
@@ -243,7 +246,7 @@ isHide=false
   }
 
   saveMenu() {
-    console.log('Saving menu', this.menuForm.value,this.conditionForm.value);
+    console.log('Saving menu', this.menuForm.value,this.conditionForm.value.store.length);
        if (this.menuForm.invalid || this.conditionForm.invalid) {
       Object.keys(this.menuForm.controls).forEach(key => {
         this.menuForm.get(key)?.markAsTouched();
@@ -265,7 +268,7 @@ isHide=false
       "description": this.menuForm.value.description,
       "disable_dish_notes": this.menuForm.value.disableDishNotes == true ? 1 : 0,
       "re_stock_menu_daily": this.menuForm.value.restockMenuDaily == true ? 1 : 0,
-      "hide_menu": this.menuForm.value.hideMenu == true ? 1 : 0,
+      "hide_menu": this.menuForm.value.hideMenu == true ? 0 : 1,
       "order_times": this.conditionForm.value.orderTimes.toString(),
       "services": this.conditionForm.value.services.toString(),
       "applicable_hours": "[{\"day\":\"Mon\",\"from\":\"12:00\",\"to\":\"15:00\"}]",
@@ -277,13 +280,13 @@ isHide=false
       "hide_restriction_warning": this.conditionForm.value.hideRestrictionWarning == true ? 1 : 0,
       "hide_if_unavailable": this.conditionForm.value.hideIfUnavailable == true ? 1 : 0,
       "POS_display_name": this.posForm.value.posDispalyname,
-      "hide_menu_in_POS": this.posForm.value.hideMenu == true ? 1 : 0,
+      "hide_menu_in_POS": this.posForm.value.hideMenu == true ? 0 : 1,
       "pickup_surcharge": this.surchargeForm.value.pickupSurcharge,
       "delivery_surcharge": this.surchargeForm.value.deliverySurcharge,
       "managed_delivery_surcharge": this.surchargeForm.value.managedDeliverySurcharge,
       "dine_in_surcharge": this.surchargeForm.value.dineInSurcharge,
       "store_id": this.conditionForm.value.store.toString(),
-      "created_by": 1
+      "created_by": JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).user.user_id,
     }
   }else{
   
@@ -294,7 +297,7 @@ isHide=false
       "description": this.menuForm.value.description ==''?'':this.menuForm.value.description,
       "disable_dish_notes": this.menuForm.value.disableDishNotes == true ? 1 : 0,
       "re_stock_menu_daily": this.menuForm.value.restockMenuDaily == true ? 1 : 0,
-      "hide_menu": this.menuForm.value.hideMenu == true ? 1 : 0,
+      "hide_menu": this.menuForm.value.hideMenu == true ? 0 : 1,
       "order_times": (this.conditionForm.value.orderTimes =='' ||this.conditionForm.value.orderTimes ==null) ?null:this.conditionForm.value.orderTimes.toString(),
       "services": this.conditionForm.value.services==''?null: this.conditionForm.value.services.toString(),
       "applicable_hours":this.rowData.length ==0?'':JSON.parse(this.rowData),
@@ -306,13 +309,13 @@ isHide=false
       "hide_restriction_warning": this.conditionForm.value.hideRestrictionWarning == true ? 1 : 0,
       "hide_if_unavailable": this.conditionForm.value.hideIfUnavailable == true ? 1 : 0,
       "POS_display_name": this.posForm.value.posDispalyname ==''?'':this.posForm.value.posDispalyname,
-      "hide_menu_in_POS": this.posForm.value.hideMenu == true ? 1 : 0,
+      "hide_menu_in_POS": this.posForm.value.hideMenu == true ? 0 : 1,
       "pickup_surcharge": this.surchargeForm.value.pickupSurcharge ==''?0.0:this.surchargeForm.value.pickupSurcharge,
       "delivery_surcharge": this.surchargeForm.value.deliverySurcharge ==''?0.0:this.surchargeForm.value.deliverySurcharge,
       "managed_delivery_surcharge": this.surchargeForm.value.managedDeliverySurcharge ==''?0.0: this.surchargeForm.value.managedDeliverySurcharge,
       "dine_in_surcharge": this.surchargeForm.value.dineInSurcharge ==''?0.0:this.surchargeForm.value.dineInSurcharge,
-      "store_id": this.conditionForm.value.store.toString(),
-      "created_by": 1
+      "store_id": this.conditionForm.value.store.length ==0?this.storeList.map((item:any)=>item.store_id):this.conditionForm.value.store,
+      "created_by":  JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).user.user_id,
     }
   }
   
@@ -320,7 +323,7 @@ isHide=false
    const formData = new FormData();
     formData.append("image", this.file); // Attach Blob with a filename
     formData.append("body", JSON.stringify(this.reqbody));
-    this.apis.postApi(AppConstants.api_end_points.menu, formData).subscribe((data: any) => {
+    this.apis.postApi(AppConstants.api_end_points.menuV2, formData).subscribe((data: any) => {
       console.log(data)
       if (data.code == 1) {
         console.log(data)

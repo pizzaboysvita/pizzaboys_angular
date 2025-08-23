@@ -31,7 +31,7 @@
                   bindLabel="store_name"
                   bindValue="store_id"
                   placeholder="Select Store Name"
-                 formControlName="store"
+                 formControlName="store" (change)="getmenuList()"
                 >
                 </ng-select>
               </div>
@@ -54,7 +54,7 @@
               <h6 class="fw-bold p-1">Status</h6>
               <select class="form-select" name="carlist" formControlName="status" >
                 @for (item of stausList; track item) {
-                <option value="">{{ item }}</option>
+                <option value="{{ item }}">{{ item }}</option>
                 }
               </select>
               <!-- </div> -->
@@ -112,7 +112,7 @@
             [rowData]="menuItemsList"
             [domLayout]="'autoHeight'"
             [suppressColumnVirtualisation]="true"[pagination]="true" [paginationPageSize]="15"
-            [defaultColDef]="{ flex: 1, minWidth: 100, sortable: true }"
+            [defaultColDef]="{ flex: 1, minWidth: 170, sortable: true }"
             (cellClicked)="onCellClicked($event)"
           >
           </ag-grid-angular>

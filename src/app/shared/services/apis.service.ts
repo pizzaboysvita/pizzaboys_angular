@@ -7,8 +7,8 @@ import { BehaviorSubject, Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class ApisService {
-  basesurl='http://78.142.47.247:3003'
-  // basesurl = 'http://localhost:3003'
+  // basesurl='http://78.142.47.247:3003'
+  basesurl = 'http://localhost:3003'
   private change$ = new BehaviorSubject<boolean>(false);
   poschanges$ = this.change$.asObservable();
   constructor() { }
@@ -28,6 +28,15 @@ export class ApisService {
   deleteApi(endpoint: any) {
     return this.http.delete(this.basesurl + endpoint);
   }
+  patchStatusApi(reqbody:any) {
+
+    console.log(reqbody, 'patchStatusApi')
+
+    return this.http.put(this.basesurl + '/api/updatedetails', reqbody);
+  }
+ 
+
+    
   show(): void {
     this.isLoading.next(true);
 

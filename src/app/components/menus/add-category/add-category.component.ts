@@ -157,7 +157,7 @@ isHide=false
       managed_delivery_surcharge: [""],
       dine_in_surcharge: [""],
       status: [1],
-      store:['',Validators.required]
+      store:['']
     });
     if(this.type =='View'|| this.type =='Edit'){
     this.PatchValuesForm()
@@ -242,7 +242,7 @@ isHide=false
     "dish_menu_id": this.menuForm.value.dish_menu_id,
     "display_name":this.menuForm.value.display_name,
     "description":this.menuForm.value.description,
-    "hide_category":this.menuForm.value.hide_category ==true?1:0,
+    "hide_category":this.menuForm.value.hide_category ==true?0:1,
     "order_times": this.menuForm.value.order_times.toString(),
     "services": this.menuForm.value.services.toString(),
     "applicable_hours":this.rowData.length ==0?"":JSON.stringify(this.rowData),
@@ -255,15 +255,15 @@ isHide=false
     "hide_if_unavailable": this.menuForm.value.hide_if_unavailable ==true?1:0,
     "POS_display_name": this.menuForm.value.POS_display_name,
     "pos_color_code": "#00AA00",
-    "hide_category_in_POS": this.menuForm.value.hide_category_in_POS ==true?1:0,
+    "hide_category_in_POS": this.menuForm.value.hide_category_in_POS ==true?0:1,
     "pickup_surcharge": this.menuForm.value.pickup_surcharge,
     "delivery_surcharge": this.menuForm.value.delivery_surcharge,
     "managed_delivery_surcharge": this.menuForm.value.managed_delivery_surcharge,
     "dine_in_surcharge":this.menuForm.value.dine_in_surcharge,
-    "store_id": this.menuForm.value.store.toString(),
+    "store_id": this.menuForm.value.store.length ==0?this.storeList.map((item:any)=>item.store_id).toString():this.menuForm.value.store,
     "status": 1,
-    "created_by": 1,
-    "updated_by": 1
+    "created_by": JSON.parse(this.session.getsessionStorage('loginDetails') as any).user.user_id,
+    "updated_by": JSON.parse(this.session.getsessionStorage('loginDetails') as any).user.user_id
 }
   }else{
     this.reqbody={
@@ -285,22 +285,22 @@ isHide=false
     "hide_if_unavailable": this.menuForm.value.hide_if_unavailable ==true?1:0,
     "POS_display_name": this.menuForm.value.POS_display_name,
     "pos_color_code": "#00AA00",
-    "hide_category_in_POS": this.menuForm.value.hide_category_in_POS ==true?1:0,
+    "hide_category_in_POS": this.menuForm.value.hide_category_in_POS ==true?0:1,
     "pickup_surcharge": this.menuForm.value.pickup_surcharge,
     "delivery_surcharge": this.menuForm.value.delivery_surcharge,
     "managed_delivery_surcharge": this.menuForm.value.managed_delivery_surcharge,
     "dine_in_surcharge":this.menuForm.value.dine_in_surcharge,
-    "store_id": this.menuForm.value.store.toString(),
+    "store_id":this.menuForm.value.store.length ==0?this.storeList.map((item:any)=>item.store_id).toString():this.menuForm.value.store,
     "status": 1,
-    "created_by": 10,
-    "updated_by": 10
+    "created_by":  JSON.parse(this.session.getsessionStorage('loginDetails') as any).user.user_id,
+    "updated_by": JSON.parse(this.session.getsessionStorage('loginDetails') as any).user.user_id
 }
   }
 console.log(this.reqbody)
     const formData = new FormData();
     formData.append("image", this.file); // Attach Blob with a filename
     formData.append("body", JSON.stringify(this.reqbody));
-    this.apis.postApi("/api/category", formData).subscribe((res: any) => {
+    this.apis.postApi("/api/categoryV2", formData).subscribe((res: any) => {
       if (res.code === "1") {
     
     Swal.fire('Success!', res.message, 'success').then(

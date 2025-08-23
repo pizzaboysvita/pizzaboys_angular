@@ -4,7 +4,21 @@
             <!-- <h5 header>Setting</h5> -->
             <div header class="title-header option-title justify-content-start right-options-height">
                 <!-- <h3 class="p-2">Dishs</h3> -->
-
+                  <div class="col-lg-4">
+<div class="input-box">
+                <!-- <h6 class="fw-bold p-1">Store Name</h6> -->
+                <ng-select
+                  [items]="storesList"
+                  [searchable]="true"
+                  [multiple]="false"
+                  bindLabel="store_name"
+                  bindValue="store_id"
+                  placeholder="Select Store Name"
+                 [(ngModel)]="selectedStoreId"
+                >
+                </ng-select>
+</div>
+              </div>
                 <div class="right-options ms-auto">
 
                     <ul>
@@ -76,7 +90,7 @@
                                          <ul class="dropdown-menu dropdown-menu-end mb-10" [class.show]="item.active"  
                                             style="position: absolute;inset: 0px 0px auto auto; margin: 0px;transform: translate(-5px, 20px);">
                                             <li>
-                                                <a class="dropdown-item d-flex align-items-center" (click)="openPopup()">
+                                                <a class="dropdown-item d-flex align-items-center" (click)="openPopup(item)">
                                                     <i class="ri-download-2-line me-2"></i>Action</a>
                                             </li>
                                             <li>

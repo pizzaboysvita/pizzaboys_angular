@@ -39,7 +39,9 @@ selectedTime!: Date;
   orderItemsDeatils: any;
   orderItemsDetails: any;
 orderForm:FormGroup
+orderdueForm:FormGroup
   showOrderDuePopup: boolean =false;
+  orderDueDetails: any;
   constructor(private apiService:ApisService,private fb:FormBuilder,private el: ElementRef ,private modal: NgbModal, private toastr: ToastrService,private cdr: ChangeDetectorRef,private sessionStorageService:SessionStorageService) {
     this.markers = [];
     this.zoom = 3;
@@ -60,6 +62,11 @@ orderForm:FormGroup
       unitNumber:[''],
       deliveryNote:['']
     });
+    this.orderdueForm = this.fb.group({
+      orderType: ['ASAP', Validators.required],
+      orderDateTime: ['', Validators.required]
+    });
+    this.orderDueDetails=this.orderdueForm.value.orderType;
      const userId = JSON.parse(
       this.sessionStorageService.getsessionStorage("loginDetails") as any
     ).user.user_id;
@@ -269,7 +276,14 @@ ngAfterViewInit() {
   });
 }
 openDeliveryPopup() {
-  this.showOrderDuePopup = true;
+    this.showOrderDuePopup = true;
+}
+closeOrderDuePopup(){
+  this.showOrderDuePopup = false;
+}
+submitDUeOrder(){
+this.orderDueDetails = this.orderdueForm.value.orderType =='ASAP'?this.orderdueForm.value.orderType: this.orderdueForm.value.orderDateTime;
+ this.showOrderDuePopup = false
 }
 }
 export interface CartItem {
