@@ -146,23 +146,29 @@
                         </div>
 
                         <!-- Child flyout menu -->
-                        <ul *ngIf="expandedParentIndex === comboIndexCat && combo_dish_cat.dishes?.length"
-                          class="submenu position-absolute shadow rounded-1 gap-1 active-child"
-                          style="left: 100%; top: 0; min-width: 240px; background: #fff; z-index: 10; border: 2px solid #e0c6ff;">
-                          @for (combo_dish_cat_dish of combo_dish_cat.dishes; track combo_dish_cat_dish; let
-                          combo_dish_index = $index) {
-                          <li>
-                            <div class="dropdown-item px-4 py-3 d-flex align-items-center"
-                              style="cursor: pointer; color: #6c6c6c; font-size: 14px;"
-                              (click)="selectChild(combo_dish_index, combo_dish_cat_dish,comboIndex)">
-                              <span>{{ combo_dish_cat_dish.dishName }}</span>
-                              <span
-                                *ngIf="selectedChildIndex === combo_dish_index && selectedChildLabel === combo_dish_cat_dish"
-                                class="ms-auto text-success">&#10003;</span>
-                            </div>
-                          </li>
-                          }
-                        </ul>
+                      <!-- Child flyout menu -->
+<ul *ngIf="expandedParentIndex === comboIndexCat && combo_dish_cat.dishes?.length"
+  class="submenu position-absolute shadow rounded-1 gap-1 active-child"
+  style="left: 100%; top: 0; min-width: 240px; background: #fff; z-index: 10; border: 2px solid #e0c6ff;">
+  
+  @for (combo_dish_cat_dish of combo_dish_cat.dishes; track combo_dish_cat_dish; let combo_dish_index = $index) {
+    <li>
+   <div class="dropdown-item px-4 py-3 d-flex align-items-center"
+  [class.selected-child]="selectedChildPerCombo[comboIndex]?.selectedChildIndex === combo_dish_index 
+                          && selectedChildPerCombo[comboIndex]?.selectedChildLabel === combo_dish_cat_dish"
+  (click)="selectChild(combo_dish_index, combo_dish_cat_dish, comboIndex)">
+  
+  <span style="font-size: 14px;">{{ combo_dish_cat_dish.dishName }}</span>
+
+  <span *ngIf="selectedChildPerCombo[comboIndex]?.selectedChildIndex === combo_dish_index 
+               && selectedChildPerCombo[comboIndex]?.selectedChildLabel === combo_dish_cat_dish"
+        class="ms-auto text-success">&#10003;</span>
+</div>
+
+    </li>
+  }
+</ul>
+
                       </li>
                       }
                     </ul>

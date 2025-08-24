@@ -3,6 +3,7 @@ import { RouterModule } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FeatherIconsComponent } from "../../feather-icons/feather-icons.component";
 import { LoggingOutComponent } from '../../widgets/logging-out/logging-out.component';
+import { SessionStorageService } from '../../../services/session-storage.service';
 
 @Component({
     selector: 'app-profile',
@@ -12,8 +13,12 @@ import { LoggingOutComponent } from '../../widgets/logging-out/logging-out.compo
 })
 
 export class ProfileComponent {
+    userDetails: any;
 
-    constructor(public modal: NgbModal) { }
+    constructor(public modal: NgbModal,private sessionStorageService:SessionStorageService) { 
+         this.userDetails = JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).user;
+console.log(this.userDetails, 'userDetails')
+    }
 
     logOut() {
         this.modal.open(LoggingOutComponent,{

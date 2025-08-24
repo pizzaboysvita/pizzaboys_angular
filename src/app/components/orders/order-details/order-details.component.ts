@@ -137,7 +137,7 @@ orderdueForm:FormGroup
   }
  
 get subtotal(): number {
-  console.log(this.cartItems,'<<<<<<<<<<<------------------this.cartItems.')
+  // console.log(this.cartItems,'<<<<<<<<<<<------------------this.cartItems.')
    return this.cartItems
     .reduce((sum :any, item :any) => sum + this.apiService.orderItemSubtotal(item), 0)
 }
@@ -149,7 +149,7 @@ get tax(): number {
 
 
   get total() {
-    console.log(this.cartItems,'<<<<<<<<<<<------------------this.cartItems. 345')
+    // console.log(this.cartItems,'<<<<<<<<<<<------------------this.cartItems. 345')
     return this.cartItems
     .reduce((sum :any, item :any) => sum + this.apiService.getItemSubtotal(item), 0)- this.tax;
     // return this.subtotal + this.tax - this.discount;

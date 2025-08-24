@@ -187,6 +187,7 @@ export class MediaComponent implements OnInit {
   dishnote=''
   comboDishDetails: any = [];
   totalDishList: any[];
+    selectedChildPerCombo: { [comboIndex: number]: any } = {};
   constructor(
     public modal: NgbModal,
     private apiService: ApisService,
@@ -282,7 +283,7 @@ export class MediaComponent implements OnInit {
 
   openIngredientsPopup(item: any) {
 item.dishnote=''
-
+this.selectedChildPerCombo = {};
     if (item.dish_type === 'combo') {
 
       this.comboDishDetails = []
@@ -331,30 +332,7 @@ item.dishnote=''
       }))
     }));
   }
-  selectedChildPerCombo: { [comboIndex: number]: any } = {};
-  selectChild(parentIndex: number, dish: any, comboIndex: number) {
-    this.comboDishDetails = []
-    console.log("Selected child:", parentIndex, dish, comboIndex);
-    this.comboDishDetails = this.totalDishList.filter((d: any) => d.dish_id == dish.dishId)
-    // this.openComboIndex = comboIndex;
-    this.comboDishDetails.forEach((comboDish: any, idx: number) => {
-      this.selectedChildPerCombo[comboIndex] = this.apiService.convertDishObject(comboDish);
-      console.log(this.selectedChildPerCombo, 'selectedChildPerCombo')
-    });
-    // this.selectedDishFromList.comboDishList=this.selectedChildPerCombo;
-
-
-
-      this.selectedDishFromList = {
-    ...this.selectedDishFromList,
-    comboDishList: this.selectedChildPerCombo
-  };
-    console.log(this.comboDishDetails, dish.dishId, this.totalDishList, 'comboDishDetails')
-    this.selectedChildIndex = parentIndex;
-    this.selectedChildLabel = dish;
-    console.log("Selected child New:", this.selectedDishFromList);
-    this.cdr.detectChanges();
-  }
+  
   closePopup() {
     this.showPopup = false;
     this.selectedDishFromList = null;
@@ -452,6 +430,43 @@ item.dishnote=''
       , 'selectedOptions')
     dish.selectedOptions = selectedOptions;
     return dish;
+  }
+
+  selectChild(parentIndex: number, dish: any, comboIndex: number) {
+
+console.log(parentIndex, dish, comboIndex)
+      if (!this.selectedChildPerCombo[comboIndex]) {
+    this.selectedChildPerCombo[comboIndex] = {};
+  }
+  
+    this.comboDishDetails = []
+    console.log("Selected child:", parentIndex, dish, comboIndex);
+    this.comboDishDetails = this.totalDishList.filter((d: any) => d.dish_id == dish.dishId)
+    // this.openComboIndex = comboIndex;
+    this.comboDishDetails.forEach((comboDish: any, idx: number) => {
+      this.selectedChildPerCombo[comboIndex] = this.apiService.convertDishObject(comboDish);
+      
+      console.log(this.selectedChildPerCombo, 'selectedChildPerCombo')
+    });
+    // this.selectedDishFromList.comboDishList=this.selectedChildPerCombo;
+
+
+
+      this.selectedDishFromList = {
+    ...this.selectedDishFromList,
+    comboDishList: this.selectedChildPerCombo
+  };
+    console.log(this.comboDishDetails, dish.dishId, this.totalDishList, 'comboDishDetails')
+      this.selectedChildPerCombo[comboIndex].selectedChildIndex = parentIndex;
+  this.selectedChildPerCombo[comboIndex].selectedChildLabel = dish;
+    console.log("Selected child New:", this.selectedDishFromList);
+ const subtotal = this.apiService.combotItemSubtotal(this.selectedDishFromList);
+    console.log(subtotal, 'subtotal for combo')
+    this.selectedDishFromList = {
+      ...this.selectedDishFromList,
+      duplicate_dish_price: subtotal
+    }; 
+    this.cdr.detectChanges();
   }
   combo_selectRadio(option: any, dishOptionSet: any, comboIndex: any, fullcomboDetails: any) {
         console.log("Selected option in combo:",comboIndex);

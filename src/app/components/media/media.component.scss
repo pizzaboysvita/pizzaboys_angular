@@ -738,3 +738,16 @@ $transition-speed: 0.2s ease-in-out;
    text-align: left;    
        min-width: 70px;          /* Adjust font size as needed */
 }
+
+/* Highlight selected child */
+.selected-child {
+  background-color: #e9f5ff; /* light blue background */
+  color: #0d6efd;            /* bootstrap primary color */
+  font-weight: 600;
+  border-radius: 4px;
+}
+
+/* Hover effect (different color than selected) */
+.dropdown-item:hover {
+  background-color: #f8f9fa; /* light gray */
+}
