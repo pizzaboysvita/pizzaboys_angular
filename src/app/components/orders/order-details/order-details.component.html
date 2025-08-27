@@ -174,12 +174,12 @@
           <!-- Order Type -->
           <div class="mb-3">
             <label class="form-label">Order Due</label>
-            <select class="form-select" formControlName="orderType">
+            <select class="form-select" formControlName="orderDue">
               <option value="ASAP">ASAP</option>
               <option value="Later">Later</option>
             </select>
           </div>
-      <div class="mb-3" *ngIf="orderdueForm.get('orderType')?.value == 'Later'">
+      <div class="mb-3" *ngIf="orderdueForm.get('orderDue')?.value == 'Later'">
             <label class="form-label">Date and Time</label>
             <input type="datetime-local"
               placeholder="Select date and Time" formControlName="orderDateTime" />

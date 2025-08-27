@@ -60,13 +60,14 @@ orderdueForm:FormGroup
       streetNumber:[''],
       streetName:[''],
       unitNumber:[''],
-      deliveryNote:['']
+      deliveryNote:[''],
+      
     });
     this.orderdueForm = this.fb.group({
-      orderType: ['ASAP', Validators.required],
+      orderDue: ['ASAP', Validators.required],
       orderDateTime: ['', Validators.required]
     });
-    this.orderDueDetails=this.orderdueForm.value.orderType;
+    this.orderDueDetails=this.orderdueForm.value.orderDue;
          const userId = JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).user.store_id;
 
     this.markers.push({
@@ -204,15 +205,15 @@ submitOrder(){
     "delivery_fees": 0.00,
     is_pos_order:1,
     "delivery_datetime": new Date(),
-    "order_notes": this.orderForm.get('orderNotes')?.value,
+    "order_notes": this.orderForm.get('deliveryNote')?.value,
     "order_status": "Order_placed",
     "order_created_by": user.store_id,
     "order_details_json": this.orderItemsDetails,
     "payment_method": "Card",
     "payment_status": "Completed",
     "payment_amount": this.total,
-    "order_due": this.orderForm.get('orderDue')?.value,
-    "order_due_datetime": this.orderForm.get('orderDateTime')?.value
+    "order_due": this.orderdueForm.get('orderDue')?.value,
+    "order_due_datetime": this.orderdueForm.get('orderDateTime')?.value
 
   }
   console.log(reqbody,'new----------> 123')
@@ -287,7 +288,7 @@ closeOrderDuePopup(){
   this.showOrderDuePopup = false;
 }
 submitDUeOrder(){
-this.orderDueDetails = this.orderdueForm.value.orderType =='ASAP'?this.orderdueForm.value.orderType: this.orderdueForm.value.orderDateTime;
+this.orderDueDetails = this.orderdueForm.value.orderDue =='ASAP'?this.orderdueForm.value.orderDue: this.orderdueForm.value.orderDateTime;
  this.showOrderDuePopup = false
 }
 }

@@ -26,6 +26,7 @@ interface RowData {
   status: string;
   address: string;
   store_name: string;
+  due:String
   email:string;
   order_due:string;
   payment_method:string;
@@ -175,7 +176,7 @@ export class PosOrdersComponent {
     },
     {
 
-      field: 'order_due',
+      field: 'due',
       headerName: 'Placed',
       suppressMenu: true,
       unSortIcon: true,
@@ -298,6 +299,8 @@ export class PosOrdersComponent {
   staff_list: any;
   staffListSorting: any;
   orderList: any;
+  orderDetails: any;
+  modalRef: any;
   //  onCellClicked(event: any): void {
   // let target = event.event?.target as HTMLElement;
   //  }
@@ -321,6 +324,7 @@ export class PosOrdersComponent {
            this.apiService.getApi(AppConstants.api_end_points.orderList+'?store_id='+store_id+'&type=web').subscribe((data: any) => {
              if (data) {
 data.categories.forEach((element: any) => {
+    element.due = this.transform(element.order_created_datetime);
   element.order_master_id = 'P-'+element.order_master_id;
 })
               this.orderList = data.categories
@@ -334,61 +338,19 @@ data.categories.forEach((element: any) => {
   
     console.log("PPPPPPPPPPPPPPpppnnnnnnnnnnnnnnnn",event.data)
     // if (event.node.data) {
-      const mockOrderData: OrderData = {
-        orderNumber: 4800,
-        name: event.node.data.fullname,
-        email: event.node.data.user_email,
-        phone: event.node.data.phone_number,
-        type: "Pickup",
-        placed: "22/08/2025 at 05:14 pm",
-        due: "Now / ASAP",
-        estReadyTime: "22/08/2025 at 05:35 pm",
-        lastUpdated: "10 minutes",
-        status: "Complete",
-        dishes: [
-          {
-            qty: 1,
-            item: "Classic Cheese Pizza",
-            price: 13.89,
-            mods: ["Large (+4.00)", "Hollandaise Sauce (+$0.90)"],
-            remove: ["Tomato Base"],
-            notes: "BBQ base sauce please",
-          },
-          {
-            qty: 1,
-            item: "Banana & Caramel Pizza",
-            price: 8.99,
-            mods: ["Small (-$4.00)"],
-          },
-        ],
-        payments: {
-          cartTotal: 22.88,
-          cardFee: 0.96,
-          gst: 3.11,
-          total: 23.84,
-          method: "Stripe (Successful)",
-        },
-        log: [
-          {
-            description:
-              'Print request sent to printer "Online Ordering - Customer"',
-            timestamp: "22/08/2025 at 05:14 pm",
-          },
-          {
-            description: 'Status updated from "Confirmed" to "Ready"',
-            timestamp: "22/08/2025 at 05:35 pm",
-          },
-          {
-            description: 'Status updated from "Ready" to "Complete"',
-            timestamp: "22/08/2025 at 05:45 pm",
-          },
-        ],
-      };
-      const modalRef = this.modalService.open(OrderDialogComponent, {
+     this.apiService.getApi(AppConstants.api_end_points.orderList + '?order_id=' + 24 + '&type=web').subscribe((response:any) => {
+      console.log(response, 'order details');
+      if(response.code ==1){
+this.orderDetails = response.categories[0];
+  this.modalRef = this.modalService.open(OrderDialogComponent, {
         size: "md",
         centered: true,
       });
-      modalRef.componentInstance.data = event.data;
+      this.modalRef.componentInstance.data = this.orderDetails;
+      }
+    });
+   
+     
     // }
   }
   getStaffList() {
@@ -398,6 +360,7 @@ data.categories.forEach((element: any) => {
         if (data) {
           data.data.forEach((element: any) => {
             // element.option=''
+          
             (element.user_image = null),
               (element.fullname = element.first_name + " " + element.last_name);
             element.status =
@@ -411,5 +374,24 @@ data.categories.forEach((element: any) => {
           this.staffListSorting = data.data;
         }
       });
+  }
+   transform(value: string | Date): string {
+    if (!value) return '';
+    
+    const created = new Date(value).getTime();
+    const now = Date.now();
+    const diffMs = now - created;
+
+    const diffMin = Math.floor(diffMs / 60000); // ms → minutes
+    const diffHr  = Math.floor(diffMin / 60);
+    const diffDay = Math.floor(diffHr / 24);
+
+    if (diffMin < 60) {
+      return `${diffMin} min${diffMin !== 1 ? 's' : ''} ago`;
+    } else if (diffHr < 24) {
+      return `${diffHr} hour${diffHr !== 1 ? 's' : ''} ago`;
+    } else {
+      return `${diffDay} day${diffDay !== 1 ? 's' : ''} ago`;
+    }
   }
 }
