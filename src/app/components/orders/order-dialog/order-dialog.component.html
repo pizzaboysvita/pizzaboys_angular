@@ -9,60 +9,43 @@
     </div>
     <hr class="m-0" />
     <div class="modal-body pt-0">
-        <div class="accordion-group">
-            <div class="accordion-header" (click)="toggleStatus()">
-                Change Status
-                <span class="arrow">
-                    <i class="ri-arrow-up-s-line" *ngIf="statusExpanded"></i>
-                    <i class="ri-arrow-down-s-line" *ngIf="!statusExpanded"></i>
-                </span>
-            </div>
-            <div class="accordion-body" *ngIf="statusExpanded">
-                <div class="accordion-item" [class.current]="data.status === 'Cancelled'">
-                    Cancelled
-                </div>
-                <div class="accordion-item" [class.current]="data.status === 'Un-Confirmed'">
-                    Un-Confirmed
-                </div>
-                <div class="accordion-item" [class.current]="data.status === 'Confirmed'">
-                    Confirmed
-                </div>
-                <div class="accordion-item" [class.current]="data.status === 'Ready'">
-                    Ready
-                </div>
-                <div class="accordion-item" [class.current]="data.status === 'Complete'">
-                    Complete (Current)
+       <div class="row p-3">
+           
+             <div class="col-12">
+                <!-- <div class="col-md-6"> -->
+                <div class="input-box">
+                    <h6>Change Status</h6>
+                    <select class="form-select" name="carlist" formControlName="status">
+                        @for (item of statusList; track item) {
+                        <option value="">{{ item .name}}</option>
+                        }
+                    </select>
+                    <!-- </div> -->
                 </div>
             </div>
-        </div>
-
-        <div class="accordion-group">
-            <div class="accordion-header" (click)="toggleReadyTime()">
-                Modify Est. Ready Time
-                <span class="arrow">
-                    <i class="ri-arrow-up-s-line" *ngIf="readyTimeExpanded"></i>
-                    <i class="ri-arrow-down-s-line" *ngIf="!readyTimeExpanded"></i>
-                </span>
+              <div class="col-12 mt-2">
+                <!-- <div class="col-md-6"> -->
+                <div class="input-box">
+                    <h6>Modify Est.Ready Time</h6>
+                    <select class="form-select" name="carlist" formControlName="status">
+                        @for (item of modiftime; track item) {
+                        <option value="">{{ item.name }}</option>
+                        }
+                    </select>
+                    <!-- </div> -->
+                </div>
             </div>
-            <div class="accordion-body" *ngIf="readyTimeExpanded">
-                <div class="accordion-item">Add 5 minutes</div>
-                <div class="accordion-item">Add 10 minutes</div>
-            </div>
-        </div>
-
-        <div class="accordion-group">
-            <div class="accordion-header" (click)="toggleActions()">
-                Actions
-                <span class="arrow">
-                    <i class="ri-arrow-up-s-line" *ngIf="actionsExpanded"></i>
-                    <i class="ri-arrow-down-s-line" *ngIf="!actionsExpanded"></i>
-                </span>
-            </div>
-            <div class="accordion-body" *ngIf="actionsExpanded">
-                <div class="accordion-item">Print - Online Ordering - Customer</div>
-                <div class="accordion-item">Print - POS - Customer</div>
-                <div class="accordion-item">Download PDF receipt</div>
-                <div class="accordion-item">Archive Order</div>
+             <div class="col-12 mt-2">
+                <!-- <div class="col-md-6"> -->
+                <div class="input-box">
+                    <h6>Action</h6>
+                    <select class="form-select" name="carlist" formControlName="status">
+                        @for (item of action; track item) {
+                        <option value="">{{ item.name }}</option>
+                        }
+                    </select>
+                    <!-- </div> -->
+                </div>
             </div>
         </div>
 

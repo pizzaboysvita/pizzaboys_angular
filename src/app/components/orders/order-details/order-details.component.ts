@@ -198,19 +198,22 @@ submitOrder(){
     "total_price": this.subtotal,
     "total_quantity": this.cartItems.length,
     "store_id": user.store_id,
-    "order_type": 1,
+    "order_type": this.orderForm.get('orderType')?.value,
     "pickup_datetime": new Date(),
     "delivery_address": this.orderForm.get('deliveryAddress')?.value,
     "delivery_fees": 0.00,
     is_pos_order:1,
-    "delivery_datetime": null,
+    "delivery_datetime": new Date(),
     "order_notes": this.orderForm.get('orderNotes')?.value,
-    "order_status": 1,
+    "order_status": "Order_placed",
     "order_created_by": user.store_id,
     "order_details_json": this.orderItemsDetails,
     "payment_method": "Card",
     "payment_status": "Completed",
     "payment_amount": this.total,
+    "order_due": this.orderForm.get('orderDue')?.value,
+    "order_due_datetime": this.orderForm.get('orderDateTime')?.value
+
   }
   console.log(reqbody,'new----------> 123')
   this.apiService.postApi('/api/order', reqbody).subscribe((res:any)=>{

@@ -317,8 +317,8 @@ export class PosOrdersComponent {
 
  
          getOrderList() {
-       
-           this.apiService.getApi(AppConstants.api_end_points.orderList).subscribe((data: any) => {
+      const store_id = JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.store_id;
+           this.apiService.getApi(AppConstants.api_end_points.orderList+'?store_id='+store_id+'&type=web').subscribe((data: any) => {
              if (data) {
 data.categories.forEach((element: any) => {
   element.order_master_id = 'P-'+element.order_master_id;
@@ -332,7 +332,7 @@ data.categories.forEach((element: any) => {
 
   onCellClicked(event: any): void {
   
-    console.log("PPPPPPPPPPPPPPpppnnnnnnnnnnnnnnnn")
+    console.log("PPPPPPPPPPPPPPpppnnnnnnnnnnnnnnnn",event.data)
     // if (event.node.data) {
       const mockOrderData: OrderData = {
         orderNumber: 4800,
@@ -388,7 +388,7 @@ data.categories.forEach((element: any) => {
         size: "md",
         centered: true,
       });
-      modalRef.componentInstance.data = mockOrderData;
+      modalRef.componentInstance.data = event.data;
     // }
   }
   getStaffList() {
