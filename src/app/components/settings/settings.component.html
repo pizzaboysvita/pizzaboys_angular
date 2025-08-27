@@ -1,0 +1,400 @@
+<div class="container-fluid">
+    <div class="row card border-0">
+        <div class="col-sm-8 m-auto p-2">
+            <div class="card justify-content-center border-0">
+                <div class="d-flex justify-content-between align-items-center p-3 border-bottom bg-white">
+                    <h2 class="mb-0">Settings</h2>
+                    <div class="d-flex align-items-center text-success">
+                        <span class="mr-2">Ordering</span>
+                        <i class="fa fa-check-circle"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white border-bottom">
+                    <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
+                        <li [ngbNavItem]="1">
+                            <a ngbNavLink>System</a>
+                            <ng-template ngbNavContent>
+                                <div class="">
+                                    <div ngbAccordion #acc="ngbAccordion" activeId="general-panel">
+                                        <div ngbAccordionItem="general-panel">
+                                            <h2 ngbAccordionHeader>
+                                                <button ngbAccordionButton>General</button>
+                                            </h2>
+                                            <div ngbAccordionCollapse>
+                                                <div ngbAccordionBody>
+                                                    <ng-template>
+                                                        <app-general-settings></app-general-settings>
+                                                    </ng-template>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div ngbAccordionItem="opening-hours-panel">
+                                            <h2 ngbAccordionHeader>
+                                                <button ngbAccordionButton>Opening Hours</button>
+                                            </h2>
+                                            <div ngbAccordionCollapse>
+                                                <div ngbAccordionBody>
+                                                    <ng-template>
+                                                        <app-opening-hours></app-opening-hours>
+                                                    </ng-template>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div ngbAccordionItem="promo-codes-panel">
+                                            <h2 ngbAccordionHeader>
+                                                <button ngbAccordionButton>Promo Codes</button>
+                                            </h2>
+                                            <div ngbAccordionCollapse>
+                                                <div ngbAccordionBody>
+                                                    <ng-template>Promo Codes settings content here.</ng-template>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div ngbAccordionItem="conditional-fees-panel">
+                                            <h2 ngbAccordionHeader>
+                                                <button ngbAccordionButton>Conditional Fees</button>
+                                            </h2>
+                                            <div ngbAccordionCollapse>
+                                                <div ngbAccordionBody>
+                                                    <ng-template>Conditional Fees content here.</ng-template>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div ngbAccordionItem="receipt-printing-panel">
+                                            <h2 ngbAccordionHeader>
+                                                <button ngbAccordionButton>Receipt Printing</button>
+                                            </h2>
+                                            <div ngbAccordionCollapse>
+                                                <div ngbAccordionBody>
+                                                    <ng-template>Receipt Printing content here.</ng-template>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div ngbAccordionItem="notifications-panel">
+                                            <h2 ngbAccordionHeader>
+                                                <button ngbAccordionButton>Notifications</button>
+                                            </h2>
+                                            <div ngbAccordionCollapse>
+                                                <div ngbAccordionBody>
+                                                    <ng-template>Notifications content here.</ng-template>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div ngbAccordionItem="facebook-advertising-panel">
+                                            <h2 ngbAccordionHeader>
+                                                <button ngbAccordionButton>Facebook Advertising</button>
+                                            </h2>
+                                            <div ngbAccordionCollapse>
+                                                <div ngbAccordionBody>
+                                                    <ng-template>Facebook Advertising content here.</ng-template>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div ngbAccordionItem="info-bar-panel">
+                                            <h2 ngbAccordionHeader>
+                                                <button ngbAccordionButton>Info Bar</button>
+                                            </h2>
+                                            <div ngbAccordionCollapse>
+                                                <div ngbAccordionBody>
+                                                    <ng-template>Info Bar content here.</ng-template>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </li>
+                        <li [ngbNavItem]="2">
+                            <a ngbNavLink>Services</a>
+                            <ng-template ngbNavContent>
+                                <div class="services-tab-container">
+                                    <div ngbAccordion #acc="ngbAccordion" class="services-accordion">
+                                        <div ngbAccordionItem="pickups-panel">
+                                            <h2 ngbAccordionHeader>
+                                                <button ngbAccordionButton
+                                                    class="d-flex justify-content-between align-items-center">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fa fa-check-circle text-success p-1 me-2"></i>
+
+                                                        Pickups
+                                                    </div>
+                                                </button>
+                                            </h2>
+                                            <div ngbAccordionCollapse #pickupsPanel="ngbAccordionCollapse">
+                                                <div ngbAccordionBody>
+                                                    <ng-template>
+                                                        <p>Settings for managing pickups.</p>
+                                                    </ng-template>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div ngbAccordionItem="deliveries-panel">
+                                            <h2 ngbAccordionHeader>
+                                                <button ngbAccordionButton
+                                                    class="d-flex justify-content-between align-items-center">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fa fa-check-circle text-success p-1 me-2"></i>
+                                                        Deliveries
+                                                    </div>
+                                                </button>
+                                            </h2>
+                                            <div ngbAccordionCollapse #deliveriesPanel="ngbAccordionCollapse">
+                                                <div ngbAccordionBody>
+                                                    <ng-template>
+                                                        <p>Settings for managing deliveries.</p>
+                                                    </ng-template>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div ngbAccordionItem="dine-ins-panel">
+                                            <h2 ngbAccordionHeader>
+                                                <button ngbAccordionButton
+                                                    class="d-flex justify-content-between align-items-center">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fa fa-check-circle text-success p-1 me-2"></i>
+                                                        Dine-Ins
+                                                    </div>
+                                                </button>
+                                            </h2>
+                                            <div ngbAccordionCollapse #dineInsPanel="ngbAccordionCollapse">
+                                                <div ngbAccordionBody>
+                                                    <ng-template>
+                                                        <p>Settings for managing dine-ins.</p>
+                                                    </ng-template>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div ngbAccordionItem="table-bookings-panel">
+                                            <h2 ngbAccordionHeader>
+                                                <button ngbAccordionButton
+                                                    class="d-flex justify-content-between align-items-center">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fa fa-check-circle text-success p-1 me-2"></i>
+                                                        Table Bookings
+                                                    </div>
+                                                </button>
+                                            </h2>
+                                            <div ngbAccordionCollapse #tableBookingsPanel="ngbAccordionCollapse">
+                                                <div ngbAccordionBody>
+                                                    <ng-template>
+                                                        <p>Settings for managing table bookings.</p>
+                                                    </ng-template>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </li>
+                        <li [ngbNavItem]="3">
+                            <a ngbNavLink>POS</a>
+                            <ng-template ngbNavContent>
+                                <div class="pos-tab-container">
+                                    <div ngbAccordion #acc="ngbAccordion" class="pos-accordion">
+                                        <div ngbAccordionItem="pos-terminals-panel">
+                                            <h2 ngbAccordionHeader>
+                                                <button ngbAccordionButton
+                                                    class="d-flex justify-content-between align-items-center">
+                                                    POS Terminals
+                                                </button>
+                                            </h2>
+                                            <div ngbAccordionCollapse #posTerminalsPanel="ngbAccordionCollapse">
+                                                <div ngbAccordionBody>
+                                                    <ng-template>
+                                                        <p>Settings for managing POS terminals.</p>
+                                                    </ng-template>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div ngbAccordionItem="payment-terminals-panel">
+                                            <h2 ngbAccordionHeader>
+                                                <button ngbAccordionButton
+                                                    class="d-flex justify-content-between align-items-center">
+                                                    Payment Terminals
+                                                </button>
+                                            </h2>
+                                            <div ngbAccordionCollapse #paymentTerminalsPanel="ngbAccordionCollapse">
+                                                <div ngbAccordionBody>
+                                                    <ng-template>
+                                                        <p>Settings for managing payment terminals.</p>
+                                                    </ng-template>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </li>
+                        <li [ngbNavItem]="4">
+                            <a ngbNavLink>Payments</a>
+                            <ng-template ngbNavContent>
+                                <div class="payments-tab-container">
+                                    <div ngbAccordion #acc="ngbAccordion" class="payments-accordion">
+                                        <div ngbAccordionItem="cash-panel">
+                                            <h2 ngbAccordionHeader>
+                                                <button ngbAccordionButton
+                                                    class="d-flex justify-content-between align-items-center">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fa fa-check-circle text-success p-1 me-2"></i>
+                                                        Cash
+                                                    </div>
+                                                </button>
+                                            </h2>
+                                            <div ngbAccordionCollapse #cashPanel="ngbAccordionCollapse">
+                                                <div ngbAccordionBody>
+                                                    <ng-template>
+                                                        <p>Settings for managing cash payments.</p>
+                                                    </ng-template>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div ngbAccordionItem="eftpos-panel">
+                                            <h2 ngbAccordionHeader>
+                                                <button ngbAccordionButton
+                                                    class="d-flex justify-content-between align-items-center">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fa fa-check-circle text-success p-1 me-2"></i>
+                                                        EFTPOS
+                                                    </div>
+                                                </button>
+                                            </h2>
+                                            <div ngbAccordionCollapse #eftposPanel="ngbAccordionCollapse">
+                                                <div ngbAccordionBody>
+                                                    <ng-template>
+                                                        <p>Settings for managing EFTPOS payments.</p>
+                                                    </ng-template>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div ngbAccordionItem="voucher-panel">
+                                            <h2 ngbAccordionHeader>
+                                                <button ngbAccordionButton
+                                                    class="d-flex justify-content-between align-items-center">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fa fa-check-circle text-success p-1 me-2"></i>
+                                                        Voucher
+                                                    </div>
+                                                </button>
+                                            </h2>
+                                            <div ngbAccordionCollapse #voucherPanel="ngbAccordionCollapse">
+                                                <div ngbAccordionBody>
+                                                    <ng-template>
+                                                        <p>Settings for managing vouchers.</p>
+                                                    </ng-template>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div ngbAccordionItem="stripe-panel">
+                                            <h2 ngbAccordionHeader>
+                                                <button ngbAccordionButton
+                                                    class="d-flex justify-content-between align-items-center">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fa fa-check-circle text-success p-1 me-2"></i>
+                                                        Stripe
+                                                    </div>
+                                                </button>
+                                            </h2>
+                                            <div ngbAccordionCollapse #stripePanel="ngbAccordionCollapse">
+                                                <div ngbAccordionBody>
+                                                    <ng-template>
+                                                        <p>Settings for managing Stripe payments.</p>
+                                                    </ng-template>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div ngbAccordionItem="windcave-panel">
+                                            <h2 ngbAccordionHeader>
+                                                <button ngbAccordionButton
+                                                    class="d-flex justify-content-between align-items-center">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fa fa-check-circle text-success p-1 me-2"></i>
+                                                        Windcave
+                                                    </div>
+                                                </button>
+                                            </h2>
+                                            <div ngbAccordionCollapse #windcavePanel="ngbAccordionCollapse">
+                                                <div ngbAccordionBody>
+                                                    <ng-template>
+                                                        <p>Settings for managing Windcave payments.</p>
+                                                    </ng-template>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div ngbAccordionItem="bambora-panel">
+                                            <h2 ngbAccordionHeader>
+                                                <button ngbAccordionButton
+                                                    class="d-flex justify-content-between align-items-center">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fa fa-check-circle text-success p-1 me-2"></i>
+                                                        Bambora
+                                                    </div>
+                                                </button>
+                                            </h2>
+                                            <div ngbAccordionCollapse #bamboraPanel="ngbAccordionCollapse">
+                                                <div ngbAccordionBody>
+                                                    <ng-template>
+                                                        <p>Settings for managing Bambora payments.</p>
+                                                    </ng-template>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div ngbAccordionItem="custom-panel">
+                                            <h2 ngbAccordionHeader>
+                                                <button ngbAccordionButton
+                                                    class="d-flex justify-content-between align-items-center">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fa fa-check-circle text-success p-1 me-2"></i>
+                                                        Custom
+                                                    </div>
+                                                </button>
+                                            </h2>
+                                            <div ngbAccordionCollapse #customPanel="ngbAccordionCollapse">
+                                                <div ngbAccordionBody>
+                                                    <ng-template>
+                                                        <p>Settings for adding custom payment methods.</p>
+                                                    </ng-template>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </li>
+                    </ul>
+                    <div [ngbNavOutlet]="nav" class="mt-2"></div>
+                </div>
+
+                <div class="bl p-3 mt-3 border bg-light d-flex justify-content-between align-items-center">
+                    <span class="font-weight-bold">View merchant dashboard</span>
+                    <div class="d-flex gap-1">
+                        <button class="btn btn-outline-secondary">STRIPE</button>
+                        <button class="btn btn-outline-secondary">WINDCAVE</button>
+                    </div>
+                </div>
+
+                <div class="bl p-3 mt-3 border bg-light d-flex justify-content-between align-items-center">
+                    <span class="text-muted">Need help updating your settings?</span>
+                    <button class="btn btn-outline-secondary">HELP</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
