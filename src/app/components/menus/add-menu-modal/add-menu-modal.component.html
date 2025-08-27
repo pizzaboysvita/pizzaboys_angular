@@ -99,20 +99,40 @@
                     <div class="input-box">
                       <!-- <h6 class="font-family ">Upload Images </h6> -->
                       <!-- <span class="choose-img-box font-family" > -->
- <div class="d-flex align-items-center justify-content-between mb-2">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
                         <h6>Upload Images</h6>
                         <span class="optional-tag">Required</span>
                       </div>
-                      <input autocomplete="off" id="fileInput"class="mt-1" type="file" accept="image/*"
-                        (change)="onSelectFile($event)">
+
+
+
+                      @if(uploadImagUrl){
+                      <div class="image-preview-container">
+                        <img #previewImage [src]="uploadImagUrl" alt="Preview" class="preview-img" />
+
+                        <!-- Delete Icon -->
+                        <!-- <button class="icon-button delete" (click)="removeImage()" title="Delete">❌</button> -->
+                        <!-- <button class="icon-button" >×</button> -->
+                        <button class="icon-button" >✕</button>
+
+
+
+                      </div>
+                      }@else{
+                      <!-- File input (shown when no preview) -->
+                      <!-- <ng-template #uploadInput> -->
+                      <input type="file" accept="image/*" (change)="onSelectFile($event)" />
+                      }
+                      <!-- <input autocomplete="off" id="fileInput"class="mt-1" type="file" accept="image/*"
+                        (change)="onSelectFile($event)"> -->
                       <!-- </span> -->
                     </div>
-                       @if((menuForm.get('image')?.touched ||menuForm.get('image')?.dirty) &&
-                      menuForm.get('image')?.hasError('required')){
-                      <div class="text-danger">
-                        Image is required
-                      </div>
-                      }
+                    @if((menuForm.get('image')?.touched ||menuForm.get('image')?.dirty) &&
+                    menuForm.get('image')?.hasError('required')){
+                    <div class="text-danger">
+                      Image is required
+                    </div>
+                    }
                   </div>
 
 
@@ -140,7 +160,7 @@
                         bindValue="store_id" placeholder="Select from the dropdown or type to search..."
                         formControlName="store">
                       </ng-select>
-                         @if((conditionForm.get('store')?.touched ||conditionForm.get('store')?.dirty) &&
+                      @if((conditionForm.get('store')?.touched ||conditionForm.get('store')?.dirty) &&
                       conditionForm.get('store')?.hasError('required')){
                       <div class="text-danger">
                         Store is required
