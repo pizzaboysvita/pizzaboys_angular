@@ -1,0 +1,35 @@
+<div class="opening-hours-container">
+    <ul ngbNav #nav="ngbNav" [(activeId)]="activeService" class="nav-tabs secondary-nav">
+        <li [ngbNavItem]="1">
+            <a ngbNavLink>General</a>
+            <ng-template ngbNavContent>
+                <p>general hours content.</p>
+            </ng-template>
+        </li>
+        <li [ngbNavItem]="2">
+            <a ngbNavLink>Pickup</a>
+            <ng-template ngbNavContent>
+                <p>Pickup hours content.</p>
+            </ng-template>
+        </li>
+        <li [ngbNavItem]="3">
+            <a ngbNavLink>Delivery</a>
+            <ng-template ngbNavContent>
+                <p>Delivery hours content.</p>
+            </ng-template>
+        </li>
+        <li [ngbNavItem]="4">
+            <a ngbNavLink>Dine In</a>
+            <ng-template ngbNavContent>
+                <p>Dine In hours content.</p>
+            </ng-template>
+        </li>
+        <li [ngbNavItem]="5">
+            <a ngbNavLink>Table Bookings</a>
+            <ng-template ngbNavContent>
+                <p>Table Bookings content.</p>
+            </ng-template>
+        </li>
+    </ul>
+    <div [ngbNavOutlet]="nav" class="mt-2"></div>
+</div>
