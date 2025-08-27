@@ -1,174 +1,299 @@
 <div class="modal-content">
-    <div class="modal-header">
-        <h5>Create Dish</h5>
-        <button class="btn-close" type="button" (click)="modal.dismissAll()">
-            <i class="ri-close-line"></i>
-        </button>
-    </div>
-    <div class="modal-body pt-0">
-        <div class="col-12">
-            <ul class="nav nav-pills flex-nowrap mb-3" ngbNav #nav="ngbNav" [(activeId)]="active">
-                <li [ngbNavItem]="1" class="nav-item m-0">
-                    <button ngbNavLink class="nav-link" type="button">General</button>
-                    <ng-template ngbNavContent>
-                        <form [formGroup]="menuForm">
-                            <div class="input-items">
-                              <div class="row gy-3">
-                          
-                                <div class="col-12">
-                                  <div class="input-box">
-                                    <h6>Menu Type</h6>
-                                    <ng-select 
-                                      [items]="menuList" 
-                                      [searchable]="true" 
-                                      [multiple]="false"
-                                      bindLabel="name" 
-                                      bindValue="id"
-                                      placeholder="Select from the dropdown or type to search"
-                                      formControlName="menuType">
-                                    </ng-select>
-                                  </div>
-                                </div>
-                          
-                                <div class="col-12">
-                                  <div class="input-box">
-                                    <h6>Category Type</h6>
-                                    <ng-select 
-                                      [items]="categoryList" 
-                                      [searchable]="true" 
-                                      [multiple]="false"
-                                      bindLabel="name" 
-                                      bindValue="id"
-                                      placeholder="Select from the dropdown or type to search"
-                                      formControlName="categoryType">
-                                    </ng-select>
-                                  </div>
-                                </div>
-                          
-                                <div class="col-12">
-                                  <div class="input-box">
-                                    <h6>Dish Type</h6>
-                                    <div class="btn-group w-auto" role="group" aria-label="Dish Type" style="height: 44px;">
-                                      <input type="radio" class="btn-check" formControlName="dishType" value="standard" id="standard" autocomplete="off">
-                                      <label class="btn btn-style" for="standard">Standard</label>
-                          
-                                      <input type="radio" class="btn-check" formControlName="dishType" value="combo" id="combo" autocomplete="off">
-                                      <label class="btn btn-style" for="combo">Combo</label>
-                                    </div>
-                                  </div>
-                                  <span class="lableSubtext">A combo dishes allows customers to make several choices between selected standard dishes</span>
-                                </div>
-                          
-                                <div class="col-12">
-                                  <div class="input-box">
-                                    <h6>First Name</h6>
-                                    <input type="text" placeholder="Enter First Name" formControlName="firstName">
-                                  </div>
-                                  <span class="lableSubtext">A unique name for your dish</span>
-                                </div>
-                          
-                                <div class="col-12">
-                                  <div class="input-box">
-                                    <h6>Price ($)</h6>
-                                    <input type="text" placeholder="Enter Price" formControlName="price">
-                                  </div>
-                                  <span class="lableSubtext">This cost of this item. <a>Toggle advanced pricing</a></span>
-                                </div>
-                          
-                                <div class="col-12">
-                                  <div class="input-box">
-                                    <h6>Price Suffix</h6>
-                                    <input type="text" placeholder="Enter Price Suffix" formControlName="priceSuffix">
-                                  </div>
-                                  <span class="lableSubtext">Used to help clarify the price, for example you can say 'per kg' or 'per scoop'</span>
-                                </div>
-                          
-                                <div class="col-12">
-                                  <div class="input-box">
-                                    <h6>Display Name</h6>
-                                    <input type="text" placeholder="Enter Display Name" formControlName="displayName">
-                                  </div>
-                                  <span class="lableSubtext">Will override the unique name in your store</span>
-                                </div>
-                          
-                                <div class="col-12">
-                                  <div class="input-box">
-                                    <h6>Print Name</h6>
-                                    <input type="text" placeholder="Enter Print Name" formControlName="printName">
-                                  </div>
-                                  <span class="lableSubtext">Will override the unique name on your printed order receipts</span>
-                                </div>
-                          
-                                <div class="col-12">
-                                  <div class="input-box">
-                                    <h6>POS Name</h6>
-                                    <input type="text" placeholder="Enter POS Name" formControlName="posName">
-                                  </div>
-                                  <span class="lableSubtext">Use this field to set another name for this dish in your POS</span>
-                                </div>
-                          
-                                <div class="col-12">
-                                  <div class="input-box">
-                                    <h6>Description</h6>
-                                    <input type="text" placeholder="Enter Description" formControlName="description">
-                                  </div>
-                                  <span class="lableSubtext">Will be displayed in your menu and dish popup</span>
-                                </div>
-                          
-                                <div class="col-12">
-                                  <div class="input-box">
-                                    <h6>Subtitle</h6>
-                                    <input type="text" placeholder="Enter Subtitle" formControlName="subtitle">
-                                  </div>
-                                  <span class="lableSubtext">Will be displayed under your dish name in bold font. Keep it short and sweet</span>
-                                </div>
-                          
-                              </div>
-                            </div>
-                          </form>
-                          
-                    </ng-template>
-                </li>
-                @if(menuForm.value.dishType =='standard'){
-                <li [ngbNavItem]="2" class="nav-item m-0" >
-                    <button ngbNavLink class="nav-link" type="button">Options & ingeration</button>
-                    <ng-template ngbNavContent>
-                        <div class="input-items">
-                            <div class="row gy-3">
-                                <div class="col-12">
-                                    <div class="input-box">
-                                        <h6>Option Sets</h6>
-                                        <ng-select [items]="PlaceholderSubcategory" [searchable]="true"
-                                            [multiple]="true" bindLabel="name" bindValue="id"
-                                            placeholder="Select from the dropdown or type to search"></ng-select>
-                                    </div>
-                                    <span class="lableSubtext">Select option sets to be applied to the dish. Option sets
-                                        are ordered according to how they are listed on the option set page, not by the
-                                        order added here</span>
-                                </div>
-                                <div class="col-12">
-                                    <div class="input-box">
-                                        <h6>Primary Option Set</h6>
-                                        <ng-select [items]="PlaceholderSubcategory" [searchable]="true"
-                                            [multiple]="true" bindLabel="name" bindValue="id"
-                                            placeholder="Select from the dropdown or type to search"></ng-select>
-                                    </div>
-                                    <span class="lableSubtext">Designate a primary option set which is 'required' and
-                                        has 'multi-select' disabled. This will result in multiple prices showing on your
-                                        dish card. For example, if you have 2 pizza sizes, regular and large ($5+), the
-                                        dish will show your base dish price along with the price of the large
-                                        option</span>
-                                </div>
+  <div class="modal-header">
+    <h5>{{type}} Dish</h5>
+    <button class="btn-close" type="button" (click)="modal.dismissAll()">
+      <i class="ri-close-line"></i>
+    </button>
+  </div>
+  <div class="modal-body pt-0">
+    <div class="col-12">
 
-                            </div>
+      <ul class="nav nav-pills flex-nowrap mb-3" ngbNav #nav="ngbNav" [(activeId)]="active">
+        <li [ngbNavItem]="1" class="nav-item m-0">
+          <button ngbNavLink class="nav-link" type="button">General</button>
+          <ng-template ngbNavContent>
+            <form [formGroup]="menuForm">
+              <div class="input-items">
+                <div class="row gy-3">
+                  <div class="col-12">
+                    <div class="input-box">
+                      <!-- <h6>Store Type</h6> -->
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Store Type</h6>
+                        <span class="optional-tag">Required</span>
+                      </div>
+                      <ng-select [items]="storesList" [searchable]="true" [multiple]="false" bindLabel="store_name"
+                        bindValue="store_id" placeholder="Select from the dropdown or type to search"
+                        formControlName="storeName" (change)="getMenu();getMenuCategoryDishData()">
+                      </ng-select>
+                      @if((menuForm.get('storeName')?.touched ||menuForm.get('storeName')?.dirty) &&
+                      menuForm.get('storeName')?.hasError('required')){
+                      <div class="text-danger">
+                        Store Type is required
+                      </div>
+                      }
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="input-box">
+                      <!-- <h6>Menu Type</h6> -->
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Menu Type</h6>
+                        <span class="optional-tag">Required</span>
+                      </div>
+                      <ng-select [items]="menuItemsList" [searchable]="true" [multiple]="false" bindLabel="name"
+                        bindValue="dish_menu_id" placeholder="Select from the dropdown or type to search"
+                        formControlName="menuType" (change)="getCategories($event)">
+                      </ng-select>
+                      @if((menuForm.get('menuType')?.touched ||menuForm.get('menuType')?.dirty) &&
+                      menuForm.get('menuType')?.hasError('required')){
+                      <div class="text-danger">
+                        Menu Type is required
+                      </div>
+                      }
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="input-box">
+                      <!-- <h6>Category Type</h6> -->
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Category Type</h6>
+                        <span class="optional-tag">Required</span>
+                      </div>
+                      <ng-select [items]="categoryList" [searchable]="true" [multiple]="false" bindLabel="name"
+                        bindValue="id" placeholder="Select from the dropdown or type to search"
+                        formControlName="categoryType">
+                      </ng-select>
+                      @if((menuForm.get('categoryType')?.touched ||menuForm.get('categoryType')?.dirty) &&
+                      menuForm.get('categoryType')?.hasError('required')){
+                      <div class="text-danger">
+                        Category Type is required
+                      </div>
+                      }
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="input-box">
+                      <h6>Dish Type</h6>
+                      <div class="btn-group w-auto" role="group" aria-label="Dish Type" style="height: 44px;">
+                        <input type="radio" class="btn-check" formControlName="dishType" value="standard" id="standard"
+                          autocomplete="off">
+                        <label class="btn btn-style" for="standard">Standard</label>
+
+                        <input type="radio" class="btn-check" formControlName="dishType" value="combo" id="combo"
+                          autocomplete="off">
+                        <label class="btn btn-style" for="combo">Combo</label>
+                      </div>
+                    </div>
+                    <span class="lableSubtext">A combo dishes allows customers to make several choices between selected
+                      standard dishes</span>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="input-box">
+                      <!-- <h6>Dish Name</h6> -->
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Dish Name</h6>
+                        <span class="optional-tag">Required</span>
+                      </div>
+
+                      <input type="text" placeholder="Enter First Name" formControlName="firstName">
+                    </div>
+                    @if((menuForm.get('firstName')?.touched ||menuForm.get('firstName')?.dirty) &&
+                    menuForm.get('firstName')?.hasError('required')){
+                    <div class="text-danger">
+                      Dish Name is required
+                    </div>
+                    }
+                    <span class="lableSubtext">A unique name for your dish</span>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="input-box">
+                      <h6>Price ($)</h6>
+                      <input type="text" placeholder="Enter Price" formControlName="price">
+                    </div>
+                    <span class="lableSubtext">This cost of this item. <a>Toggle advanced pricing</a></span>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="input-box">
+                      <h6>Price Suffix</h6>
+                      <input type="text" placeholder="Enter Price Suffix" formControlName="priceSuffix">
+                    </div>
+                    <span class="lableSubtext">Used to help clarify the price, for example you can say 'per kg' or 'per
+                      scoop'</span>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="input-box">
+                      <h6>Display Name</h6>
+                      <input type="text" placeholder="Enter Display Name" formControlName="displayName">
+                    </div>
+                    <span class="lableSubtext">Will override the unique name in your store</span>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="input-box">
+                      <h6>Print Name</h6>
+                      <input type="text" placeholder="Enter Print Name" formControlName="printName">
+                    </div>
+                    <span class="lableSubtext">Will override the unique name on your printed order receipts</span>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="input-box">
+                      <h6>POS Name</h6>
+                      <input type="text" placeholder="Enter POS Name" formControlName="posName">
+                    </div>
+                    <span class="lableSubtext">Use this field to set another name for this dish in your POS</span>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="input-box">
+                      <h6>Description</h6>
+                      <input type="text" placeholder="Enter Description" formControlName="description">
+                    </div>
+                    <span class="lableSubtext">Will be displayed in your menu and dish popup</span>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="input-box">
+                      <h6>Subtitle</h6>
+                      <input type="text" placeholder="Enter Subtitle" formControlName="subtitle">
+                    </div>
+                    <span class="lableSubtext">Will be displayed under your dish name in bold font. Keep it short and
+                      sweet</span>
+                  </div>
+
+
+
+
+              <div class="col-12">
+ <div class="input-box">
+  <h6 class="mb-2">Upload Images</h6>
+
+  <!-- Preview Section -->
+  <div *ngIf="previewUrl; else uploadInput" class="image-preview-container">
+    <img
+      #previewImage
+      [src]="previewUrl"
+      alt="Preview"
+      class="preview-img"
+    
+    />
+
+    <!-- Delete Icon -->
+    <!-- <button class="icon-button delete" (click)="removeImage()" title="Delete">❌</button> -->
+  <!-- <button class="icon-button" >×</button> -->
+  <button class="icon-button"(click)="removeImage()">✕</button>
+    <!-- File name -->
+    <!-- <div class="file-name text-center mt-1">
+      {{ getCleanFileName() }}
+    </div> -->
+
+  
+  </div>
+
+  <!-- File input (shown when no preview) -->
+  <ng-template #uploadInput>
+    <input
+      type="file"
+      accept="image/*"
+      (change)="onSelectFile($event)"
+    />
+  </ng-template>
+</div>
+
+</div>
+
+
+                </div>
+              </div>
+            </form>
+
+          </ng-template>
+        </li>
+        @if(menuForm.value.dishType =='standard'){
+        <li [ngbNavItem]="2" class="nav-item m-0">
+          <button ngbNavLink class="nav-link" type="button">Options & ingeration</button>
+          <ng-template ngbNavContent>
+            <div class="input-items">
+              <div class="row gy-3">
+                <div class="col-12">
+                  <div class="input-box">
+                    <h6>Option Sets</h6>
+                    <ng-select [items]="optSetDetails" [searchable]="true" [multiple]="true" bindLabel="option_set_name"
+                      placeholder="Select from the dropdown or type to search"
+                      [(ngModel)]="selectedSubcategories"></ng-select>
+                  </div>
+                  <span class="lableSubtext">Select option sets to be applied to the dish. Option sets
+                    are ordered according to how they are listed on the option set page, not by the
+                    order added here</span>
+                </div>
+                <div class="col-12">
+                  <div class="input-box">
+                    <h6>Primary Option Set</h6>
+                    <ng-select [items]="optSetDetails" [searchable]="true" [multiple]="true" bindLabel="option_set_name"
+                      bindValue="option_set_id" placeholder="Select from the dropdown or type to search"></ng-select>
+                  </div>
+                  <span class="lableSubtext">Designate a primary option set which is 'required' and
+                    has 'multi-select' disabled. This will result in multiple prices showing on your
+                    dish card. For example, if you have 2 pizza sizes, regular and large ($5+), the
+                    dish will show your base dish price along with the price of the large
+                    option</span>
+                </div>
+                <div class="col-12">
+                  <div class="input-box">
+                    <!-- <h6>Primary Option Set</h6> -->
+                    <div class="mb-2 mt-2">
+                      <button class="btn addChoice-button" type="button" (click)="addIngredients()">Add
+                        Ingredient</button>
+                    </div>
+                    @for (choice of Ingredients; track choice; let i = $index) {
+                    <div class="choice-container border border-top-0 rounded-0">
+                      <!-- Main Row -->
+                      <div class="row align-items-center gx-0 border fixed-height-row">
+                        <div class="col-1 d-flex justify-content-center align-items-center border-end">
+                          <i class="ri-menu-line" style="font-size: 1.2rem; color: black;"></i>
                         </div>
-                    </ng-template>
-                </li>
-            }@else{
-                <li [ngbNavItem]="2" class="nav-item m-0" >
-                    <button ngbNavLink class="nav-link" type="button">Dish Choices</button>
-                    <ng-template ngbNavContent>
-                        <div class="input-items">
+
+                        <div class="col-1 d-flex justify-content-center align-items-center border-end"
+                          style="color: black;">
+                          {{ i + 1 }}
+                        </div>
+
+                        <div class="col-9 border-end d-flex align-items-center">
+                          <input type="text" class="form-control border-0 py-0"
+                            style="height: 32px; font-size: 0.875rem" placeholder="Name"
+                            [(ngModel)]="Ingredients[i].name" />
+                        </div>
+
+                        <div class="col-1 d-flex justify-content-center align-items-center">
+                          <i class="ri-delete-bin-line" (click)="removeIngredients(i)" style="
+    cursor: pointer;
+    font-size: 1rem;"></i>
+
+
+                        </div>
+                      </div>
+                    </div>
+                    }
+                    <span class="lableSubtext">Define a list of ingredients for this dish that be can removed by the
+                      customer when ordering</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </li>
+        }@else{
+        <li [ngbNavItem]="2" class="nav-item m-0">
+          <button ngbNavLink class="nav-link" type="button">Dish Choices</button>
+          <ng-template ngbNavContent>
+            <!-- <div class="input-items">
                             <div class="row">
                                 <div class="col-12">
                                     <button class="btn addChoice-button" type="button">Add Choice</button>
@@ -176,16 +301,129 @@
                               
 <span class="lableSubtext">Define choices that can contain a list of dishes a customer can select from. If a choice only has a single dish, then it will be preselect when ordering</span>
                             </div>
-                        </div>
-                    </ng-template>
-                </li> 
-            }
-            </ul>
-        </div>
-        <div class="col-12" [ngbNavOutlet]="nav"></div>
+                        </div> -->
+            <!-- Add Choice Button -->
+            <div class="mb-3">
+              <button class="btn addChoice-button" type="button" (click)="addChoice()">Add Choice</button>
+            </div>
+            @for (choice of choices; track choice; let i = $index) {
+            <div class="choice-container border border-top-0 rounded-0">
+              <!-- Main Row -->
+              <div class="row align-items-center gx-0 border fixed-height-row">
+                <div class="col-1 d-flex justify-content-center align-items-center border-end">
+                  <i class="ri-arrow-right-s-line" *ngIf="!choice.expanded" (click)="toggleExpand(i)"
+                    style="cursor: pointer; font-size: 1.3rem; color: black;"></i>
+                  <i class="ri-arrow-down-s-line" *ngIf="choice.expanded" (click)="toggleExpand(i)"
+                    style="cursor: pointer; font-size: 1.3rem; color: black;"></i>
+                </div>
+
+                <div class="col-1 d-flex justify-content-center align-items-center border-end">
+                  <i class="ri-menu-line" style="font-size: 1.2rem; color: black;"></i>
+                </div>
+
+                <div class="col-1 d-flex justify-content-center align-items-center border-end" style="color: black;">
+                  {{ i + 1 }}
+                </div>
+
+                <div class="col-8 border-end d-flex align-items-center">
+                  <input type="text" class="form-control border-0 py-0" style="height: 32px; font-size: 0.875rem"
+                    placeholder="Name" [(ngModel)]="choice.name" />
+                </div>
+
+                <div class="col-1 d-flex justify-content-center align-items-center">
+                  <span (click)="removeChoice(i)" style="
+    cursor: pointer;
+    color: white;
+    font-size: 0.85rem;
+    background-color: #383838;
+    width: 15px;
+    height: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    line-height: 1;
+    font-weight: bold;
+  ">
+                    −
+                  </span>
+
+                </div>
+              </div>
+
+              @if (choice.expanded) {
+              <!-- Menu Toggle -->
+            @for (menu of choice.menuItems; track menu; let j = $index) {
+  <div class="row ps-4 py-1" style="font-size: 0.92rem;">
+    <div class="col d-flex align-items-center">
+      <i class="me-2" [ngClass]="menu.takeawayExpanded ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"
+        (click)="menu.takeawayExpanded = !menu.takeawayExpanded"
+        style="cursor: pointer; font-size: 1.3rem; color: black;"></i>
+
+      <input type="checkbox"
+        id="checkbox-{{ j }}"
+        class="form-check-input me-2"
+        [checked]="menu.checked"
+        [indeterminate]="menu.indeterminate"
+        (change)="onMenuToggle(menu, choice.menuItems)"
+      />
+      <label for="checkbox-{{ j }}" class="form-check-label mb-0" style="font-size: 0.92rem;">
+        {{menu.menuName}}
+      </label>
     </div>
-    <div class="modal-footer">
-        <button class="btn btn-cancel" type="button" (click)="modal.dismissAll()"><i class="ri-close-circle-line"></i> &nbsp;Cancel</button>
-        <button body class="btn btn-animation  save-button" style="margin-left: 10px;" type="button"><i class="ri-add-circle-line"></i>&nbsp; Add Dish</button>&nbsp;
+  </div>
+  @if (menu.takeawayExpanded) {
+    @for (sub of menu.categories; track sub; let k = $index) {
+      <div class="row ps-5 pb-0" style="font-size: 0.92rem; font-weight: normal;">
+        <div class="col d-flex align-items-center">
+          <i class="me-2" [ngClass]="sub.expanded ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"
+            (click)="sub.expanded = !sub.expanded"
+            style="cursor: pointer; font-size: 1.3rem; color: black;"></i>
+          <input type="checkbox"
+            class="form-check-input me-2"
+            [checked]="sub.checked"
+            [indeterminate]="sub.indeterminate"
+            (change)="onSubcategoryToggle(sub, menu.categories, menu)"
+          />
+          <label class="form-check-label mb-0 subcat-label">{{ sub.categoryName }}</label>
+        </div>
       </div>
+      @if (sub.expanded && sub.dishes?.length) {
+        @for (subsub of sub.dishes; track subsub; let l = $index) {
+          <div class="row ps-5 pb-1">
+            <div class="col d-flex align-items-center" style="font-size: 0.92rem;margin-left: 2.5rem;">
+              <input type="checkbox"
+                class="form-check-input me-2"
+                [checked]="subsub.checked"
+                (change)="onDishToggle(subsub, sub.dishes, sub, menu.categories, menu)"
+              />
+              <label class="form-check-label mb-0 subcat-label">{{ subsub.dishName }}</label>
+            </div>
+          </div>
+        }
+      }
+    }
+  }
+}
+
+              }
+            </div>
+            }
+
+          </ng-template>
+        </li>
+        }
+      </ul>
+
+    </div>
+    <div class="col-12" [ngbNavOutlet]="nav"></div>
+  </div>
+  @if(type != 'View'){
+  <div class="modal-footer">
+    <button class="btn btn-cancel" type="button" (click)="modal.dismissAll()"><i class="ri-close-circle-line"></i>
+      &nbsp;Cancel</button>
+    <button body class="btn btn-animation  save-button" (click)="insertDishData()" style="margin-left: 10px;"
+      type="button"><i class="ri-add-circle-line"></i>&nbsp; Add Dish</button>&nbsp;
+  </div>
+  }
 </div>

@@ -5,7 +5,7 @@ import { TableConfig } from '../../../shared/interface/table.interface';
 import { ProductsList } from '../../../shared/data/products';
 import { AgGridAngular } from '@ag-grid-community/angular';
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
-import { ColDef, ModuleRegistry } from '@ag-grid-community/core';
+import { ColDef, ITooltipParams, ModuleRegistry } from '@ag-grid-community/core';
 import { Router } from '@angular/router';
 import { AppConstants } from '../../../app.constants';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -14,6 +14,9 @@ import { ApisService } from '../../../shared/services/apis.service';
 import * as ExcelJS from 'exceljs';
 import * as FileSaver from 'file-saver';
 import { SessionStorageService } from '../../../shared/services/session-storage.service';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import moment from 'moment';
+import { DatePipe } from '@angular/common';
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
   store_name: string;
@@ -25,9 +28,10 @@ interface RowData {
 }
 @Component({
   selector: 'app-restaurants-list',
-  imports: [CardComponent, AgGridAngular],
+  imports: [CardComponent, AgGridAngular,ReactiveFormsModule,FormsModule],
   templateUrl: './restaurants-list.component.html',
-  styleUrl: './restaurants-list.component.scss'
+  styleUrl: './restaurants-list.component.scss',
+  providers:[DatePipe]
 })
 export class RestaurantsListComponent {
   @ViewChild('confirmModal') confirmModalRef!: TemplateRef<any>;
@@ -35,10 +39,11 @@ export class RestaurantsListComponent {
     pagination: true,
 
   };
-
+storeForm:FormGroup
   storeList: any;
   storeData: any;
-  constructor(private router: Router, private apis: ApisService, private modalService: NgbModal, private session: SessionStorageService) { }
+  storeListSorting: any;
+  constructor(private router: Router, private apis: ApisService,private fb:FormBuilder, private datePipe:DatePipe,private modalService: NgbModal, private session: SessionStorageService) { }
   modules = [ClientSideRowModelModule];
 
   stausList = ['Active', 'In-Active']
@@ -46,11 +51,13 @@ export class RestaurantsListComponent {
     {
       field: 'store_name', headerName: 'Store Name', sortable: true,
       suppressMenu: true,
-      unSortIcon: true
+      unSortIcon: true,
+          tooltipValueGetter: (p: ITooltipParams) =>p.value,
     },
     {
       field: 'email', headerName: 'E-Mail', suppressMenu: true,
-      unSortIcon: true
+      unSortIcon: true,
+        tooltipValueGetter: (p: ITooltipParams) =>p.value,
     },
     {
       field: 'phone', headerName: 'Phone Number', suppressMenu: true,
@@ -58,11 +65,13 @@ export class RestaurantsListComponent {
     },
     {
       field: 'street_address', headerName: 'Store Address', suppressMenu: true,
-      unSortIcon: true
+      unSortIcon: true,
+          tooltipValueGetter: (p: ITooltipParams) =>p.value,
     },
     {
       field: 'created_on', headerName: 'Created Date', suppressMenu: true,
       unSortIcon: true,
+          tooltipValueGetter: (p: ITooltipParams) =>p.value,
    valueFormatter: (params) => {
   if (!params.value) return '';
   const date = new Date(params.value);
@@ -82,9 +91,9 @@ export class RestaurantsListComponent {
       field: 'status',
       cellRenderer: (params: any) => {
         let statusClass = '';
-        if (params.value === 'Active') {
+        if (params.value == 'Active') {
           statusClass = 'status-active';
-        } else if (params.value === 'Inactive') {
+        } else if (params.value == 'Inactive') {
           statusClass = 'status-no-stock';
         } else if (params.value === 'Pending') {
           statusClass = 'status-hide';
@@ -146,6 +155,12 @@ delete
   //   { storename: 'Porsche', email: 'Boxster',status: 'Pending', phoneNumber: 72000,storeAddress:'Abc Address' }
   // ];
   ngOnInit() {
+    this.storeForm =this.fb.group({
+      storeName:[''],
+      email:[''],
+      address:[''],
+      status:['Active']
+    })
     this.getStoreList()
   }
   getStoreList() {
@@ -155,6 +170,7 @@ delete
         element.status = element.status == 1 ? 'Active' : element.status == 0 ? 'Inactive' : element.status
       })
       this.storeList = data.reverse()
+         this.storeListSorting = data.reverse()
     })
   }
   onCellClicked(event: any): void {
@@ -280,8 +296,23 @@ downloadDevicesExcel(): void {
     const blob = new Blob([data], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
-    FileSaver.saveAs(blob, 'storesList.xlsx');
+    // const today = new Date();
+const formattedDate =  this.datePipe.transform(new Date(), 'dd MMM yyyy');
+    FileSaver.saveAs(blob, `storesList_${formattedDate}.xlsx`);
   });
 }
-
+search(){
+  console.log(this.storeForm.value.status, this.storeListSorting)
+  this.storeList = this.storeListSorting.filter((store:any) => {
+    return (
+      ( store.store_name.toLowerCase().includes(this.storeForm.value.storeName.toLowerCase())) &&    ( store.email.toLowerCase().includes(this.storeForm.value.email.toLowerCase())) &&( store.street_address.toLowerCase().includes(this.storeForm.value.address.toLowerCase())) &&( store.status.toLowerCase().includes(this.storeForm.value.status.toLowerCase())) 
+    );
+  });
+  console.log(this.storeList)
 }
+reset(){
+  this.storeForm.reset()
+  this.getStoreList()
+}
+}
+

@@ -2,8 +2,8 @@
 .switch {
     position: relative;
     display: inline-block;
-    width: 50px;
-    height: 28px;
+    width: 45px;
+    height: 20px;
     margin-top: 10px;
   }
   
@@ -25,10 +25,10 @@
   .slider:before {
     position: absolute;
     content: "";
-    height: 20px;
-    width: 20px;
+    height: 18px;
+    width: 18px;
     left: 4px;
-    bottom: 4px;
+    bottom: 1px;
     background-color: white;
     transition: 0.4s;
     border-radius: 50%;
@@ -107,3 +107,86 @@
     
   }
 }
+
+.add-time-slot-btn {
+    padding: 4px 10px;
+    font-size: 14px;
+    color: #f60;
+    border: 1px solid #f60;
+    background: transparent;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.3s ease all;
+    margin-bottom: 2%;
+}
+
+.add-time-slot-btn:hover {
+    background: #f60;
+    color: #fff;
+}
+
+
+.position-absolute {
+  position: absolute;
+}
+.top-0 {
+  top: 0;
+}
+.end-0 {
+  right: 0;
+}
+.image-preview-container {
+  position: relative;
+  width: 120px;
+  height: auto;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 5px;
+  background-color: #fff;
+  text-align: center;
+}
+
+.preview-img {
+   width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+}
+
+.icon-button {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background-color: black;
+  color: white;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  z-index: 10;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+
+.file-name {
+  font-size: 14px;
+  color: #333;
+  margin-top: 4px;
+  word-break: break-word;
+}
+
+.image-size {
+  font-size: 12px;
+  color: #666;
+}
+

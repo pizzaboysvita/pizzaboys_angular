@@ -44,13 +44,13 @@
     &-animation {
         @include flex_common;
         overflow: hidden;
-        color: $white;
+        color: #ef2917;
         border-radius: 5px;
         font-weight: 600;
         background: transparent;
         transition: all 0.3s ease;
         position: relative;
-        background: var(--theme-color);
+        background: #fff;
         border: none;
         z-index: 0;
         padding: calc(7px + (12 - 7) * ((100vw - 320px) / (1920 - 320)))
@@ -73,7 +73,7 @@
         }
 
         &:hover {
-            color: var(--theme-color);
+            color: #ef2917;
 
             i {
                 transform: translateX(3px);
@@ -402,10 +402,17 @@
     }
 }
 
-.btn-dashed {
-    border: 1px dashed $primary-color !important;
-    background: $gradient-fill !important;
-    color: $white;
+
+  .btn-dashed {
+    border: 1px solid #ef2917 !important;
+    background: #ef2917;
+    color: #fff;
+    
+    &:hover {
+      border: 1px solid #ef2917 !important;
+    background: #fff;
+    color: #ef2917 !important;
+    }
 }
 
 .btn-gradient {

@@ -30,4 +30,7 @@ export const routes: Routes = [
         children: content,
         canActivate: [AdminGuard],
     },
+    {
+        path:'**', redirectTo:"store-dashboard", pathMatch:"full"
+    }
 ];

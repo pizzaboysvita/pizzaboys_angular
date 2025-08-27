@@ -1,161 +1,194 @@
 <div class="row">
-    <div class="col-xl-9">
-       <app-media (itemAdded)="addToCart($event)" (itemDecreased)="decreaseFromCart($event)"></app-media>
-    </div>
-    <div class="col-xl-3">
-<!-- <div class="card">
-    <div class="row" body>
-        <div class="col-12">
-            <ul class="nav setting-main-box driver-main-box sticky theme-scrollbar" ngbNav #nav="ngbNav"
-                [(activeId)]="active">
-                <li [ngbNavItem]="1">
-                    <button ngbNavLink class="nav-link"><i class="ri-settings-line"></i>Order
-                        Status</button>
-                    <ng-template ngbNavContent>
-                        <app-order-status></app-order-status>
-                    </ng-template>
-                </li>
-                <li [ngbNavItem]="2">
-                    <button ngbNavLink class="nav-link"><i class="ri-information-2-line"></i>Order
-                        Details</button>
-                    <ng-template ngbNavContent>
-                        <app-details></app-details>
-                    </ng-template>
-                </li>
-            </ul>
-        </div>
-        <div class="col-12">
-            <div class="restaurant-tab" [ngbNavOutlet]="nav"></div>
-        </div>
-    </div>
-</div> -->
-       
-<div class="card p-3 shadow-sm d-flex flex-column" style="border-radius: 8px; height: 90vh; overflow: hidden !important;">
-  <!-- Header -->
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <div>
-      <h6 class="fw-bold  mb-1">Order Details</h6>
-      <div class="text-muted" style="font-size: 12px;">#ORD-3291</div>
-    </div>
-    <div class="maerail-btn-icons">
-    <span class="material-symbols-outlined"  style="font-size: 18px;">more_vert</span>
-</div>
+  <div class="col-xl-9">
+    <app-media (itemAdded)="addToCart($event)"></app-media>
   </div>
-
-  <!-- Dine In / Take Away / Delivery Buttons -->
-  <!-- <div class="btn-group custom-btn-group mb-3 w-100" style="height: 50px;">
-    <button type="button" class="btn w-33" [class.active]="selected === 'dinein'" (click)="selected = 'dinein'">Dine In</button>
-    <button type="button" class="btn w-33" [class.active]="selected === 'takeaway'" (click)="selected = 'takeaway'">Take away</button>
-    <button type="button" class="btn w-33" [class.active]="selected === 'delivery'" (click)="selected = 'delivery'">Delivery</button>
-  </div> -->
-  <!-- Dine In / Take Away / Delivery Buttons -->
-<div class="btn-group w-100 mb-3 order-type-toggle">
-  <button type="button" 
-          class="toggle-btn" 
-          [class.active]="selected === 'dinein'" 
-          (click)="selected = 'dinein'">
-    Dine in
-  </button>
-  <button type="button" 
-          class="toggle-btn" 
-          [class.active]="selected === 'takeaway'" 
-          (click)="selected = 'takeaway'">
-    Take away
-  </button>
-  <button type="button" 
-          class="toggle-btn" 
-          [class.active]="selected === 'delivery'" 
-          (click)="selected = 'delivery'">
-    Delivery
-  </button>
-</div>
+  <div class="col-xl-3">
 
 
-  <!-- Customer Info -->
-  <!-- <div class="d-flex justify-content-between align-items-center mb-2">
-    <div>
-      <div style="font-size: 13px; color: #666;">Customer Name</div>
-      <div class="fw-semibold">Jhonatan Andrew</div>
-    </div>
-    <div>
-      <div style="font-size: 13px; color: #666;">Table Number</div>
-      <div class="fw-semibold">17</div>
-    </div>
-  </div> -->
-
-  <!-- Order Items List -->
-  <div class="flex-grow-1 overflow-auto mb-3" style="height: 340px; overflow-y: auto;">
-    @for (item of cartItems; track item) {
-    <div  class="d-flex align-items-center justify-content-between mb-3">
-      <div class="d-flex align-items-center" style="flex: 1;">
-        <img [src]="item.img" alt="{{ item.name }}" width="50" height="50" class="rounded me-2" style="object-fit: cover;">
+    <div class="card p-3 shadow-sm d-flex flex-column"
+      style="border-radius: 8px; height: 90vh; overflow: hidden !important;">
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-          <div class="fw-semibold">{{ item.name }}</div>
-         <div style="font-size: 14px;">
-        <span class="fw-bold">${{ item.price.toFixed(2) }}</span> &nbsp; x {{ item.quantity }}
-      </div>
+          <h6 class="fw-bold  mb-1">Order Details</h6>
+          <!-- <div class="text-muted" style="font-size: 12px;">#ORD-3291</div> -->
+        </div>
+        <div class="maerail-btn-icons" (click)="orderList()">
+          <span class="material-symbols-outlined" style="font-size: 18px;">more_vert</span>
         </div>
       </div>
-      <!-- <div class="fw-semibold">x {{ item.quantity }}</div> -->
-<div (click)="removeItem(item)"
-     class="maerail-btn-icons">
-  <span class="material-symbols-outlined text-danger" style="font-size: 18px;">delete</span>
-</div>
 
-      <!-- <span class="material-symbols-outlined text-danger"  (click)="removeItem(item)" style="cursor: pointer;font-size: 18px !important;">delete</span> -->
-    </div>
-  }
-  </div>
+      <!-- Dine In / Take Away / Delivery Buttons -->
+      <div class="btn-group w-100 mb-3 order-type-toggle">
+        <button type="button" class="toggle-btn" [class.active]="selected === 'dinein'"
+          (click)="selected = 'dinein' ;openNewModelPopup()">
+          Dine in
+        </button>
+        <button type="button" class="toggle-btn" 
+          (click)="selected = 'delivery'; openDeliveryPopup()">
+          {{orderDueDetails}}
+        </button>
+      </div>
 
-  <!-- Summary -->
-  <div class="pt-3">
-    <div class="d-flex justify-content-between mb-1">
-      <span class="text-muted">Subtotal</span>
-      <span class="fw-semibold">${{ subtotal.toFixed(2) }}</span>
-    </div>
-    <div class="d-flex justify-content-between mb-2">
-      <span class="text-muted">Tax 10%</span>
-      <span class="fw-semibold">${{ tax.toFixed(2) }}</span>
-    </div>
-    <div class="d-flex justify-content-between fw-bold mb-3">
-      <span>Total</span>
-      <span>${{ total.toFixed(2) }}</span>
-    </div>
-
-    <button class="btn btn-primary w-100 fw-bold" style="border-radius: 10px; padding: 12px;">
-      Pay ${{ total.toFixed(2) }}
-    </button>
-  </div>
-</div>
-
-  
-
-
-<!-- <app-card [body]="true">
-            <div class="row" body>
-                <div class="col-12">
-                    <ul class="nav setting-main-box driver-main-box sticky theme-scrollbar" ngbNav #nav="ngbNav"
-                        [(activeId)]="active">
-                        <li [ngbNavItem]="1">
-                            <button ngbNavLink class="nav-link"><i class="ri-settings-line"></i>Order
-                                Status</button>
-                            <ng-template ngbNavContent>
-                                <app-order-status></app-order-status>
-                            </ng-template>
-                        </li>
-                        <li [ngbNavItem]="2">
-                            <button ngbNavLink class="nav-link"><i class="ri-information-2-line"></i>Order
-                                Details</button>
-                            <ng-template ngbNavContent>
-                                <app-details></app-details>
-                            </ng-template>
-                        </li>
-                    </ul>
+      <!-- Order Items List -->
+      <div style="height: 400px;">
+        <!-- <div class="checkout-detail p-0"> -->
+        <ul>
+          @for (item of cartItems; track item) {
+          <li class="mb-3">
+            <div class="horizontal-product-box">
+              <div class="row align-items-start">
+                <!-- Left: Image + Quantity -->
+                <div class="col-3 text-center">
+                  <img [src]="item.dish_image" alt="{{ item.dish_name }}" width="70" height="60" class="rounded"
+                    style="object-fit: cover;">
+                  <div class="like-box d-flex justify-content-center mt-2" style="width: 70px;">
+                    <i class="ri-subtract-line" style="cursor: pointer;" (click)="decreaseModalQuantity(item)"></i>
+                    <span>{{item.dish_quantity}}</span>
+                    <i class="ri-add-line" style="cursor: pointer;" (click)="increaseModalQuantity(item)"></i>
+                    <i class="ri-delete-bin-line text-danger" style="cursor: pointer;" (click)="removeItem(item)"></i>
+                  </div>
                 </div>
-                <div class="col-12">
-                    <div class="restaurant-tab" [ngbNavOutlet]="nav"></div>
+
+                <!-- Right: Dish Info -->
+                <!-- Right: Dish Info -->
+                <div class="col-9">
+                  <!-- Dish Name and Price -->
+                  <div class="d-flex justify-content-between">
+                    <h6 class="mb-0" style="font-size: 14px;"><b>{{ item.dish_name }}</b></h6>
+                    <h6 class="mb-0 fw-bold" style="font-size: 14px;">${{ item.dish_price }}</h6>
+                  </div>
+
+                  <!-- Ingredients and their prices -->
+                  <div *ngFor="let ingredient of item.selectedOptions" class="d-flex justify-content-between">
+                    <span style="font-size: 14px;">{{ ingredient.name }}</span>
+                    <span style="font-size: 14px;">${{ ingredient.price | number: '1.2-2' }}</span>
+                  </div>
                 </div>
+
+              </div>
             </div>
-        </app-card> -->
+          </li>
+
+          }
+        </ul>
+        <!-- </div> -->
+
+
+      </div>
+
+      <!-- Summary -->
+      <div class="pt-3">
+        <div class="d-flex justify-content-between mb-1">
+          <span class="text-muted">Subtotal</span>
+          <span class="fw-semibold">${{ subtotal.toFixed(2) }}</span>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-muted">Tax 10%</span>
+          <span class="fw-semibold">${{ tax }}</span>
+        </div>
+        <div class="d-flex justify-content-between fw-bold mb-3">
+          <span>Total</span>
+          <span>${{ total.toFixed(2) }}</span>
+        </div>
+
+        <button class="btn btn-primary w-100 fw-bold" style="border-radius: 10px; padding: 12px;"
+          (click)="submitOrder()">
+          Pay ${{ total.toFixed(2) }}
+        </button>
+      </div>
     </div>
+
+  </div>
+</div>
+
+
+<div class="modal fade show d-block" tabindex="-1" role="dialog" [ngClass]="{ 'show d-block': showNewModelPopup }">
+  <div class="modal-dialog modal-sm  modal-dialog-centered" role="document">
+    <div class="modal-content">
+
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title">Create New Model</h5>
+        <button type="button" class="btn-close" (click)="closeNewModelPopup()"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <form [formGroup]="orderForm">
+
+          <!-- Order Type -->
+          <div class="mb-3">
+            <label class="form-label">Order Type</label>
+            <select class="form-select" formControlName="orderType">
+              <option value="pickup">Pick Up</option>
+              <option value="delivery">Delivery</option>
+            </select>
+          </div>
+
+          <!-- Delivery Address (shown only if Delivery selected) -->
+          <div class="mb-3" *ngIf="orderForm.get('orderType')?.value === 'delivery'">
+            <label class="form-label">Delivery Address</label>
+            <input type="text" #addressInput class="form-control" (input)="getAddressAutocomplete()"
+              placeholder="Search your address" formControlName="deliveryAddress">
+          </div>
+          <div class="mb-3" *ngIf="orderForm.get('deliveryAddress')?.value">
+            <label class="form-label">Street Number</label>
+            <input type="text" class="form-control" formControlName="streetNumber" placeholder="Enter street number" />
+          </div>
+          <div class="mb-3" *ngIf="orderForm.get('deliveryAddress')?.value">
+            <label class="form-label">Unit Number</label>
+            <input type="text" class="form-control" formControlName="unitNumber" placeholder="Enter unit number" />
+          </div>
+          <div class="mb-3" *ngIf="orderForm.get('deliveryAddress')?.value">
+            <label class="form-label">Delivery Note</label>
+            <input type="text" #addressInput class="form-control" formControlName="deliveryNote"
+              placeholder="Enter delivery note" />
+          </div>
+  <button class="btn fw-bold text-white " style="background: #f44336;margin-left: 30%;" (click)="submitDUeOrder()">Submit</button>
+     
+          <!-- Selected Address Preview -->
+          <!-- <div *ngIf="selectedAddress" class="alert alert-info"> -->
+
+          <!-- </div> -->
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show d-block" tabindex="-1" role="dialog" [ngClass]="{ 'show d-block': showOrderDuePopup }">
+  <div class="modal-dialog modal-sm  modal-dialog-centered" role="document">
+    <div class="modal-content">
+
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title">Create New Model</h5>
+        <button type="button" class="btn-close" (click)="closeOrderDuePopup()"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+         <form [formGroup]="orderdueForm">
+
+          <!-- Order Type -->
+          <div class="mb-3">
+            <label class="form-label">Order Due</label>
+            <select class="form-select" formControlName="orderType">
+              <option value="ASAP">ASAP</option>
+              <option value="Later">Later</option>
+            </select>
+          </div>
+      <div class="mb-3" *ngIf="orderdueForm.get('orderType')?.value == 'Later'">
+            <label class="form-label">Date and Time</label>
+            <input type="datetime-local"
+              placeholder="Select date and Time" formControlName="orderDateTime" />
+          </div>
+    
+
+         </form>
+         <button class="btn fw-bold text-white " style="background: #f44336;margin-left: 30%;" (click)="submitDUeOrder()">Submit</button>
+      </div>
+    </div>
+  </div>
 </div>

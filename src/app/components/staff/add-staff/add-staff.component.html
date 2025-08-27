@@ -64,7 +64,7 @@
                                 <div class="col-xl-6">
                                   <div class="input-box">
                                     <h6 class="f-w-600 p-1">Phone Number<span class="text-danger">*</span></h6>
-                                    <input type="text" formControlName="phone" placeholder="Enter Phone Number" />
+                                    <input type="text" formControlName="phone" mask="(000)-000 0000" placeholder="Enter Phone Number" />
                                     @if (staffForm.get('phone')?.touched &&
                                     staffForm.get('phone')?.hasError('required')) {
                                     <div class="text-danger">Phone Number is required</div>
@@ -183,6 +183,9 @@
                                   formControlName="store" bindLabel="store_name" bindValue="store_id"
                                   placeholder="Select from the dropdown or type to search">
                                 </ng-select>
+                                @if (permissionForm.get('store')?.touched && permissionForm.get('store')?.invalid) {
+                                    <div class="text-danger">store is required.</div>
+                                    }
                               </div>
                             </div>
 
@@ -191,7 +194,7 @@
                               <div class="presets mb-3 nav-pills">
                                 @for (role of rolesList; track role) {
                                 <button type="button" class="mb-3" (click)="applyPreset(role)"
-                                  [class.active]="selectedPreset === role.role_name">
+                                  [class.active]="selectedPreset == role.role_name">
                                   {{ role.role_name }}
                                 </button>
                                 }

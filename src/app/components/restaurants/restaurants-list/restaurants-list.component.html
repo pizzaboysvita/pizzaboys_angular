@@ -11,33 +11,34 @@
       <div id="collapseOne" class="accordion-collapse collapse show"
            aria-labelledby="headingOne" data-bs-parent="#accordionExample">
         <div class="accordion-body">
-         
-            <div class="row gy-3">
+         <form [formGroup]="storeForm">
+            <div class="row">
                 <div class="col-xl-3">
                     <div class="input-box">
                         <h6 class="f-w-600 p-1">Store Name</h6>
-                        <input type="text" placeholder="Search Store Name">
+                        <input type="text"  formControlName="storeName" placeholder="Search Store Name">
                     </div>
                 </div>
                 <div class="col-xl-3">
                     <div class="input-box">
                         <h6 class="f-w-600 p-1">E-Mail</h6>
-                        <input type="text" placeholder=" Search E-Mail">
+                        <input type="text"  formControlName="email" placeholder=" Search E-Mail">
                     </div>
                 </div>
                 <div class="col-xl-3">
                     <div class="input-box">
                         <h6 class="f-w-600 p-1">Address</h6>
-                        <input type="text" placeholder=" Search Address">
+                        <input type="text"  formControlName="address" placeholder=" Search Address">
                     </div>
                 </div>
                 <div class="col-xl-3">
                     <!-- <div class="col-md-6"> -->
                         <div class="input-box">
                             <h6 class="f-w-600 p-1">Status</h6>
-                            <select class="form-select" name="carlist">
+                            <select class="form-select"  formControlName="status" name="carlist">
+                              <option value="-1">All</option>
                                 @for (item of stausList; track item) {
-                                <option value="">{{item}}</option>
+                                <option [value]="item">{{item}}</option>
                                 }
                             </select>
                         <!-- </div> -->
@@ -45,15 +46,15 @@
                 </div>
                 <div class="col-xl-4">
                     <div class="d-flex flex-wrap gap-2">
-                        <button class="btn btn-animation  save-button font-family" type="button"><i class="ri-search-line"></i>&nbsp; Search</button>
-                        <button class="btn btn-animation  reset-button font-family " type="button"><i class="ri-loop-right-line"></i>&nbsp; Reset</button>
+                        <button class="btn btn-animation  save-button font-family" type="button" (click)="search()"><i class="ri-search-line"></i>&nbsp; Search</button>
+                        <button class="btn btn-animation  reset-button font-family " type="button" (click)="reset()" ><i class="ri-loop-right-line"></i>&nbsp; Reset</button>
                      
                     </div>
                   </div>
                   
             </div>
 
-          
+          </form>
 
         </div>
       </div>
@@ -70,7 +71,7 @@
                 <h5>Stores List</h5>
                 <div class="right-options">
                     <ul>
-                        <li><span style="font-size: 14px;color: #787c8b;font-weight: 600;">No.of.Records:{{storeList.length}}</span></li>
+                        <li><span style="font-size: 14px;color: #787c8b;font-weight: 600;">No.of.Stores:{{storeList.length}}</span></li>
                         <li>
                             <a class="export-btn font-family" (click)="openNew()">
                                 <i class="ri-add-box-fill" ></i> Add New

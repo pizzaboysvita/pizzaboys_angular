@@ -10,11 +10,13 @@ import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import { ApisService } from '../../../shared/services/apis.service';
 import { SessionStorageService } from '../../../shared/services/session-storage.service';
+import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 @Component({
   selector: 'app-add-restaurants',
-  imports: [CardComponent,ReactiveFormsModule,CommonModule],
+  imports: [CardComponent,ReactiveFormsModule,CommonModule,NgxMaskDirective],
   templateUrl: './add-restaurants.component.html',
-  styleUrl: './add-restaurants.component.scss'
+  styleUrl: './add-restaurants.component.scss',
+  providers:[NgxMaskPipe]
 })
 export class AddRestaurantsComponent {
   @ViewChild(AddWorkingHourComponent) addWork!: AddWorkingHourComponent;
@@ -57,18 +59,18 @@ export class AddRestaurantsComponent {
       postalCode: [''],
       country: [''],
       status: ['1', Validators.required],
+      image:[null,Validators.required]
     });
   }
 addStore() {
+  console.log(this.storeForm.value.status )
   console.log(this.workinghours)
-    // if (!this.storeForm.invalid) {
-    //   console.log(this.storeForm.value);
-    //     Object.keys(this.storeForm.controls).forEach(key => {
-    //     this.storeForm.get(key)?.markAsTouched();
-    //   });
-    // } else {
     
-
+ if (this.storeForm.invalid) {
+      Object.keys(this.storeForm.controls).forEach(key => {
+        this.storeForm.get(key)?.markAsTouched();
+      });
+    } else {
 const req_body={
   "type": "insert",
 "store_name": this.storeForm.value.storeName,
@@ -84,7 +86,7 @@ const req_body={
   "country":this.storeForm.value.country,
   "zip_code":  this.storeForm.value.postalCode,
   updated_by:1,
-  "working_hours": this.workinghours
+  "working_hours":  this.workinghours
 }
 
 console.log(req_body)
@@ -105,7 +107,7 @@ this.apis.postApi(AppConstants.api_end_points.store_list,formData).subscribe((da
   }
 })
 
-    // }
+    }
   }
 capitalizeWords_firstName(event: any) {
   const input = event.target as HTMLInputElement;

@@ -256,31 +256,31 @@ export const createRoles = [
                     },
                 ]
             },
-            {
-                title: 'Support Ticket',
-                subData: [
-                    {
-                        id: 're1',
-                        title: 'All'
-                    },
-                    {
-                        id: 're2',
-                        title: 'Index'
-                    },
-                    {
-                        id: 're3',
-                        title: 'Create'
-                    },
-                    {
-                        id: 're4',
-                        title: 'Edit'
-                    },
-                    {
-                        id: 're5',
-                        title: 'Destroy'
-                    },
-                ]
-            },
+            // {
+            //     title: 'Support Ticket',
+            //     subData: [
+            //         {
+            //             id: 're1',
+            //             title: 'All'
+            //         },
+            //         {
+            //             id: 're2',
+            //             title: 'Index'
+            //         },
+            //         {
+            //             id: 're3',
+            //             title: 'Create'
+            //         },
+            //         {
+            //             id: 're4',
+            //             title: 'Edit'
+            //         },
+            //         {
+            //             id: 're5',
+            //             title: 'Destroy'
+            //         },
+            //     ]
+            // },
             {
                 title: 'Reports',
                 subData: [

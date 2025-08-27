@@ -113,7 +113,7 @@ if (index !== -1) {
   // If day doesn't exist, add a new object
 if (!isDayExists) {
     this.workingHours.push({
-        // id: this.workingHours.length + 1, // Auto-incrementing ID
+        id: this.workingHours.length + 1, // Auto-incrementing ID
         day: this.addWorkingForm.value.day,
         from: this.addWorkingForm.value.formtime,
         to: this.addWorkingForm.value.to,

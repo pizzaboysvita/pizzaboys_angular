@@ -34,7 +34,7 @@
         <div class="col-xl-6">
           <div class="input-box">
             <h6 class="f-w-600 p-1">Phone Number</h6>
-            <input type="text" formControlName="phoneNumber" placeholder="Enter Phone Number" />
+            <input type="text" formControlName="phoneNumber" placeholder="Enter Phone Number"  mask="(000)-000 0000" />
             @if (storeForm.get('phoneNumber')?.touched && storeForm.get('phoneNumber')?.invalid) {
               <div class="text-danger">Valid 10-digit phone number is required</div>
             }
@@ -117,6 +117,25 @@
             </span>
           </div>
         </div>
+
+        <div class="row">
+ <!-- <div class="col-12"> -->
+            <div class="col-8">
+          <div class="input-box">
+            <h6 class="font-family">Upload Images </h6>
+            <!-- <span class="choose-img-box font-family" > -->
+            
+               <input autocomplete="off" id="fileInput" type="file" accept="image/*" (change)="onSelectFile($event)"
+        >
+            <!-- </span> -->
+          </div>
+          </div>
+           <div class="col-3">
+                <img [src]="uploadImagUrl_data" alt="Preview" width="100" height="100" />
+           </div>
+        </div>
+        <!-- </div> -->
+         
       </div>
 
       <!-- Buttons -->

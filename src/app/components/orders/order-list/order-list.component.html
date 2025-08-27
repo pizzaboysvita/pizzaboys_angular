@@ -25,7 +25,7 @@
         <div class="right-options">
           <ul>
             <li><span style="font-size: 14px;color: #787c8b;font-weight: 600;">No.of.Records:
-                {{orderList.length}}</span></li>
+                10</span></li>
             <li>
               <a class="export-btn"><i class="ri-export-fill"></i> Export</a>
             </li>
@@ -33,8 +33,14 @@
           </ul>
         </div>
       </div>
-      <div body>
-        <app-table [search]="false" [hasCheckbox]="false" [tableConfig]="tableConfig"></app-table>
+        <div body>
+        <div style="overflow: auto">
+          <ag-grid-angular class="ag-theme-alpine font-family my-grid" style="width: 100%" [columnDefs]="tableConfig"
+            [rowData]="staff_list" [domLayout]="'autoHeight'" [pagination]="true" [paginationPageSize]="10"
+            [gridOptions]="gridOptions" [suppressColumnVirtualisation]="true" (cellClicked)="onCellClicked($event)"
+            [defaultColDef]="{ flex: 1, minWidth: 100, sortable: true }">
+          </ag-grid-angular>
+        </div>
       </div>
     </app-card>
   </div>

@@ -20,6 +20,7 @@ export class AdminGuard  {
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
   
     let user =this.sessionStorage.getsessionStorage('islogin') ;
+    console.log(user,'authhhhhhhh')
     if (!user) {
       this.router.navigate(['/login']);
       return true;

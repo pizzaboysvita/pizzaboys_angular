@@ -19,8 +19,24 @@
       data-bs-parent="#accordionExample"
     >
       <div class="accordion-body">
+           <form [formGroup]="categoriesForm">
         <div class="row input-items gy-3">
-          <div class="col-xl-3">
+           <div class="col-xl-3">
+            <div class="input-box">
+                <h6 class="fw-bold p-1">Store Name</h6>
+                <ng-select
+                  [items]="storeList"
+                  [searchable]="true"
+                  [multiple]="false"
+                  bindLabel="store_name"
+                  bindValue="store_id"
+                  placeholder="Select Store Name"
+                 formControlName="store" (change)="getmenuList()"
+                >
+                </ng-select>
+              </div>
+          </div>
+          <!-- <div class="col-xl-3">
             <div class="input-box">
                 <h6>Category Types</h6>
                 <ng-select
@@ -33,24 +49,24 @@
                 >
                 </ng-select>
               </div>
-          </div>
-          <div class="col-xl-3">
+          </div> -->
+          <!-- <div class="col-xl-3">
             <div class="input-box">
               <h6>E-Mail</h6>
               <input type="text" placeholder="E-Mail" />
             </div>
-          </div>
+          </div> -->
           <div class="col-xl-3">
             <div class="input-box">
               <h6>Address</h6>
-              <input type="text" placeholder="E-Mail" />
+              <input type="text" placeholder="E-Mail"   formControlName="address"/>
             </div>
           </div>
           <div class="col-xl-3">
             <!-- <div class="col-md-6"> -->
             <div class="input-box">
               <h6>Status</h6>
-              <select class="form-select" name="carlist">
+              <select class="form-select" name="carlist"   formControlName="status">
                 @for (item of stausList; track item) {
                 <option value="">{{ item }}</option>
                 }
@@ -69,6 +85,7 @@
             </div>
           </div>
         </div>
+        </form>
       </div>
     </div>
   </div>
@@ -84,10 +101,10 @@
           <ul>
             <li>
               <span style="font-size: 14px; color: #787c8b; font-weight: 600"
-                >No.of.Records:50</span
+                >No.of.Categorys:{{rowData.length}}</span
               >
             </li>
-            <li (click)="insertCategory()">
+            <li (click)="insertCategory('Add')">
               <a class="export-btn"
                 ><i class="ri-upload-2-fill me-1"></i> Add Category</a
               >
@@ -108,7 +125,7 @@
             [columnDefs]="columnDefs"
             [rowData]="rowData"
             [domLayout]="'autoHeight'"
-            [suppressColumnVirtualisation]="true"
+            [suppressColumnVirtualisation]="true" [pagination]="true" [paginationPageSize]="15"
             [defaultColDef]="{ flex: 1, minWidth: 100, sortable: true }"
             (cellClicked)="onCellClicked($event)"
           >
@@ -118,3 +135,32 @@
     </app-card>
   </div>
 </div>
+
+<ng-template #confirmModal let-modal>
+  <div class="modal-content">
+    <div class="modal-header d-block text-center">
+      <h5 class="modal-title w-100" style="font-size: 20px; font-weight: 600">
+        Confirm Category Deletion
+      </h5>
+      <button type="button" class="btn-close" (click)="modal.dismiss()">
+        <!-- <i class="fa fa-times"></i> -->
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="text-center">
+        <span style="font-size: 16px">
+          Are you sure you want to delete this category?
+        </span>
+        <span class="text-danger fw-bold">This action cannot be undone.</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-sm fw-bold btn-animation" (click)="modal.dismiss()">
+        No
+      </button>
+      <button type="button" class="btn btn-sm fw-bold btn-animation" (click)="onConfirm()">
+        Yes
+      </button>
+    </div>
+  </div>
+</ng-template>

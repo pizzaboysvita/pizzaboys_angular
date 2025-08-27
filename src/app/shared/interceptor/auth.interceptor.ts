@@ -22,6 +22,7 @@ if(token){
 
       return next(clonedReq).pipe(
       catchError((error: HttpErrorResponse) => {
+        console.log(error)
         if (error.status === 401) {
           console.log('401 Unauthorized error detected, logging out the user...');
           
@@ -29,6 +30,8 @@ if(token){
           apis.hide(); // Hide loader
         router.navigate(['/login']); // Redirect to the login page
           sessionStorage.clear()
+        }else{
+
         }
         return throwError(() => error); // Pass error to the subscriber
       }),

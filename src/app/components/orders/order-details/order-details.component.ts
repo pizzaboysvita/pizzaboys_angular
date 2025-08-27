@@ -1,27 +1,48 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { GoogleMap, GoogleMapsModule } from '@angular/google-maps';
-import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { CardComponent } from "../../../shared/components/card/card.component";
 import { DetailsComponent } from "./details/details.component";
 import { OrderStatusComponent } from "./order-status/order-status.component";
 import { MediaComponent } from '../../media/media.component';
 import { CommonModule } from '@angular/common';
-
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ApisService } from '../../../shared/services/apis.service';
+import { SessionStorageService } from '../../../shared/services/session-storage.service';
+import { ToastrService } from 'ngx-toastr';
+import { PosOrdersComponent } from '../pos-orders/pos-orders.component';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { TimepickerModule } from 'ngx-bootstrap/timepicker';
+// import { DpDatePickerModule } from 'ng2-date-picker';
 @Component({
     selector: 'app-order-details',
     templateUrl: './order-details.component.html',
     styleUrl: './order-details.component.scss',
-    imports: [NgbNavModule,MediaComponent,
+    imports: [NgbNavModule,MediaComponent,FormsModule,ReactiveFormsModule,
+   
          GoogleMapsModule,CommonModule]
 })
 
 export class OrderDetailsComponent {
+  
+  @ViewChild('addressInput', { static: false }) addressInput!: ElementRef;
+  // @ViewChild('modalBody', { static: false }) modalBody!: ElementRef;
+selectedDate!: Date;
+selectedTime!: Date;
   selected: string = 'dinein';
   public active = 1;
   public markers: any[];
   public zoom: number;
-
-  constructor() {
+  totalPrice: any =0;
+  comboDishDetails: any;
+  orderDeatils: any;
+  orderItemsDeatils: any;
+  orderItemsDetails: any;
+orderForm:FormGroup
+orderdueForm:FormGroup
+  showOrderDuePopup: boolean =false;
+  orderDueDetails: any;
+  constructor(private apiService:ApisService,private fb:FormBuilder,private el: ElementRef ,private modal: NgbModal, private toastr: ToastrService,private cdr: ChangeDetectorRef,private sessionStorageService:SessionStorageService) {
     this.markers = [];
     this.zoom = 3;
   }
@@ -33,6 +54,22 @@ export class OrderDetailsComponent {
   }
   
   ngOnInit() {
+     this.orderForm = this.fb.group({
+      orderType: ['pickup', Validators.required],
+      deliveryAddress: [''],
+      streetNumber:[''],
+      streetName:[''],
+      unitNumber:[''],
+      deliveryNote:['']
+    });
+    this.orderdueForm = this.fb.group({
+      orderType: ['ASAP', Validators.required],
+      orderDateTime: ['', Validators.required]
+    });
+    this.orderDueDetails=this.orderdueForm.value.orderType;
+     const userId = JSON.parse(
+      this.sessionStorageService.getsessionStorage("loginDetails") as any
+    ).user.user_id;
     this.markers.push({
       position: {
         lat: 20.5937,
@@ -47,82 +84,207 @@ export class OrderDetailsComponent {
         animation: google.maps.Animation.DROP,
       },
     });
+      this.apiService.getApi('/api/dish?user_id=' + userId + '&typeOfDish=combo').subscribe(
+      (res: any) => {
+        this.comboDishDetails = res.data;
+        console.log(this.comboDishDetails, 'comboDishDetails')
+      }
+    );
   }
-  cartItems: CartItem[] = [];
+  cartItems:any= [];
 
 
   @ViewChild(GoogleMap) map!: GoogleMap;
-//  cartItems = [
-//     { name: 'Chicken Tacos', price: 20.36, quantity: 2, img: '/assets/food/chicken-tacos.jpg' },
-//     { name: 'Pizza', price: 25.36, quantity: 4,  img: '/assets/food/default-pizza.avif' },
-//     { name: 'Italian Pasta', price: 18.30, quantity: 1, img: '/assets/food/italian-pasta.jpg' },
-//     { name: 'Beetroot', price: 30.36, quantity: 2, img: '/assets/food/beetroot_juice.avif' },
-//     { name: 'Salad', price: 80.36, quantity: 2,  img: '/assets/food/salads.png' },
-    
-//   ];
-  addToCart(item: CartItem) {
-    const existingItem = this.cartItems.find(cartItem => cartItem.name === item.name);
-  
+
+  addToCart(item: any) {
+    console.log(item)
+    const existingItem = this.cartItems.find((cartItem:any) => cartItem.dish_id === item.dish_id);
+  console.log(existingItem, 'existingItem')
     if (existingItem) {
       // If item already exists in the cart, just update the quantity
-      existingItem.quantity++;
+      existingItem.dish_quantity++;
     } else {
-      // If item doesn't exist, add a new item to the cart
-      this.cartItems.push({ ...item, quantity: 1 });
+// console.log(  this.moveSelectedOptionsToMainObject(item), 'moveSelectedOptionsToMainObject')
+      this.cartItems.push({ ...item });
+      console.log(this.cartItems,this.comboDishDetails ,'this.comboDishDetails')
+      if(this.cartItems.length >1){
+      this.cartItems.forEach((cartItem:any) => {
+        if(cartItem.dish_type =='standard'){
+          this.comboDishDetails.forEach((comboItem:any) => {
+            if(comboItem.combo_item_dish_id == cartItem.dish_id){
+              console.log(comboItem, 'comboItem')
+                this.toastr.success(comboItem.dish_name +' ' +comboItem.dish_price, 'Check Combo Options');
+              // 
+              // cartItem.dish_quantity = 1; // Initialize quantity for each item
+            }
+          });
+        }
+        })
+      }
+  // this.moveSelectedOptionsToMainObject(item);
+    }
+     console.log(  this.cartItems,'  this.cartItems')
+  }
+  increaseModalQuantity(item: any) {
+    console.log(item, 'increaseModalQuantity')
+    item['dish_quantity']++;
+  
+  }
+  decreaseModalQuantity(item: any) {
+    if (item['dish_quantity'] > 1) {
+      item['dish_quantity']--;
+     
     }
   }
-  decreaseFromCart(item: CartItem) {
-  const existingItem = this.cartItems.find(cartItem => cartItem.name === item.name);
-
-  if (existingItem) {
-    if (existingItem.quantity > 1) {
-      existingItem.quantity--;
-    } else {
-      // Remove from cart if quantity is 0 or 1
-      this.cartItems = this.cartItems.filter(cartItem => cartItem.name !== item.name);
-    }
-  }
-}
-  // get subtotal() {
-  //   return this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  // }
-
-  // get tax() {
-  //   return this.subtotal * 0.10;  // 10% tax
-  // }
-
-  // get discount() {
-  //   return this.subtotal * 0.20;  // 20% discount
-  // }
+ 
 get subtotal(): number {
-  return this.cartItems.reduce((sum, item) => sum + item.quantity * item.price, 0);
+  console.log(this.cartItems,'<<<<<<<<<<<------------------this.cartItems.')
+   return this.cartItems
+    .reduce((sum :any, item :any) => sum + this.apiService.orderItemSubtotal(item), 0)
 }
 
 get tax(): number {
+ 
   return +(this.subtotal * 0.10).toFixed(2); // 10% Tax
 }
 
-// get total(): number {
-//   return +(this.subtotal + this.tax).toFixed(2);
-// }
+
   get total() {
-    return this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    console.log(this.cartItems,'<<<<<<<<<<<------------------this.cartItems. 345')
+    return this.cartItems
+    .reduce((sum :any, item :any) => sum + this.apiService.getItemSubtotal(item), 0)- this.tax;
     // return this.subtotal + this.tax - this.discount;
   }
 
-  increaseQuantity(item: CartItem) {
-    item.quantity++;
-  }
 
-  decreaseQuantity(item: CartItem) {
-    if (item.quantity > 1) {
-      item.quantity--;
-    }
-  }
 
   removeItem(item: CartItem) {
-    this.cartItems = this.cartItems.filter(i => i !== item);
+    this.cartItems = this.cartItems.filter((i:any) => i !== item);
+     this.totalPrice =  this.cartItems
+    .reduce((sum :any, item :any) => sum + this.apiService.getItemSubtotal(item), 0)
+  console.log( this.cartItems)
   }
+
+
+  orderList() {
+    const modalRef = this.modal.open(PosOrdersComponent, {
+      windowClass: 'theme-modal',
+      centered: true,
+      size: 'xl'
+    });
+  }
+  showNewModelPopup = false;
+   openNewModelPopup() {
+    this.showNewModelPopup = true;
+  }
+   closeNewModelPopup() {
+    this.showNewModelPopup = false;
+  }
+submitOrder(){
+ this.orderItemsDetails = this.cartItems.map((item: any) => ({
+  dish_id: item.dish_id,
+  quantity: item.dish_quantity,
+  price: item.duplicate_dish_price
+}));
+  let user=JSON.parse(
+      this.sessionStorageService.getsessionStorage("loginDetails") as any
+    ).user
+  console.log(JSON.parse(
+      this.sessionStorageService.getsessionStorage("loginDetails") as any
+    ).user.user_id
+,'new----------> 123',this.orderItemsDeatils)
+  const reqbody={
+    "total_price": this.subtotal,
+    "total_quantity": this.cartItems.length,
+    "store_id": user.store_id,
+    "order_type": 1,
+    "pickup_datetime": new Date(),
+    "delivery_address": null,
+    "delivery_fees": 0.00,
+    "delivery_datetime": null,
+    "order_notes": "Please prepare without spice",
+    "order_status": 1,
+    "order_created_by": user.store_id,
+    "order_details_json": this.orderItemsDetails,
+    "payment_method": "Card",
+    "payment_status": "Completed",
+    "payment_amount": this.total,
+  }
+  console.log(reqbody,'new----------> 123')
+  this.apiService.postApi('/api/order', reqbody).subscribe((res:any)=>{
+    console.log(res,'new----------> 123')
+    if(res && res.code == 1){
+      this.toastr.success(res.message, 'Success');
+      this.cartItems = [];
+    }
+  })
+}
+   getAddressAutocomplete() {
+    console.log( 'addressInput')
+const autocomplete = new google.maps.places.Autocomplete(this.addressInput.nativeElement, {
+    componentRestrictions: { country: 'nz' },
+    fields: ['formatted_address', 'geometry']
+  });
+
+  autocomplete.addListener('place_changed', () => {
+    const place = autocomplete.getPlace();
+    if (place?.formatted_address) {
+      // this.addModelForm.patchValue({ address: place.formatted_address });
+    }
+  });
+
+  // Watch for pac-container and force re-position
+  const observer = new MutationObserver(() => {
+    document.querySelectorAll('.pac-item span').forEach((el) => {
+      if (el.textContent && el.textContent.includes(',')) {
+        // Remove everything after the last comma
+        el.textContent = el.textContent.substring(0, el.textContent.lastIndexOf(','));
+      }
+    });
+
+    const pac = document.querySelector('.pac-container') as HTMLElement;
+    if (pac) {
+      pac.style.zIndex = '2000';
+      pac.style.position = 'absolute';
+      pac.style.width = this.addressInput.nativeElement.offsetWidth + 'px';
+      const rect = this.addressInput.nativeElement.getBoundingClientRect();
+      pac.style.top = rect.bottom + 'px';
+      pac.style.left = rect.left + 'px';
+    }
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+  }
+ngAfterViewInit() {
+  
+  const observer = new MutationObserver(() => {
+    const pac = document.querySelector('.pac-container') as HTMLElement;
+    if (pac && this.addressInput) {
+      const rect = this.addressInput.nativeElement.getBoundingClientRect();
+
+      pac.style.zIndex = '2000'; // above modal
+      pac.style.position = 'fixed'; // use fixed for modal positioning
+      pac.style.width = rect.width + 'px';
+      pac.style.top = rect.bottom + 'px';
+      pac.style.left = rect.left + 'px';
+    }
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+  });
+}
+openDeliveryPopup() {
+    this.showOrderDuePopup = true;
+}
+closeOrderDuePopup(){
+  this.showOrderDuePopup = false;
+}
+submitDUeOrder(){
+this.orderDueDetails = this.orderdueForm.value.orderType =='ASAP'?this.orderdueForm.value.orderType: this.orderdueForm.value.orderDateTime;
+ this.showOrderDuePopup = false
+}
 }
 export interface CartItem {
   name: string;      // Item name
