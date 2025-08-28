@@ -140,7 +140,7 @@ orderdueForm:FormGroup
 get subtotal(): number {
   // console.log(this.cartItems,'<<<<<<<<<<<------------------this.cartItems.')
    return this.cartItems
-    .reduce((sum :any, item :any) => sum + this.apiService.orderItemSubtotal(item), 0)
+    .reduce((sum :any, item :any) => sum + this.apiService.getItemSubtotal(item), 0)
 }
 
 get tax(): number {

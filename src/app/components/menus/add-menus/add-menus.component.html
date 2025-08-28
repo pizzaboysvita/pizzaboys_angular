@@ -92,11 +92,13 @@
                 >No.of.Records:{{menuItemsList.length}}</span
               >
             </li>
+            @if(loginUser ==1){
             <li (click)="insertMenu('Add')">
               <a class="export-btn"
                 ><i class="ri-add-box-fill"></i> Create Menu</a
               >
             </li>
+          }
             <li (click)="downloadDevicesExcel()">
               <a class="export-btn"><i class="ri-export-fill"></i> Export</a>
             </li>

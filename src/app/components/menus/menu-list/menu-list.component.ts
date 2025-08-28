@@ -39,6 +39,7 @@ export class MenuListComponent {
   selectedRowData: any;
   storesList: any;
   selectedStoreId: any = -1;
+  loginUser: any
   constructor(
     public modal: NgbModal,
     private apiService: ApisService, private modalService: NgbModal,
@@ -140,6 +141,10 @@ export class MenuListComponent {
 
 
   ngOnInit(): void {
+   this.loginUser= JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user
+   if(this.loginUser.role_id !=1){
+this.selectedStoreId=this.loginUser.store_id
+   }
     this.getMenuCategoryDishData()
     this.storeList()
 
@@ -250,12 +255,12 @@ export class MenuListComponent {
       "updated_by": JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,
     };
     // console.log(reqbody,data,'reqbody')
-    this.apiService.patchStatusApi(reqbody).subscribe((response: any) => {
-      console.log("Status updated successfully:", response);
+    // this.apiService.patchStatusApi(reqbody).subscribe((response: any) => {
+    //   console.log("Status updated successfully:", response);
 
-    }, (error) => {
-      console.error("Error updating status:", error);
-    });
+    // }, (error) => {
+    //   console.error("Error updating status:", error);
+    // });
   }
 
   //    getmenuList() {
