@@ -92,7 +92,7 @@
                 >No.of.Records:{{menuItemsList.length}}</span
               >
             </li>
-            @if(loginUser ==1){
+            @if(loginUser.role_id ==1){
             <li (click)="insertMenu('Add')">
               <a class="export-btn"
                 ><i class="ri-add-box-fill"></i> Create Menu</a
