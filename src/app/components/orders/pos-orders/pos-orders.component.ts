@@ -14,11 +14,11 @@ import { OrderDialogComponent } from "../order-dialog/order-dialog.component"; /
 
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
-  order_type:string,
-  order_master_id:Number,
-  total_price:string,
-  total_quantity:string,
-  order_status:string,
+  order_type: string;
+  order_master_id: Number;
+  total_price: string;
+  total_quantity: string;
+  order_status: string;
   user_email: string;
   profiles: string;
   phone_number: number;
@@ -66,26 +66,29 @@ interface OrderData {
   styleUrl: "./pos-orders.component.scss",
 })
 export class PosOrdersComponent {
+  staff_list: any;
+  staffListSorting: any;
+  orderList: any;
+
   gridOptions = {
     pagination: true,
     rowHeight: 60,
   };
   tableConfig: ColDef<RowData>[] = [
     {
-      field: 'order_type',
-      headerName: 'Type',
+      field: "order_type",
+      headerName: "Type",
       sortable: true,
       suppressMenu: true,
       unSortIcon: true,
     },
 
     {
-
-      field: 'order_master_id',
-      headerName: '#/Name',
+      field: "order_master_id",
+      headerName: "#/Name",
       suppressHeaderMenuButton: true, // updated from deprecated `suppressMenu`
       unSortIcon: true,
-         tooltipValueGetter: (p: ITooltipParams) =>p.value,
+      tooltipValueGetter: (p: ITooltipParams) => p.value,
       // cellRenderer: (params: any) => {
       //   const firstName = params.value;
       //   const image = params.data?.profiles;
@@ -95,7 +98,7 @@ export class PosOrdersComponent {
       //   if (image) {
       //     return `
       //   <div class="d-flex align-items-center gap-2">
-      //     <img src="${image}" class="img-fluid rounded-circle" 
+      //     <img src="${image}" class="img-fluid rounded-circle"
       //       style="width: 40px; height: 40px;" alt="${firstName}" />
       //     <span>${firstName}</span>
       //   </div>
@@ -121,11 +124,10 @@ export class PosOrdersComponent {
       //     return colors[index];
       //   }
       // }
-    }
-    ,
- {
-      field: 'store_name',
-      headerName: 'Phone',
+    },
+    {
+      field: "store_name",
+      headerName: "Phone",
       suppressMenu: true,
       unSortIcon: true,
       tooltipValueGetter: (p: ITooltipParams) => p.value,
@@ -137,45 +139,43 @@ export class PosOrdersComponent {
       unSortIcon: true,
       tooltipValueGetter: (p: ITooltipParams) => p.value,
     },
+    // {
+    //   field: "phone_number",
+    //   headerName: "Phone Number",
+    //   field: "phone_number",
+    //   headerName: "Due",
+    //   suppressMenu: true,
+    //   unSortIcon: true,
+    //   tooltipValueGetter: (p: ITooltipParams) => p.value,
+    // },
     {
-      field: "phone_number",
-      headerName: "Phone Number",
-      field: 'phone_number',
-      headerName: 'Due',
+      field: "address",
+      headerName: "Placed",
       suppressMenu: true,
       unSortIcon: true,
       tooltipValueGetter: (p: ITooltipParams) => p.value,
     },
     {
-
-      field: 'address',
-      headerName: 'Placed',
+      field: "total_price",
+      headerName: "Total",
       suppressMenu: true,
       unSortIcon: true,
-         tooltipValueGetter: (p: ITooltipParams) =>p.value,
+      tooltipValueGetter: (p: ITooltipParams) => p.value,
     },
-     {
-      field: 'total_price',
-      headerName: 'Total',
-      suppressMenu: true,
-      unSortIcon: true,
-         tooltipValueGetter: (p: ITooltipParams) =>p.value,
-    },
-     {
-      field: 'total_quantity',
-      headerName: '#Items',
+    {
+      field: "total_quantity",
+      headerName: "#Items",
       suppressMenu: true,
       unSortIcon: true,
       tooltipValueGetter: (p: ITooltipParams) => p.value,
     },
 
-   {
-  headerName: 'Status',
-  field: 'order_status',
-  cellRenderer: (params: any) => {
-    const select = document.createElement('select');
-    select.className = 'custom-select';
-
+    {
+      headerName: "Status",
+      field: "order_status",
+      cellRenderer: (params: any) => {
+        const select = document.createElement("select");
+        select.className = "custom-select";
 
         const options = ["Active", "Inactive", "Pending"];
         const selected = params.value || "";
@@ -261,110 +261,106 @@ export class PosOrdersComponent {
       flex: 1,
     },
   ];
-  staff_list: any;
-  staffListSorting: any;
+  // staff_list: any;
+  // staffListSorting: any;
   //  onCellClicked(event: any): void {
   // let target = event.event?.target as HTMLElement;
   //  }
+  // constructor(
+  //   private apiService: ApisService,
+  //   private sessionStorage: SessionStorageService,
+  //   private modalService: NgbModal
+  // ) {}
+
+  // ngOnInit() {
+  //   this.getStaffList();
+  // }
+
+  onCellClicked(event: any): void {
+    let target = event.event?.target as HTMLElement;
+  }
   constructor(
     private apiService: ApisService,
-    private sessionStorage: SessionStorageService,
-    private modalService: NgbModal
+    private sessionStorage: SessionStorageService
   ) {}
 
   ngOnInit() {
-    this.getStaffList();
+    this.getOrderList();
   }
-
-
-   
-  ];
-  staff_list: any;
-  staffListSorting: any;
-  orderList: any;
-     onCellClicked(event: any): void {
-    let target = event.event?.target as HTMLElement;
-     }
-      constructor(private apiService:ApisService,  private sessionStorage: SessionStorageService){}
-     
-       ngOnInit() {
-      this.getOrderList();
-       }
-         getOrderList() {
-       
-           this.apiService.getApi(AppConstants.api_end_points.orderList).subscribe((data: any) => {
-             if (data) {
-
-              this.orderList = data.categories
-             console.log(data, 'order list data');
-             }
-           })
-         }
-
-
-  onCellClicked(event: any): void {
-    const isActionColumn = event.colDef.headerName === "Actions";
-    if (isActionColumn) {
-      return;
-    }
-    if (event.node.data) {
-      const mockOrderData: OrderData = {
-        orderNumber: 4800,
-        name: event.node.data.fullname,
-        email: event.node.data.user_email,
-        phone: event.node.data.phone_number.toString(),
-        type: "Pickup",
-        placed: "22/08/2025 at 05:14 pm",
-        due: "Now / ASAP",
-        estReadyTime: "22/08/2025 at 05:35 pm",
-        lastUpdated: "10 minutes",
-        status: "Complete",
-        dishes: [
-          {
-            qty: 1,
-            item: "Classic Cheese Pizza",
-            price: 13.89,
-            mods: ["Large (+4.00)", "Hollandaise Sauce (+$0.90)"],
-            remove: ["Tomato Base"],
-            notes: "BBQ base sauce please",
-          },
-          {
-            qty: 1,
-            item: "Banana & Caramel Pizza",
-            price: 8.99,
-            mods: ["Small (-$4.00)"],
-          },
-        ],
-        payments: {
-          cartTotal: 22.88,
-          cardFee: 0.96,
-          gst: 3.11,
-          total: 23.84,
-          method: "Stripe (Successful)",
-        },
-        log: [
-          {
-            description:
-              'Print request sent to printer "Online Ordering - Customer"',
-            timestamp: "22/08/2025 at 05:14 pm",
-          },
-          {
-            description: 'Status updated from "Confirmed" to "Ready"',
-            timestamp: "22/08/2025 at 05:35 pm",
-          },
-          {
-            description: 'Status updated from "Ready" to "Complete"',
-            timestamp: "22/08/2025 at 05:45 pm",
-          },
-        ],
-      };
-      const modalRef = this.modalService.open(OrderDialogComponent, {
-        size: "md",
-        centered: true,
+  getOrderList() {
+    this.apiService
+      .getApi(AppConstants.api_end_points.orderList)
+      .subscribe((data: any) => {
+        if (data) {
+          this.orderList = data.categories;
+          console.log(data, "order list data");
+        }
       });
-      modalRef.componentInstance.data = mockOrderData;
-    }
   }
+
+  // onCellClicked(event: any): void {
+  //   const isActionColumn = event.colDef.headerName === "Actions";
+  //   if (isActionColumn) {
+  //     return;
+  //   }
+  //   if (event.node.data) {
+  //     const mockOrderData: OrderData = {
+  //       orderNumber: 4800,
+  //       name: event.node.data.fullname,
+  //       email: event.node.data.user_email,
+  //       phone: event.node.data.phone_number.toString(),
+  //       type: "Pickup",
+  //       placed: "22/08/2025 at 05:14 pm",
+  //       due: "Now / ASAP",
+  //       estReadyTime: "22/08/2025 at 05:35 pm",
+  //       lastUpdated: "10 minutes",
+  //       status: "Complete",
+  //       dishes: [
+  //         {
+  //           qty: 1,
+  //           item: "Classic Cheese Pizza",
+  //           price: 13.89,
+  //           mods: ["Large (+4.00)", "Hollandaise Sauce (+$0.90)"],
+  //           remove: ["Tomato Base"],
+  //           notes: "BBQ base sauce please",
+  //         },
+  //         {
+  //           qty: 1,
+  //           item: "Banana & Caramel Pizza",
+  //           price: 8.99,
+  //           mods: ["Small (-$4.00)"],
+  //         },
+  //       ],
+  //       payments: {
+  //         cartTotal: 22.88,
+  //         cardFee: 0.96,
+  //         gst: 3.11,
+  //         total: 23.84,
+  //         method: "Stripe (Successful)",
+  //       },
+  //       log: [
+  //         {
+  //           description:
+  //             'Print request sent to printer "Online Ordering - Customer"',
+  //           timestamp: "22/08/2025 at 05:14 pm",
+  //         },
+  //         {
+  //           description: 'Status updated from "Confirmed" to "Ready"',
+  //           timestamp: "22/08/2025 at 05:35 pm",
+  //         },
+  //         {
+  //           description: 'Status updated from "Ready" to "Complete"',
+  //           timestamp: "22/08/2025 at 05:45 pm",
+  //         },
+  //       ],
+  //     };
+  //     const modalRef = this.modalService.open(OrderDialogComponent, {
+  //       size: "md",
+  //       centered: true,
+  //     });
+  //     modalRef.componentInstance.data = mockOrderData;
+  //   }
+  // }
   getStaffList() {
     this.apiService
       .getApi(AppConstants.api_end_points.staff + "?user_id=-1")

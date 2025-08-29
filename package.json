@@ -39,6 +39,7 @@
     "font-awesome": "^4.7.0",
     "igniteui-angular": "^17.2.27",
     "ng-apexcharts": "1.15.0",
+    "ngx-bootstrap": "^20.0.1",
     "ngx-chips": "^3.0.0",
     "ngx-dropzone-wrapper": "^17.0.0",
     "ngx-editor": "^18.0.0",
