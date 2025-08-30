@@ -11,8 +11,8 @@ import { ApisService } from '../../../shared/services/apis.service';
 import { SessionStorageService } from '../../../shared/services/session-storage.service';
 import { ToastrService } from 'ngx-toastr';
 import { PosOrdersComponent } from '../pos-orders/pos-orders.component';
-import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
-import { TimepickerModule } from 'ngx-bootstrap/timepicker';
+// import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+// import { TimepickerModule } from 'ngx-bootstrap/timepicker';
 // import { DpDatePickerModule } from 'ng2-date-picker';
 @Component({
   selector: 'app-order-details',
@@ -180,7 +180,7 @@ export class OrderDetailsComponent {
  
   showNewModelPopup = false;
   openNewModelPopup() {
-    this.showNewModelPopup = false;
+    this.showNewModelPopup = true;
   }
   closeNewModelPopup() {
     this.showNewModelPopup = false;
@@ -245,7 +245,8 @@ export class OrderDetailsComponent {
       ingredients_details: this.ingredients_details,
       unitnumber: this.orderForm.value.unitNumber,
       delivery_notes: this.orderForm.value.deliveryNote,
-      "gst_price": this.tax
+      "gst_price": this.tax,
+      combo_order_details:this.totalCartDetails
     }
     console.log(reqbody, 'new----------> 123')
     this.apiService.postApi('/api/order', reqbody).subscribe((res: any) => {
@@ -321,6 +322,7 @@ export class OrderDetailsComponent {
   submitDUeOrder() {
     this.orderDueDetails = this.orderdueForm.value.orderDue == 'ASAP' ? this.orderdueForm.value.orderDue : this.orderdueForm.value.orderDateTime;
     this.showOrderDuePopup = false
+    this.showNewModelPopup=false
   }
 }
 export interface CartItem {

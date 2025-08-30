@@ -10,11 +10,15 @@
     </div>
     <hr class="m-0" />
     <div class="modal-body pt-0">
-        <div class="stepper">
-  <div class="step active">Confirmed</div>
-  <div class="step">Ready</div>
-  <div class="step">On Route</div>
-</div>
+    <ol class="progtrckr">
+  <li *ngFor="let step of statuses" 
+      [ngClass]="getStepClass(step)">
+    <h5 style="font-weight: 500; font-size: 12px;">
+      {{ step }}
+    </h5>
+  </li>
+</ol>
+
 
        <div class="row p-3">
           <form [formGroup]="orderForm">
@@ -87,11 +91,11 @@
                 </div>
                 <div class="row-info">
                     <p>Placed:</p>
-                    <span>{{ data.order_created_datetime }}</span>
+                    <span>{{ data.order_created_datetime |date:'medium' }}</span>
                 </div>
                 <div class="row-info">
                     <p>Due:</p>
-                    <span>{{ data.order_due_datetime }}</span>
+                    <span>{{ data.order_due_datetime | date:'medium' }}</span>
                 </div>
                 @if(data.name){
                 <div class="row-info">
@@ -120,34 +124,79 @@
                     <span class="header-item">Item</span>
                     <span class="header-price">Price</span>
                 </div>
-                <div class="dish-item" *ngFor="let dish of totalOrdermerged">
+                @for (item of orderDishDetails; track item) {
+            @if(item.dish_type =='standard'){
+                <div class="dish-item" >
                     <div class="item-details-row">
-                        <span class="qty">{{ dish.quantity }}</span>
+                        <span class="qty">{{ item.dish_quantity }}</span>
                         <div class="item-name-details">
-                            <span class="item-name">{{ dish.dish_name }}</span>
-                            <div class="item-mods" *ngIf="dish.selected_options && dish.selected_options.length > 0">
-                                <!-- <p class="mod-title">{{}}</p> -->
-                                <li *ngFor="let mod of dish.selected_options" style="margin-bottom: 5px;">{{ mod.name }} 
-                                    @if(mod.price){
+                            <span class="item-name">{{ item.dish_name }}</span>
+                             @for (optiondish of item.standed_option_selected_array; track optiondish) {
+                            <div class="item-mods">
+                                <p class="mod-title">{{optiondish.dish_opt_type}}</p>
+                                   @for (opt_typ of optiondish.choose_option; track opt_typ) {
+                                <li style="margin-bottom: 5px;">{{ opt_typ.name }} 
+                                  
                                     <span style="background-color: #d1d2da;
     width: 30px;
     height: 20px;
     border-radius: 5px;
-    text-align: center;">${{mod.price}}</span>}</li>
+    text-align: center;">${{opt_typ.price}}</span>
+    </li>
+}
                             </div>
-                            <div class="item-mods" *ngIf="dish.remove && dish.remove.length > 0">
+                        }
+                            <!-- <div class="item-mods" *ngIf="dish.remove && dish.remove.length > 0">
                                 <p class="mod-title">Remove Ingredients</p>
                                 <div *ngFor="let remove of dish.remove">{{ remove }}</div>
-                            </div>
-                            <div class="item-notes" *ngIf="dish.notes">
+                            </div> -->
+                            <!-- <div class="item-notes" *ngIf="dish.notes">
                                 <p class="mod-title">Notes:</p>
                                 <div>{{ dish.notes }}</div>
-                            </div>
+                            </div> -->
                         </div>
-                        <span class="price">${{ dish.price.toFixed(2) }}</span>
+                        <span class="price">${{ item.item_total_price.toFixed(2) }}</span>
                     </div>
                 </div>
+            }@else if(item.dish_type =="combo"){
+                <div class="dish-item" >
+                    <div class="item-details-row">
+                        <span class="qty">{{ item.dish_quantity }}</span>
+                        <div class="item-name-details">
+                            <span class="item-name">{{ item.dish_name }}</span>
+                             @for (combooption of item.combo_selected_dishes; track combooption) {
+<span><u>{{combooption.combo_option_name}} </u>({{combooption.combo_option_dish_name}})</span>
 
+ @for (combo_opt of combooption.combo_option_selected_array; track combo_opt) {
+                            <div class="item-mods">
+                                <p class="mod-title">{{combo_opt.dish_opt_type}}</p>
+                                   @for (opt_typ of combo_opt.choose_option; track opt_typ) {
+                                <li style="margin-bottom: 5px;">{{ opt_typ.name }} 
+                                  
+                                    <span style="background-color: #d1d2da;
+    width: 30px;
+    height: 20px;
+    border-radius: 5px;
+    text-align: center;">${{opt_typ.price}}</span>
+    </li>
+}
+                            </div>
+                        }
+                        }
+                            <!-- <div class="item-mods" *ngIf="dish.remove && dish.remove.length > 0">
+                                <p class="mod-title">Remove Ingredients</p>
+                                <div *ngFor="let remove of dish.remove">{{ remove }}</div>
+                            </div> -->
+                            <!-- <div class="item-notes" *ngIf="dish.notes">
+                                <p class="mod-title">Notes:</p>
+                                <div>{{ dish.notes }}</div>
+                            </div> -->
+                        </div>
+                        <span class="price">${{ item.item_total_price.toFixed(2) }}</span>
+                    </div>
+                </div>
+            }
+            }
                 <div class="bill-summary">
                     <div class="summary-row">
                         <p>Cart</p>

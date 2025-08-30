@@ -15,7 +15,11 @@ import { SessionStorageService } from "../../../shared/services/session-storage.
 })
 export class OrderDialogComponent {
   @Input() data: any;
- 
+ // component.ts
+statuses = ["Confirmed", "Ready", "Completed", "Delivered"];  
+
+currentStatus:any // <-- backend API or dynamic status
+
   activeTab = "details";
   statusExpanded = false;
   readyTimeExpanded = false;
@@ -50,9 +54,13 @@ export class OrderDialogComponent {
   order_ingredients: any;
   totalOrdermerged:any
   orderForm:FormGroup
+  orderDishDetails:any=[]
   constructor(public activeModal: NgbActiveModal, private session:SessionStorageService,private apis: ApisService,private fb:FormBuilder) {}
 
   ngOnInit(): void {
+    this.orderDishDetails=JSON.parse(this.data.combo_details_json)
+    console.log(this.orderDishDetails,'oppppppppp')
+    this.currentStatus=this.data.order_status
     this.orderForm =this.fb.group({
       status:[this.data.order_status],
       modifyEstTime:[''],
@@ -128,9 +136,21 @@ export class OrderDialogComponent {
   "updated_by":  JSON.parse(this.session.getsessionStorage('loginDetails') as any).user.user_id
  
 }
-this.apis.postApi(AppConstants.api_end_points.orderList,reqbody).subscribe((data)=>{
+this.apis.putApi(AppConstants.api_end_points.orderList,reqbody).subscribe((data)=>{
   console.log(data)
 })
 
   }
+  // component.ts
+getStepClass(step: string) {
+  const currentIndex = this.statuses.indexOf(this.currentStatus);
+  const stepIndex = this.statuses.indexOf(step);
+
+  if (stepIndex <= currentIndex) {
+    return "progtrckr-done";   // completed step
+  } else {
+    return "progtrckr-todo";   // pending step
+  }
+}
+
 }

@@ -178,10 +178,13 @@
 </div>
 
 
-<div class="modal fade show d-block" tabindex="-1" role="dialog" [ngClass]="{ 'show d-block': showNewModelPopup }">
-  <div class="modal-dialog modal-sm  modal-dialog-centered" role="document">
+<!-- <div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{ 'show d-block': showNewModelPopup }">
+  <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+    <div class="modal-content"> -->
+<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{ 'show d-block': showNewModelPopup }" style="  background: rgba(0,0,0,0.5);  /* <-- dim effect */
+  z-index: 1040; ">
+  <div class="modal-dialog modal-sm modal-dialog-centered " role="document">
     <div class="modal-content">
-
       <!-- Header -->
       <div class="modal-header">
         <h5 class="modal-title">Create New Model</h5>
@@ -207,32 +210,37 @@
             <input type="text" #addressInput class="form-control" (input)="getAddressAutocomplete()"
               placeholder="Search your address" formControlName="deliveryAddress">
           </div>
+
           <div class="mb-3" *ngIf="orderForm.get('deliveryAddress')?.value">
             <label class="form-label">Street Number</label>
             <input type="text" class="form-control" formControlName="streetNumber" placeholder="Enter street number" />
           </div>
+
           <div class="mb-3" *ngIf="orderForm.get('deliveryAddress')?.value">
             <label class="form-label">Unit Number</label>
             <input type="text" class="form-control" formControlName="unitNumber" placeholder="Enter unit number" />
           </div>
+
           <div class="mb-3" *ngIf="orderForm.get('deliveryAddress')?.value">
             <label class="form-label">Delivery Note</label>
             <input type="text" #addressInput class="form-control" formControlName="deliveryNote"
               placeholder="Enter delivery note" />
           </div>
-  <button class="btn fw-bold text-white " style="background: #f44336;margin-left: 30%;" (click)="submitDUeOrder()">Submit</button>
-     
-          <!-- Selected Address Preview -->
-          <!-- <div *ngIf="selectedAddress" class="alert alert-info"> -->
 
-          <!-- </div> -->
+          <!-- Submit -->
+          <button type="button" class="btn fw-bold text-white" style="background:#f44336;margin-left:30%;"
+            (click)="submitDUeOrder()">
+            Submit
+          </button>
         </form>
       </div>
+
     </div>
   </div>
 </div>
 
-<div class="modal fade show d-block" tabindex="-1" role="dialog" [ngClass]="{ 'show d-block': showOrderDuePopup }">
+<div class="modal fade show d-block" tabindex="-1" role="dialog" [ngClass]="{ 'show d-block': showOrderDuePopup }" style="  background: rgba(0,0,0,0.5);  /* <-- dim effect */
+  z-index: 1040; ">
   <div class="modal-dialog modal-sm  modal-dialog-centered" role="document">
     <div class="modal-content">
 

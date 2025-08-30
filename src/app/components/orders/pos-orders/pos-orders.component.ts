@@ -329,7 +329,7 @@ data.categories.forEach((element: any) => {
       if(response.code ==1){
 this.orderDetails = response.categories[0];
   this.modalRef = this.modalService.open(OrderDialogComponent, {
-        size: "md",
+        size: "lg",
         centered: true,
       });
       this.modalRef.componentInstance.data = this.orderDetails;
