@@ -15,6 +15,7 @@ import { OrderDialogComponent } from "../order-dialog/order-dialog.component"; /
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
   order_type:string,
+  is_pos_order:string
   order_master_id:Number,
   total_price:string,
   total_quantity:string,
@@ -77,7 +78,7 @@ export class PosOrdersComponent {
   };
   tableConfig: ColDef<RowData>[] = [
 {
-  field: 'order_type',
+  field: 'is_pos_order',
   headerName: 'Type',
   sortable: true,
   suppressMenu: true,
@@ -100,7 +101,19 @@ export class PosOrdersComponent {
                 style="    width: 30px; height: 20px; top: 25px; left: 25px; font-size: 0.65rem;">POS</span>
         </div>
       `;
+    }else{
+      return `
+        <div class="d-flex align-items-center gap-2 position-relative">
+          <div class="rounded-circle d-flex align-items-center justify-content-center"
+               style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
+             <i class="ri-shopping-bag-2-line"></i>
+          </div>
+          
+         
+        </div>
+      `;
     }
+
 
    
   }
@@ -207,35 +220,7 @@ export class PosOrdersComponent {
    {
   headerName: 'Status',
   field: 'order_status',
-  cellRenderer: (params: any) => {
-    const select = document.createElement('select');
-    select.className = 'custom-select';
-
-
-        const options = ["Active", "Inactive", "Pending"];
-        const selected = params.value || "";
-
-        options.forEach((opt) => {
-          const option = document.createElement("option");
-          option.value = opt;
-          option.text = opt;
-          if (opt === selected) {
-            option.selected = true;
-          }
-          select.appendChild(option);
-        });
-
-        const rowData = params.data;
-        // Handle the change event
-        select.addEventListener("change", (event) => {
-          const newValue = (event.target as HTMLSelectElement).value;
-          params.setValue(newValue); // Updates the grid's value
-          console.log("Dropdown changed to:", newValue);
-          console.log(rowData, "rowData");
-        });
-
-        return select;
-      },
+ tooltipValueGetter: (p: ITooltipParams) => p.value,
     },
     // {
     //     headerName: "Status",
@@ -338,7 +323,8 @@ data.categories.forEach((element: any) => {
   
     console.log("PPPPPPPPPPPPPPpppnnnnnnnnnnnnnnnn",event.data)
     // if (event.node.data) {
-     this.apiService.getApi(AppConstants.api_end_points.orderList + '?order_id=' + 24 + '&type=web').subscribe((response:any) => {
+     let result1 = event.data.order_master_id.replace("P-", "")
+     this.apiService.getApi(AppConstants.api_end_points.orderList + '?order_id=' + result1 + '&type=web').subscribe((response:any) => {
       console.log(response, 'order details');
       if(response.code ==1){
 this.orderDetails = response.categories[0];

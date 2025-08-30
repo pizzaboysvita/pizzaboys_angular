@@ -156,7 +156,7 @@
    <div class="dropdown-item px-4 py-3 d-flex align-items-center"
   [class.selected-child]="selectedChildPerCombo[comboIndex]?.selectedChildIndex === combo_dish_index 
                           && selectedChildPerCombo[comboIndex]?.selectedChildLabel === combo_dish_cat_dish"
-  (click)="selectChild(combo_dish_index, combo_dish_cat_dish, comboIndex)">
+  (click)="selectChild(combo_dish_index, combo_dish_cat_dish, comboIndex,combo_dish)">
   
   <span style="font-size: 14px;">{{ combo_dish_cat_dish.dishName }}</span>
 

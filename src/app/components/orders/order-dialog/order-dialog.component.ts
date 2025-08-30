@@ -3,11 +3,13 @@ import { Component, input, Input } from "@angular/core";
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap"; 
 import { ApisService } from "../../../shared/services/apis.service";
 import { AppConstants } from "../../../app.constants";
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { SessionStorageService } from "../../../shared/services/session-storage.service";
 
 @Component({
   selector: "app-order-dialog",
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,FormsModule,ReactiveFormsModule],
   templateUrl: "./order-dialog.component.html",
   styleUrl: "./order-dialog.component.scss",
 })
@@ -19,12 +21,12 @@ export class OrderDialogComponent {
   readyTimeExpanded = false;
   actionsExpanded = false;
   statusList: any[] = [
-    { id: 1, name: "Change Status" },
-    { id: 2, name: "Cancelled" },
-    { id: 3, name: "Un-Confirmed" },
-    { id: 4, name: "Confirmed" },
-    { id: 5, name: "Ready" },
-    { id: 6, name: "Completed" },
+    { id: 'Change Status', name: "Change Status" },
+    { id: 'Cancelled', name: "Cancelled" },
+    { id: 'Un-Confirmed', name: "Un-Confirmed" },
+    { id: 'Confirmed', name: "Confirmed" },
+    { id: 'Ready', name: "Ready" },
+    { id: 'Completed', name: "Completed" },
   ];
    action: any[] = [
     { id: 1, name: "Print Online-Customer" },
@@ -44,14 +46,39 @@ export class OrderDialogComponent {
   orderDetails:any
   order_items: any;
   orderlogs: any =[];
-  constructor(public activeModal: NgbActiveModal, private apis: ApisService) {}
+  order_toppings: any;
+  order_ingredients: any;
+  totalOrdermerged:any
+  orderForm:FormGroup
+  constructor(public activeModal: NgbActiveModal, private session:SessionStorageService,private apis: ApisService,private fb:FormBuilder) {}
 
   ngOnInit(): void {
+    this.orderForm =this.fb.group({
+      status:[this.data.order_status],
+      modifyEstTime:[''],
+      action:['']
+    })
     // Initialization logic here
-    this.order_items = JSON.parse(this.data.order_items);
-    // console.log(this.datalogs, 'order dialog data');
+    console.log(this.data,'this.datathis.datathis.datathis.datathis.datathis.datathis.datathis.data')
+
+ this.order_items = JSON.parse(this.data.order_items);
+       this.order_toppings = JSON.parse(this.data.order_toppings);
+          this.order_ingredients = JSON.parse(this.data.order_ingredients);
+    this.totalOrdermerged = this.order_items.map((dish:any) => {
+  const selected =  this.order_toppings
+    .filter((opt:any) => opt.dish_id === dish.dish_id)
+    .map(({ name, price,quantity }:any ) => ({ name, price,quantity }));
+
+     const ingredients =  this.order_ingredients
+    .filter((opt:any) => opt.dish_id === dish.dish_id)
+    .map(({ name, price,quantity }:any ) => ({ name, price,quantity }));
+
+  return { ...dish, selected_options: [...selected,...ingredients] };
+});
+   
+    console.log(this.totalOrdermerged ,this.order_toppings,'order dialog data');
     // let result1 = this.data.order_master_id.replace("P-", "")
-       this.apis.getApi(AppConstants.api_end_points.orderList + '?order_id=' + 24 + '&orderStatus=true&type=web').subscribe((response:any) => {
+       this.apis.getApi(AppConstants.api_end_points.orderList + '?order_id=' + this.data.order_master_id + '&orderStatus=true&type=web').subscribe((response:any) => {
       console.log(response, 'order details');
       if(response.code ==1){
         this.orderlogs = response.categories;
@@ -93,5 +120,17 @@ export class OrderDialogComponent {
     } else {
       return `${diffDay} day${diffDay !== 1 ? 's' : ''} ago`;
     }
+  }
+  updatedOrder(){
+    const reqbody={
+ "order_id": this.data.order_master_id,
+  "order_status": this.orderForm.value.status,
+  "updated_by":  JSON.parse(this.session.getsessionStorage('loginDetails') as any).user.user_id
+ 
+}
+this.apis.postApi(AppConstants.api_end_points.orderList,reqbody).subscribe((data)=>{
+  console.log(data)
+})
+
   }
 }

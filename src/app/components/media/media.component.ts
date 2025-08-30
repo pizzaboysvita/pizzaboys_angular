@@ -184,10 +184,10 @@ export class MediaComponent implements OnInit {
       ]
     }
   ];
-  dishnote=''
+  dishnote = ''
   comboDishDetails: any = [];
   totalDishList: any[];
-    selectedChildPerCombo: { [comboIndex: number]: any } = {};
+  selectedChildPerCombo: { [comboIndex: number]: any } = {};
   constructor(
     public modal: NgbModal,
     private apiService: ApisService,
@@ -200,7 +200,7 @@ export class MediaComponent implements OnInit {
   }
 
   getDishslist() {
-        const storeId = JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).user.store_id;
+    const storeId = JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).user.store_id;
 
 
     const categoryApi = this.apiService.getApi(
@@ -209,7 +209,7 @@ export class MediaComponent implements OnInit {
     const dishApi = this.apiService.getApi(
       AppConstants.api_end_points.dish + "?store_id=" + storeId
     );
- 
+
 
     forkJoin([categoryApi, dishApi]).subscribe(
       ([categoryRes, dishRes]: any) => {
@@ -282,12 +282,12 @@ export class MediaComponent implements OnInit {
   }
 
   openIngredientsPopup(item: any) {
-item.dishnote=''
-this.selectedChildPerCombo = {};
+    item.dishnote = ''
+    this.selectedChildPerCombo = {};
     if (item.dish_type === 'combo') {
 
       this.comboDishDetails = []
-      
+
       item.dish_choices_json_array = this.filterIndeterminateCategories(JSON.parse(item.dish_choices_json));
       this.selectedDishFromList = item;
       item['dish_quantity'] = 1; // Ensure quantity is set
@@ -295,7 +295,7 @@ this.selectedChildPerCombo = {};
       this.selectedDishFromList.duplicate_dish_price = item.dish_price
       this.cartItems = [item]
       this.showPopup = true;
-      
+
       console.log("Opening combo ingredients popup for item:", item);
       console.log(this.selectedDishFromList, 'selectedDishFromList 123 456')
     } else {
@@ -332,7 +332,7 @@ this.selectedChildPerCombo = {};
       }))
     }));
   }
-  
+
   closePopup() {
     this.showPopup = false;
     this.selectedDishFromList = null;
@@ -425,93 +425,90 @@ this.selectedChildPerCombo = {};
       .flatMap((optionSet: any) =>
         (optionSet.option_set_array).filter((opt: any) => opt.selected === true)
       );
-    console.log(selectedOptions   
-      
+    console.log(selectedOptions
+
       , 'selectedOptions')
     dish.selectedOptions = selectedOptions;
     return dish;
   }
 
-  selectChild(parentIndex: number, dish: any, comboIndex: number) {
+  selectChild(parentIndex: number, dish: any, comboIndex: number,combo_option_details:any) {
+console.log(">>>>>>>>>>>>???????????????",)
+    if (!this.selectedChildPerCombo[comboIndex]) {
+      this.selectedChildPerCombo[comboIndex] = {};
+    }
 
-console.log(parentIndex, dish, comboIndex)
-      if (!this.selectedChildPerCombo[comboIndex]) {
-    this.selectedChildPerCombo[comboIndex] = {};
-  }
-  
     this.comboDishDetails = []
-    console.log("Selected child:", parentIndex, dish, comboIndex);
+    console.log("Selected child:", parentIndex, dish, comboIndex,combo_option_details);
     this.comboDishDetails = this.totalDishList.filter((d: any) => d.dish_id == dish.dishId)
     // this.openComboIndex = comboIndex;
     this.comboDishDetails.forEach((comboDish: any, idx: number) => {
+       
       this.selectedChildPerCombo[comboIndex] = this.apiService.convertDishObject(comboDish);
-      
-      console.log(this.selectedChildPerCombo, 'selectedChildPerCombo')
     });
-    // this.selectedDishFromList.comboDishList=this.selectedChildPerCombo;
+    // this.selectedDishFromList.comboDishList=this.selectedChildPerCombo
 
-
-
-      this.selectedDishFromList = {
-    ...this.selectedDishFromList,
-    comboDishList: this.selectedChildPerCombo
-  };
-    console.log(this.comboDishDetails, dish.dishId, this.totalDishList, 'comboDishDetails')
-      this.selectedChildPerCombo[comboIndex].selectedChildIndex = parentIndex;
-  this.selectedChildPerCombo[comboIndex].selectedChildLabel = dish;
+    this.selectedDishFromList = {
+      ...this.selectedDishFromList,
+      comboDishList: this.selectedChildPerCombo
+    };
+  this.selectedChildPerCombo[comboIndex].combo_option_name=combo_option_details.name
+    this.selectedChildPerCombo[comboIndex].selectedChildIndex = parentIndex;
+    this.selectedChildPerCombo[comboIndex].selectedChildLabel = dish;
     console.log("Selected child New:", this.selectedDishFromList);
- const subtotal = this.apiService.combotItemSubtotal(this.selectedDishFromList);
-    console.log(subtotal, 'subtotal for combo')
+    const subtotal = this.apiService.combotItemSubtotal(this.selectedDishFromList);
+    console.log(this.selectedChildPerCombo, 'subtotal for combo')
     this.selectedDishFromList = {
       ...this.selectedDishFromList,
       duplicate_dish_price: subtotal
-    }; 
+    };
     this.cdr.detectChanges();
   }
   combo_selectRadio(option: any, dishOptionSet: any, comboIndex: any, fullcomboDetails: any) {
-        console.log("Selected option in combo:",comboIndex);
-    console.log("Selected option in combo:",this.selectedDishFromList);
+    console.log("Selected option in combo:", comboIndex);
+    console.log("Selected option in combo:", this.selectedDishFromList);
 
-   const comboDishDetails=this.selectedDishFromList.comboDishList[comboIndex].dish_option_set_array.filter((optSet: any) => optSet.option_set_id === dishOptionSet.option_set_id)[0].option_set_array;
-   comboDishDetails.forEach((opt: any) => {
-    opt.quantity =1;
-opt.value = option.name; // Ensure the value is set correctly
+    const comboDishDetails = this.selectedDishFromList.comboDishList[comboIndex].dish_option_set_array.filter((optSet: any) => optSet.option_set_id === dishOptionSet.option_set_id)[0].option_set_array;
+    comboDishDetails.forEach((opt: any) => {
+      opt.quantity = 1;
+      opt.value = option.name; // Ensure the value is set correctly
       opt.selected = (opt === option);; // Deselect all options in the group
 
     });
-  const subtotal = this.apiService.combotItemSubtotal(this.selectedDishFromList);
-    console.log(subtotal, 'subtotal for combo')
-    this.selectedDishFromList = {
-      ...this.selectedDishFromList,
-      duplicate_dish_price: subtotal
-    }; 
-  this.cdr.detectChanges();
-  }
-  combo_increment(option: any, dishOptionSet: any, comboDishDetails: any, fullcomboDetails: any) {
-  option.quantity = (option.quantity || 0) + 1;
-    if (option.quantity > 0) {
-      option.selected = true; 
-    }
-      const subtotal = this.apiService.combotItemSubtotal(fullcomboDetails);
+    const subtotal = this.apiService.combotItemSubtotal(this.selectedDishFromList);
     console.log(subtotal, 'subtotal for combo')
     this.selectedDishFromList = {
       ...this.selectedDishFromList,
       duplicate_dish_price: subtotal
     };
-    
+    this.cdr.detectChanges();
+  }
+  combo_increment(option: any, dishOptionSet: any, comboDishDetails: any, fullcomboDetails: any) {
+    console.log(fullcomboDetails,'fullcomboDetails')
+    option.quantity = (option.quantity || 0) + 1;
+    if (option.quantity > 0) {
+      option.selected = true;
+    }
+    const subtotal = this.apiService.combotItemSubtotal(fullcomboDetails);
+    console.log(subtotal, 'subtotal for combo')
+    this.selectedDishFromList = {
+      ...this.selectedDishFromList,
+      duplicate_dish_price: subtotal
+    };
+
     this.cdr.detectChanges();
     // this.calculateTotal();
   }
   combo_decrement(option: any, dishOptionSet: any, comboDishDetails: any, fullcomboDetails: any) {
     console.log("Decrementing option in combo:", option);
-if (option.quantity > 0) {
+    if (option.quantity > 0) {
       option.quantity--;
     }
     if (option.quantity == 0) {
       option.selected = false; // Ensure option is selected when incrementing
 
     }
-      const subtotal = this.apiService.combotItemSubtotal(fullcomboDetails);
+    const subtotal = this.apiService.combotItemSubtotal(fullcomboDetails);
     console.log(subtotal, 'subtotal for combo')
     this.selectedDishFromList = {
       ...this.selectedDishFromList,
@@ -538,7 +535,7 @@ if (option.quantity > 0) {
     if (option.dish_quantity > 1) {
       option.dish_quantity--;
     }
-   
+
     const subtotal = this.apiService.combotItemSubtotal(option);
     console.log(subtotal, 'subtotal for combo')
     this.selectedDishFromList = {
@@ -554,16 +551,16 @@ if (option.quantity > 0) {
     this.itemAdded.emit(cartItem);
   }
   comboSelectedOptions(fullcomboDetails: any) {
-  let selectedOptions :any
-  console.log(fullcomboDetails, 'fullcomboDetails')
-  if (fullcomboDetails && typeof fullcomboDetails.comboDishList === 'object') {
-selectedOptions = Object.values(fullcomboDetails.comboDishList)
-  .flatMap((dish: any) => dish.dish_option_set_array)
-  .flatMap((optSet: any) => optSet.option_set_array)
-  .filter((option: any) => option.selected === true)
-  }
-  console.log(selectedOptions, 'selectedOptions')
+    let selectedOptions: any
+    console.log(fullcomboDetails, 'fullcomboDetails')
+    if (fullcomboDetails && typeof fullcomboDetails.comboDishList === 'object') {
+      selectedOptions = Object.values(fullcomboDetails.comboDishList)
+        .flatMap((dish: any) => dish.dish_option_set_array)
+        .flatMap((optSet: any) => optSet.option_set_array)
+        .filter((option: any) => option.selected === true)
+    }
+    console.log(selectedOptions, 'selectedOptions')
     fullcomboDetails.selectedOptions = selectedOptions;
     return fullcomboDetails;
-}
+  }
 }

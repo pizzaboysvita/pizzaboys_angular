@@ -7,8 +7,8 @@ import { BehaviorSubject, Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class ApisService {
-  basesurl='http://78.142.47.247:3003'
-  // basesurl = 'http://localhost:3003'
+  // basesurl='http://78.142.47.247:3003'
+  basesurl = 'http://localhost:3003'
   private change$ = new BehaviorSubject<boolean>(false);
   poschanges$ = this.change$.asObservable();
   constructor() { }
@@ -212,7 +212,11 @@ getItemSubtotal(item: any): number {
       return sum + (price * qty);
     }, 0);
     console.log(optionsTotal, 'optionsTotal')
-  return (Number(item.dish_price) + optionsTotal) * Number(item.dish_quantity);
+    const subtotal = (Number(item.dish_price) + optionsTotal) * Number(item.dish_quantity);
+
+  // ✅ store subtotal inside item itself
+  item.item_total_price = subtotal;
+  return subtotal;
 }
 
 combotItemSubtotal(fullcomboDetails: any): number {
@@ -242,4 +246,95 @@ orderItemSubtotal(item: any) {
     }, 0);
  return (Number(item.dish_price) + optionsTotal) * Number(item.dish_quantity);
 }
+
+
+
+
+
+combotItemConvert(fullcomboDetails: any): any {
+  console.log(fullcomboDetails,'fullcomboDetails step 1')
+  console.log(this.transformData(fullcomboDetails),'fullcomboDetails step 2')
+//   let grandTotal: any;
+//   console.log(fullcomboDetails, 'fullcomboDetails')
+//   if (fullcomboDetails && typeof fullcomboDetails.comboDishList === 'object') {
+//  grandTotal = Object.values(fullcomboDetails.comboDishList)
+//   .flatMap((dish: any) => dish.dish_option_set_array)
+//   // .flatMap((optSet: any) => optSet.option_set_array)
+//   // .filter((option: any) => option.selected === true)
+//   // .reduce((sum: number, option: any) => {
+//   //   const price = Number(option.price) || 0;
+//   //   const qty = Number(option.quantity) || 0;
+//   //   return sum + (price * qty);
+//   // }, 0);
+// }
+// console.log(grandTotal, 'grandTotal')
+// return (Number(fullcomboDetails.dish_price) + grandTotal) * Number(fullcomboDetails.dish_quantity);
+}
+transformData(data: any) {
+  console.log(data)
+  return data.map((element: any) => {
+    if (element.dish_type === "combo") {
+      const selectedDishes = Object.values(element.comboDishList || {}).map((dish: any) => {
+        return {
+          combo_option_name: dish.combo_option_name,
+          combo_option_dish_name: dish.dish_name,
+          combo_option_selected_array: dish.dish_option_set_array
+            .map((optionSet: any) => {
+              const chosen = optionSet.option_set_array
+                .filter((opt: any) => opt.selected)
+                .map((opt: any) => ({
+                  name: opt.name,
+                  price: opt.price,
+                  quantity: opt.quantity
+                }));
+
+              return {
+                dish_opt_type: optionSet.dispaly_name, // <-- fixed spelling
+                choose_option: chosen
+              };
+            })
+            .filter((item: any) => item.choose_option.length > 0)
+        };
+      });
+
+      return {
+        ...element,
+        dish_name: element.dish_name,
+        dish_id: element.dish_id,
+        // dish_quantity: element.dish_quantity,
+        dish_type: element.dish_type,
+        combo_selected_dishes: selectedDishes
+      };
+    } else{
+      
+  return {
+    ...element,
+        dish_name: element.dish_name,
+        dish_id: element.dish_id,
+        // dish_quantity: element.dish_quantity,
+        dish_type: element.dish_type,
+        // combo_selected_dishes: chosen
+             standed_option_selected_array: element.dish_option_set_array
+            .map((optionSet: any) => {
+              const chosen = optionSet.option_set_array
+                .filter((opt: any) => opt.selected)
+                .map((opt: any) => ({
+                  name: opt.name,
+                  price: opt.price,
+                  quantity: opt.quantity
+                }));
+
+              return {
+                dish_opt_type: optionSet.dispaly_name, // <-- fixed spelling
+                choose_option: chosen
+              };
+            })
+            .filter((item: any) => item.choose_option.length > 0)
+      };
+    }
+   
+    
+  });
+}
+
 }

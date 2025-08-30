@@ -10,15 +10,23 @@
     </div>
     <hr class="m-0" />
     <div class="modal-body pt-0">
+        <div class="stepper">
+  <div class="step active">Confirmed</div>
+  <div class="step">Ready</div>
+  <div class="step">On Route</div>
+</div>
+
        <div class="row p-3">
-           
+          <form [formGroup]="orderForm">
+
+         
              <div class="col-12">
                 <!-- <div class="col-md-6"> -->
                 <div class="input-box">
                     <h6>Change Status</h6>
                     <select class="form-select" name="carlist" formControlName="status">
                         @for (item of statusList; track item) {
-                        <option value="">{{ item .name}}</option>
+                        <option [value]="item.id">{{ item .name}}</option>
                         }
                     </select>
                     <!-- </div> -->
@@ -28,7 +36,7 @@
                 <!-- <div class="col-md-6"> -->
                 <div class="input-box">
                     <h6>Modify Est.Ready Time</h6>
-                    <select class="form-select" name="carlist" formControlName="status">
+                    <select class="form-select" name="carlist" formControlName="modifyEstTime">
                         @for (item of modiftime; track item) {
                         <option value="">{{ item.name }}</option>
                         }
@@ -40,20 +48,21 @@
                 <!-- <div class="col-md-6"> -->
                 <div class="input-box">
                     <h6>Action</h6>
-                    <select class="form-select" name="carlist" formControlName="status">
+                    <select class="form-select" name="carlist" formControlName="action">
                         @for (item of action; track item) {
-                        <option value="">{{ item.name }}</option>
+                        <option [value]="item.id">{{ item.name }}</option>
                         }
                     </select>
                     <!-- </div> -->
                 </div>
             </div>
+              </form>
         </div>
 
-        <button class="complete-button">
+        <!-- <button class="complete-button">
             <i class="ri-checkbox-circle-fill" style="font-size: 20px;"></i>
             Complete
-        </button>
+        </button> -->
 
         <div class="tab-header">
             <div class="tab" [class.active]="activeTab === 'details'" (click)="selectTab('details')">
@@ -74,7 +83,7 @@
             <div *ngIf="activeTab === 'details'">
                 <div class="row-info">
                     <p>Type:</p>
-                    <span>{{ data.order_type ==1?'Pickup':data.order_type }}</span>
+                    <span>{{ data.order_type ==1?'Pickup':data.order_type==0?'Delivery':'--' }}</span>
                 </div>
                 <div class="row-info">
                     <p>Placed:</p>
@@ -111,15 +120,21 @@
                     <span class="header-item">Item</span>
                     <span class="header-price">Price</span>
                 </div>
-                <div class="dish-item" *ngFor="let dish of order_items">
+                <div class="dish-item" *ngFor="let dish of totalOrdermerged">
                     <div class="item-details-row">
                         <span class="qty">{{ dish.quantity }}</span>
                         <div class="item-name-details">
                             <span class="item-name">{{ dish.dish_name }}</span>
-                            <!-- <div class="item-mods" *ngIf="dish.mods && dish.mods.length > 0">
-                                <p class="mod-title">Base Choice</p>
-                                <div *ngFor="let mod of dish.mods">{{ mod }}</div>
-                            </div> -->
+                            <div class="item-mods" *ngIf="dish.selected_options && dish.selected_options.length > 0">
+                                <!-- <p class="mod-title">{{}}</p> -->
+                                <li *ngFor="let mod of dish.selected_options" style="margin-bottom: 5px;">{{ mod.name }} 
+                                    @if(mod.price){
+                                    <span style="background-color: #d1d2da;
+    width: 30px;
+    height: 20px;
+    border-radius: 5px;
+    text-align: center;">${{mod.price}}</span>}</li>
+                            </div>
                             <div class="item-mods" *ngIf="dish.remove && dish.remove.length > 0">
                                 <p class="mod-title">Remove Ingredients</p>
                                 <div *ngFor="let remove of dish.remove">{{ remove }}</div>
@@ -142,13 +157,21 @@
                         <p>Credit / Debit Card Fee</p>
                         <span>${{ data.payments?.cardFee?.toFixed(2) }}</span>
                     </div>
+                    @if(data.delivery_fees){
+                    <div class="summary-row">
+                        <p>Delivery Fees</p>
+                        <span>${{ data.delivery_fees }}</span>
+                    </div>
+                }
                     <div class="summary-row">
                         <p>GST (15%) inc. in price</p>
-                        <span>${{ data.payments?.gst?.toFixed(2) }}</span>
+                        <span>${{ data.gst_price }}</span>
                     </div>
+                    
+
                     <div class="summary-row total-row">
                         <p>Total</p>
-                        <span>${{ data.total_price }}</span>
+                        <span>${{ data.payment_amount }}</span>
                     </div>
                 </div>
             </div>
@@ -183,4 +206,10 @@
             </div>
         </div>
     </div>
+      <div class="modal-footer">
+    <button class="btn btn-cancel" type="button" ><i class="ri-close-circle-line"></i>
+      &nbsp;Cancel</button>
+    <button body class="btn btn-animation  save-button" style="margin-left: 10px;" (click)="updatedOrder()"
+      type="button"><i class="ri-add-circle-line"></i>&nbsp; Update Order</button>&nbsp;
+  </div>
 </div>
