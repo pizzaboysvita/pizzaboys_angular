@@ -1,0 +1,13 @@
+.inventory-container {
+  .nav-tabs {
+    .nav-link {
+      cursor: pointer;
+      font-weight: 500;
+      &.active {
+        background: #402d8b;
+        color: white;
+        border-radius: 6px 6px 0 0;
+      }
+    }
+  }
+}

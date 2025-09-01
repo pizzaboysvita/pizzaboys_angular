@@ -24,14 +24,14 @@ interface RowData {
   phone: number;
   street_address: string;
   status: string
-  created_on:Date
+  created_on: Date
 }
 @Component({
   selector: 'app-restaurants-list',
-  imports: [CardComponent, AgGridAngular,ReactiveFormsModule,FormsModule],
+  imports: [CardComponent, AgGridAngular, ReactiveFormsModule, FormsModule],
   templateUrl: './restaurants-list.component.html',
   styleUrl: './restaurants-list.component.scss',
-  providers:[DatePipe]
+  providers: [DatePipe]
 })
 export class RestaurantsListComponent {
   @ViewChild('confirmModal') confirmModalRef!: TemplateRef<any>;
@@ -39,25 +39,25 @@ export class RestaurantsListComponent {
     pagination: true,
 
   };
-storeForm:FormGroup
+  storeForm: FormGroup
   storeList: any;
   storeData: any;
   storeListSorting: any;
-  constructor(private router: Router, private apis: ApisService,private fb:FormBuilder, private datePipe:DatePipe,private modalService: NgbModal, private session: SessionStorageService) { }
+  constructor(private router: Router, private apis: ApisService, private fb: FormBuilder, private datePipe: DatePipe, private modalService: NgbModal, private session: SessionStorageService) { }
   modules = [ClientSideRowModelModule];
 
   stausList = ['Active', 'In-Active']
-  columnDefs: ColDef<RowData>[] = [   
+  columnDefs: ColDef<RowData>[] = [
     {
       field: 'store_name', headerName: 'Store Name', sortable: true,
       suppressMenu: true,
       unSortIcon: true,
-          tooltipValueGetter: (p: ITooltipParams) =>p.value,
+      tooltipValueGetter: (p: ITooltipParams) => p.value,
     },
     {
       field: 'email', headerName: 'E-Mail', suppressMenu: true,
       unSortIcon: true,
-        tooltipValueGetter: (p: ITooltipParams) =>p.value,
+      tooltipValueGetter: (p: ITooltipParams) => p.value,
     },
     {
       field: 'phone', headerName: 'Phone Number', suppressMenu: true,
@@ -66,24 +66,24 @@ storeForm:FormGroup
     {
       field: 'street_address', headerName: 'Store Address', suppressMenu: true,
       unSortIcon: true,
-          tooltipValueGetter: (p: ITooltipParams) =>p.value,
+      tooltipValueGetter: (p: ITooltipParams) => p.value,
     },
     {
       field: 'created_on', headerName: 'Created Date', suppressMenu: true,
       unSortIcon: true,
-          tooltipValueGetter: (p: ITooltipParams) =>p.value,
-   valueFormatter: (params) => {
-  if (!params.value) return '';
-  const date = new Date(params.value);
-  const day = date.getDate();
-  const month = date.toLocaleString('default', { month: 'long' });
-  const year = date.getFullYear();
-  let hours = date.getHours();
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  hours = hours % 12 || 12;
-  return `${day} ${month} ${year} ${hours}:${minutes}${ampm}`;
-}
+      tooltipValueGetter: (p: ITooltipParams) => p.value,
+      valueFormatter: (params) => {
+        if (!params.value) return '';
+        const date = new Date(params.value);
+        const day = date.getDate();
+        const month = date.toLocaleString('default', { month: 'long' });
+        const year = date.getFullYear();
+        let hours = date.getHours();
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+        return `${day} ${month} ${year} ${hours}:${minutes}${ampm}`;
+      }
 
     },
     {
@@ -155,11 +155,11 @@ delete
   //   { storename: 'Porsche', email: 'Boxster',status: 'Pending', phoneNumber: 72000,storeAddress:'Abc Address' }
   // ];
   ngOnInit() {
-    this.storeForm =this.fb.group({
-      storeName:[''],
-      email:[''],
-      address:[''],
-      status:['Active']
+    this.storeForm = this.fb.group({
+      storeName: [''],
+      email: [''],
+      address: [''],
+      status: ['Active']
     })
     this.getStoreList()
   }
@@ -170,7 +170,7 @@ delete
         element.status = element.status == 1 ? 'Active' : element.status == 0 ? 'Inactive' : element.status
       })
       this.storeList = data.reverse()
-         this.storeListSorting = data.reverse()
+      this.storeListSorting = data.reverse()
     })
   }
   onCellClicked(event: any): void {
@@ -188,14 +188,14 @@ delete
       switch (action) {
         case 'view':
           console.log('Viewing:', rowData);
-                this.session.setsessionStorage('storeType','view')
-          this.session.setsessionStorage('storeDetails',JSON.stringify(rowData))
+          this.session.setsessionStorage('storeType', 'view')
+          this.session.setsessionStorage('storeDetails', JSON.stringify(rowData))
           this.router.navigate(['/restaurants/restaurants-view'])
           break;
         case 'edit':
           console.log('Editing:', rowData);
-             this.session.setsessionStorage('storeType','edit')
-          this.session.setsessionStorage('storeDetails',JSON.stringify(rowData))
+          this.session.setsessionStorage('storeType', 'edit')
+          this.session.setsessionStorage('storeDetails', JSON.stringify(rowData))
           this.router.navigate(['/restaurants/restaurants-view'])
           break;
         case 'delete':
@@ -225,7 +225,7 @@ delete
     const req_body = {
       "store_id": this.storeData.store_id
     }
-    this.apis.deleteApi(AppConstants.api_end_points.store_list+'/'+this.storeData.store_id).subscribe((data: any) => {
+    this.apis.deleteApi(AppConstants.api_end_points.store_list + '/' + this.storeData.store_id).subscribe((data: any) => {
 
       if (data) {
         console.log(data)
@@ -249,70 +249,70 @@ delete
 
 
 
-downloadDevicesExcel(): void {
-  if (!this.storeList || this.storeList.length === 0) {
-    console.warn('No data to export.');
-    return;
+  downloadDevicesExcel(): void {
+    if (!this.storeList || this.storeList.length === 0) {
+      console.warn('No data to export.');
+      return;
+    }
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Stores');
+
+    // Define header row with styles
+    const headers = [
+      { header: 'Store Name', key: 'store_name', width: 20 },
+      { header: 'E-Mail', key: 'email', width: 25 },
+      { header: 'Phone Number', key: 'phone', width: 15 },
+      { header: 'Store Address', key: 'street_address', width: 30 },
+      { header: 'Created Date', key: 'created_on', width: 20 },
+      { header: 'Status', key: 'Status', width: 12 },
+    ];
+
+    worksheet.columns = headers;
+
+    worksheet.getRow(1).eachCell((cell) => {
+      cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF1F4E78' }, // dark blue
+      };
+    });
+
+    // Add data rows
+    this.storeList.forEach((store: any) => {
+      worksheet.addRow({
+        store_name: store.store_name || '',
+        email: store.email || '',
+        phone: store.phone || '',
+        street_address: store.street_address || '',
+        created_on: store.created_on || '',
+        Status: store.Status || '',
+      });
+    });
+
+    // Create buffer and save
+    workbook.xlsx.writeBuffer().then((data) => {
+      const blob = new Blob([data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      // const today = new Date();
+      const formattedDate = this.datePipe.transform(new Date(), 'dd MMM yyyy');
+      FileSaver.saveAs(blob, `storesList_${formattedDate}.xlsx`);
+    });
   }
-
-  const workbook = new ExcelJS.Workbook();
-  const worksheet = workbook.addWorksheet('Stores');
-
-  // Define header row with styles
-  const headers = [
-    { header: 'Store Name', key: 'store_name', width: 20 },
-    { header: 'E-Mail', key: 'email', width: 25 },
-    { header: 'Phone Number', key: 'phone', width: 15 },
-    { header: 'Store Address', key: 'street_address', width: 30 },
-    { header: 'Created Date', key: 'created_on', width: 20 },
-    { header: 'Status', key: 'Status', width: 12 },
-  ];
-
-  worksheet.columns = headers;
-
-  worksheet.getRow(1).eachCell((cell) => {
-    cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-    cell.fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: 'FF1F4E78' }, // dark blue
-    };
-  });
-
-  // Add data rows
-  this.storeList.forEach((store: any) => {
-    worksheet.addRow({
-      store_name: store.store_name || '',
-      email: store.email || '',
-      phone: store.phone || '',
-      street_address: store.street_address || '',
-      created_on: store.created_on || '',
-      Status: store.Status || '',
+  search() {
+    console.log(this.storeForm.value.status, this.storeListSorting)
+    this.storeList = this.storeListSorting.filter((store: any) => {
+      return (
+        (store.store_name.toLowerCase().includes(this.storeForm.value.storeName.toLowerCase())) && (store.email.toLowerCase().includes(this.storeForm.value.email.toLowerCase())) && (store.street_address.toLowerCase().includes(this.storeForm.value.address.toLowerCase())) && (store.status.toLowerCase().includes(this.storeForm.value.status.toLowerCase()))
+      );
     });
-  });
-
-  // Create buffer and save
-  workbook.xlsx.writeBuffer().then((data) => {
-    const blob = new Blob([data], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    });
-    // const today = new Date();
-const formattedDate =  this.datePipe.transform(new Date(), 'dd MMM yyyy');
-    FileSaver.saveAs(blob, `storesList_${formattedDate}.xlsx`);
-  });
-}
-search(){
-  console.log(this.storeForm.value.status, this.storeListSorting)
-  this.storeList = this.storeListSorting.filter((store:any) => {
-    return (
-      ( store.store_name.toLowerCase().includes(this.storeForm.value.storeName.toLowerCase())) &&    ( store.email.toLowerCase().includes(this.storeForm.value.email.toLowerCase())) &&( store.street_address.toLowerCase().includes(this.storeForm.value.address.toLowerCase())) &&( store.status.toLowerCase().includes(this.storeForm.value.status.toLowerCase())) 
-    );
-  });
-  console.log(this.storeList)
-}
-reset(){
-  this.storeForm.reset()
-  this.getStoreList()
-}
+    console.log(this.storeList)
+  }
+  reset() {
+    this.storeForm.reset()
+    this.getStoreList()
+  }
 }
 
