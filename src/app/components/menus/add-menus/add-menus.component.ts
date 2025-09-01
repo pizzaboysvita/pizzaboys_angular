@@ -298,14 +298,25 @@ delete
   storeList: any;
   modelRef: any;
   menuItemsSortingList: any;
+  loginUser: any;
   constructor(public modal: NgbModal, private datePipe: DatePipe, private fb: FormBuilder, private apis: ApisService, private session: SessionStorageService, private modalService: NgbModal) { }
 
   getFrom() {
+    this.loginUser= JSON.parse(this.session.getsessionStorage('loginDetails') as any).user
+   
     this.menuSearchForm = this.fb.group({
       store: [-1],
       menuName: [''],
       status: ['']
     })
+     if(this.loginUser.role_id !=1){
+      this.menuSearchForm.patchValue({
+        store: this.loginUser.store_id
+      })
+      this.menuSearchForm.get('store')?.disable(); 
+    }else{
+       this.menuSearchForm.get('store')?.enable(); 
+    }
   }
 
  
@@ -391,7 +402,7 @@ delete
   }
   getmenuList() {
 
-    this.apis.getApi(AppConstants.api_end_points.menu + '?store_id=' + this.menuSearchForm.value.store).subscribe((data: any) => {
+    this.apis.getApi(AppConstants.api_end_points.menu + '?store_id=' + this.menuSearchForm.getRawValue().store).subscribe((data: any) => {
       if (data) {
         console.log(data)
         data.data.forEach((item: any) => {

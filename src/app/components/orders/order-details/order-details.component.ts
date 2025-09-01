@@ -11,65 +11,69 @@ import { ApisService } from '../../../shared/services/apis.service';
 import { SessionStorageService } from '../../../shared/services/session-storage.service';
 import { ToastrService } from 'ngx-toastr';
 import { PosOrdersComponent } from '../pos-orders/pos-orders.component';
-import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
-import { TimepickerModule } from 'ngx-bootstrap/timepicker';
+// import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+// import { TimepickerModule } from 'ngx-bootstrap/timepicker';
 // import { DpDatePickerModule } from 'ng2-date-picker';
 @Component({
-    selector: 'app-order-details',
-    templateUrl: './order-details.component.html',
-    styleUrl: './order-details.component.scss',
-    imports: [NgbNavModule,MediaComponent,FormsModule,ReactiveFormsModule,
-   
-         GoogleMapsModule,CommonModule]
+  selector: 'app-order-details',
+  templateUrl: './order-details.component.html',
+  styleUrl: './order-details.component.scss',
+  imports: [NgbNavModule, MediaComponent, FormsModule, ReactiveFormsModule,
+
+    GoogleMapsModule, CommonModule]
 })
 
 export class OrderDetailsComponent {
-  
+
   @ViewChild('addressInput', { static: false }) addressInput!: ElementRef;
   // @ViewChild('modalBody', { static: false }) modalBody!: ElementRef;
-selectedDate!: Date;
-selectedTime!: Date;
+  selectedDate!: Date;
+  selectedTime!: Date;
   selected: string = 'dinein';
   public active = 1;
   public markers: any[];
   public zoom: number;
-  totalPrice: any =0;
+  totalPrice: any = 0;
   comboDishDetails: any;
   orderDeatils: any;
   orderItemsDeatils: any;
   orderItemsDetails: any;
-orderForm:FormGroup
-orderdueForm:FormGroup
-  showOrderDuePopup: boolean =false;
+  orderForm: FormGroup
+  orderdueForm: FormGroup
+  showOrderDuePopup: boolean = false;
   orderDueDetails: any;
-  constructor(private apiService:ApisService,private fb:FormBuilder,private el: ElementRef ,private modal: NgbModal, private toastr: ToastrService,private cdr: ChangeDetectorRef,private sessionStorageService:SessionStorageService) {
+  toppingDetails: any;
+  ingredients_details: any;
+  deliveryfee: any = 5.90;
+  totalCartDetails: any=[];
+  constructor(private apiService: ApisService, private fb: FormBuilder, private el: ElementRef, private modal: NgbModal, private toastr: ToastrService, private cdr: ChangeDetectorRef, private sessionStorageService: SessionStorageService) {
     this.markers = [];
     this.zoom = 3;
   }
   filterOptions = ['Cash', 'Card', 'E-Wallet'];
   selectedOption = 'Cash';
-  
+
   selectOption(option: string) {
     this.selectedOption = option;
   }
-  
+
   ngOnInit() {
-     this.orderForm = this.fb.group({
+    this.orderForm = this.fb.group({
       orderType: ['pickup', Validators.required],
       deliveryAddress: [''],
-      streetNumber:[''],
-      streetName:[''],
-      unitNumber:[''],
-      deliveryNote:['']
+      streetNumber: [''],
+      streetName: [''],
+      unitNumber: [''],
+      deliveryNote: [''],
+
     });
     this.orderdueForm = this.fb.group({
-      orderType: ['ASAP', Validators.required],
+      orderDue: ['ASAP', Validators.required],
       orderDateTime: ['', Validators.required]
     });
-    this.orderDueDetails=this.orderdueForm.value.orderType;
-     const userId = JSON.parse(
-      this.sessionStorageService.getsessionStorage("loginDetails") as any
-    ).user.user_id;
+    this.orderDueDetails = this.orderdueForm.value.orderDue;
+    const userId = JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).user.store_id;
+
     this.markers.push({
       position: {
         lat: 20.5937,
@@ -84,213 +88,248 @@ orderdueForm:FormGroup
         animation: google.maps.Animation.DROP,
       },
     });
-      this.apiService.getApi('/api/dish?user_id=' + userId + '&typeOfDish=combo').subscribe(
+    this.apiService.getApi('/api/dish?store_id=' + userId + '&typeOfDish=combo').subscribe(
       (res: any) => {
         this.comboDishDetails = res.data;
         console.log(this.comboDishDetails, 'comboDishDetails')
       }
     );
   }
-  cartItems:any= [];
+  cartItems: any = [];
 
 
   @ViewChild(GoogleMap) map!: GoogleMap;
 
   addToCart(item: any) {
-    console.log(item)
-    const existingItem = this.cartItems.find((cartItem:any) => cartItem.dish_id === item.dish_id);
-  console.log(existingItem, 'existingItem')
+    console.log(item,'>>>>>>>>>>>>>>> Add To cart')
+
+
+    const existingItem = this.cartItems.find((cartItem: any) => cartItem.dish_id === item.dish_id);
+    console.log(existingItem, 'existingItem')
     if (existingItem) {
       // If item already exists in the cart, just update the quantity
       existingItem.dish_quantity++;
     } else {
-// console.log(  this.moveSelectedOptionsToMainObject(item), 'moveSelectedOptionsToMainObject')
+      // console.log(  this.moveSelectedOptionsToMainObject(item), 'moveSelectedOptionsToMainObject')
       this.cartItems.push({ ...item });
-      console.log(this.cartItems,this.comboDishDetails ,'this.comboDishDetails')
-      if(this.cartItems.length >1){
-      this.cartItems.forEach((cartItem:any) => {
-        if(cartItem.dish_type =='standard'){
-          this.comboDishDetails.forEach((comboItem:any) => {
-            if(comboItem.combo_item_dish_id == cartItem.dish_id){
-              console.log(comboItem, 'comboItem')
-                this.toastr.success(comboItem.dish_name +' ' +comboItem.dish_price, 'Check Combo Options');
-              // 
-              // cartItem.dish_quantity = 1; // Initialize quantity for each item
-            }
-          });
-        }
+      // if(item.dish_type =='combo'){
+  this.totalCartDetails=this.apiService.transformData(this.cartItems)
+// }
+      console.log(this.totalCartDetails, 'this.totalCartDetails')
+      if (this.cartItems.length > 1) {
+        this.cartItems.forEach((cartItem: any) => {
+          if (cartItem.dish_type == 'standard') {
+            this.comboDishDetails.forEach((comboItem: any) => {
+              if (comboItem.combo_item_dish_id == cartItem.dish_id) {
+                console.log(comboItem, 'comboItem')
+                this.toastr.success(comboItem.dish_name + ' ' + comboItem.dish_price, 'Check Combo Options');
+                // 
+                // cartItem.dish_quantity = 1; // Initialize quantity for each item
+              }
+            });
+          }
         })
       }
-  // this.moveSelectedOptionsToMainObject(item);
+      // this.moveSelectedOptionsToMainObject(item);
     }
-     console.log(  this.cartItems,'  this.cartItems')
+    console.log(this.cartItems, '  this.cartItems')
   }
   increaseModalQuantity(item: any) {
     console.log(item, 'increaseModalQuantity')
     item['dish_quantity']++;
-  
+
   }
   decreaseModalQuantity(item: any) {
     if (item['dish_quantity'] > 1) {
       item['dish_quantity']--;
-     
+
     }
   }
- 
-get subtotal(): number {
-  console.log(this.cartItems,'<<<<<<<<<<<------------------this.cartItems.')
-   return this.cartItems
-    .reduce((sum :any, item :any) => sum + this.apiService.orderItemSubtotal(item), 0)
-}
 
-get tax(): number {
- 
-  return +(this.subtotal * 0.10).toFixed(2); // 10% Tax
-}
+  get subtotal(): number {
+    console.log(this.totalCartDetails,'<<<<<<<<<<<------------------this.cartItems.')
+
+    return   this.totalCartDetails
+      .reduce((sum: any, item: any) => sum + this.apiService.getItemSubtotal(item), 0)
+  }
+
+  get tax(): number {
+
+    return +(this.subtotal * 0.10).toFixed(2); // 10% Tax
+  }
 
 
   get total() {
-    console.log(this.cartItems,'<<<<<<<<<<<------------------this.cartItems. 345')
-    return this.cartItems
-    .reduce((sum :any, item :any) => sum + this.apiService.getItemSubtotal(item), 0)- this.tax;
+    const fee = this.orderForm.value.orderType == 'delivery' ? this.deliveryfee : 0
+    console.log(this.cartItems,this.totalCartDetails ,'<<<<<<<<<<<------------------this.cartItems. 345')
+    return this.totalCartDetails
+      .reduce((sum: any, item: any) => sum + this.apiService.getItemSubtotal(item), 0) + this.tax + fee;
     // return this.subtotal + this.tax - this.discount;
   }
 
 
 
   removeItem(item: CartItem) {
-    this.cartItems = this.cartItems.filter((i:any) => i !== item);
-     this.totalPrice =  this.cartItems
-    .reduce((sum :any, item :any) => sum + this.apiService.getItemSubtotal(item), 0)
-  console.log( this.cartItems)
+    this.cartItems = this.cartItems.filter((i: any) => i !== item);
+    this.totalPrice = this.cartItems
+      .reduce((sum: any, item: any) => sum + this.apiService.getItemSubtotal(item), 0)
+    console.log(this.cartItems)
   }
 
 
-  orderList() {
-    const modalRef = this.modal.open(PosOrdersComponent, {
-      windowClass: 'theme-modal',
-      centered: true,
-      size: 'xl'
-    });
-  }
+ 
   showNewModelPopup = false;
-   openNewModelPopup() {
+  openNewModelPopup() {
     this.showNewModelPopup = true;
   }
-   closeNewModelPopup() {
+  closeNewModelPopup() {
     this.showNewModelPopup = false;
   }
-submitOrder(){
- this.orderItemsDetails = this.cartItems.map((item: any) => ({
-  dish_id: item.dish_id,
-  quantity: item.dish_quantity,
-  price: item.duplicate_dish_price
-}));
-  let user=JSON.parse(
+  submitOrder() {
+    console.log(this.cartItems, 'this.cartItems opennnnnnnnnnnn ')
+    this.orderItemsDetails = this.cartItems.map((item: any) => ({
+      dish_id: item.dish_id,
+      dish_note: item.dishnote,
+      quantity: item.dish_quantity,
+      price: item.duplicate_dish_price,
+
+    }));
+    this.toppingDetails = this.cartItems.flatMap((dish: any) =>
+      dish.selectedOptions
+        .filter((opt: any) => opt.selected)
+        .map((opt: any) => ({
+          dish_id: dish.dish_id,
+          name: opt.name,
+          price: opt.price,
+          quantity: opt.quantity
+        }))
+    );
+    this.ingredients_details = this.cartItems.flatMap((dish: any) =>
+      dish.dish_ingredient_array
+        .filter((opt: any) => opt.selected)
+        .map((opt: any) => ({
+          dish_id: dish.dish_id,
+          name: opt.name,
+          price: opt.price,
+          quantity: opt.quantity
+        }))
+    );
+    console.log(this.toppingDetails, 'this.cartItems opennnnnnnnnnnn ')
+    let user = JSON.parse(
       this.sessionStorageService.getsessionStorage("loginDetails") as any
     ).user
-  console.log(JSON.parse(
+    console.log(JSON.parse(
       this.sessionStorageService.getsessionStorage("loginDetails") as any
     ).user.user_id
-,'new----------> 123',this.orderItemsDeatils)
-  const reqbody={
-    "total_price": this.subtotal,
-    "total_quantity": this.cartItems.length,
-    "store_id": user.store_id,
-    "order_type": 1,
-    "pickup_datetime": new Date(),
-    "delivery_address": null,
-    "delivery_fees": 0.00,
-    "delivery_datetime": null,
-    "order_notes": "Please prepare without spice",
-    "order_status": 1,
-    "order_created_by": user.store_id,
-    "order_details_json": this.orderItemsDetails,
-    "payment_method": "Card",
-    "payment_status": "Completed",
-    "payment_amount": this.total,
+      , 'new----------> 123', this.orderItemsDeatils)
+    const reqbody = {
+      "total_price": this.subtotal,
+      "total_quantity": this.cartItems.length,
+      "store_id": user.store_id,
+      "order_type": this.orderForm.get('orderType')?.value,
+      "pickup_datetime": new Date(),
+      "delivery_address": this.orderForm.get('deliveryAddress')?.value,
+      "delivery_fees": this.deliveryfee,
+      is_pos_order: 1,
+      "delivery_datetime": new Date(),
+      "order_notes": this.orderForm.get('deliveryNote')?.value,
+      "order_status": "Confirmed",
+      "order_created_by": user.store_id,
+      "order_details_json": this.orderItemsDetails,
+      "payment_method": "Card",
+      "payment_status": "Completed",
+      "payment_amount": this.total,
+      "order_due": this.orderdueForm.get('orderDue')?.value,
+      "order_due_datetime": this.orderdueForm.get('orderDateTime')?.value,
+      "topping_details": this.toppingDetails,
+      ingredients_details: this.ingredients_details,
+      unitnumber: this.orderForm.value.unitNumber,
+      delivery_notes: this.orderForm.value.deliveryNote,
+      "gst_price": this.tax,
+      combo_order_details:this.totalCartDetails
+    }
+    console.log(reqbody, 'new----------> 123')
+    this.apiService.postApi('/api/order', reqbody).subscribe((res: any) => {
+      console.log(res, 'new----------> 123')
+      if (res && res.code == 1) {
+        this.toastr.success(res.message, 'Success');
+        this.cartItems = [];
+      }
+    })
   }
-  console.log(reqbody,'new----------> 123')
-  this.apiService.postApi('/api/order', reqbody).subscribe((res:any)=>{
-    console.log(res,'new----------> 123')
-    if(res && res.code == 1){
-      this.toastr.success(res.message, 'Success');
-      this.cartItems = [];
-    }
-  })
-}
-   getAddressAutocomplete() {
-    console.log( 'addressInput')
-const autocomplete = new google.maps.places.Autocomplete(this.addressInput.nativeElement, {
-    componentRestrictions: { country: 'nz' },
-    fields: ['formatted_address', 'geometry']
-  });
+  getAddressAutocomplete() {
+    console.log('addressInput')
+    const autocomplete = new google.maps.places.Autocomplete(this.addressInput.nativeElement, {
+      componentRestrictions: { country: 'nz' },
+      fields: ['formatted_address', 'geometry']
+    });
 
-  autocomplete.addListener('place_changed', () => {
-    const place = autocomplete.getPlace();
-    if (place?.formatted_address) {
-      // this.addModelForm.patchValue({ address: place.formatted_address });
-    }
-  });
-
-  // Watch for pac-container and force re-position
-  const observer = new MutationObserver(() => {
-    document.querySelectorAll('.pac-item span').forEach((el) => {
-      if (el.textContent && el.textContent.includes(',')) {
-        // Remove everything after the last comma
-        el.textContent = el.textContent.substring(0, el.textContent.lastIndexOf(','));
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      if (place?.formatted_address) {
+        // this.addModelForm.patchValue({ address: place.formatted_address });
       }
     });
 
-    const pac = document.querySelector('.pac-container') as HTMLElement;
-    if (pac) {
-      pac.style.zIndex = '2000';
-      pac.style.position = 'absolute';
-      pac.style.width = this.addressInput.nativeElement.offsetWidth + 'px';
-      const rect = this.addressInput.nativeElement.getBoundingClientRect();
-      pac.style.top = rect.bottom + 'px';
-      pac.style.left = rect.left + 'px';
-    }
-  });
+    // Watch for pac-container and force re-position
+    const observer = new MutationObserver(() => {
+      document.querySelectorAll('.pac-item span').forEach((el) => {
+        if (el.textContent && el.textContent.includes(',')) {
+          // Remove everything after the last comma
+          el.textContent = el.textContent.substring(0, el.textContent.lastIndexOf(','));
+        }
+      });
 
-  observer.observe(document.body, { childList: true, subtree: true });
+      const pac = document.querySelector('.pac-container') as HTMLElement;
+      if (pac) {
+        pac.style.zIndex = '2000';
+        pac.style.position = 'absolute';
+        pac.style.width = this.addressInput.nativeElement.offsetWidth + 'px';
+        const rect = this.addressInput.nativeElement.getBoundingClientRect();
+        pac.style.top = rect.bottom + 'px';
+        pac.style.left = rect.left + 'px';
+      }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
   }
-ngAfterViewInit() {
-  
-  const observer = new MutationObserver(() => {
-    const pac = document.querySelector('.pac-container') as HTMLElement;
-    if (pac && this.addressInput) {
-      const rect = this.addressInput.nativeElement.getBoundingClientRect();
+  ngAfterViewInit() {
 
-      pac.style.zIndex = '2000'; // above modal
-      pac.style.position = 'fixed'; // use fixed for modal positioning
-      pac.style.width = rect.width + 'px';
-      pac.style.top = rect.bottom + 'px';
-      pac.style.left = rect.left + 'px';
-    }
-  });
+    const observer = new MutationObserver(() => {
+      const pac = document.querySelector('.pac-container') as HTMLElement;
+      if (pac && this.addressInput) {
+        const rect = this.addressInput.nativeElement.getBoundingClientRect();
 
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-  });
-}
-openDeliveryPopup() {
+        pac.style.zIndex = '2000'; // above modal
+        pac.style.position = 'fixed'; // use fixed for modal positioning
+        pac.style.width = rect.width + 'px';
+        pac.style.top = rect.bottom + 'px';
+        pac.style.left = rect.left + 'px';
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+  }
+  openDeliveryPopup() {
     this.showOrderDuePopup = true;
-}
-closeOrderDuePopup(){
-  this.showOrderDuePopup = false;
-}
-submitDUeOrder(){
-this.orderDueDetails = this.orderdueForm.value.orderType =='ASAP'?this.orderdueForm.value.orderType: this.orderdueForm.value.orderDateTime;
- this.showOrderDuePopup = false
-}
+  }
+  closeOrderDuePopup() {
+    this.showOrderDuePopup = false;
+  }
+  submitDUeOrder() {
+    this.orderDueDetails = this.orderdueForm.value.orderDue == 'ASAP' ? this.orderdueForm.value.orderDue : this.orderdueForm.value.orderDateTime;
+    this.showOrderDuePopup = false
+    this.showNewModelPopup=false
+  }
 }
 export interface CartItem {
   name: string;      // Item name
   price: number;     // Item price
   quantity: number;  // Quantity of the item
   img?: string;      // Optional property for image URL
-  Ingredients:string; //optional property for Ingredients
+  Ingredients: string; //optional property for Ingredients
 
 }

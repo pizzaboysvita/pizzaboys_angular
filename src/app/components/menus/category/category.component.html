@@ -23,7 +23,7 @@
         <div class="row input-items gy-3">
            <div class="col-xl-3">
             <div class="input-box">
-                <h6 class="fw-bold p-1">Store Name</h6>
+                <h6 class="fw-bold ">Store Name</h6>
                 <ng-select
                   [items]="storeList"
                   [searchable]="true"
@@ -74,9 +74,10 @@
               <!-- </div> -->
             </div>
           </div>
+          <div class="col-xl-3"></div>
           <div class="col-xl-3">
             <div class="d-flex flex-wrap gap-2">
-              <button class="btn btn-animation save-button" type="button">
+              <button class="btn btn-animation save-button" type="button" (click)="searchCategory()">
                 Search
               </button>
               <button class="btn btn-animation reset-button" type="button">
@@ -104,11 +105,13 @@
                 >No.of.Categorys:{{rowData.length}}</span
               >
             </li>
+            @if(this.loginUser.role_id ==1){
             <li (click)="insertCategory('Add')">
               <a class="export-btn"
                 ><i class="ri-upload-2-fill me-1"></i> Add Category</a
               >
             </li>
+          }
             <li>
               <a class="export-btn"
                 ><i class="ri-upload-2-fill me-1"></i> Export</a
@@ -126,7 +129,7 @@
             [rowData]="rowData"
             [domLayout]="'autoHeight'"
             [suppressColumnVirtualisation]="true" [pagination]="true" [paginationPageSize]="15"
-            [defaultColDef]="{ flex: 1, minWidth: 100, sortable: true }"
+            [defaultColDef]="{ flex: 1, minWidth: 160, sortable: true }"
             (cellClicked)="onCellClicked($event)"
           >
           </ag-grid-angular>

@@ -203,6 +203,7 @@ optType=[
   miscForm: FormGroup
   storeList: any;
   reqbody: any
+  storesList: any;
   constructor(private fb: FormBuilder, public modal: NgbModal,private toastr: ToastrService, private apis: ApisService, private sessionStorage: SessionStorageService) {
     this.optionSetForm = this.fb.group({
       name: ['',Validators.required],
@@ -229,8 +230,9 @@ optType=[
       PriceinFreeQuantityPromos: ['']
     })
   }
-
+selectedStore='-1'
   ngOnInit() {
+    this.storeListItem()
     this.getMenuCategoryDishData();
     this.patchValue();
   }
@@ -247,12 +249,25 @@ optType=[
       this.gridApi.setFocusedCell(0, 'name');
       this.gridApi.startEditingCell({ rowIndex: 0, colKey: 'name' });
     });
+    
+  }
+    storeListItem() {
+    this.apis
+      .getApi(AppConstants.api_end_points.store_list)
+      .subscribe((data:any) => {
+        if (data) {
+          console.log(data);
+          data.unshift({ store_id: -1, store_name: 'All Stores' });
+          this.storesList = data;
+        }
+      });
+
   }
   getMenuCategoryDishData() {
 
-    const menuApi = this.apis.getApi(AppConstants.api_end_points.menu + '?store_id=' + -1);
-    const categoryApi = this.apis.getApi(`/api/category?store_id=` + -1);
-    const dishApi = this.apis.getApi(AppConstants.api_end_points.dish + '?store_id=' + -1);
+    const menuApi = this.apis.getApi(AppConstants.api_end_points.menu + '?store_id=' + this.selectedStore);
+    const categoryApi = this.apis.getApi(`/api/category?store_id=` + this.selectedStore);
+    const dishApi = this.apis.getApi(AppConstants.api_end_points.dish + '?store_id=' + this.selectedStore);
 
     forkJoin([menuApi, categoryApi, dishApi]).subscribe(
       ([menuRes, categoryRes, dishRes]: any) => {

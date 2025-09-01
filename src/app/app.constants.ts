@@ -10,7 +10,6 @@ export const AppConstants = {
        menuV2:'/api/menuv2',
        category:'/api/category',
         categoryV2:'/api/categoryv2',
-        
        optionSet:'/api/optionset',
        dish:'/api/dish',
        dishV2:'/api/dishV2',

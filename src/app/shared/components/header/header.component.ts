@@ -10,12 +10,14 @@ import { ModeComponent } from './mode/mode.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { ProfileComponent } from "./profile/profile.component";
 import { SessionStorageService } from '../../services/session-storage.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { PosOrdersComponent } from '../../../components/orders/pos-orders/pos-orders.component';
 
 @Component({
     selector: 'app-header',
     templateUrl: './header.component.html',
     styleUrl: './header.component.scss',
-    imports: [MessagesComponent, ModeComponent, NotificationsComponent,
+    imports: [ 
         ClickOutsideDirective, ProfileComponent, FeatherIconsComponent,
         RouterModule, FormsModule, CommonModule]
 })
@@ -37,7 +39,7 @@ export class HeaderComponent {
   users: any;
   ishidepos:any;
 
-  constructor(public navService: NavService,private sessionStorageService:SessionStorageService,public router: Router) { 
+  constructor(public navService: NavService,private sessionStorageService:SessionStorageService,public router: Router,private modal: NgbModal) { 
     this.navService.items.subscribe(
       (menuItems) => (this.items = menuItems)
     );
@@ -113,4 +115,11 @@ home(){
     window.location.reload();
   }, 1000);
 }
+ orderList() {
+    const modalRef = this.modal.open(PosOrdersComponent, {
+      windowClass: 'theme-modal',
+      centered: true,
+      size: 'xl'
+    });
+  }
 }

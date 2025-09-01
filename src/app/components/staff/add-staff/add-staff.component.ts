@@ -109,7 +109,7 @@ export class AddStaffComponent {
 
   ngOnInit(): void {
     this.permissionForm = this.fb.group({
-      store: new FormControl(null,Validators.required),
+      store: new FormControl(null),
     });
     this.initForm();
     this.applyPreset("Manager");
@@ -313,6 +313,7 @@ const posGroup = this.permissionForm.get('pos') as FormGroup;
 const staffGroup = this.permissionForm.get('staff') as FormGroup;
 const websiteGroup = this.permissionForm.get('website') as FormGroup;
 const storeGroup = this.permissionForm.get('store') as FormGroup;
+console.log(this.permissionForm.controls,this.staffForm.controls)
  if (this.staffForm.invalid || this.permissionForm.invalid) {
      this.toastr.error('Fill all Required Fields', 'Error');
       Object.keys(this.staffForm.controls).forEach(key => {
