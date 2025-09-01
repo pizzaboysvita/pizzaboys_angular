@@ -4,7 +4,18 @@
             <!-- <h5 header>Setting</h5> -->
             <div header class="title-header option-title justify-content-start right-options-height">
                 <!-- <h3 class="p-2">Dishs</h3> -->
-
+                @if(loginUser.role_id == 1){
+                <div class="col-lg-3">
+                    <div class="input-box">
+                        <!-- <h6 class="fw-bold p-1">Store Name</h6> -->
+                        <ng-select style="font-size: 14px;font-weight: 600  ;" [items]="storesList" [searchable]="true"
+                            [multiple]="false" bindLabel="store_name" bindValue="store_id"
+                            placeholder="Select Store Name" (change)="getMenuCategoryDishData()"
+                            [(ngModel)]="selectedStoreId">
+                        </ng-select>
+                    </div>
+                </div>
+                }
                 <div class="right-options ms-auto">
 
                     <ul>
@@ -15,9 +26,11 @@
                         <li>
                             <a class="btn btn-dashed" (click)="insertCategory()">Add Category</a>
                         </li> -->
+                        @if(loginUser.role_id == 1){
                         <li>
                             <a class="btn btn-dashed" (click)="insertDish('Add')">Add Dish</a>
                         </li>
+                    }
                     </ul>
                 </div>
             </div>
@@ -27,7 +40,8 @@
                     <ul class="nav setting-main-box sticky theme-scrollbar" style="background-color: rgb(240 240 240);">
                         <li style="font-weight: 500;"> Menu Type:</li>
                         <li class="position-relative d-flex align-items-center">
-                            <select class="form-select" [(ngModel)]="selectedMenuId" (change)="menuType_cat(selectedMenuId)" >
+                            <select class="form-select" [(ngModel)]="selectedMenuId"
+                                (change)="menuType_cat(selectedMenuId)">
                                 @for(item of menuList; track item) {
                                 <option [ngValue]="item">{{ item.name }}</option>
                                 }
@@ -43,8 +57,8 @@
                         </li>
                         }
 
-                        
-                      
+
+
 
 
                     </ul>
@@ -72,23 +86,24 @@
                                         <a href="javascript:void(0)" [class.show]="item.active">
                                             <i class="ri-more-fill"></i>
                                         </a>
-                                        
-                                         <ul class="dropdown-menu dropdown-menu-end mb-10" [class.show]="item.active"  
+
+                                        <ul class="dropdown-menu dropdown-menu-end mb-10" [class.show]="item.active"
                                             style="position: absolute;inset: 0px 0px auto auto; margin: 0px;transform: translate(-5px, 20px);">
                                             <li>
-                                                <a class="dropdown-item d-flex align-items-center" (click)="openPopup()">
+                                                <a class="dropdown-item d-flex align-items-center"
+                                                    (click)="openPopup(item)">
                                                     <i class="ri-download-2-line me-2"></i>Action</a>
                                             </li>
                                             <li>
                                                 <a class="dropdown-item d-flex align-items-center"
-                                                     (click)="viewDish(item,'view')">
-                                               <i class="ri-eye-line"></i> &nbsp;  View</a>
+                                                    (click)="viewDish(item,'view')">
+                                                    <i class="ri-eye-line"></i> &nbsp; View</a>
                                             </li>
-                                           
+
                                             <li>
                                                 <a class="dropdown-item d-flex align-items-center"
-                                                     (click)="viewDish(item,'edit')">
-                                                   <i class="ri-pencil-line"></i> &nbsp;Edit</a>
+                                                    (click)="viewDish(item,'edit')">
+                                                    <i class="ri-pencil-line"></i> &nbsp;Edit</a>
                                             </li>
                                             <li (click)="dishDelete(item)" class=" mb-10">
                                                 <a class="dropdown-item d-flex align-items-center">
@@ -97,7 +112,7 @@
                                         </ul>
                                     </div>
                                 </label>
-                                <h6 class="f-w-600">{{item.dish_name}}       </h6>
+                                <h6 class="f-w-600">{{item.dish_name}} </h6>
                                 <h6><span style="float: inline-start;">${{item.dish_price}}</span></h6>
 
                             </div>
@@ -113,30 +128,30 @@
 </div>
 
 <ng-template #confirmModal let-modal>
-  <div class="modal-content">
-    <div class="modal-header d-block text-center">
-      <h5 class="modal-title w-100" style="font-size: 20px; font-weight: 600">
-        Confirm Dish Deletion
-      </h5>
-      <button type="button" class="btn-close" (click)="modal.dismiss()">
-        <!-- <i class="fa fa-times"></i> -->
-      </button>
+    <div class="modal-content">
+        <div class="modal-header d-block text-center">
+            <h5 class="modal-title w-100" style="font-size: 20px; font-weight: 600">
+                Confirm Dish Deletion
+            </h5>
+            <button type="button" class="btn-close" (click)="modal.dismiss()">
+                <!-- <i class="fa fa-times"></i> -->
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="text-center">
+                <span style="font-size: 16px">
+                    Are you sure you want to delete this Dish?
+                </span>
+                <span class="text-danger fw-bold">This action cannot be undone.</span>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-sm fw-bold btn-animation" (click)="modal.dismiss()">
+                No
+            </button>
+            <button type="button" class="btn btn-sm fw-bold btn-animation" (click)="onConfirm(modal)">
+                Yes
+            </button>
+        </div>
     </div>
-    <div class="modal-body">
-      <div class="text-center">
-        <span style="font-size: 16px">
-          Are you sure you want to delete this Dish?
-        </span>
-        <span class="text-danger fw-bold">This action cannot be undone.</span>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-sm fw-bold btn-animation" (click)="modal.dismiss()">
-        No
-      </button>
-      <button type="button" class="btn btn-sm fw-bold btn-animation" (click)="onConfirm(modal)">
-        Yes
-      </button>
-    </div>
-  </div>
 </ng-template>

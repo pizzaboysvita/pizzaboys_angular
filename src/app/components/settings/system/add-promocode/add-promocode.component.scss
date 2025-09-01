@@ -1,0 +1,57 @@
+$primary-orange: #fd7e14;
+
+.modal-header {
+  border-bottom: 1px solid #e9ecef;
+}
+
+.modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #333;
+}
+
+.form-text {
+  font-size: 0.875rem;
+  color: #6c757d !important;
+}
+
+.input-group-text {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+  color: #495057;
+}
+
+.optional-badge {
+  background-color: #e9ecef;
+  color: #6c757d;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+}
+
+.form-check-label {
+  font-weight: 500;
+}
+
+.btn-primary {
+  background-color: $primary-orange;
+  border-color: $primary-orange;
+  font-weight: bold;
+
+  &:hover {
+    background-color: darken($primary-orange, 10%);
+    border-color: darken($primary-orange, 10%);
+  }
+}
+
+.dotted-divider {
+  border: none;
+  border-top: 2px dotted #2b2a2a;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}

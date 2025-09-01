@@ -1,6 +1,7 @@
-import { Routes } from '@angular/router';
+import { Routes } from "@angular/router";
 
 export const content: Routes = [
+
     {
         path: 'dashboard',
         loadChildren: () => import('../../components/dashboard/dashboard.routes'),

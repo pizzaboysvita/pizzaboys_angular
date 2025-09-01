@@ -186,3 +186,20 @@
   min-width: 30px;
   text-align: center;
 }
+/* create-model.component.scss */
+/* Make sure pac dropdown stays above modal */
+.pac-container {
+  z-index: 2000 !important;   /* higher than modal */
+}
+
+/* If you want it to align directly under the input */
+.modal .pac-container {
+  position: fixed !important;   /* stick to viewport */
+  left: auto !important;
+  right: auto !important;
+}
+body.modal-open {
+  overflow: hidden !important;
+  
+}
+

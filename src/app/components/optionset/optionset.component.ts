@@ -158,7 +158,7 @@ export class OptionsetComponent implements OnInit {
 
   getOptionSets() {
     console.log("oppppppppppppppppp")
-    this.apis.getApi('/api/optionset?user_id=' + JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id).subscribe((data: any) => {
+    this.apis.getApi('/api/optionset?store_id=' + -1).subscribe((data: any) => {
       if (data.code==1) {
         console.log(data, 'optionnnnnnnn')
          data.data.forEach((item:any)=>{

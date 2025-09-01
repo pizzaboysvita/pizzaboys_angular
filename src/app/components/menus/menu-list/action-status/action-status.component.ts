@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -11,15 +11,23 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 export class ActionStatusComponent {
   status: string = '';
 pos: string = '';
-misc: string = '';
-
+web: string = '';
+@Input() data: any;  
   constructor(public modal: NgbActiveModal) {}
+
+  ngOnInit(): void {
+    if (this.data) {
+      this.status = this.data.status || '';
+      this.pos = this.data.pos || '';
+      this.web = this.data.is_online_hide || '';
+    }
+  }
 
   saveStatus() {
     const result = {
       status: this.status,
       pos: this.pos,
-      misc: this.misc
+      web: this.web
     };
     this.modal.close(result);
   }

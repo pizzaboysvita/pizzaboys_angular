@@ -10,11 +10,14 @@ import { SessionStorageService } from "../../../shared/services/session-storage.
 import { ApisService } from "../../../shared/services/apis.service";
 import { AppConstants } from "../../../app.constants";
 import Swal from "sweetalert2";
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
   store_id:string;
   dish_menu_id: string;
+  hide_menu_in_POS:string
+  is_online_hide:string
   name: string;
   display_name: string;
   price: string;
@@ -24,7 +27,7 @@ interface RowData {
 }
 @Component({
   selector: "app-category",
-  imports: [CardComponent, AgGridAngular, NgSelectModule],
+  imports: [CardComponent, AgGridAngular, NgSelectModule,FormsModule,ReactiveFormsModule],
   templateUrl: "./category.component.html",
   styleUrl: "./category.component.scss",
 })
@@ -73,77 +76,167 @@ valueGetter: (params: any) =>this.menuNameData(params.data.dish_menu_id)
       tooltipField: "display_name",
     },
    {
-  headerName: 'Status',
-  field: 'status',
-  cellRenderer: (params: any) => {
-    const select = document.createElement('select');
-    select.className = 'custom-select';
-  
+      headerName: 'Status',
+      field: 'status',
+      cellRenderer: (params: any) => {
+        const select = document.createElement('select');
+        select.className = 'custom-select';
 
-    const options = ['Active', 'Inactive', 'Pending'];
-    const selected = params.value || '';
+        // mapping values
+        const statusMap: Record<string | number, string> = {
+          1: 'Active',
+          0: 'Inactive',
+          // keep as string if API sends it
+        };
 
-    options.forEach((opt) => {
-      const option = document.createElement('option');
-      option.value = opt;
-      option.text = opt;
-      if (opt === selected) {
-        option.selected = true;
+        const options = [
+          { value: 1, label: 'Active' },
+          { value: 0, label: 'Inactive' },
+
+        ];
+
+        const selected = statusMap[params.value] ?? params.value ?? '';
+
+        options.forEach((opt) => {
+          const option = document.createElement('option');
+          option.value = opt.value.toString();
+          option.text = opt.label;
+
+          if (opt.label === selected || opt.value === params.value) {
+            option.selected = true;
+          }
+          select.appendChild(option);
+        });
+
+        const rowData = params.data;
+
+        // Handle the change event
+        select.addEventListener('change', (event) => {
+          const newValue = (event.target as HTMLSelectElement).value;
+
+          // store as number if 0/1, otherwise keep string
+          const parsedValue = newValue === '1' ? 1 : newValue === '0' ? 0 : newValue;
+
+          params.setValue(parsedValue); // Updates the grid's value
+          console.log('Dropdown changed to:', parsedValue);
+          const dishMenuId = params.data.dish_menu_id;
+          this.updateStatus(parsedValue, params.data);
+          console.log(rowData, 'rowData');
+        });
+
+        return select;
       }
-      select.appendChild(option);
-    });
+    }
+    ,
+    {
+      headerName: 'POS',
+      field: 'hide_category_in_POS',
+      cellRenderer: (params: any) => {
+        const select = document.createElement('select');
+        select.className = 'custom-select';
 
-      const rowData = params.data;
-    // Handle the change event
-    select.addEventListener('change', (event) => {
-      const newValue = (event.target as HTMLSelectElement).value;
-      params.setValue(newValue); // Updates the grid's value
-      console.log('Dropdown changed to:', newValue);
-      console.log(rowData,'rowData')
-    });
+        // mapping values
+        const statusMap: Record<string | number, string> = {
+          1: 'Show of POS',
+          0: 'Hide of POS',
+          // keep as string if API sends it
+        };
 
-    return select;
-  }
-  
-},
- {
- headerName: "POS",
-      field: "hide_category_in_POS",
-      flex: 1,
-        width: 180, 
-  cellRenderer: (params: any) => {
-    const select = document.createElement('select');
-    select.className = 'custom-select';
-  
+        const options = [
+          { value: 1, label: 'Show of POS' },
+          { value: 0, label: 'Hide of POS' },
 
-    const options = ["Hide in POS", "Show in POS"];
-    const selected = params.value || '';
+        ];
 
-    options.forEach((opt) => {
-      const option = document.createElement('option');
-      option.value = opt;
-      option.text = opt;
-      if (opt === selected) {
-        option.selected = true;
+        const selected = statusMap[params.value] ?? params.value ?? '';
+
+        options.forEach((opt) => {
+          const option = document.createElement('option');
+          option.value = opt.value.toString();
+          option.text = opt.label;
+
+          if (opt.label === selected || opt.value === params.value) {
+            option.selected = true;
+          }
+          select.appendChild(option);
+        });
+
+        const rowData = params.data;
+
+        // Handle the change event
+        select.addEventListener('change', (event) => {
+          const newValue = (event.target as HTMLSelectElement).value;
+
+          // store as number if 0/1, otherwise keep string
+          const parsedValue = newValue === '1' ? 1 : newValue === '0' ? 0 : newValue;
+
+          params.setValue(parsedValue); // Updates the grid's value
+          console.log('Dropdown changed to:', parsedValue);
+          const dishMenuId = params.data.dish_menu_id;
+
+          this.updateStatusPOS(parsedValue, params.data);
+          console.log(rowData, 'rowData');
+        });
+
+        return select;
       }
-      select.appendChild(option);
-    });
+    }
+    ,
+    {
+      headerName: 'Web',
+      field: 'is_online_hide',
+      cellRenderer: (params: any) => {
+        const select = document.createElement('select');
+        select.className = 'custom-select';
 
-      const rowData = params.data;
-    // Handle the change event
-    select.addEventListener('change', (event) => {
-      const newValue = (event.target as HTMLSelectElement).value;
-      params.setValue(newValue); // Updates the grid's value
-      console.log('Dropdown changed to:', newValue);
-      console.log(rowData,'rowData')
-    });
+        // mapping values
+        const statusMap: Record<string | number, string> = {
+          1: 'Show in Web',
+          0: 'Hide in Web',
+          // keep as string if API sends it
+        };
 
-    return select;
-  }
-},
+        const options = [
+          { value: 1, label: 'Show in Web' },
+          { value: 0, label: 'Hide in Web' },
+
+        ];
+
+        const selected = statusMap[params.value] ?? params.value ?? '';
+
+        options.forEach((opt) => {
+          const option = document.createElement('option');
+          option.value = opt.value.toString();
+          option.text = opt.label;
+
+          if (opt.label === selected || opt.value === params.value) {
+            option.selected = true;
+          }
+          select.appendChild(option);
+        });
+
+        const rowData = params.data;
+
+        // Handle the change event
+        select.addEventListener('change', (event) => {
+          const newValue = (event.target as HTMLSelectElement).value;
+
+          // store as number if 0/1, otherwise keep string
+          const parsedValue = newValue === '1' ? 1 : newValue === '0' ? 0 : newValue;
+
+          params.setValue(parsedValue); // Updates the grid's value
+          console.log('Dropdown changed to:', parsedValue);
+          const dishMenuId = params.data.dish_menu_id;
+          this.updateStatusWeb(parsedValue, params.data);
+          console.log(rowData, 'rowData');
+        });
+
+        return select;
+      }
+    }
     
    
-    {
+   , {
       headerName: "Actions",
       cellRenderer: (params: any) => {
         return `
@@ -175,20 +268,97 @@ delete
   menuItemsList: any=[];
   menuMap: any;
   storeList: any;
-
+  categoriesForm: FormGroup;
+  loginUser: any;
   constructor(
     public modal: NgbModal,
     private apiService: ApisService,
-    private sessionStorage: SessionStorageService
+    private sessionStorage: SessionStorageService,
+    private formBuilder: FormBuilder
   ) {}
 
   ngOnInit(): void {
+     this.loginUser= JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user
+   
+    this.categoriesForm=this.formBuilder.group({
+      store: [''],
+      address: [''],
+      status: ['']
+    });
+    if(this.loginUser.role_id !=1){
+      this.categoriesForm.patchValue({
+        store: this.loginUser.store_id
+      })
+      this.categoriesForm.get('store')?.disable(); 
+    }else{
+       this.categoriesForm.get('store')?.enable(); 
+    }
     this.getStoreList()
 
   
   }
 
+ updateStatus(dishStatusId:any, rowData:any){
+    console.log("opppppppppppppp",dishStatusId)
+ const reqbody = {
+      "details_type": "category",
+      "detail_id": rowData.id,
+      "action": dishStatusId,
+      "pos": rowData.hide_category_in_POS,
+      "in_web_hide": rowData.is_online_hide,
+      "updated_by": JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,
+    };
+    console.log(reqbody,rowData,'reqbody')
+ this.apiService.patchStatusApi(reqbody).subscribe((response:any) => {
+      console.log("Status updated successfully:", response);
+      if(response){
+        this.getmenuList()
+      }
+    }, (error) => {
+      console.error("Error updating status:", error);
+    });
+  }
 
+   updateStatusPOS(dishPOSId:any, rowData:any){
+    console.log("opppppppppppppp",dishPOSId)
+ const reqbody = {
+      "details_type": "category",
+      "detail_id": rowData.id,
+      "action": rowData.status == 'Active' ? 1 : 0,
+      "pos": dishPOSId,
+      "in_web_hide": rowData.is_online_hide,
+      "updated_by": JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,
+    };
+    console.log(reqbody,rowData,'reqbody')
+ this.apiService.patchStatusApi(reqbody).subscribe((response:any) => {
+      console.log("Status updated successfully:", response);
+      if(response){
+        this.getmenuList()
+      }
+    }, (error) => {
+      console.error("Error updating status:", error);
+    });
+  }
+  updateStatusWeb(dishWebId:any, rowData:any){
+    console.log("opppppppppppppp",dishWebId)
+ const reqbody = {
+      "details_type": "category",
+      "detail_id": rowData.id,
+      "action": rowData.status == 'Active' ? 1 : 0,
+      "pos": rowData.hide_category_in_POS,
+        "in_web_hide": dishWebId,
+      "updated_by": JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,
+    };
+    console.log(reqbody,rowData,'reqbody')
+ this.apiService.patchStatusApi(reqbody).subscribe((response:any) => {
+      console.log("Status updated successfully:", response);
+      if(response){
+        this.getmenuList()
+      }
+    }, (error) => {
+      console.error("Error updating status:", error);
+    });
+  }
     getStoreList() {
     this.apiService.getApi(AppConstants.api_end_points.store_list).subscribe((data: any) => {
       console.log(data)
@@ -201,9 +371,12 @@ delete
     }
     })
   }
+  searchCategory(){
+
+  }
   getmenuList() {
 
-    this.apiService.getApi(AppConstants.api_end_points.menu + '?user_id=' + JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id).subscribe((data: any) => {
+    this.apiService.getApi(AppConstants.api_end_points.menu + '?store_id=' + -1).subscribe((data: any) => {
       if (data) {
      
         // data.data.forEach((item: any) => {
@@ -218,6 +391,7 @@ delete
       }
     })
   }
+  
     fetchCategories(): void {
     const loginRaw = this.sessionStorage.getsessionStorage("loginDetails");
     const loginData = loginRaw ? JSON.parse(loginRaw) : null;
@@ -231,7 +405,7 @@ delete
     }
 
     this.apiService
-      .getApi(`/api/category?user_id=${userId}`)
+      .getApi(`/api/category?store_id=${ loginData?.user?.store_id ||-1}`)
       .subscribe((res: any) => {
 
         console.log(res, 'categories response');
@@ -309,13 +483,14 @@ this.insertCategory("Edit")
 const reqbody={
   "type": "delete",
   "id":this.categoryRowData.id,
+  "store_id": this.categoryRowData.store_id
 
 
 }
  const formData = new FormData();
     formData.append("category_image", ''); // Attach Blob with a filename
     formData.append("body", JSON.stringify(reqbody));
-this.apiService.postApi(AppConstants.api_end_points.category,formData).subscribe((data:any)=>{
+this.apiService.postApi(AppConstants.api_end_points.categoryV2,formData).subscribe((data:any)=>{
   console.log(data)
   if(data.code ==1){
         this.modelRef.close();
