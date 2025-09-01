@@ -286,9 +286,16 @@ export class NavService {
       icon: "ri-store-3-line",
       type: "link",
       active: false,
-    }
+    },
 
-      
+      {
+ level: 1,
+      title: "Setting",
+      path: "/settings/profile-setting",
+      icon: "ri-store-3-line",
+      type: "link",
+      active: false,
+      }
     //   {
     //   level: 1,
     //   title: "Category",

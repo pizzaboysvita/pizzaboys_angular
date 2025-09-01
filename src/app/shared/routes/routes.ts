@@ -39,7 +39,7 @@ export const content: Routes = [
 
 
 
-    {
+     {
         path: 'settings/profile-setting',
         loadChildren: () => import('../../components/setting/setting.routes'),
     },
