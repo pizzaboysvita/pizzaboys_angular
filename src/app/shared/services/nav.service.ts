@@ -279,6 +279,14 @@ export class NavService {
       type: "link",
       active: false,
     },
+    {
+      level: 1,
+      title: "Inventory",
+      path: "/inventory",
+      icon: "ri-store-3-line",
+      type: "link",
+      active: false,
+    }
       
     //   {
     //   level: 1,

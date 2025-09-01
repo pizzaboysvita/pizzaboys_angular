@@ -1,0 +1,26 @@
+<div class="p-4">
+
+  <!-- 🔘 Tabs -->
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <button class="nav-link" 
+              [class.active]="activeTab === 'items'"
+              (click)="switchTab('items')">
+        Items
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" 
+              [class.active]="activeTab === 'dishes'"
+              (click)="switchTab('dishes')">
+        Dishes
+      </button>
+    </li>
+  </ul>
+
+  <!-- 📑 Tab Content -->
+  <div class="mt-3">
+    <app-inventory-items *ngIf="activeTab === 'items'"></app-inventory-items>
+    <app-inventory-dishes *ngIf="activeTab === 'dishes'"></app-inventory-dishes>
+  </div>
+</div>
