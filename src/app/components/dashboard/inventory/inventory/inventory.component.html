@@ -1,26 +1,44 @@
-<div class="p-4">
+<app-card [header]="true" [body]="true">
+    <h5 header>Inventory</h5>
+    <div class="row" body style="margin-top: -25px;">
+        <div class="col-12">
+            <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav nav-pills flex-nowrap">
+                <li [ngbNavItem]="1">
+                    <button class="nav-link" ngbNavLink><i class="ri-image-circle-fill"></i>Dish</button>
+                    <ng-template ngbNavContent>
+                        <br>
+                        <app-grocery></app-grocery>
+                        <!-- <app-menu-list></app-menu-list> -->
+                    </ng-template>
+                </li>
 
-  <!-- 🔘 Tabs -->
-  <ul class="nav nav-tabs">
-    <li class="nav-item">
-      <button class="nav-link" 
-              [class.active]="activeTab === 'items'"
-              (click)="switchTab('items')">
-        Items
-      </button>
-    </li>
-    <li class="nav-item">
-      <button class="nav-link" 
-              [class.active]="activeTab === 'dishes'"
-              (click)="switchTab('dishes')">
-        Dishes
-      </button>
-    </li>
-  </ul>
+                <li [ngbNavItem]="2">
+                    <button class="nav-link" ngbNavLink><i class="ri-restaurant-2-fill"></i>Dish Ingredients</button>
+                    <ng-template ngbNavContent>
+                        <br>
+                        <app-ingredients></app-ingredients>
+                        <!-- <app-category></app-category> -->
+                    </ng-template>
+                </li>
+                <!-- <li [ngbNavItem]="3">
+                    <button class="nav-link" ngbNavLink><i class="ri-restaurant-fill"></i>Types of Menus</button>
+                    <ng-template ngbNavContent>
+                        <br>
+                       <app-add-menus></app-add-menus>
+                    </ng-template>
+                </li> -->
 
-  <!-- 📑 Tab Content -->
-  <div class="mt-3">
-    <app-inventory-items *ngIf="activeTab === 'items'"></app-inventory-items>
-    <app-inventory-dishes *ngIf="activeTab === 'dishes'"></app-inventory-dishes>
-  </div>
-</div>
+                <!-- <li [ngbNavItem]="4">
+                    <button class="nav-link" ngbNavLink><i class="ri-image-circle-fill"></i>Option Set</button>
+                    <ng-template ngbNavContent>
+                        <br>
+                        <app-dish></app-dish>
+                         <app-optionset></app-optionset>
+                    </ng-template>
+                </li> -->
+            </ul>
+        </div>
+        <div class="col-12" [ngbNavOutlet]="nav"></div>
+    </div>
+    <!-- <button body class="btn save-button mt-2" type="submit">Save</button> -->
+</app-card>
