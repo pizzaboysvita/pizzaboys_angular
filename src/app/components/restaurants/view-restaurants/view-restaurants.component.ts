@@ -90,11 +90,12 @@ export class ViewRestaurantsComponent {
     if (input.files && input.files[0]) {
       console.log(input.files[0])
       this.file = input.files[0];
+      this.uploadImagUrl_data=this.file
       console.log()
       const reader = new FileReader();
 
       reader.onload = () => {
-        this.uploadImagUrl = reader.result; // this will update the image source
+        this.uploadImagUrl_data = reader.result; // this will update the image source
       };
 
       reader.readAsDataURL(this.file); // convert image to base64 URL
@@ -152,5 +153,12 @@ export class ViewRestaurantsComponent {
       })
 
     }
+  }
+  goBack() {
+    console.log('Going back to restaurant list');
+    this.router.navigate(['/restaurants/restaurants-list']);
+  }
+  removeImage(){
+        this.uploadImagUrl_data = null;
   }
 }

@@ -281,13 +281,21 @@ export class NavService {
     },
     {
       level: 1,
-      title: "Settings",
-      path: "/settings",
-      icon: "ri-settings-line",
+      title: "Inventory",
+      path: "/inventory",
+      icon: "ri-store-3-line",
       type: "link",
       active: false,
     },
-      
+
+      {
+ level: 1,
+      title: "Setting",
+      path: "/settings/profile-setting",
+      icon: "ri-store-3-line",
+      type: "link",
+      active: false,
+      }
     //   {
     //   level: 1,
     //   title: "Category",

@@ -1,10 +1,25 @@
 <form [formGroup]="storeForm">
   <app-card [header]="true" [body]="true">
+       <div header class="title-header option-title justify-content-start right-options-height">
       @if(this.session.getsessionStorage('storeType') =='view'){
-    <h5 header class="font-family">View Store</h5>
+    <h5 header class="font-family" style="font-size: 20px;">View Store</h5>
       } @else{
-          <h5 header class="font-family">Edit Store</h5>
+          <h5 header class="font-family" style="font-size: 20px;">Edit Store</h5>
+          
       }
+      
+          <div class="right-options ms-auto">
+
+                    <ul>                
+                        <li>
+                            <!-- <a class="btn" > -->
+                              <i class="ri-arrow-left-circle-line" style="font-size: 27px; cursor: pointer;" (click)="goBack()"></i>
+                            <!-- </a> -->
+                        </li>
+                    
+                    </ul>
+                </div>
+                </div>
     <div class="input-items font-family" body>
       <div class="row gy-3">
 
@@ -118,24 +133,53 @@
           </div>
         </div>
 
-        <div class="row">
- <!-- <div class="col-12"> -->
-            <div class="col-8">
-          <div class="input-box">
-            <h6 class="font-family">Upload Images </h6>
-            <!-- <span class="choose-img-box font-family" > -->
-            
-               <input autocomplete="off" id="fileInput" type="file" accept="image/*" (change)="onSelectFile($event)"
-        >
-            <!-- </span> -->
-          </div>
-          </div>
-           <div class="col-3">
-                <img [src]="uploadImagUrl_data" alt="Preview" width="100" height="100" />
-           </div>
-        </div>
+      
+
+        <div class="col-12">
+ <div class="input-box">
+  <h6 class="mb-2">Upload Images</h6>
+
+  <!-- Preview Section -->
+  <div *ngIf="uploadImagUrl_data; else uploadInput" class="image-preview-container">
+    <img
+      #previewImage
+      [src]="uploadImagUrl_data"
+      alt="Preview"
+      class="preview-img"
+    
+    />
+
+    <!-- Delete Icon -->
+    <!-- <button class="icon-button delete" (click)="removeImage()" title="Delete">❌</button> -->
+  <!-- <button class="icon-button" >×</button> -->
+    @if(session.getsessionStorage('storeType') !='view'){
+  <button class="icon-button"(click)="removeImage()">✕</button>
+    }
+    <!-- File name -->
+    <!-- <div class="file-name text-center mt-1">
+      {{ getCleanFileName() }}
+    </div> -->
+
+  
+  </div>
+
+  <!-- File input (shown when no preview) -->
+  <ng-template #uploadInput>
+    <input
+      type="file"
+      accept="image/*"
+      (change)="onSelectFile($event)"
+    />
+  </ng-template>
+</div>
+
+</div>
         <!-- </div> -->
          
+
+
+
+        
       </div>
 
       <!-- Buttons -->

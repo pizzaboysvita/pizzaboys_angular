@@ -290,6 +290,7 @@ export class PosOrdersComponent {
   // staff_list: any;
   // staffListSorting: any;
   // orderList: any;
+
   orderDetails: any;
   modalRef: any;
   //  onCellClicked(event: any): void {
@@ -311,9 +312,9 @@ export class PosOrdersComponent {
   constructor(
     private apiService: ApisService,
     private sessionStorage: SessionStorageService,
-     private modalService: NgbModal
-  ) {}
-
+     private modalService: NgbModal) 
+  {}
+ 
   ngOnInit() {
     this.getStaffList();
     this.getOrderList()
@@ -328,7 +329,7 @@ export class PosOrdersComponent {
            this.apiService.getApi(AppConstants.api_end_points.orderList+'?store_id='+store_id+'&type=web').subscribe((data: any) => {
              if (data) {
 data.categories.forEach((element: any) => {
-    element.due = this.transform(element.order_created_datetime);
+    element.due = this.transform(element.ordr_created_datetime);
   element.order_master_id = 'P-'+element.order_master_id;
 })
               this.orderList = data.categories

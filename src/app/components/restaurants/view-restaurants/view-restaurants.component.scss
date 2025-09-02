@@ -7,4 +7,67 @@
     font-family: 'Trebuchet MS', sans-serif !important;
     font-size: 14px !important; /* optional */
   }
-  
+  .back-button{
+    float: right;
+    color: #fff;
+    // font-size: calc(15px + 1 * (100vw - 320px) / 1600);
+
+    border: 1px solid #ef2917;
+    background: #ef2917;
+    border-radius: 10px;
+}
+
+
+.image-preview-container {
+  position: relative;
+  width: 120px;
+  height: auto;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 5px;
+  background-color: #fff;
+  text-align: center;
+}
+
+.preview-img {
+   width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+}
+
+.icon-button {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background-color: black;
+  color: white;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  z-index: 10;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+
+.file-name {
+  font-size: 14px;
+  color: #333;
+  margin-top: 4px;
+  word-break: break-word;
+}
+
+.image-size {
+  font-size: 12px;
+  color: #666;
+}
