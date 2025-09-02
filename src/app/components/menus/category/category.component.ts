@@ -269,6 +269,7 @@ delete
   menuMap: any;
   storeList: any;
   categoriesForm: FormGroup;
+  loginUser: any;
   constructor(
     public modal: NgbModal,
     private apiService: ApisService,
@@ -277,11 +278,21 @@ delete
   ) {}
 
   ngOnInit(): void {
+     this.loginUser= JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user
+   
     this.categoriesForm=this.formBuilder.group({
       store: [''],
       address: [''],
       status: ['']
     });
+    if(this.loginUser.role_id !=1){
+      this.categoriesForm.patchValue({
+        store: this.loginUser.store_id
+      })
+      this.categoriesForm.get('store')?.disable(); 
+    }else{
+       this.categoriesForm.get('store')?.enable(); 
+    }
     this.getStoreList()
 
   
@@ -360,6 +371,9 @@ delete
     }
     })
   }
+  searchCategory(){
+
+  }
   getmenuList() {
 
     this.apiService.getApi(AppConstants.api_end_points.menu + '?store_id=' + -1).subscribe((data: any) => {
@@ -377,6 +391,7 @@ delete
       }
     })
   }
+  
     fetchCategories(): void {
     const loginRaw = this.sessionStorage.getsessionStorage("loginDetails");
     const loginData = loginRaw ? JSON.parse(loginRaw) : null;
@@ -390,7 +405,7 @@ delete
     }
 
     this.apiService
-      .getApi(`/api/category?store_id=${-1}`)
+      .getApi(`/api/category?store_id=${ loginData?.user?.store_id ||-1}`)
       .subscribe((res: any) => {
 
         console.log(res, 'categories response');

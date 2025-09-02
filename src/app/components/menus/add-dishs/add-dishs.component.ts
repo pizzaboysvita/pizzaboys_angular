@@ -42,6 +42,7 @@ export class AddDishsComponent {
   constructor(private fb: FormBuilder, public modal: NgbModal, private router: Router, private apiService: ApisService, private sessionStorage: SessionStorageService) { }
 
   ngOnInit() {
+    console.log(this.myData)
     this.menuForm = this.fb.group({
       menuType: [null, Validators.required],
       categoryType: [null, Validators.required],
@@ -56,7 +57,7 @@ export class AddDishsComponent {
       description: [''],
       // optionSet:[''],
       subtitle: [''],
-      storeName: [null, Validators.required]
+      storeName: [this.myData?this.myData.store_id : '', Validators.required]
 
     });
     this.storeList()
@@ -76,8 +77,7 @@ export class AddDishsComponent {
 
   }
   patchValue() {
-    this.getMenuCategoryDishData()
-
+    
     console.log(this.myData, this.type, 'opennnnnnnnnnnnn')
     if (this.type == 'Edit' || this.type == 'View') {
       this.menuForm.controls['menuType'].disable();
@@ -108,6 +108,8 @@ export class AddDishsComponent {
       this.previewUrl = this.myData.dish_image;
       // dish_choices_json
     }
+    this.getMenuCategoryDishData()
+
   }
 
   getMenuCategoryDishData() {
