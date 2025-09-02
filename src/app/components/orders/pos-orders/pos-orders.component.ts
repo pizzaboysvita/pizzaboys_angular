@@ -287,9 +287,9 @@ export class PosOrdersComponent {
     //   flex: 1,
     // },
   ];
-  staff_list: any;
-  staffListSorting: any;
-  orderList: any;
+  // staff_list: any;
+  // staffListSorting: any;
+  // orderList: any;
   orderDetails: any;
   modalRef: any;
   //  onCellClicked(event: any): void {
@@ -305,12 +305,13 @@ export class PosOrdersComponent {
   //   this.getStaffList();
   // }
 
-  onCellClicked(event: any): void {
-    let target = event.event?.target as HTMLElement;
-  }
+  // onCellClicked(event: any): void {
+  //   let target = event.event?.target as HTMLElement;
+  // }
   constructor(
     private apiService: ApisService,
-    private sessionStorage: SessionStorageService
+    private sessionStorage: SessionStorageService,
+     private modalService: NgbModal
   ) {}
 
   ngOnInit() {
