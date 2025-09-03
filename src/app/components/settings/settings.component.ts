@@ -6,6 +6,10 @@ import { OpeningHoursComponent } from "./system/opening-hours/opening-hours.comp
 import { PromocodesComponent } from "./system/promocodes/promocodes.component";
 import { ConditionalFeeComponent } from "./system/conditional-fee/conditional-fee.component";
 import { RecieptPrinterComponent } from "./system/reciept-printer/reciept-printer.component";
+import { InfoBarComponent } from "./system/info-bar/info-bar.component";
+import { FacebookAdvertisingComponent } from "./system/facebook-advertising/facebook-advertising.component";
+import { PickupsComponent } from "./service/pickups/pickups.component";
+import { DeliveriesComponent } from "./service/deliveries/deliveries.component";
 
 @Component({
   selector: "app-settings",
@@ -17,7 +21,11 @@ import { RecieptPrinterComponent } from "./system/reciept-printer/reciept-printe
     OpeningHoursComponent,
     PromocodesComponent,
     ConditionalFeeComponent,
-    RecieptPrinterComponent
+    RecieptPrinterComponent,
+    InfoBarComponent,
+    FacebookAdvertisingComponent,
+    PickupsComponent,
+    DeliveriesComponent
 ],
   templateUrl: "./settings.component.html",
   styleUrl: "./settings.component.scss",

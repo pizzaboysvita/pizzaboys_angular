@@ -1,1 +1,133 @@
-<p>pickups works!</p>
+<div class="card-body">
+    <ul class="nav nav-tabs mb-3" id="pickupTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="general-tab" data-bs-toggle="tab" href="#general" role="tab"
+                aria-controls="general" aria-selected="true">General</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="order-timing-tab" data-bs-toggle="tab" href="#order-timing" role="tab"
+                aria-controls="order-timing" aria-selected="false">Order Timing</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+            <div class="mb-4">
+                <label class="form-check-label fw-bold">Enabled</label>
+                <div class="form-check form-switch mt-2">
+                    <input class="form-check-input" type="checkbox" role="switch" id="pickupEnabled"
+                        [(ngModel)]="isPickupEnabled">
+                </div>
+                <small class="text-muted">Allow customers to place orders that can be collected at your store
+                    location</small>
+            </div>
+
+            <div class="mb-4">
+                <label for="prepTime" class="form-label fw-bold">Food Preparation Time (minutes)</label>
+                <input type="text" class="form-control" id="prepTime" [(ngModel)]="foodPrepTime" placeholder="20">
+                <small class="text-muted">Time in minutes required to prepare order. Will be used to calculate a
+                    customers wait time</small>
+            </div>
+
+            <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <label class="form-label fw-bold">Food Preparation Time Periods</label>
+                    <span class="badge bg-secondary-subtle text-secondary">OPTIONAL</span>
+                </div>
+                <button class="btn btn1 btn-sm mt-2">Add Food Prep Slot</button>
+                <small class="text-muted d-block mt-1">Will override the default food preparation time if one of
+                    these periods get matched</small>
+            </div>
+
+            <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <label for="pickupNotes" class="form-label fw-bold">Pickup Notes</label>
+                    <span class="badge bg-secondary-subtle text-secondary">OPTIONAL</span>
+                </div>
+                <textarea class="form-control mt-2" id="pickupNotes" rows="3" [(ngModel)]="pickupNotes"></textarea>
+                <small class="text-muted">This will be shown to customers if they choose this order
+                    method</small>
+            </div>
+
+            <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <label for="defaultMenu" class="form-label fw-bold">Default Menu</label>
+                    <span class="badge bg-secondary-subtle text-secondary">OPTIONAL</span>
+                </div>
+                <select class="form-select mt-2" id="defaultMenu" [(ngModel)]="defaultMenu">
+                    <option>None</option>
+                    <option>Menu 1</option>
+                    <option>Menu 2</option>
+                </select>
+                <small class="text-muted">This menu will be auto selected when a customer chooses this
+                    service</small>
+            </div>
+
+            <div class="d-grid mt-4">
+                <button type="button" class="btn  btn-lg">Save</button>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="order-timing" role="tabpanel" aria-labelledby="order-timing-tab">
+            <div class="mb-4">
+                <label class="form-check-label fw-bold">Enable Immediate Orders</label>
+                <div class="form-check form-switch mt-2">
+                    <input class="form-check-input" type="checkbox" role="switch" id="enableImmediateOrders"
+                        [(ngModel)]="enableImmediateOrders">
+                </div>
+                <small class="text-muted">Allows customers to place orders due immediately</small>
+            </div>
+
+            <div class="mb-4">
+                <label for="firstOrderOffset" class="form-label fw-bold">First Order Offset (minutes)</label>
+                <input type="text" class="form-control" id="firstOrderOffset" [(ngModel)]="firstOrderOffset"
+                    placeholder="10">
+                <small class="text-muted">How many minutes after your store opens will you accept the first
+                    order</small>
+            </div>
+
+            <div class="mb-4">
+                <label for="lastOrderOffset" class="form-label fw-bold">Last Order Offset (minutes)</label>
+                <input type="text" class="form-control" id="lastOrderOffset" [(ngModel)]="lastOrderOffset"
+                    placeholder="5">
+                <small class="text-muted">How many minutes before your store closes will you accept the last
+                    order</small>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="mb-4">
+                <label class="form-check-label fw-bold">Enable Later Orders</label>
+                <div class="form-check form-switch mt-2">
+                    <input class="form-check-input" type="checkbox" role="switch" id="enableLaterOrders"
+                        [(ngModel)]="enableLaterOrders">
+                </div>
+                <small class="text-muted">Allows customers to place orders for a later date and time</small>
+            </div>
+
+            <div class="mb-4">
+                <label for="maximumDaysAhead" class="form-label fw-bold">Maximum Days Ahead</label>
+                <input type="text" class="form-control" id="maximumDaysAhead" [(ngModel)]="maximumDaysAhead"
+                    placeholder="7">
+                <small class="text-muted">The number of days in advance customers can place orders</small>
+            </div>
+
+            <div class="mb-4">
+                <label for="timeInterval" class="form-label fw-bold">Time Interval (minutes)</label>
+                <input type="text" class="form-control" id="timeInterval" [(ngModel)]="timeInterval" placeholder="5">
+                <small class="text-muted">The number of minutes between each available order time slot</small>
+            </div>
+
+            <div class="mb-4">
+                <label for="orderOffset" class="form-label fw-bold">Order Offset (minutes)</label>
+                <input type="text" class="form-control" id="orderOffset" [(ngModel)]="orderOffset" placeholder="20">
+                <small class="text-muted">The minimum amount of time from now that an order for a later time must be
+                    placed</small>
+            </div>
+
+            <div class="d-grid mt-4">
+                <button type="button" class="btn  btn-lg">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

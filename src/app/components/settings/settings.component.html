@@ -99,7 +99,9 @@
                                             </h2>
                                             <div ngbAccordionCollapse>
                                                 <div ngbAccordionBody>
-                                                    <ng-template>Facebook Advertising content here.</ng-template>
+                                                    <ng-template>
+                                                        <app-facebook-advertising></app-facebook-advertising>
+                                                    </ng-template>
                                                 </div>
                                             </div>
                                         </div>
@@ -110,7 +112,9 @@
                                             </h2>
                                             <div ngbAccordionCollapse>
                                                 <div ngbAccordionBody>
-                                                    <ng-template>Info Bar content here.</ng-template>
+                                                    <ng-template>
+                                                        <app-info-bar></app-info-bar>
+                                                    </ng-template>
                                                 </div>
                                             </div>
                                         </div>
@@ -137,7 +141,7 @@
                                             <div ngbAccordionCollapse #pickupsPanel="ngbAccordionCollapse">
                                                 <div ngbAccordionBody>
                                                     <ng-template>
-                                                        <p>Settings for managing pickups.</p>
+                                                        <app-pickups></app-pickups>
                                                     </ng-template>
                                                 </div>
                                             </div>
@@ -156,7 +160,7 @@
                                             <div ngbAccordionCollapse #deliveriesPanel="ngbAccordionCollapse">
                                                 <div ngbAccordionBody>
                                                     <ng-template>
-                                                        <p>Settings for managing deliveries.</p>
+                                                        <app-deliveries></app-deliveries>
                                                     </ng-template>
                                                 </div>
                                             </div>
