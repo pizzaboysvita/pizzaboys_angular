@@ -1,0 +1,12 @@
+$primary-orange: #fd7e14;
+
+.create-promo-btn {
+  background-color: $primary-orange;
+  border-color: $primary-orange;
+  font-weight: bold;
+
+  &:hover {
+    background-color: darken($primary-orange, 10%);
+    border-color: darken($primary-orange, 10%);
+  }
+}
