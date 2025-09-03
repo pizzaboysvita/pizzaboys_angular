@@ -63,7 +63,7 @@
     </tr>
   </thead>
   <tbody>
-    @for(row of workingHours;track row){
+    @for(row of workingHours;track row;let i = $index){
     <tr >
         @for(col of columns;track col){
       <td >{{ row[col.dataField] }}</td>
@@ -72,7 +72,7 @@
            <ul>
                             @for (action of rowActions; track action) {
                             <li>
-                                <a href="javascript:void(0)" (click)="performAction(action,row)">
+                                <a href="javascript:void(0)" (click)="performAction(action,row,i)">
                                     <i [class]="action.icon"></i>
                                 </a>
                             </li>
