@@ -155,13 +155,16 @@ delete
   //   { storename: 'Porsche', email: 'Boxster',status: 'Pending', phoneNumber: 72000,storeAddress:'Abc Address' }
   // ];
   ngOnInit() {
-    this.storeForm = this.fb.group({
+   this.getFromStore()
+    this.getStoreList()
+  }
+  getFromStore(){
+     this.storeForm = this.fb.group({
       storeName: [''],
       email: [''],
       address: [''],
       status: ['Active']
     })
-    this.getStoreList()
   }
   getStoreList() {
     this.apis.getApi(AppConstants.api_end_points.store_list).subscribe((data: any) => {
@@ -301,17 +304,39 @@ delete
       FileSaver.saveAs(blob, `storesList_${formattedDate}.xlsx`);
     });
   }
-  search() {
-    console.log(this.storeForm.value.status, this.storeListSorting)
-    this.storeList = this.storeListSorting.filter((store: any) => {
-      return (
-        (store.store_name.toLowerCase().includes(this.storeForm.value.storeName.toLowerCase())) && (store.email.toLowerCase().includes(this.storeForm.value.email.toLowerCase())) && (store.street_address.toLowerCase().includes(this.storeForm.value.address.toLowerCase())) && (store.status.toLowerCase().includes(this.storeForm.value.status.toLowerCase()))
-      );
-    });
-    console.log(this.storeList)
-  }
+ search() {
+  console.log(this.storeForm.value.status, this.storeListSorting);
+
+  // Extract form values (convert to lowercase for case-insensitive matching)
+  const name = this.storeForm.value.storeName?.toLowerCase() || '';
+  const email = this.storeForm.value.email?.toLowerCase() || '';
+  const address = this.storeForm.value.address?.toLowerCase() || '';
+  const status = this.storeForm.value.status?.toLowerCase() || '';
+
+  // Filter the list
+  let filtered = this.storeListSorting.filter((store: any) => {
+    return (
+      store.store_name.toLowerCase().includes(name) &&
+      store.email.toLowerCase().includes(email) &&
+      store.street_address.toLowerCase().includes(address) &&
+      store.status.toLowerCase().includes(status)
+    );
+  });
+
+  // ✅ Sort by latest (assuming you have created_at or updated_at)
+  filtered = filtered.sort((a: any, b: any) =>
+    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+
+  // ✅ Show only latest few results (e.g., 5)
+  this.storeList = filtered.slice(0, 5);
+
+  console.log(this.storeList);
+}
+
   reset() {
     this.storeForm.reset()
+    this.getFromStore()
     this.getStoreList()
   }
 }
