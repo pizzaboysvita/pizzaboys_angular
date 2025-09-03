@@ -11,6 +11,7 @@ import { ApisService } from '../../../shared/services/apis.service';
 import { SessionStorageService } from '../../../shared/services/session-storage.service';
 import { ToastrService } from 'ngx-toastr';
 import { PosOrdersComponent } from '../pos-orders/pos-orders.component';
+import { OrderPaymentsComponent } from '../order-payments/order-payments.component';
 // import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 // import { TimepickerModule } from 'ngx-bootstrap/timepicker';
 // import { DpDatePickerModule } from 'ng2-date-picker';
@@ -46,7 +47,8 @@ export class OrderDetailsComponent {
   ingredients_details: any;
   deliveryfee: any = 5.90;
   totalCartDetails: any=[];
-  constructor(private apiService: ApisService, private fb: FormBuilder, private el: ElementRef, private modal: NgbModal, private toastr: ToastrService, private cdr: ChangeDetectorRef, private sessionStorageService: SessionStorageService) {
+  modalRef: any;
+  constructor(private apiService: ApisService, private fb: FormBuilder, private el: ElementRef, private modal: NgbModal, private toastr: ToastrService, private cdr: ChangeDetectorRef, private sessionStorageService: SessionStorageService,private modalService: NgbModal) {
     this.markers = [];
     this.zoom = 3;
   }
@@ -186,6 +188,14 @@ export class OrderDetailsComponent {
     this.showNewModelPopup = false;
   }
   submitOrder() {
+      this.modalRef = this.modalService.open(OrderPaymentsComponent, {
+               size: "xl",
+               centered: true,
+             });
+             this.modalRef.componentInstance.data = this.totalCartDetails;
+             
+          
+    return
     console.log(this.cartItems, 'this.cartItems opennnnnnnnnnnn ')
     this.orderItemsDetails = this.cartItems.map((item: any) => ({
       dish_id: item.dish_id,
