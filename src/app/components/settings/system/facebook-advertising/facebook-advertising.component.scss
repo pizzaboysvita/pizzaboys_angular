@@ -1,0 +1,17 @@
+$primary-orange: #fd7e14;
+
+.btn-link {
+  color: #000;
+  &:hover {
+    text-decoration: none;
+  }
+}
+.btn {
+  background-color: $primary-orange !important;
+}
+.dotted-divider {
+  border: none;
+  border-top: 2px dotted #2b2a2a;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}

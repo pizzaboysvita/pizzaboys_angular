@@ -1,0 +1,43 @@
+/* Custom SCSS for the Deliveries component */
+
+.card-header {
+  background-color: #fff;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.nav-tabs .nav-link {
+  color: #6c757d;
+  border: none;
+  border-bottom: 2px solid transparent;
+  &.active {
+    color: #212529;
+    border-bottom-color: #ffc107;
+  }
+}
+
+.badge.bg-secondary-subtle {
+  background-color: #e2e3e5 !important;
+  color: #6c757d !important;
+}
+/* No custom SCSS is required to match the provided image. */
+.badge.bg-secondary-subtle {
+    background-color: #e2e3e5 !important;
+    color: #6c757d !important;
+}
+
+
+/* Custom SCSS for the Fees tab */
+.btn-group-sm {
+  .btn {
+    border-radius: 0.25rem !important;
+  }
+}
+.btn-group .btn-check + .btn {
+  border-color: #ffc107;
+  color: #ffc107;
+}
+
+.btn-group .btn-check:checked + .btn {
+  background-color: #ffc107;
+  color: #fff;
+}

@@ -1,0 +1,26 @@
+$primary-orange: #fd7e14;
+
+.btn1 {
+  border: 1px solid $primary-orange !important;
+  &:hover {
+    background-color: $primary-orange !important;
+    color: white !important;
+  }
+}
+.btn {
+  background-color: $primary-orange !important;
+}
+.nav-tabs .nav-link {
+  color: black;
+  border: none;
+  border-bottom: 2px solid transparent;
+  &.active {
+    color: #212529;
+    border-bottom-color: $primary-orange !important;
+  }
+}
+
+.badge.bg-secondary-subtle {
+  background-color: #e2e3e5 !important;
+  color: #6c757d !important;
+}
