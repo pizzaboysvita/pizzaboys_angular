@@ -65,6 +65,10 @@ export const content: Routes = [
         path: 'menus',
         loadChildren: () => import('../../components/menus/menus.routes'),
     },
+     {
+        path: 'settings',
+        loadChildren: () => import('../../components/settings/settings.routes'),
+    },
     {
         path: 'inventory',
         loadChildren: () => import('../../components/dashboard/inventory/inventory/inventory.routes'),
