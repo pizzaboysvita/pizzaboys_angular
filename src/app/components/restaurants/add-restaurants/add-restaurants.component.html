@@ -44,13 +44,32 @@
 
         <!-- Password -->
         <div class="col-md-6">
-          <div class="input-box">
-            <h6 class="f-w-600 p-1">Password<span class="text-danger">*</span></h6>
-            <input type="password" formControlName="password" placeholder="Enter Password" />
-            @if (storeForm.get('password')?.touched && storeForm.get('password')?.invalid) {
-              <div class="text-danger">Minimum 6 characters required</div>
+      <div class="input-box">
+  <h6 class="f-w-600 p-1">Password<span class="text-danger">*</span></h6>
+  <input 
+    type="password" 
+    formControlName="password" 
+    placeholder="Enter Password" 
+    (focus)="showRules = true" 
+    (blur)="hideRulesIfEmpty()" 
+    (input)="validatePassword()" 
+  />
+  @if (storeForm.get('password')?.touched && storeForm.get('password')?.errors?.['required']) {
+              <div class="text-danger">Password is required</div>
             }
-          </div>
+  <!-- Show rules only if password field is touched and not empty -->
+  <ul class="password-rules mt-2" *ngIf="showRules && storeForm.get('password')?.value">
+    <li *ngIf="!rules.minLength">&#10060; At least 8 characters</li>
+    <li *ngIf="!rules.uppercase">&#10060; At least 1 uppercase letter</li>
+    <li *ngIf="!rules.lowercase">&#10060; At least 1 lowercase letter</li>
+    <li *ngIf="!rules.number">&#10060; At least 1 number</li>
+    <li *ngIf="!rules.special">&#10060; At least 1 special symbol</li>
+  </ul>
+</div>
+
+
+
+
         </div>
 
         <!-- Address Fields -->
@@ -87,7 +106,7 @@
         <div class="col-xl-6">
           <div class="input-box">
             <h6 class="f-w-600 p-1">Postal Code<span class="text-danger">*</span></h6>
-            <input type="text" formControlName="postalCode" placeholder="Enter Postal Code" />
+            <input type="text" formControlName="postalCode" maxlength="10" (keypress)="allowOnlyNumbers($event)"  placeholder="Enter Postal Code" />
           </div>
         </div>
 

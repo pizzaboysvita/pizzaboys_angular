@@ -3,12 +3,22 @@
     <app-card [body]="true">
       <div body
         class="row row-cols-xl-12 row-cols-md-5 row-cols-sm-3 row-cols-2 g-sm-3 g-2 media-library-sec ratio_landscape">
-        <div class="input-box search-icon">
+        <!-- <div class="input-box search-icon w-100">
           <i class="ri-search-line"></i>
           <input class="search-box" type="search" placeholder="What are you looking for?" [(ngModel)]="searchText"
             name="search" (keyup)="searchTerm(searchText)"
             style="flex: 1; border: none; outline: none; background: transparent" />
-        </div>
+        </div> -->
+        <div class="input-box d-flex align-items-center border rounded px-3 py-2 w-100" >
+  <i class="ri-search-line text-muted me-2"></i>
+  <input 
+    class="form-control border-0 shadow-none p-0" 
+    type="search" 
+    placeholder="What are you looking for?" 
+    [(ngModel)]="searchText"
+    name="search"
+    (keyup)="searchTerm(searchText)" />
+</div>
 
         <div class="w-100">
           <div class="mb-4 position-relative">
@@ -146,23 +156,29 @@
                         </div>
 
                         <!-- Child flyout menu -->
-                        <ul *ngIf="expandedParentIndex === comboIndexCat && combo_dish_cat.dishes?.length"
-                          class="submenu position-absolute shadow rounded-1 gap-1 active-child"
-                          style="left: 100%; top: 0; min-width: 240px; background: #fff; z-index: 10; border: 2px solid #e0c6ff;">
-                          @for (combo_dish_cat_dish of combo_dish_cat.dishes; track combo_dish_cat_dish; let
-                          combo_dish_index = $index) {
-                          <li>
-                            <div class="dropdown-item px-4 py-3 d-flex align-items-center"
-                              style="cursor: pointer; color: #6c6c6c; font-size: 14px;"
-                              (click)="selectChild(combo_dish_index, combo_dish_cat_dish,comboIndex)">
-                              <span>{{ combo_dish_cat_dish.dishName }}</span>
-                              <span
-                                *ngIf="selectedChildIndex === combo_dish_index && selectedChildLabel === combo_dish_cat_dish"
-                                class="ms-auto text-success">&#10003;</span>
-                            </div>
-                          </li>
-                          }
-                        </ul>
+                      <!-- Child flyout menu -->
+<ul *ngIf="expandedParentIndex === comboIndexCat && combo_dish_cat.dishes?.length"
+  class="submenu position-absolute shadow rounded-1 gap-1 active-child"
+  style="left: 100%; top: 0; min-width: 240px; background: #fff; z-index: 10; border: 2px solid #e0c6ff;">
+  
+  @for (combo_dish_cat_dish of combo_dish_cat.dishes; track combo_dish_cat_dish; let combo_dish_index = $index) {
+    <li>
+   <div class="dropdown-item px-4 py-3 d-flex align-items-center"
+  [class.selected-child]="selectedChildPerCombo[comboIndex]?.selectedChildIndex === combo_dish_index 
+                          && selectedChildPerCombo[comboIndex]?.selectedChildLabel === combo_dish_cat_dish"
+  (click)="selectChild(combo_dish_index, combo_dish_cat_dish, comboIndex,combo_dish)">
+  
+  <span style="font-size: 14px;">{{ combo_dish_cat_dish.dishName }}</span>
+
+  <span *ngIf="selectedChildPerCombo[comboIndex]?.selectedChildIndex === combo_dish_index 
+               && selectedChildPerCombo[comboIndex]?.selectedChildLabel === combo_dish_cat_dish"
+        class="ms-auto text-success">&#10003;</span>
+</div>
+
+    </li>
+  }
+</ul>
+
                       </li>
                       }
                     </ul>
@@ -347,7 +363,7 @@
 
 
         }
-
+ <textarea placeholder="Enter dish Note" [(ngModel)]="selectedDishFromList.dishnote"></textarea>
 
 
   @if(selectedDishFromList.dish_type === 'combo') {
@@ -375,6 +391,7 @@
           </div>
         </div>
       } @else {
+         
          <div class="modal-footer d-flex justify-content-between align-items-center" style="width: 103%;">
           <div class="input-group quantity-control flex-grow-1 me-3" style="max-width: 180px">
             <button class="btn btn-outline-secondary" (click)="decreaseModalQuantity(selectedDishFromList)">-</button>

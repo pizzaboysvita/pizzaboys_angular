@@ -30,7 +30,8 @@ interface RowData {
   fullname: string;
   status: string
   address: string;
-  store_name:string
+  store_name:string;
+  role_id: number;
 }
 
 @Component({
@@ -114,6 +115,19 @@ export class StaffListComponent {
       unSortIcon: true,
          tooltipValueGetter: (p: ITooltipParams) =>p.value,
     },
+    {
+  field: 'role_id',
+  headerName: 'Role',
+  suppressMenu: true,
+  unSortIcon: true,
+  tooltipValueGetter: (p: ITooltipParams) => p.value,
+  valueGetter: (params:any) => {
+    if (params.data.role_id === 3) return 'POS';
+    if (params.data.role_id === 2) return 'Manager';
+    return params.data.role_id; // or 'Unknown'
+  }
+},
+
     {
       field: 'user_email',
       headerName: 'Email-Id',

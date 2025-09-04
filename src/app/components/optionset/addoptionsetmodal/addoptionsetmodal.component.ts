@@ -180,7 +180,11 @@ export class AddoptionsetmodalComponent {
     sortable: true,
     resizable: true
   };
-
+optType=[
+  {name: 'Radio', value: 'Radio'},
+  {name: 'Checkbox', value: 'Checkbox'},
+  {name: 'Counter', value: 'Counter'}
+]
   toggleOptions = [
     { key: 'editing', label: 'Hide Editing Mode', enabled: false },
     { key: 'hide', label: 'Hide', enabled: true },
@@ -199,6 +203,7 @@ export class AddoptionsetmodalComponent {
   miscForm: FormGroup
   storeList: any;
   reqbody: any
+  storesList: any;
   constructor(private fb: FormBuilder, public modal: NgbModal,private toastr: ToastrService, private apis: ApisService, private sessionStorage: SessionStorageService) {
     this.optionSetForm = this.fb.group({
       name: ['',Validators.required],
@@ -210,7 +215,7 @@ export class AddoptionsetmodalComponent {
       availability: [[]],
       posName: [''],
       surcharge: [''],
-
+      optionSetType: ['', Validators.required]
     });
     this.optionSetConditionForm = this.fb.group({
       required: [''],
@@ -225,8 +230,9 @@ export class AddoptionsetmodalComponent {
       PriceinFreeQuantityPromos: ['']
     })
   }
-
+selectedStore='-1'
   ngOnInit() {
+    this.storeListItem()
     this.getMenuCategoryDishData();
     this.patchValue();
   }
@@ -243,13 +249,25 @@ export class AddoptionsetmodalComponent {
       this.gridApi.setFocusedCell(0, 'name');
       this.gridApi.startEditingCell({ rowIndex: 0, colKey: 'name' });
     });
+    
+  }
+    storeListItem() {
+    this.apis
+      .getApi(AppConstants.api_end_points.store_list)
+      .subscribe((data:any) => {
+        if (data) {
+          console.log(data);
+          data.unshift({ store_id: -1, store_name: 'All Stores' });
+          this.storesList = data;
+        }
+      });
+
   }
   getMenuCategoryDishData() {
-    const userId = JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id;
 
-    const menuApi = this.apis.getApi(AppConstants.api_end_points.menu + '?user_id=' + userId);
-    const categoryApi = this.apis.getApi(`/api/category?user_id=` + userId);
-    const dishApi = this.apis.getApi(AppConstants.api_end_points.dish + '?user_id=' + userId);
+    const menuApi = this.apis.getApi(AppConstants.api_end_points.menu + '?store_id=' + this.selectedStore);
+    const categoryApi = this.apis.getApi(`/api/category?store_id=` + this.selectedStore);
+    const dishApi = this.apis.getApi(AppConstants.api_end_points.dish + '?store_id=' + this.selectedStore);
 
     forkJoin([menuApi, categoryApi, dishApi]).subscribe(
       ([menuRes, categoryRes, dishRes]: any) => {
@@ -410,7 +428,9 @@ onCellValueChanged(event: any) {
         "free_quantity": this.optionSetConditionForm.value.FreeQuantity,
         "option_set_dishes": JSON.stringify(this.choices),
         "inc_price_in_free": this.miscForm.value.PriceinFreeQuantityPromos = true ? 1 : 0,
-        "cretaed_by": 1011
+        "created_by": JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,
+        "updated_by": JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,
+        "option_type": this.optionSetForm.value.optionSetType
       }
     }
     else {
@@ -430,7 +450,9 @@ onCellValueChanged(event: any) {
         "free_quantity": this.optionSetConditionForm.value.FreeQuantity,
         "option_set_dishes": JSON.stringify(this.choices),
         "inc_price_in_free": this.miscForm.value.PriceinFreeQuantityPromos = true ? 1 : 0,
-        "cretaed_by": 1011
+        "cretaed_by": 1011,
+        
+        "option_type": this.optionSetForm.value.optionSetType
       }
     }
 
@@ -467,7 +489,7 @@ onCellValueChanged(event: any) {
         availability: [[]],
         posName: [''],
         surcharge: [''],
-
+        optionSetType: this.myData.option_type
       });
 
       this.optionSetConditionForm.patchValue({

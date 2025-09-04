@@ -148,7 +148,7 @@
                                 <div class="col-xl-6">
                                   <div class="input-box">
                                     <h6 class="f-w-600 p-1">POS Pin Number</h6>
-                                    <input type="password" formControlName="posPin"
+                                    <input type="password" formControlName="posPin"   (keypress)="allowOnlyNumbers($event)" 
                                       placeholder="Enter POS Pin Number" />
                                   </div>
                                 </div>

@@ -1,0 +1,74 @@
+<div class="container-fluid p-0">
+  <form>
+    <div class="form-group mb-3">
+      <label for="businessName" class="form-label">Name</label>
+      <input
+        type="text"
+        class="form-control"
+        id="businessName"
+        value="Pizza Boyz - Ellerslie"
+      />
+      <small class="form-text text-muted">
+        The name of this restaurant location, used throughout the system
+      </small>
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="address" class="form-label">Address</label>
+      <div class="input-group">
+        <input
+          type="text"
+          class="form-control"
+          id="address"
+          value="64 Michaels Avenue, Ellerslie, Auckland 1051, New Zealand"
+        />
+        <div class="input-group-append">
+          <span class="input-group-text">
+            <i class="ri-arrow-drop-down-line"></i>
+          </span>
+        </div>
+      </div>
+      <small class="form-text text-muted">
+        Search for your address and select from the dropdown
+      </small>
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="locationName" class="form-label"
+        >Location Name
+        <span class="optional-badge">OPTIONAL</span>
+      </label>
+      <input
+        type="text"
+        class="form-control"
+        id="locationName"
+        value="Ellerslie"
+      />
+      <small class="form-text text-muted">
+        This will override your restaurant name in certain places when referring
+        to just your store location. It’s recommend to use your store suburb /
+        locality / district name
+      </small>
+    </div>
+
+    <div class="form-group mb-4">
+      <label for="phoneNumber" class="form-label"
+        >Phone Number
+        <span class="optional-badge">OPTIONAL</span>
+      </label>
+      <input
+        type="tel"
+        class="form-control"
+        id="phoneNumber"
+        value="09 600 1231"
+      />
+      <small class="form-text text-muted">
+        Enter your store contact number
+      </small>
+    </div>
+
+    <div class="d-grid gap-2">
+      <button type="submit" class="btn btn-primary btn-lg">Save</button>
+    </div>
+  </form>
+</div>

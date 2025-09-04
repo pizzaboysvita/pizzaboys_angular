@@ -1,0 +1,385 @@
+   <div class="modal-content ">
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title">Order Payments</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" ></button>
+      </div>
+
+      <div class="modal-body p-0">
+        <div class="row g-0">
+
+          <!-- Sidebar Tabs -->
+          <div class="col-3" style="background-color: #f9f9fa;">
+            <!-- Tabs -->
+            <ul class="nav flex-column nav-pills">
+            <li class="nav-item">
+                <a class="nav-link" 
+                [class.active]="activeTab === 'full'" 
+                (click)="setActiveTab('full')">
+                Full & Partial
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" 
+                [class.active]="activeTab === 'people'" 
+                (click)="setActiveTab('people')">
+                Split By People
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" 
+                [class.active]="activeTab === 'items'" 
+                (click)="setActiveTab('items')">
+                Split By Items
+                </a>
+            </li>
+            </ul>
+          </div>
+
+          <!-- Content Area -->
+          <div class="col-9">
+            <div class="tab-content p-3">
+             @if(activeTab === 'full'){
+              <!-- Full & Partial -->
+              
+              <div class="border-bottom pb-2 mb-3">
+                <!-- Row 1: Total -->
+                <div class="d-flex justify-content-between">
+                    <div class="fs-6 fw-semibold ">Total</div>
+                    <div class="fs-6 fw-semibold">${{totalPrice}}</div>
+                </div>
+
+                <!-- Row 2: Paid -->
+                <div class="d-flex justify-content-between">
+                    <div class="fs-6 fw-semibold">Paid</div>
+                    <div class="fs-6 fw-semibold">$0.00</div>
+                </div>
+                </div>
+                <!-- Payment Table -->
+                <table class="table table-sm align-middle">
+                  <thead style="background-color: #f9f9fa !important;">
+                    <tr>
+                      <th>Status</th>
+                      <th>Type</th>
+                      <th>Amount</th>
+                      <th>Tender</th>
+                      <th>Change</th>
+                    </tr>
+                  </thead>
+                  <tbody style="background-color: #eeeeef;">
+                       <!-- @for (rowData of data; track rowData;let ind = $index) { -->
+                    <tr>
+                      <td><span class="badge bg-warning  text-dark fs-16">Pending</span></td>
+                      <td>New</td>
+                      <td>${{totalPrice}}</td>
+                      <td>-</td>
+                      <td>-</td>
+                    </tr>
+                <!-- } -->
+                  </tbody>
+                </table>
+
+                <!-- Payment Buttons -->
+               <div class="d-flex flex-wrap gap-2 my-3">
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                    <i class="ri-money-dollar-circle-line"></i> <span>Cash</span>
+                </button>
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                    <i class="ri-bank-card-line"></i> <span>EFTPOS</span>
+                </button>
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                    <i class="ri-gift-line"></i> <span>Voucher</span>
+                </button>
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                    <i class="ri-smartphone-line"></i> <span>Mob. EFTPOS</span>
+                </button>
+                <button class="btn btn-outline-danger d-flex align-items-center gap-2">
+                    <i class="ri-close-line"></i> <span>Remove</span>
+                </button>
+                </div>
+              
+            }
+              <!-- Split By People -->
+                @if(activeTab === 'people'){
+  <div class="row">
+    <!-- Split Control -->
+    <div class="col-6 border-end d-flex flex-column align-items-center p-4">
+       @if(!isSplitPayment){ 
+<div class="d-flex align-items-center gap-3 mb-3" style="max-width: 320px;">
+  <span class="fw-bold">Split By</span>
+
+  <div class="input-group input-group-sm" style="width: 160px;">
+    <button class="btn btn-outline-secondary px-3" type="button" (click)="decSplit()">&minus;</button>
+    <input class="form-control text-center fw-semibold" [value]="splitBy" readonly>
+    <button class="btn btn-outline-secondary px-3" type="button" (click)="incSplit()">&plus;</button>
+  </div>
+</div>
+
+
+      <button class="btn btn-outline-warning fw-bold text-uppercase"  (click)="generateSplitPayments()">
+        Generate Split Payments
+      </button>
+    }
+    @else{
+    <span>No balance remaining to split</span>  
+
+    }
+    </div>
+
+    <!-- Right Section -->
+    <div class="col-6 p-4">
+      <div class="d-flex justify-content-between border-bottom pb-2 mb-3">
+        <div><strong>Total</strong><br><strong>Paid</strong></div>
+        <div><strong>${{totalPrice}}</strong><br><strong>$0.00</strong></div>
+      </div>
+@if(isSplitPayment){
+  <div class="text-muted text-center py-5">
+         <table class="table table-sm align-middle"  >
+                  <thead style="background-color: #f9f9fa !important;">
+                    <tr>
+                      <th>Status</th>
+                      <th>Type</th>
+                      <th>Amount</th>
+                      <th>Tender</th>
+                      <th>Change</th>
+                    </tr>
+                  </thead>
+                  <tbody style="background-color: #eeeeef;">
+                       @for (rowData of splitRows; track rowData;let ind = $index) {
+                    <tr>
+                      <td><span class="badge bg-warning  text-dark fs-16">{{rowData.status}}</span></td>
+                      <td>{{rowData.type}}</td>
+                      <td>${{rowData.amount}}</td>
+                      <td>-</td>
+                      <td>-</td>
+                    </tr>
+                }
+                  </tbody>
+                </table>
+              <div class="d-flex flex-wrap gap-2 my-3">
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                    <i class="ri-money-dollar-circle-line"></i> <span>Cash</span>
+                </button>
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                    <i class="ri-bank-card-line"></i> <span>EFTPOS</span>
+                </button>
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                    <i class="ri-gift-line"></i> <span>Voucher</span>
+                </button>
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                    <i class="ri-smartphone-line"></i> <span>Mob. EFTPOS</span>
+                </button>
+                <button class="btn btn-outline-danger d-flex align-items-center gap-2">
+                    <i class="ri-close-line"></i> <span>Remove</span>
+                </button>
+                </div>
+      </div>
+}@else{
+        <span >No payments yet...</span>
+
+}
+    
+
+      <!-- <button class="btn btn-warning w-100 fw-bold text-uppercase mt-3">
+        Place Order & Clear
+      </button> -->
+    </div>
+  </div>
+                }
+
+
+              <!-- Split By Items -->
+                @if(activeTab === 'items'){
+                <div class="row">
+    <!-- Split Control -->
+    <div class="col-6 border-end d-flex flex-column align-items-center p-4">
+       @if(!isSplitPayment){ 
+        <div class="card mb-3 w-100">
+        <div class="card-body p-2">
+            <h6 class="fw-bold">Unpaid Items</h6>
+            @if(unpaidItems.length === 0){
+        <div class="text-muted py-4 text-center">
+                <i class="ri-checkbox-circle-line text-success fs-3"></i>
+            <div>All items accounted for</div>
+            </div>
+            }
+  
+    @for (rowData of unpaidItems; track rowData; let ind = $index) {
+      <div 
+        class="d-flex justify-content-between align-items-start py-2" 
+        [class.border-bottom]="ind < data.length - 1" (click)="moveToPay(rowData,ind)">
+        <div>
+          <span>{{ ind+1 }}</span> {{ rowData.dish_name }}
+          <br />
+          <small>• {{ rowData.dish_type }}</small>
+        </div>
+        <div class="fw-bold">${{ rowData.item_total_price }}</div>
+      </div>
+    }
+
+    <div class="d-flex justify-content-between fw-bold border-top pt-2 mt-2">
+      <span>Total</span>
+      <span>${{ getUnpaidTotal() }}</span>
+    </div>
+  </div>
+</div>
+    <!-- Pay For Items -->
+ <div class="card mb-3 w-100">
+  <div class="card-body p-2">
+    <h6 class="fw-bold">Pay For Items</h6>
+        @if(payItems.length === 0){
+        <div  class="text-muted py-3 text-center">
+            Select dishes to add them here...
+            </div>
+        }
+        
+    @for (rowData of payItems; track rowData; let ind = $index) {
+    <div
+         class="d-flex justify-content-between align-items-start border-bottom py-2">
+      <div>
+        <span>{{ ind+1 }}</span> {{ rowData.dish_name }}
+        <br />
+        <small>• {{ rowData.dish_type }}</small>
+      </div>
+      <div class="fw-bold">${{ rowData.item_total_price }}</div>
+    </div>
+    }
+     @if(payItems.length > 0){
+         <div 
+         class="text-center text-warning fw-bold border-top border-bottom py-2"
+         style="cursor: pointer;"
+         (click)="addPayment()">
+      ADD PAYMENT
+    </div>
+    }
+    
+    <div class="d-flex justify-content-between fw-bold  pt-2 mt-2">
+      <span>Total</span>
+      <span>${{ getPayTotal() }}</span>
+    </div>
+  </div>
+</div>
+
+    <!-- Dishes Paid -->
+    <div class="card mb-3 w-100">
+      <div class="card-body p-2">
+        <h6 class="fw-bold">Dishes Paid</h6>
+        <div class="text-muted py-3 text-center">
+          Paid items will show here
+        </div>
+        <div class="d-flex justify-content-between fw-bold border-top pt-2">
+          <span>Total</span>
+          <span>$0.00</span>
+        </div>
+      </div>
+    </div>
+    }
+    @else{
+    <span>No balance remaining to split</span>  
+
+    }
+    </div>
+
+    <!-- Right Section -->
+    <div class="col-6 p-4">
+      <div class="d-flex justify-content-between border-bottom pb-2 mb-3">
+        <div><strong>Total</strong><br><strong>Paid</strong></div>
+        <div><strong>${{totalPrice}}</strong><br><strong>$0.00</strong></div>
+      </div>
+
+  <div class="text-muted text-center py-5">
+    @if(isSplitPayment){
+         <table class="table table-sm align-middle"  >
+                  <thead style="background-color: #f9f9fa !important;">
+                    <tr>
+                      <th>Status</th>
+                      <th>Type</th>
+                      <th>Amount</th>
+                      <th>Tender</th>
+                      <th>Change</th>
+                    </tr>
+                  </thead>
+                  <tbody style="background-color: #eeeeef;">
+                       @for (rowData of splitRows; track rowData;let ind = $index) {
+                    <tr>
+                      <td><span class="badge bg-warning  text-dark fs-16">{{rowData.status}}</span></td>
+                      <td>{{rowData.type}}</td>
+                      <td>${{rowData.amount}}</td>
+                      <td>-</td>
+                      <td>-</td>
+                    </tr>
+                }
+                  </tbody>
+                </table>
+            }
+                @if(paidItems.length > 0) {
+    <div class="text-muted">
+      <table class="table table-sm align-middle">
+        <thead style="background-color: #f9f9fa !important;">
+          <tr>
+            <th>Status</th>
+                      <th>Type</th>
+                      <th>Amount</th>
+                      <th>Tender</th>
+                      <th>Change</th>
+          </tr>
+        </thead>
+        <tbody style="background-color: #eeeeef;">
+          @for (rowData of paidItems; track rowData; let ind = $index) {
+            <tr>
+              <td><span class="badge bg-warning  text-dark fs-16">Pending</span></td>
+                      <td>{{rowData.dish_type}}</td>
+                      <td>${{rowData.item_total_price}}</td>
+                      <td>-</td>
+                      <td>-</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } 
+  @if(isSplitPayment || paidItems.length > 0){
+
+  
+              <div class="d-flex flex-wrap gap-2 my-3">
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                    <i class="ri-money-dollar-circle-line"></i> <span>Cash</span>
+                </button>
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                    <i class="ri-bank-card-line"></i> <span>EFTPOS</span>
+                </button>
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                    <i class="ri-gift-line"></i> <span>Voucher</span>
+                </button>
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                    <i class="ri-smartphone-line"></i> <span>Mob. EFTPOS</span>
+                </button>
+                <button class="btn btn-outline-danger d-flex align-items-center gap-2">
+                    <i class="ri-close-line"></i> <span>Remove</span>
+                </button>
+                </div>
+            }
+      
+@else{
+        <span >No payments yet...</span>
+}
+</div>
+    </div>
+  </div>
+            }
+
+            </div>
+              <button class="btn btn-warning w-100 py-3 fw-bold">
+          PLACE ORDER & CLEAR
+        </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <!-- <div class="modal-footer p-0">
+        <button class="btn btn-warning w-100 py-3 fw-bold">
+          PLACE ORDER & CLEAR
+        </button>
+      </div> -->
+    </div>

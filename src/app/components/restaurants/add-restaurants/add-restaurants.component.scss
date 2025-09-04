@@ -7,4 +7,29 @@
 //     font-family: 'Trebuchet MS', sans-serif !important;
 //     font-size: 14px !important; /* optional */
 //   }
-  
+  .password-rules {
+  list-style: none;
+  padding-left: 0;
+  font-size: 14px;
+}
+
+.password-rules li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.password-rules li span {
+  display: inline-block;
+  width: 20px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.valid {
+  color: green;
+}
+
+.invalid {
+  color: red;
+}

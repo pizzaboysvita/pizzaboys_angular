@@ -1,0 +1,43 @@
+$primary-orange: #fd7e14;
+.status-indicator {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-indicator.connected {
+  background-color: #28a745;
+}
+
+.status-indicator.disabled {
+  background-color: #dc3545;
+}
+
+.card {
+  border: 1px solid #e0e0e0;
+  border-radius: 0.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 2px;
+}
+
+.btn-warning {
+  background-color: $primary-orange;
+  border-color: $primary-orange;
+  font-weight: bold;
+
+  &:hover {
+    background-color: darken($primary-orange, 10%);
+    border-color: darken($primary-orange, 10%);
+  }
+}
+
+.btn-outline-danger {
+  color: #dc3545;
+  border-color: #dc3545;
+
+  &:hover {
+    background-color: #dc3545;
+    color: white;
+  }
+}

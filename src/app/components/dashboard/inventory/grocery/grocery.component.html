@@ -1,0 +1,128 @@
+<div class="accordion" id="accordionExample">
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                aria-expanded="true" aria-controls="collapseOne">
+                <strong>Search Criteria </strong>
+            </button>
+        </h2>
+        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+            data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                <form [formGroup]="groceryForm">
+                    <div class="row">
+                        <div class="col-xl-3">
+                            <div class="input-box">
+                                <h6 class="fw-bold p-1">Item Name</h6>
+                                <input type="text" placeholder="Search Item Name" formControlName="itemname" />
+                            </div>
+                        </div>
+                        <div class="col-xl-3">
+                            <div class="input-box">
+                                <h6 class="fw-bold p-1">Quantity</h6>
+                                <input type="text" placeholder="Search quantity" formControlName="quantity" />
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3">
+                            <!-- <div class="col-md-6"> -->
+                            <div class="input-box">
+                                <h6 class="fw-bold p-1">Status</h6>
+                                <select class="form-select" name="carlist" formControlName="status">
+                                    @for (item of statusList; track item) {
+                                    <option value="">{{ item }}</option>
+                                    }
+                                </select>
+                                <!-- </div> -->
+                            </div>
+                        </div>
+                        <div class="col-xl-4">
+                            <div class="d-flex flex-wrap gap-2">
+                                <button class="btn btn-animation save-button" type="button" (click)="search()">
+                                    <i class="ri-search-line"></i>&nbsp; Search
+                                </button>
+                                <button class="btn btn-animation reset-button" type="button" (click)="reset()">
+                                    <i class="ri-loop-right-line"></i>&nbsp; Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+
+<div class="row">
+    <div class="col-sm-12">
+        <app-card [cardClass]="'card-table'" [body]="true">
+            <div class="title-header option-title d-sm-flex d-block" body>
+                <h5> Grocery</h5>
+                <div class="right-options">
+                    <ul>
+                        <li>
+                            <span style="font-size: 14px; color: #787c8b; font-weight: 600">
+                                No.of.Records: {{ rowData.length }}
+                            </span>
+                        </li>
+                        <li>
+                            <a class="export-btn" (click)="openNew()">
+                                <i class="ri-add-box-fill"></i> Add New
+                            </a>
+                        </li>
+                        <li>
+                            <a class="export-btn" (click)="exportExcel()">
+                                <i class="ri-export-fill"></i> Export
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div body>
+                <div style="overflow: auto">
+                    <ag-grid-angular class="ag-theme-alpine font-family my-grid" style="width: 100%"
+                        [columnDefs]="tableConfig" [rowData]="rowData" [domLayout]="'autoHeight'" [pagination]="true"
+                        [paginationPageSize]="10" [gridOptions]="{ rowHeight: 50 }"
+                        (cellClicked)="onCellClicked($event)"
+                        [defaultColDef]="{ flex: 1, minWidth: 100, sortable: true }">
+                    </ag-grid-angular>
+                </div>
+            </div>
+        </app-card>
+    </div>
+</div>
+
+<!-- View Modal -->
+<ng-template #viewModal let-modal>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Grocery Details</h5>
+            <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+        </div>
+        <div class="modal-body">
+            <p><strong>Item Name:</strong> {{ selectedItem?.itemname }}</p>
+            <p><strong>Quantity:</strong> {{ selectedItem?.quantity }}</p>
+            <p><strong>Status:</strong> {{ selectedItem?.status }}</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-sm btn-primary" (click)="modal.close()">Close</button>
+        </div>
+    </div>
+</ng-template>
+<ng-template #deleteModal let-modal>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Confirm Deletion</h5>
+      <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+      Are you sure you want to delete <strong>{{ selectedItem?.itemname }}</strong>?
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary btn-sm" (click)="modal.dismiss()">No</button>
+      <button type="button" class="btn btn-danger btn-sm" (click)="confirmDelete(modal)">Yes</button>
+    </div>
+  </div>
+</ng-template>

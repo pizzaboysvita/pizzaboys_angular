@@ -2,7 +2,11 @@
     @if(header){
     <div class="card-header" [class]="cardHeaderClass">
         <ng-content select="[header]"></ng-content>
+         <div>
+  
+  </div>
     </div>
+    
     }
     @if (body) {
     <div class="card-body" [class]="cardBodyClass">

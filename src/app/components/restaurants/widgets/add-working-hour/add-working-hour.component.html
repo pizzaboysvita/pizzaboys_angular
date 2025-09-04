@@ -23,10 +23,10 @@
             }
             </div>
             <div class="col-4">
-                <label class="f-w-600 text-black">Form</label>
+                <label class="f-w-600 text-black">From</label>
                 <input type="time" name="time" formControlName="formtime">
                   @if (addWorkingForm.get('formtime')?.touched && addWorkingForm.get('formtime')?.errors?.['required']) {
-              <div class="text-danger">Form Time is required</div>
+              <div class="text-danger">From Time is required</div>
             }
             </div>
             <div class="col-4">
@@ -63,7 +63,7 @@
     </tr>
   </thead>
   <tbody>
-    @for(row of workingHours;track row){
+    @for(row of workingHours;track row;let i = $index){
     <tr >
         @for(col of columns;track col){
       <td >{{ row[col.dataField] }}</td>
@@ -72,7 +72,7 @@
            <ul>
                             @for (action of rowActions; track action) {
                             <li>
-                                <a href="javascript:void(0)" (click)="performAction(action,row)">
+                                <a href="javascript:void(0)" (click)="performAction(action,row,i)">
                                     <i [class]="action.icon"></i>
                                 </a>
                             </li>

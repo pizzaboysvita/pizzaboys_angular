@@ -1,0 +1,195 @@
+<div class="modal-header">
+    <h4 class="modal-title">Create Printer</h4>
+    <button type="button" class="btn-close" aria-label="Close"
+        (click)="activeModal.dismiss('Cross click')"></button><br />
+</div>
+<div class="modal-body p-4">
+    <div>
+        <p>API Key: <span class="bg-light text-black fw-bold p-1">{{ APIKEY }}</span></p>
+    </div>
+    <hr>
+    <div class="opening-hours-container">
+        <ul ngbNav #nav="ngbNav" [(activeId)]="activeService" class="nav-tabs secondary-nav">
+            <li [ngbNavItem]="1">
+                <a ngbNavLink>General</a>
+                <ng-template ngbNavContent>
+                    <div class="mt-4">
+                        <form>
+                            <div class="mb-4">
+                                <label for="name" class="form-label fw-bold">Name</label>
+                                <input type="text" class="form-control" id="name" name="name"
+                                    [(ngModel)]="printer.name" />
+                                <small class="form-text text-muted">
+                                    Printer configuration name. It is only used to help you
+                                    identify this configuration
+                                </small>
+                            </div>
+                            <div class="mb-4">
+                                <label for="posTerminals" class="form-label fw-bold">Restrict To POS Terminals</label>
+                                <input type="text" class="form-control" id="posTerminals" name="posTerminals"
+                                    placeholder="Select from the dropdown or type to search..." />
+                                <small class="form-text text-muted">
+                                    Restrict this printer to be accessible or only print
+                                    automatically for the selected POS terminal
+                                </small>
+                            </div>
+                            <div class="mb-4 d-flex flex-column">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="disablePrinter"
+                                        name="disablePrinter" [(ngModel)]="printer.disablePrinter" />
+                                    <label class="form-check-label fw-bold" for="disablePrinter">
+                                        Disable Printer
+                                    </label>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Disable this printer from being used without deleting it
+                                </small>
+                            </div>
+                        </form>
+                    </div>
+                </ng-template>
+            </li>
+            <li [ngbNavItem]="2">
+                <a ngbNavLink>Auto Print</a>
+                <ng-template ngbNavContent>
+                    <div class="mt-4">
+                        <form>
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div>
+                                    <label class="form-check-label fw-bold">Auto Print Orders</label>
+                                    <p>
+                                        Automatically print out new online orders when they are
+                                        placed
+                                    </p>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="autoPrintOrders"
+                                        name="autoPrintOrders" [(ngModel)]="printer.autoPrintOrders" />
+                                </div>
+                            </div>
+                            <hr class="dotted-divider" />
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div>
+                                    <label class="form-check-label fw-bold">Auto Print Bookings</label>
+                                    <p>Automatically print out new online bookings when they are placed</p>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="autoPrintBookings"
+                                        name="autoPrintBookings" [(ngModel)]="printer.autoPrintBookings" />
+                                </div>
+                            </div>
+                            <hr class="dotted-divider" />
+
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div>
+                                    <label class="form-check-label fw-bold">POS - Auto Print Orders</label>
+                                    <p>Automatically print out new orders when they are placed in your POS</p>
+                                </div>
+
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="posAutoPrintOrders" name="posAutoPrintOrders"
+                                        [(ngModel)]="printer.posAutoPrintOrders" />
+                                </div>
+                            </div>
+                            <hr class="dotted-divider" />
+
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div>
+                                    <label class="form-check-label fw-bold">POS - Auto Print Order Edits</label>
+                                    <p>Automatically print out new dishes added to an existing order</p>
+                                </div>
+
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="posAutoPrintOrderEdits" name="posAutoPrintOrderEdits"
+                                        [(ngModel)]="printer.posAutoPrintOrderEdits" />
+                                </div>
+                            </div>
+                            <hr class="dotted-divider" />
+
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div>
+                                    <label class="form-check-label fw-bold">POS - Auto Print Bookings</label>
+                                    <p>Automatically print out new bookings when they are placed in your POS</p>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="posAutoPrintBookings" name="posAutoPrintBookings"
+                                        [(ngModel)]="printer.posAutoPrintBookings" />
+                                </div>
+                            </div>
+                            <hr class="dotted-divider" />
+
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div>
+                                    <label class="form-check-label fw-bold">Auto Print Delivery Updates</label>
+                                    <p>Automatically print out updates related to deliveries, such as delays</p>
+                                </div>
+
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="autoPrintDeliveryUpdates" name="autoPrintDeliveryUpdates"
+                                        [(ngModel)]="printer.autoPrintDeliveryUpdates" />
+                                </div>
+                            </div>
+                            <hr class="dotted-divider" />
+
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label class="form-label fw-bold">Auto Print Order Services</label>
+                                    <span class="optional-badge">OPTIONAL</span>
+                                </div>
+                                <input type="text" class="form-control" name="autoPrintOrderServices"
+                                    [(ngModel)]="printer.autoPrintOrderServices"
+                                    placeholder="Select from the dropdown or type to search..." />
+                                <p>Select which services will trigger this receipt configuration to automatically print.
+                                    Leaving this empty will auto print for all services</p>
+                            </div>
+                            <hr class="dotted-divider" />
+
+                            <div class="mb-4">
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label class="form-label fw-bold">Auto Print Fail E-Mail</label>
+                                    <span class="optional-badge">OPTIONAL</span>
+                                </div>
+                                <input type="email" class="form-control" name="autoPrintFailEmail"
+                                    [(ngModel)]="printer.autoPrintFailEmail"
+                                    placeholder="If an e-mail address is entered, whenever an automated print job fails, you will receive an e-mail notification" />
+                                <p>If an e-mail address is entered, whenever an automated print job fails, you will
+                                    receive an e-mail notification</p>
+                            </div>
+                        </form>
+                    </div>
+                </ng-template>
+            </li>
+            <li [ngbNavItem]="3">
+                <a ngbNavLink>Printer Settings</a>
+                <ng-template ngbNavContent> printer settings content </ng-template>
+            </li>
+            <li [ngbNavItem]="4">
+                <a ngbNavLink>Customization</a>
+                <ng-template ngbNavContent> customization content </ng-template>
+            </li>
+            <li [ngbNavItem]="5">
+                <a ngbNavLink>Header & Footer</a>
+                <ng-template ngbNavContent> header & footer content </ng-template>
+            </li>
+            <li [ngbNavItem]="6">
+                <a ngbNavLink>Dishes to Print</a>
+                <ng-template ngbNavContent> dishes to print content </ng-template>
+            </li>
+            <li [ngbNavItem]="7">
+                <a ngbNavLink>Device</a>
+                <ng-template ngbNavContent> device content </ng-template>
+            </li>
+        </ul>
+        <div [ngbNavOutlet]="nav" class="mt-2"></div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary w-100" (click)="savePrinter()">
+        Save
+    </button>
+</div>

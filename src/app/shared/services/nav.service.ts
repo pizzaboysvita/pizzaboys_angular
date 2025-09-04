@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { BehaviorSubject } from 'rxjs';
-import { LoggingOutComponent } from '../components/widgets/logging-out/logging-out.component';
+import { Injectable } from "@angular/core";
+import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
+import { BehaviorSubject } from "rxjs";
+import { LoggingOutComponent } from "../components/widgets/logging-out/logging-out.component";
 
 export interface menuItem {
   level?: number;
@@ -15,13 +15,11 @@ export interface menuItem {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
-
 export class NavService {
-
   public collapseSidebar: boolean = window.innerWidth < 1200 ? true : false;
-  constructor(public modal: NgbModal) { }
+  constructor(public modal: NgbModal) {}
 
   // menuItem: menuItem[] = [
   //   {
@@ -216,7 +214,6 @@ export class NavService {
   //   },
   // ]
   superAdminmenuItem: menuItem[] = [
-       
     //    {
     //   level: 1,
     //   title: "Restaurants",
@@ -225,11 +222,10 @@ export class NavService {
     //   active: true,
     //   children: [
     //     { path: "/restaurants/restaurants-list", title: "Restaurants", type: "link", level: 2, },
-        
+
     //       {  path: "/restaurants/add-restaurants", title: "Add New Restaurants", type: "link", level: 2, },
     //   ]
 
-      
     // },
     {
       level: 1,
@@ -249,29 +245,29 @@ export class NavService {
     },
     {
       level: 1,
-      title:  "Add New Store",
-      path: "/restaurants/add-restaurants", 
+      title: "Add New Store",
+      path: "/restaurants/add-restaurants",
       icon: "ri-file-chart-line",
       type: "link",
       active: false,
     },
     {
       level: 1,
-      title:  "Staff",
-      path: "/staff/staff-list", 
+      title: "Staff",
+      path: "/staff/staff-list",
       icon: "ri-group-line",
       type: "link",
       active: false,
     },
     {
       level: 1,
-      title:  "Add Staff",
-      path: "/staff/add-staff", 
+      title: "Add Staff",
+      path: "/staff/add-staff",
       icon: "ri-user-3-line",
       type: "link",
       active: false,
     },
-      {
+    {
       level: 1,
       title: "Menus",
       path: "/menus",
@@ -279,7 +275,31 @@ export class NavService {
       type: "link",
       active: false,
     },
-      
+     {
+      level: 1,
+      title: "Settings",
+      path: "/settings",
+      icon: "ri-bowl-line",
+      type: "link",
+      active: false,
+    },
+    {
+      level: 1,
+      title: "Inventory",
+      path: "/inventory",
+      icon: "ri-store-3-line",
+      type: "link",
+      active: false,
+    },
+
+    // {
+    //   level: 1,
+    //   title: "Setting",
+    //   path: "/settings/profile-setting",
+    //   icon: "ri-store-3-line",
+    //   type: "link",
+    //   active: false,
+    // },
     //   {
     //   level: 1,
     //   title: "Category",
@@ -304,14 +324,14 @@ export class NavService {
     //   type: "link",
     //   active: false,
     // },
-// {
-//       level: 1,
-//       title: "Dish",
-//       path: "/menus",
-//       icon: "ri-restaurant-fill",
-//       type: "link",
-//       active: false,
-//     },
+    // {
+    //       level: 1,
+    //       title: "Dish",
+    //       path: "/menus",
+    //       icon: "ri-restaurant-fill",
+    //       type: "link",
+    //       active: false,
+    //     },
     //    {
     //   level: 1,
     //   title: "Users",
@@ -331,18 +351,17 @@ export class NavService {
     //   type: "link",
     //   active: false,
     // },
-   
-  ]
-  customer_menu_items:menuItem[] =[
+  ];
+  customer_menu_items: menuItem[] = [
     {
       level: 1,
       title: "Dashboard",
-        icon: "ri-home-line",
+      icon: "ri-home-line",
       path: "/store-dashboard",
       type: "link",
       active: false,
     },
-   
+
     {
       level: 1,
       title: "Orders",
@@ -362,13 +381,13 @@ export class NavService {
     {
       level: 1,
       title: "Customers",
-      path:"/users/all-users",
+      path: "/users/all-users",
       icon: "ri-user-3-line",
       type: "link",
       active: false,
     },
-   
-      {
+
+    {
       level: 1,
       title: "Menus",
       path: "/menus",
@@ -400,7 +419,7 @@ export class NavService {
     //   type: "link",
     //   active: false,
     // },
-     {
+    {
       level: 1,
       title: "Reports",
       path: "/reports",
@@ -417,7 +436,7 @@ export class NavService {
       active: false,
     },
 
- {
+    {
       level: 1,
       title: "Pos",
       path: "/orders/order-detail",
@@ -425,11 +444,8 @@ export class NavService {
       type: "link",
       active: false,
     },
-
-  
-  ]
-  pos_menu_items:menuItem[]  =[
-
+  ];
+  pos_menu_items: menuItem[] = [
     {
       level: 1,
       title: "Functions",
@@ -444,16 +460,16 @@ export class NavService {
         { path: "", title: "Settings", type: "link", level: 2 },
         { path: "", title: "Sync Data", type: "link", level: 2 },
         { path: "", title: "Close POS", type: "link", level: 2 },
-      
+
         // New items
         // { path: "/localization/translation", title: "Limited Time Deal", type: "link", level: 2 },
         // { path: "/localization/currency-rates", title: "Specials", type: "link", level: 2 },
         // { path: "/coupons/create-coupon", title: "Lunch", type: "link", level: 2 },
-        
+
         // { path: "/localization/translation", title: "Limited Time Deal", type: "link", level: 2, },
         // { path: "/localization/currency-rates", title: "Specials", type: "link", level: 2, },
         // { path: "/coupons/create-coupon", title: "Lunch", type: "link", level: 2, },
-      ]
+      ],
     },
     {
       level: 1,
@@ -463,34 +479,48 @@ export class NavService {
       active: true,
       children: [
         // { path: "/orders/order-detail", title: "Coupon List", type: "link", level: 2, },
-        { path: "/orders/order-detail", title: "Classic Range Pizzas", type: "link", level: 2 },
-        { path: "/orders/order-detail", title: "Non Vegetarian", type: "link", level: 2 },
-        { path: "/orders/order-detail", title: "Pasta", type: "link", level: 2 },
-        { path: "/orders/order-detail", title: "Drinks", type: "link", level: 2 },
+        {
+          path: "/orders/order-detail",
+          title: "Classic Range Pizzas",
+          type: "link",
+          level: 2,
+        },
+        {
+          path: "/orders/order-detail",
+          title: "Non Vegetarian",
+          type: "link",
+          level: 2,
+        },
+        {
+          path: "/orders/order-detail",
+          title: "Pasta",
+          type: "link",
+          level: 2,
+        },
+        {
+          path: "/orders/order-detail",
+          title: "Drinks",
+          type: "link",
+          level: 2,
+        },
         // { path: "/coupons/create-coupon", title: "Lunch", type: "link", level: 2, },
-
-      ]
+      ],
     },
     {
       level: 2,
       title: "Logout",
-      type: 'method',
-      methodName: 'logOut',  
-      icon: "",  // Logout icon
+      type: "method",
+      methodName: "logOut",
+      icon: "", // Logout icon
       active: false,
-    }
-    
+    },
+  ];
 
-    
-   
-   
-  ]
-  
   items = new BehaviorSubject<menuItem[]>(this.superAdminmenuItem);
-   logOut() {
-          this.modal.open(LoggingOutComponent,{
-              windowClass:'theme-modal',centered:true
-          })
-      }
-
+  logOut() {
+    this.modal.open(LoggingOutComponent, {
+      windowClass: "theme-modal",
+      centered: true,
+    });
+  }
 }

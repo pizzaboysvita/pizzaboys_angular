@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { ApisService } from '../../../shared/services/apis.service';
 import { SessionStorageService } from '../../../shared/services/session-storage.service';
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-add-restaurants',
   imports: [CardComponent,ReactiveFormsModule,CommonModule,NgxMaskDirective],
@@ -23,7 +24,7 @@ export class AddRestaurantsComponent {
   workinghours: any;
   uploadImagUrl: string | ArrayBuffer | null;
   file: File;
- constructor(public modal: NgbModal,private fb: FormBuilder,private apis:ApisService,private router:Router,private session:SessionStorageService){ }
+ constructor(public modal: NgbModal,private fb: FormBuilder,private toastr: ToastrService,private apis:ApisService,private router:Router,private session:SessionStorageService){ }
   storeForm!: FormGroup;
 
   addHour(){
@@ -66,10 +67,13 @@ addStore() {
   console.log(this.storeForm.value.status )
   console.log(this.workinghours)
     
- if (this.storeForm.invalid) {
+ if (this.storeForm.invalid || !this.workinghours || !this.file) {
       Object.keys(this.storeForm.controls).forEach(key => {
         this.storeForm.get(key)?.markAsTouched();
       });
+      if(this.workinghours ==undefined || this.workinghours.length === 0) {
+     this.toastr.error('Working hours are required', 'Error');
+      }
     } else {
 const req_body={
   "type": "insert",
@@ -133,5 +137,42 @@ capitalizeWords_firstName(event: any) {
     reader.readAsDataURL(this.file); // convert image to base64 URL
   }
 }
+
+
+showRules: boolean = false;
+
+rules = {
+  minLength: false,
+  uppercase: false,
+  lowercase: false,
+  number: false,
+  special: false
+};
+
+validatePassword() {
+  const password = this.storeForm.get('password')?.value || '';
+
+  this.rules.minLength = password.length >= 8;
+  this.rules.uppercase = /[A-Z]/.test(password);
+  this.rules.lowercase = /[a-z]/.test(password);
+  this.rules.number = /[0-9]/.test(password);
+  this.rules.special = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+}
+
+hideRulesIfEmpty() {
+  const password = this.storeForm.get('password')?.value || '';
+  if (!password) {
+    this.showRules = false;
+  }
+}
+
+
+allowOnlyNumbers(event: KeyboardEvent) {
+  const charCode = event.which ? event.which : event.keyCode;
+  if (charCode < 48 || charCode > 57) {
+    event.preventDefault();
+  }
+}
+
 
 }
