@@ -147,6 +147,7 @@
   .order-type-toggle {
   display: flex;
   height: 40px;
+  min-height: 40px;
   border: 1px solid #ddd;
   border-radius: 6px;
   overflow: hidden;
@@ -202,4 +203,3 @@ body.modal-open {
   overflow: hidden !important;
   
 }
-
