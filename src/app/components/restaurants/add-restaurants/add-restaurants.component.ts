@@ -65,9 +65,9 @@ export class AddRestaurantsComponent {
   }
 addStore() {
   console.log(this.storeForm.value.status )
-  console.log(this.workinghours)
+  console.log(this.workinghours,'step 1')
     
- if (this.storeForm.invalid || !this.workinghours || !this.file) {
+ if (this.storeForm.invalid || (!this.workinghours ||this.workinghours.length ==0)) {
       Object.keys(this.storeForm.controls).forEach(key => {
         this.storeForm.get(key)?.markAsTouched();
       });
