@@ -41,3 +41,83 @@
   background-color: #ffc107;
   color: #fff;
 }
+
+
+.instructions-list {
+  padding-left: 1.2rem;
+  li {
+    margin-bottom: 0.5rem;
+  }
+}
+
+.upload-box {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 2rem;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+  background: #fafafa;
+
+  &:hover {
+    border-color: #ff6f00; /* orange highlight */
+  }
+
+  .upload-content {
+    pointer-events: none;
+  }
+}
+
+.btn-save {
+  background-color: #ff6f00;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 6px;
+
+  &:hover {
+    background-color: #e65c00;
+  }
+}
+
+
+.btn-save {
+  background-color: #ff6f00;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 6px;
+
+  &:hover {
+    background-color: #e65c00;
+  }
+}
+
+
+
+.nav-pills .nav-link {
+  border-radius: 6px;
+  margin-right: 0.5rem;
+  font-weight: 500;
+  color: #555;
+  background-color: #f5f5f5;
+
+  &.active {
+    background-color: #ff6f00;
+    color: #fff;
+  }
+}
+
+.btn-save {
+  background-color: #ff6f00;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 6px;
+
+  &:hover {
+    background-color: #e65c00;
+  }
+}

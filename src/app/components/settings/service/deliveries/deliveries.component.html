@@ -148,17 +148,216 @@
             </div>
         </div>
 
-        <div class="tab-pane fade" id="delivery-fees" role="tabpanel" aria-labelledby="fees-tab">
-            <p class="text-muted">Content for Fees tab: Here you can configure delivery fees.</p>
-        </div>
+      <div class="tab-pane fade" id="delivery-fees" role="tabpanel" aria-labelledby="fees-tab">
+  <div class="p-3">
 
+    <!-- Fee Type Tabs -->
+    <h6 class="fw-bold mb-3">Fee Type</h6>
+    <ul class="nav nav-pills mb-4" id="feeTypeTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" [class.active]="feeType==='fixed'" (click)="feeType='fixed'">Fixed</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" [class.active]="feeType==='range'" (click)="feeType='range'">Range</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" [class.active]="feeType==='formula'" (click)="feeType='formula'">Formula</button>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+
+      <!-- Fixed Fee -->
+      <div *ngIf="feeType==='fixed'">
+        <label class="form-label fw-bold">Flat Delivery Fee ($)</label>
+        <input type="number" class="form-control mb-3" [(ngModel)]="fixedFee" placeholder="e.g. 5.00">
+        <small class="text-muted">A single flat fee charged for all deliveries</small>
+      </div>
+
+      <!-- Range Fee -->
+      <div *ngIf="feeType==='range'">
+        <div *ngFor="let range of feeRanges; let i = index" class="mb-3">
+          <div class="d-flex align-items-center gap-2">
+            <div class="flex-fill">
+              <label class="form-label">Up to (km)</label>
+              <input type="number" class="form-control" [(ngModel)]="range.km">
+            </div>
+            <div class="flex-fill">
+              <label class="form-label">Cost ($)</label>
+              <input type="number" class="form-control" [(ngModel)]="range.cost">
+            </div>
+            <div class="d-flex align-items-end gap-2">
+              <button type="button" class="btn btn-outline-secondary" (click)="addRange()" *ngIf="i===feeRanges.length-1">
+                <i class="bi bi-plus"></i>
+              </button>
+              <button type="button" class="btn btn-outline-danger" (click)="removeRange(i)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formula Fee -->
+      <div *ngIf="feeType==='formula'">
+        <label class="form-label fw-bold">Formula</label>
+        <input type="text" class="form-control mb-3" [(ngModel)]="formula" placeholder="e.g. base + (km * rate)">
+        <small class="text-muted">Define a formula for calculating fees based on distance/time</small>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- Free Delivery Amount -->
+    <div class="mb-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <label for="freeDelivery" class="form-label fw-bold">Free Delivery Amount ($)</label>
+        <span class="badge bg-secondary-subtle text-secondary">OPTIONAL</span>
+      </div>
+      <input type="number" id="freeDelivery" class="form-control" [(ngModel)]="freeDeliveryAmount">
+      <small class="text-muted">If a customer's cart exceeds this value, delivery will be free. Leave as 0 to disable</small>
+    </div>
+
+    <!-- Restrict Fee Times -->
+    <div class="mb-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <label class="form-label fw-bold">Restrict Delivery Fee Times</label>
+        <span class="badge bg-secondary-subtle text-secondary">OPTIONAL</span>
+      </div>
+      <select class="form-select" [(ngModel)]="restrictFeeTime">
+        <option value="">-- Select --</option>
+        <option value="immediate">Immediate Orders Only</option>
+        <option value="later">Later Orders Only</option>
+      </select>
+      <small class="text-muted">Restrict the fee to orders now or at a later time. Leave empty for any time.</small>
+    </div>
+
+    <!-- Save Button -->
+    <div class="d-grid mt-4">
+      <button type="button" class="btn btn-save" (click)="saveFees()">Save</button>
+    </div>
+
+  </div>
+</div>
+
+
+    
         <div class="tab-pane fade" id="delivery-zones" role="tabpanel" aria-labelledby="zones-tab">
-            <p class="text-muted">Content for Zones tab: Here you can manage your delivery zones.</p>
+            <div class="p-3">
+
+                <!-- Instructions -->
+                <h6 class="fw-bold mb-3">How Delivery Zones Work</h6>
+                <p class="text-muted">
+                    Use delivery zones to ensure delivery orders are accepted only within set areas. Adding delivery
+                    zones will override existing delivery fee and max driving distance settings.
+                </p>
+                <ol class="instructions-list">
+                    <li>
+                        Visit <a href="https://www.google.com/mymaps" target="_blank" class="link-primary">custom google
+                            maps</a> and login if needed
+                    </li>
+                    <li>Press the button that says "Create A New Map"</li>
+                    <li>
+                        Use the draw line tool to create your various delivery zones making sure to give them meaningful
+                        names that you can remember
+                    </li>
+                    <li>
+                        Delivery zones must be closed shapes. Do not create any additional layers
+                    </li>
+                    <li>
+                        Use the "Export to KML/KMZ" option and check the box that says "Export to a .KML file".
+                        Press download to get your map file and upload it here
+                    </li>
+                </ol>
+
+                <hr>
+
+                <!-- Upload Section -->
+                <h6 class="fw-bold mb-3">Upload Delivery Zone File (.kml)</h6>
+                <div class="upload-box text-center" (click)="fileInput.click()">
+                    <input type="file" #fileInput accept=".kml" class="d-none" (change)="onFileSelected($event)">
+                    <div class="upload-content">
+                        <i class="bi bi-upload fs-2 text-muted"></i>
+                        <p class="text-muted mb-0">Drop your files here or click to select one</p>
+                        <small class="text-muted">Accepts .kml files</small>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="d-grid mt-4">
+                    <button type="button" class="btn btn-save" (click)="saveZones()">Save</button>
+                </div>
+
+            </div>
         </div>
 
         <div class="tab-pane fade" id="delivery-order-timing" role="tabpanel" aria-labelledby="order-timing-tab">
-            <p class="text-muted">Content for Order Timing tab: Here you can set the timing for orders.</p>
+            <div class="p-3">
+
+                <!-- Enable Immediate Orders -->
+                <div class="mb-4">
+                    <label class="form-check-label fw-bold">Enable Immediate Orders</label>
+                    <div class="form-check form-switch mt-2">
+                        <input class="form-check-input" type="checkbox" [(ngModel)]="enableImmediateOrders">
+                    </div>
+                    <small class="text-muted">Allows customers to place orders due immediately</small>
+                </div>
+
+                <!-- First Order Offset -->
+                <div class="mb-4">
+                    <label for="firstOrderOffset" class="form-label fw-bold">First Order Offset (minutes)</label>
+                    <input type="number" id="firstOrderOffset" class="form-control" [(ngModel)]="firstOrderOffset">
+                    <small class="text-muted">How many minutes after your store opens will you accept the first
+                        order</small>
+                </div>
+
+                <!-- Last Order Offset -->
+                <div class="mb-4">
+                    <label for="lastOrderOffset" class="form-label fw-bold">Last Order Offset (minutes)</label>
+                    <input type="number" id="lastOrderOffset" class="form-control" [(ngModel)]="lastOrderOffset">
+                    <small class="text-muted">How many minutes before your store closes will you accept the last
+                        order</small>
+                </div>
+
+                <!-- Enable Later Orders -->
+                <div class="mb-4">
+                    <label class="form-check-label fw-bold">Enable Later Orders</label>
+                    <div class="form-check form-switch mt-2">
+                        <input class="form-check-input" type="checkbox" [(ngModel)]="enableLaterOrders">
+                    </div>
+                    <small class="text-muted">Allows customers to place orders for a later date and time</small>
+                </div>
+
+                <!-- Maximum Days Ahead -->
+                <div class="mb-4">
+                    <label for="maxDaysAhead" class="form-label fw-bold">Maximum Days Ahead</label>
+                    <input type="number" id="maxDaysAhead" class="form-control" [(ngModel)]="maxDaysAhead">
+                    <small class="text-muted">The number of days in advance customers can place orders</small>
+                </div>
+
+                <!-- Time Interval -->
+                <div class="mb-4">
+                    <label for="timeInterval" class="form-label fw-bold">Time Interval (minutes)</label>
+                    <input type="number" id="timeInterval" class="form-control" [(ngModel)]="timeInterval">
+                    <small class="text-muted">The number of minutes between each available order time slot</small>
+                </div>
+
+                <!-- Order Offset -->
+                <div class="mb-4">
+                    <label for="orderOffset" class="form-label fw-bold">Order Offset (minutes)</label>
+                    <input type="number" id="orderOffset" class="form-control" [(ngModel)]="orderOffset">
+                    <small class="text-muted">The minimum amount of time from now that an order for a later time must be
+                        placed</small>
+                </div>
+
+                <!-- Save Button -->
+                <div class="d-grid mt-4">
+                    <button type="button" class="btn btn-save" (click)="saveOrderTiming()">Save</button>
+                </div>
+
+            </div>
         </div>
+
 
     </div>
 </div>

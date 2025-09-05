@@ -22,41 +22,81 @@ export class DeliveriesComponent implements OnInit {
   maxDeliveryDistance: string = "6";
   maxDrivingTime: string = "45";
 
+  selectedFile: File | null = null;
+
+  enableImmediateOrders: boolean = true;
+  firstOrderOffset: number = 30;
+  lastOrderOffset: number = 15;
+  enableLaterOrders: boolean = true;
+  maxDaysAhead: number = 7;
+  timeInterval: number = 15;
+  orderOffset: number = 30;
   constructor() {}
 
   ngOnInit(): void {}
 
-  fees = [
-    { min: 0, max: 1, cost: 7.99 },
-    { min: 1, max: 3, cost: 9.99 },
-    { min: 3, max: 6, cost: 12.99 },
+  // Fee tab state
+  feeType: string = 'range'; // default
+  fixedFee: number = 0;
+  feeRanges: { km: number; cost: number }[] = [
+    { km: 1, cost: 7.99 },
+    { km: 3, cost: 9.99 },
+    { km: 6, cost: 12.99 },
   ];
+  formula: string = '';
 
-  freeDeliveryAmount: string = "0.00";
-  restrictFeeTimes: string = "";
+  freeDeliveryAmount: number = 0;
+  restrictFeeTime: string = '';
 
-
-  addFee(): void {
-    const lastFee = this.fees[this.fees.length - 1];
-    this.fees.push({
-      min: lastFee.max,
-      max: lastFee.max + 3, 
-      cost: 0,
-    });
+  addRange() {
+    this.feeRanges.push({ km: 0, cost: 0 });
   }
 
-  removeFee(index: number): void {
-    if (this.fees.length > 1) {
-      this.fees.splice(index, 1);
+  removeRange(index: number) {
+    this.feeRanges.splice(index, 1);
+  }
+
+  saveFees() {
+    const feesConfig = {
+      feeType: this.feeType,
+      fixedFee: this.fixedFee,
+      feeRanges: this.feeRanges,
+      formula: this.formula,
+      freeDeliveryAmount: this.freeDeliveryAmount,
+      restrictFeeTime: this.restrictFeeTime,
+    };
+    console.log('Delivery Fees Saved:', feesConfig);
+    // TODO: send feesConfig to backend
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+      console.log("Selected KML file:", this.selectedFile.name);
     }
   }
 
-  onSave(): void {
-    const feeSettings = {
-      fees: this.fees,
-      freeDeliveryAmount: this.freeDeliveryAmount,
-      restrictFeeTimes: this.restrictFeeTimes,
+  saveZones() {
+    if (!this.selectedFile) {
+      alert("Please upload a KML file before saving.");
+      return;
+    }
+    // TODO: send this.selectedFile to backend
+    console.log("Saving zones with file:", this.selectedFile);
+  }
+
+  saveOrderTiming() {
+    const timingSettings = {
+      enableImmediateOrders: this.enableImmediateOrders,
+      firstOrderOffset: this.firstOrderOffset,
+      lastOrderOffset: this.lastOrderOffset,
+      enableLaterOrders: this.enableLaterOrders,
+      maxDaysAhead: this.maxDaysAhead,
+      timeInterval: this.timeInterval,
+      orderOffset: this.orderOffset,
     };
-    console.log("Delivery fee settings saved:", feeSettings);
+    console.log("Order Timing Settings Saved:", timingSettings);
+    // TODO: send timingSettings to backend API
   }
 }
