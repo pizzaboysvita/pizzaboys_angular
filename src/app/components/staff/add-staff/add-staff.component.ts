@@ -119,7 +119,7 @@ export class AddStaffComponent {
           "",
           [Validators.required, Validators.pattern("^[A-Za-z ]+$")],
         ],
-        lastName: ["", [Validators.pattern("^[A-Za-z ]+$")]],
+        lastName: ["", [Validators.required,Validators.pattern("^[A-Za-z ]+$")]],
         phone: [
           "",
           [Validators.required, Validators.pattern(/^\+?\d[\d\s]{7,13}$/)],

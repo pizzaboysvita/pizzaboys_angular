@@ -50,12 +50,15 @@
                                 <!-- Last Name -->
                                 <div class="col-xl-6">
                                   <div class="input-box">
-                                    <h6 class="f-w-600 p-1">Last Name</h6>
+                                    <h6 class="f-w-600 p-1">Last Name<span class="text-danger">*</span></h6>
                                     <input type="text" formControlName="lastName" placeholder="Enter Last Name"
                                       (input)="capitalizeWords_lastName($event)" />
                                     @if ((staffForm.get('lastName')?.touched || staffForm.get('lastName')?.dirty) &&
                                     staffForm.get('lastName')?.hasError('pattern')) {
                                     <div class="text-danger">Only alphabets are allowed.</div>
+                                    }
+                                    @if (staffForm.get('lastName')?.touched && staffForm.get('lastName')?.invalid) {
+                                    <div class="text-danger">Last name is required.</div>
                                     }
                                   </div>
                                 </div>

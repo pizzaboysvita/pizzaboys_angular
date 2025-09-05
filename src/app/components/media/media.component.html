@@ -3,12 +3,22 @@
     <app-card [body]="true">
       <div body
         class="row row-cols-xl-12 row-cols-md-5 row-cols-sm-3 row-cols-2 g-sm-3 g-2 media-library-sec ratio_landscape">
-        <div class="input-box search-icon">
+        <!-- <div class="input-box search-icon w-100">
           <i class="ri-search-line"></i>
           <input class="search-box" type="search" placeholder="What are you looking for?" [(ngModel)]="searchText"
             name="search" (keyup)="searchTerm(searchText)"
             style="flex: 1; border: none; outline: none; background: transparent" />
-        </div>
+        </div> -->
+        <div class="input-box d-flex align-items-center border rounded px-3 py-2 w-100" >
+  <i class="ri-search-line text-muted me-2"></i>
+  <input 
+    class="form-control border-0 shadow-none p-0" 
+    type="search" 
+    placeholder="What are you looking for?" 
+    [(ngModel)]="searchText"
+    name="search"
+    (keyup)="searchTerm(searchText)" />
+</div>
 
         <div class="w-100">
           <div class="mb-4 position-relative">
