@@ -66,6 +66,13 @@ currentStatus:any // <-- backend API or dynamic status
       modifyEstTime:[''],
       action:['']
     })
+       this.apis.getApi(AppConstants.api_end_points.orderList + '?order_id=' + this.data.order_master_id + '&orderStatus=true&type=web').subscribe((response:any) => {
+      console.log(response, 'order details');
+      if(response.code ==1){
+        this.orderlogs = response.categories;
+          //  this.modalRef.componentInstance.datalogs = this.orderDetails;
+      }
+    });
     // Initialization logic here
     console.log(this.data,'this.datathis.datathis.datathis.datathis.datathis.datathis.datathis.data')
 
@@ -86,13 +93,7 @@ currentStatus:any // <-- backend API or dynamic status
    
     console.log(this.totalOrdermerged ,this.order_toppings,'order dialog data');
     // let result1 = this.data.order_master_id.replace("P-", "")
-       this.apis.getApi(AppConstants.api_end_points.orderList + '?order_id=' + this.data.order_master_id + '&orderStatus=true&type=web').subscribe((response:any) => {
-      console.log(response, 'order details');
-      if(response.code ==1){
-        this.orderlogs = response.categories;
-          //  this.modalRef.componentInstance.datalogs = this.orderDetails;
-      }
-    });
+    
   }
 
   selectTab(tabName: string): void {

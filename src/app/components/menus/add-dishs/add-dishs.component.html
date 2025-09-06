@@ -176,7 +176,7 @@
   <h6 class="mb-2">Upload Images</h6>
 
   <!-- Preview Section -->
-  <div *ngIf="previewUrl; else uploadInput" class="image-preview-container">
+  <div *ngIf="previewUrl !== null; else uploadInput" class="image-preview-container">
     <img
       #previewImage
       [src]="previewUrl"

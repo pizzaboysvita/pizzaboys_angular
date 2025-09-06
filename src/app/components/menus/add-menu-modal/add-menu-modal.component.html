@@ -106,14 +106,14 @@
 
 
 
-                      @if(uploadImagUrl){
+                      @if(uploadImagUrl || uploadImagUrl2){
                       <div class="image-preview-container">
-                        <img #previewImage [src]="uploadImagUrl" alt="Preview" class="preview-img" />
+                        <img #previewImage [src]="uploadImagUrl || uploadImagUrl2" alt="Preview" class="preview-img" />
 
                         <!-- Delete Icon -->
                         <!-- <button class="icon-button delete" (click)="removeImage()" title="Delete">❌</button> -->
                         <!-- <button class="icon-button" >×</button> -->
-                        <button class="icon-button" >✕</button>
+                        <button class="icon-button" (click)="removeImage()" >✕</button>
 
 
 
