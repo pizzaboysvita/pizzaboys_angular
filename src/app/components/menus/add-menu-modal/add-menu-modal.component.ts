@@ -146,6 +146,7 @@ isHide=false
   reqbody:any
   file: File;
   uploadImagUrl: string | ArrayBuffer | null;
+  uploadImagUrl2: string | ArrayBuffer | null;
   constructor(private fb: FormBuilder, public modal: NgbModal, private apis: ApisService,private toastr: ToastrService,private sessionStorageService:SessionStorageService ) {
     this.menuForm = this.fb.group({
       name: ['',Validators.required],
@@ -273,7 +274,7 @@ isHide=false
       "disable_dish_notes": this.menuForm.value.disableDishNotes == true ? 1 : 0,
       "re_stock_menu_daily": this.menuForm.value.restockMenuDaily == true ? 1 : 0,
       "hide_menu": this.menuForm.value.hideMenu == true ? 0 : 1,
-      "order_times": this.conditionForm.value.orderTimes.toString(),
+      "order_times": this.conditionForm.value.orderTimes == null ? '' : this.conditionForm.value.orderTimes.toString(),
       "services": this.conditionForm.value.services.toString(),
       "applicable_hours": "[{\"day\":\"Mon\",\"from\":\"12:00\",\"to\":\"15:00\"}]",
       "mark_as_age_restricted": this.conditionForm.value.ageRestricted == true ? 1 : 0,
@@ -290,6 +291,7 @@ isHide=false
       "managed_delivery_surcharge": this.surchargeForm.value.managedDeliverySurcharge,
       "dine_in_surcharge": this.surchargeForm.value.dineInSurcharge,
       "store_id":this.conditionForm.getRawValue().store.toString(),
+      menu_image: this.uploadImagUrl,
       "created_by": JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).user.user_id,
     }
   }else{
@@ -361,7 +363,7 @@ isHide=false
     const reader = new FileReader();
 
     reader.onload = () => {
-      this.uploadImagUrl = reader.result; // this will update the image source
+      this.uploadImagUrl2 = reader.result; // this will update the image source
     };
 
     reader.readAsDataURL(this.file); // convert image to base64 URL
@@ -393,5 +395,10 @@ addNewRow() {
   this.isHide =true
   this.rowData.push({ day: 'Monday', open: '09:00', close: '21:00', is24Hour: false });
   this.rowData = [...this.rowData]; // forces change detection
+}
+removeImage(){
+    this.uploadImagUrl = null;
+    this.menuForm.get('image')?.setValue(null);
+    // this.file = null;
 }
 }

@@ -16,6 +16,7 @@ import { ColDef, ITooltipParams, ModuleRegistry } from "@ag-grid-community/core"
 import { AgGridAngular } from "@ag-grid-community/angular";
 import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
 import { ToastrService } from "ngx-toastr";
+import { ConstantPool } from "@angular/compiler";
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 @Component({
   selector: "app-add-category",
@@ -159,7 +160,7 @@ isHide=false
       managed_delivery_surcharge: [""],
       dine_in_surcharge: [""],
       status: [1],
-      store:[-1]
+      store:['']
     });
       this.getMenuList();
     if(this.type =='View'|| this.type =='Edit'){
@@ -207,7 +208,7 @@ isHide=false
   getMenuList(): void {
   
 console.log(this.menuForm.value.store,'selected store idddddddddddddd')
-    this.apis.getApi(`/api/menu?store_id=${this.menuForm.value.store}`).subscribe((res: any) => {
+    this.apis.getApi(`/api/menu?store_id=${this.menuForm.value.store ==''?-1:this.menuForm.value.store}`).subscribe((res: any) => {
       if (res.code == "1") {
         this.menuList = res.data;
         
@@ -219,7 +220,7 @@ console.log(this.menuForm.value.store,'selected store idddddddddddddd')
     getStoreList() {
       this.apis.getApi(AppConstants.api_end_points.store_list).subscribe((data: any) => {
         console.log(data)
-        data.unshift({ store_id: -1, store_name: 'All Stores' })
+        data.unshift({ store_id: '', store_name: 'All Stores' })
         data.forEach((element: any) => {
           element.status = element.status == 1 ? 'Active' : element.status == 0 ? 'Inactive' : element.status
         })
@@ -228,7 +229,8 @@ console.log(this.menuForm.value.store,'selected store idddddddddddddd')
     }
 
   addCategory(): void {
-
+        console.log(this.storeList.map((item:any)=>item.store_id),'form valueeeeeeeeeeeeee')
+    console.log(this.menuForm.value.store,'form valueeeeeeeeeeeeee')
   if (this.menuForm.invalid) {
       console.log('validation required fields');
       const controls = this.menuForm.controls;
@@ -296,7 +298,7 @@ console.log(this.menuForm.value.store,'selected store idddddddddddddd')
     "delivery_surcharge": this.menuForm.value.delivery_surcharge,
     "managed_delivery_surcharge": this.menuForm.value.managed_delivery_surcharge,
     "dine_in_surcharge":this.menuForm.value.dine_in_surcharge,
-    "store_id":this.menuForm.value.store.length ==0?this.storeList.map((item:any)=>item.store_id).toString():this.menuForm.value.store,
+    "store_id":this.menuForm.value.store.length ==0?this.storeList.filter((item: any) => item.store_id).map((item:any)=>item.store_id):[this.menuForm.value.store],
     "status": 1,
     "created_by":  JSON.parse(this.session.getsessionStorage('loginDetails') as any).user.user_id,
     "updated_by": JSON.parse(this.session.getsessionStorage('loginDetails') as any).user.user_id
@@ -347,6 +349,7 @@ onSelectFile(event: Event): void {
 
 removeImage(): void {
   this.previewUrl = null;
+  this.previewUrlNew = null;
     this.selectedFile = null;
   this.menuForm.get('image')?.reset();  // Reset form control
 }

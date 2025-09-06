@@ -57,7 +57,7 @@ export class AddDishsComponent {
       description: [''],
       // optionSet:[''],
       subtitle: [''],
-      storeName: [this.myData?this.myData.store_id : '', Validators.required]
+      storeName: [this.myData?this.myData.store_id : '']
 
     });
     this.storeList()
@@ -68,9 +68,10 @@ export class AddDishsComponent {
   storeList() {
     this.apiService
       .getApi(AppConstants.api_end_points.store_list)
-      .subscribe((data) => {
+      .subscribe((data:any) => {
         if (data) {
           console.log(data);
+           data.unshift({ store_id: '', store_name: 'All Stores' })
           this.storesList = data;
         }
       });
@@ -114,9 +115,9 @@ export class AddDishsComponent {
 
   getMenuCategoryDishData() {
     const userId = JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id;
-    const menuApi = this.apiService.getApi(AppConstants.api_end_points.menu + '?store_id=' + this.menuForm.value.storeName);
-    const categoryApi = this.apiService.getApi(`/api/category?store_id=` + this.menuForm.value.storeName);
-    const dishApi = this.apiService.getApi(AppConstants.api_end_points.dish + '?store_id=' + this.menuForm.value.storeName);
+    const menuApi = this.apiService.getApi(AppConstants.api_end_points.menu + '?store_id=' + (this.menuForm.value.storeName==''?-1:this.menuForm.value.storeName));
+    const categoryApi = this.apiService.getApi(`/api/category?store_id=` + (this.menuForm.value.storeName==''?-1:this.menuForm.value.storeName));
+    const dishApi = this.apiService.getApi(AppConstants.api_end_points.dish + '?store_id=' + (this.menuForm.value.storeName==''?-1:this.menuForm.value.storeName));
 
     forkJoin([menuApi, categoryApi, dishApi]).subscribe(
       ([menuRes, categoryRes, dishRes]: any) => {
@@ -286,7 +287,9 @@ export class AddDishsComponent {
         "pos_name": this.menuForm.value.posName,
         "description": this.menuForm.value.description,
         "subtitle": this.menuForm.value.subtitle,
-        "store_id": this.menuForm.value.storeName.length ==0?this.storesList.map((item:any)=>item.store_id).toString():this.menuForm.value.storeName,
+        // "store_id": this.menuForm.value.storeName.length ==0?this.storesList.map((item:any)=>item.store_id).toString():this.menuForm.value.storeName,
+         "store_id":this.menuForm.value.storeName.length ==0?this.storesList.filter((item: any) => item.store_id).map((item:any)=>item.store_id):[this.menuForm.value.storeName],
+
         "created_by":  JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,
         "dish_option_set_json": JSON.stringify(this.selectedSubcategories),
         "dish_ingredients_json": JSON.stringify(this.Ingredients as any),

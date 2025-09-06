@@ -51,10 +51,12 @@
                   <span class="slider"></span>
                 </label> -->
               <!-- </li> -->
-            }
+            } 
+             @if (users.user.role_id==3) {
             <li class="onhover-dropdown" (click)="orderList()">
                <i class="ri-shopping-bag-2-line"></i>
             </li>
+        }
             <!-- <li class="onhover-dropdown">
                 <app-notifications></app-notifications>
             </li>

@@ -48,6 +48,7 @@ export class HeaderComponent {
 
         if (userData !== null) {
           this.users = userData
+          console.log("User data loaded:", this.users);
         } else {
           console.log("No user data found in localStorage.");
         }

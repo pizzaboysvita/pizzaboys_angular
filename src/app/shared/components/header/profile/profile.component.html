@@ -1,7 +1,9 @@
 <div class="media profile-media">
     
     <div class="user-name-hide media-body">
+        @if(userDetails.store_name){
          <span><b>Store Name: </b>{{ userDetails.store_name }}</span><br>
+        }
         <span>User Name: {{ userDetails.first_name }} {{ userDetails.last_name }}</span>
         <p class="mb-0 font-roboto">Role : {{ userDetails.role_id ==1?'Admin':userDetails.role_id ==3?'POS':'Manager' }}<i class="middle ri-arrow-down-s-line"></i></p>
        

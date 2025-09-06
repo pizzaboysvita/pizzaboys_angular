@@ -450,8 +450,8 @@ onCellValueChanged(event: any) {
         "free_quantity": this.optionSetConditionForm.value.FreeQuantity,
         "option_set_dishes": JSON.stringify(this.choices),
         "inc_price_in_free": this.miscForm.value.PriceinFreeQuantityPromos = true ? 1 : 0,
-        "cretaed_by": 1011,
-        
+        "created_by": JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,
+
         "option_type": this.optionSetForm.value.optionSetType
       }
     }

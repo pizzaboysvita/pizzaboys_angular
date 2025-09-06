@@ -188,14 +188,14 @@ export class OrderDetailsComponent {
     this.showNewModelPopup = false;
   }
   submitOrder() {
-      this.modalRef = this.modalService.open(OrderPaymentsComponent, {
-               size: "xl",
-               centered: true,
-             });
-             this.modalRef.componentInstance.data = this.totalCartDetails;
+      // this.modalRef = this.modalService.open(OrderPaymentsComponent, {
+      //          size: "xl",
+      //          centered: true,
+      //        });
+      //        this.modalRef.componentInstance.data = this.totalCartDetails;
              
           
-    return
+    // return
     console.log(this.cartItems, 'this.cartItems opennnnnnnnnnnn ')
     this.orderItemsDetails = this.cartItems.map((item: any) => ({
       dish_id: item.dish_id,
