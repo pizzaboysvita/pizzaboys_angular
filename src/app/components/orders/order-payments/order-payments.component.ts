@@ -98,6 +98,10 @@ moveToPay(item: any, index: number) {
   this.payItems.push(item);
   this.unpaidItems.splice(index, 1);
 }
+removeToPay(item: any, index: number) {
+  this.unpaidItems.push(item);
+  this.payItems.splice(index, 1);
+}
 
 getUnpaidTotal() {
   return this.unpaidItems.reduce((sum: any, item: { item_total_price: any; }) => sum + item.item_total_price, 0).toFixed(2);

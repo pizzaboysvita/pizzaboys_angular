@@ -9,7 +9,7 @@
         <div class="row g-0">
 
           <!-- Sidebar Tabs -->
-          <div class="col-3" style="background-color: #f9f9fa;">
+          <div class="col-2" style="background-color: #f9f9fa;">
             <!-- Tabs -->
             <ul class="nav flex-column nav-pills">
             <li class="nav-item">
@@ -37,7 +37,7 @@
           </div>
 
           <!-- Content Area -->
-          <div class="col-9">
+          <div class="col-10">
             <div class="tab-content p-3">
              @if(activeTab === 'full'){
               <!-- Full & Partial -->
@@ -192,15 +192,18 @@
                 @if(activeTab === 'items'){
                 <div class="row">
     <!-- Split Control -->
-    <div class="col-6 border-end d-flex flex-column align-items-center p-4">
+    <div class="col-6 border-end d-flex flex-column align-items-start p-4">
        @if(!isSplitPayment){ 
+           <h6 class="fw-bold fs-6 text-start mb-2">Unpaid Items</h6> 
+          
+
         <div class="card mb-3 w-100">
+
         <div class="card-body p-2">
-            <h6 class="fw-bold">Unpaid Items</h6>
             @if(unpaidItems.length === 0){
         <div class="text-muted py-4 text-center">
-                <i class="ri-checkbox-circle-line text-success fs-3"></i>
-            <div>All items accounted for</div>
+                <i class="ri-checkbox-circle-line text-success fs-5"></i>
+            <div class="fs-8">All items accounted for</div>
             </div>
             }
   
@@ -224,9 +227,11 @@
   </div>
 </div>
     <!-- Pay For Items -->
+           <h6 class="fw-bold fs-6 text-start mb-2">Pay For Items</h6> 
+
  <div class="card mb-3 w-100">
   <div class="card-body p-2">
-    <h6 class="fw-bold">Pay For Items</h6>
+    <!-- <h6 class="fw-bold">Pay For Items</h6> -->
         @if(payItems.length === 0){
         <div  class="text-muted py-3 text-center">
             Select dishes to add them here...
@@ -235,7 +240,7 @@
         
     @for (rowData of payItems; track rowData; let ind = $index) {
     <div
-         class="d-flex justify-content-between align-items-start border-bottom py-2">
+         class="d-flex justify-content-between align-items-start border-bottom py-2" (click)="removeToPay(rowData,ind)">
       <div>
         <span>{{ ind+1 }}</span> {{ rowData.dish_name }}
         <br />
@@ -261,9 +266,11 @@
 </div>
 
     <!-- Dishes Paid -->
+           <h6 class="fw-bold fs-6 text-start mb-2">Dishes Paid</h6> 
+
     <div class="card mb-3 w-100">
       <div class="card-body p-2">
-        <h6 class="fw-bold">Dishes Paid</h6>
+        <!-- <h6 class="fw-bold">Dishes Paid</h6> -->
         <div class="text-muted py-3 text-center">
           Paid items will show here
         </div>
