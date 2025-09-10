@@ -1,63 +1,200 @@
-$primary-orange: #fd7e14;
-
-.modal-header {
-  border-bottom: 1px solid #e9ecef;
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 
-.modal-footer {
-  border-top: 1px solid #e9ecef;
-  padding: 1rem 1.5rem;
-}
-
-.form-label {
-  font-weight: 500;
-  color: #333;
-}
-
-.form-text {
-  font-size: 0.875rem;
-  color: #6c757d !important;
-}
-
-.input-group-text {
-  background-color: #e9ecef;
-  border-color: #ced4da;
-  color: #495057;
-}
-
-.optional-badge {
-  background-color: #e9ecef;
-  color: #6c757d;
-  font-size: 0.75rem;
-  font-weight: 500;
-  padding: 0.25rem 0.5rem;
+.modal-content {
+  background: #fff;
+  padding: 2rem;
+  width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
   border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
-.form-check-label {
-  font-weight: 500;
+h2 {
+  margin-bottom: 1.2rem;
+  font-size: 1.3rem;
+  font-weight: 600;
 }
 
-.btn-primary {
-  background-color: $primary-orange;
-  border-color: $primary-orange;
-  font-weight: bold;
+.close-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #999;
+  padding: 0;
+  line-height: 1;
 
   &:hover {
-    background-color: darken($primary-orange, 10%);
-    border-color: darken($primary-orange, 10%);
+    color: #333;
   }
 }
 
-.dotted-divider {
-  border: none;
-  border-top: 2px dotted #2b2a2a;
-  margin-top: 1.5rem;
-  margin-bottom: 1.5rem;
+.form-group {
+  margin-bottom: 1.3rem;
+  display: flex;
+  flex-direction: column;
+
+  label {
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .optional {
+      font-size: 0.75rem;
+      color: #999;
+      font-weight: normal;
+    }
+  }
+
+  input,
+  select,
+  ng-select {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.95rem;
+    outline: none;
+    &:focus {
+      border-color: #ff6a00;
+    }
+  }
+
+  small {
+    font-size: 0.75rem;
+    color: #777;
+    margin-top: 0.3rem;
+  }
 }
 
-.btn-outline-primary.active {
-  background-color: $primary-orange;
+.input-prefix {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 0 0.5rem;
+
+  span {
+    color: #555;
+    margin-right: 0.25rem;
+  }
+
+  input {
+    flex-grow: 1;
+    border: none;
+    padding: 0.5rem 0;
+  }
+}
+
+.toggle-group {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+
+  button {
+    flex: 1;
+    padding: 0.5rem 0.9rem;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    background: #f9f9f9;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+
+    &.active {
+      background: #ff6a00;
+      color: #fff;
+      border-color: #ff6a00;
+    }
+  }
+}
+
+.time-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.time-slot {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+
+  input[type="time"],
+  select {
+    flex: 1;
+  }
+
+  .remove {
+    border: none;
+    background: none;
+    color: red;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+}
+
+.add-btn {
+  margin-top: 0.6rem;
+  background: none;
+  border: 1px solid #ff6a00;
+  color: #ff6a00;
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+
+  &:hover {
+    background: #fff3eb;
+  }
+}
+
+.save-btn {
+  width: 100%;
+  padding: 0.9rem;
+  background: #ff6a00;
+  border: none;
+  border-radius: 8px;
   color: white;
-  border-color: $primary-orange;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background: #e65c00;
+  }
+}
+
+.error-message,
+.success-message {
+  margin-top: 0.6rem;
+  padding: 0.6rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+.success-message {
+  background-color: #e8f5e9;
+  color: #388e3c;
 }

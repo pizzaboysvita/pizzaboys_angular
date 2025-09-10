@@ -1,102 +1,165 @@
 import { Component, OnInit } from "@angular/core";
+import { FormArray, FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { CommonModule } from "@angular/common";
-import { FormsModule } from "@angular/forms";
+import { ReactiveFormsModule } from "@angular/forms";
+import { SettingsService } from "../../settings.service";
 
 @Component({
   selector: "app-deliveries",
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: "./deliveries.component.html",
   styleUrls: ["./deliveries.component.scss"],
 })
 export class DeliveriesComponent implements OnInit {
-  isDeliveryEnabled: boolean = false;
-  foodPrepTime: string = "40";
-  deliveryNotes: string = "";
-  avoidTolls: boolean = false;
-  avoidHighways: boolean = false;
-  blockAddresses: string = "";
-  defaultMenu: string = "None";
+  deliveryForm!: FormGroup;
+  deliveryServiceId: number | null = null; // for update
 
-  minOrderAmount: string = "30.00";
-  maxDeliveryDistance: string = "6";
-  maxDrivingTime: string = "45";
+  constructor(
+    private fb: FormBuilder,
+    private deliveryService: SettingsService
+  ) {}
 
-  selectedFile: File | null = null;
+  ngOnInit(): void {
+    this.deliveryForm = this.fb.group({
+      type: ["insert"], 
+      delivery_service_id: [null],
+      store_id: [null], 
+      enabled: [false],
+      food_prep_time: [null],
+      delivery_notes: [""],
+      avoid_tolls: [false],
+      avoid_highways: [false],
+      block_addresses: [""],
+      default_menu: [""],
+      min_order_amount: [null],
+      max_delivery_distance: [null],
+      max_driving_time: [null],
+      fee_type: [""],
+      fixed_fee: [null],
+      range_fee: this.fb.array([]),
+      formula_fee: this.fb.group({
+        base: [null],
+        per_km: [null],
+      }),
+      free_delivery_amount: [null],
+      restrict_fee_times: [""],
+      delivery_zone_file: [""],
+      enable_immediate_orders: [false],
+      first_order_offset: [null],
+      last_order_offset: [null],
+      enable_later_orders: [false],
+      max_days_ahead: [null],
+      time_interval: [null],
+      order_offset: [null],
+      created_by: [null],
+    });
 
-  enableImmediateOrders: boolean = true;
-  firstOrderOffset: number = 30;
-  lastOrderOffset: number = 15;
-  enableLaterOrders: boolean = true;
-  maxDaysAhead: number = 7;
-  timeInterval: number = 15;
-  orderOffset: number = 30;
-  constructor() {}
-
-  ngOnInit(): void {}
-
-  // Fee tab state
-  feeType: string = 'range'; // default
-  fixedFee: number = 0;
-  feeRanges: { km: number; cost: number }[] = [
-    { km: 1, cost: 7.99 },
-    { km: 3, cost: 9.99 },
-    { km: 6, cost: 12.99 },
-  ];
-  formula: string = '';
-
-  freeDeliveryAmount: number = 0;
-  restrictFeeTime: string = '';
-
-  addRange() {
-    this.feeRanges.push({ km: 0, cost: 0 });
+    // default 3 ranges
+    this.addRange(1, 7.99);
+    this.addRange(3, 9.99);
+    this.addRange(6, 12.99);
   }
 
-  removeRange(index: number) {
-    this.feeRanges.splice(index, 1);
+  // ===== Range Fee helpers =====
+  get rangeFeeArray(): FormArray {
+    return this.deliveryForm.get("range_fee") as FormArray;
   }
 
-  saveFees() {
-    const feesConfig = {
-      feeType: this.feeType,
-      fixedFee: this.fixedFee,
-      feeRanges: this.feeRanges,
-      formula: this.formula,
-      freeDeliveryAmount: this.freeDeliveryAmount,
-      restrictFeeTime: this.restrictFeeTime,
-    };
-    console.log('Delivery Fees Saved:', feesConfig);
-    // TODO: send feesConfig to backend
+  addRange(km = 0, cost = 0) {
+    this.rangeFeeArray.push(
+      this.fb.group({
+        min: [0],
+        max: [km],
+        fee: [cost],
+      })
+    );
   }
 
+  removeRange(i: number) {
+    this.rangeFeeArray.removeAt(i);
+  }
+
+  // ===== File Upload (zones) =====
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
-      console.log("Selected KML file:", this.selectedFile.name);
+      this.deliveryForm.patchValue({ delivery_zone_file: input.files[0].name });
     }
   }
 
-  saveZones() {
-    if (!this.selectedFile) {
-      alert("Please upload a KML file before saving.");
+  // ===== Save =====
+  private boolToNum(v: any): number {
+    return v ? 1 : 0;
+  }
+
+  saveDeliveryService(isUpdate = false) {
+    if (this.deliveryForm.invalid) {
+      alert("Please fill required fields.");
       return;
     }
-    // TODO: send this.selectedFile to backend
-    console.log("Saving zones with file:", this.selectedFile);
-  }
 
-  saveOrderTiming() {
-    const timingSettings = {
-      enableImmediateOrders: this.enableImmediateOrders,
-      firstOrderOffset: this.firstOrderOffset,
-      lastOrderOffset: this.lastOrderOffset,
-      enableLaterOrders: this.enableLaterOrders,
-      maxDaysAhead: this.maxDaysAhead,
-      timeInterval: this.timeInterval,
-      orderOffset: this.orderOffset,
+    const f = this.deliveryForm.value;
+
+    const payload: any = {
+      type: isUpdate ? "update" : "insert",
+      store_id: Number(f.store_id),
+
+      enabled: this.boolToNum(f.enabled),
+      avoid_tolls: this.boolToNum(f.avoid_tolls),
+      avoid_highways: this.boolToNum(f.avoid_highways),
+
+      food_prep_time: Number(f.food_prep_time),
+      delivery_notes: f.delivery_notes,
+      block_addresses: f.block_addresses,
+      default_menu: f.default_menu,
+
+      min_order_amount: Number(f.min_order_amount),
+      max_delivery_distance: Number(f.max_delivery_distance),
+      max_driving_time: Number(f.max_driving_time),
+
+      fee_type: f.fee_type,
+      fixed_fee: Number(f.fixed_fee),
+      range_fee: (f.range_fee || []).map((r: any) => ({
+        min: Number(r.min),
+        max: Number(r.max),
+        fee: Number(r.fee),
+      })),
+      formula_fee: {
+        base: Number(f.formula_fee.base),
+        per_km: Number(f.formula_fee.per_km),
+      },
+      free_delivery_amount: Number(f.free_delivery_amount),
+      restrict_fee_times: f.restrict_fee_times,
+
+      delivery_zone_file: f.delivery_zone_file,
+
+      enable_immediate_orders: this.boolToNum(f.enable_immediate_orders),
+      enable_later_orders: this.boolToNum(f.enable_later_orders),
+      first_order_offset: Number(f.first_order_offset),
+      last_order_offset: Number(f.last_order_offset),
+      max_days_ahead: Number(f.max_days_ahead),
+      time_interval: Number(f.time_interval),
+      order_offset: Number(f.order_offset),
+
+      created_by: Number(f.created_by),
     };
-    console.log("Order Timing Settings Saved:", timingSettings);
-    // TODO: send timingSettings to backend API
+
+    if (isUpdate && this.deliveryServiceId) {
+      payload.delivery_service_id = this.deliveryServiceId;
+    }
+
+    console.log("Payload:", payload);
+
+    this.deliveryService.saveDeliveryService(payload).subscribe({
+      next: (res) => {
+        console.log("Saved:", res);
+        alert("Delivery service saved successfully!");
+      },
+      error: (err) => {
+        console.error("Error:", err);
+        alert("Failed to save delivery service.");
+      },
+    });
   }
 }
