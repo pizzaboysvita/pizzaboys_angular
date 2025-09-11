@@ -100,6 +100,7 @@ console.log(req_body)
 this.apis.postApi(AppConstants.api_end_points.store_list,formData).subscribe((data:any)=>{
   console.log(data)
   if(data.code ==1){
+    sessionStorage.removeItem('workingHours');
      Swal.fire('Success!',data.message, 'success').then(
       (result) => {
   if (result) {
