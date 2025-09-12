@@ -62,6 +62,15 @@ export class AddWorkingHourComponent {
       this.workingHours = typeof working_hours1 === "string" ? JSON.parse(working_hours1) : working_hours1;
 
     }
+    // else{
+      const data = sessionStorage.getItem('workingHours');
+      if (data) {
+        this.workingHours = JSON.parse(data); // parse only the value, not the key 
+      }
+        // else {
+      //   this.workingHours = []; // fallback when no data
+      // }
+   // }
     
 
     this.createFrom()
@@ -141,7 +150,7 @@ this.addWorkingForm.get('formtime')?.valueChanges.subscribe(from => {
         Swal.fire('Error!', this.addWorkingForm.value.day + ' ' + 'is exist', 'error')
       }
     }
-
+      sessionStorage.setItem('workingHours',JSON.stringify(this.workingHours))
 
   }
   close() {

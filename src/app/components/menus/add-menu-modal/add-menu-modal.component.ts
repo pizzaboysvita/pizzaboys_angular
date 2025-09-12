@@ -306,7 +306,7 @@ isHide=false
       "hide_menu": this.menuForm.value.hideMenu == true ? 0 : 1,
       "order_times": (this.conditionForm.value.orderTimes =='' ||this.conditionForm.value.orderTimes ==null) ?null:this.conditionForm.value.orderTimes.toString(),
       "services": this.conditionForm.value.services==''?null: this.conditionForm.value.services.toString(),
-      "applicable_hours":this.rowData.length ==0?'':JSON.parse(this.rowData),
+      "applicable_hours":this.rowData.length ==0?'':JSON.stringify(this.rowData),
       "mark_as_age_restricted": this.conditionForm.value.ageRestricted == true ? 1 : 0,
       "enable_pre_orders_only": this.conditionForm.value.preOrderOnly == true ? 1 : 0,
       "pre_order_days_in_advance": this.conditionForm.value.preOrderDays ==''?null:this.conditionForm.value.preOrderDays,
@@ -398,6 +398,7 @@ addNewRow() {
 }
 removeImage(){
     this.uploadImagUrl = null;
+    this.uploadImagUrl2 = null;
     this.menuForm.get('image')?.setValue(null);
     // this.file = null;
 }

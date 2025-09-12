@@ -409,7 +409,7 @@ onCellValueChanged(event: any) {
   }
 
   saveMenu() {
-    console.log('Saving menu', this.rowData, this.hideOptionSet);
+    console.log('Saving menu', this.rowData,this.optionSetConditionForm.value.MinOptionsRequired);
     if (this.type == 'Edit') {
       this.reqbody = {
         "type": "update",
@@ -423,9 +423,9 @@ onCellValueChanged(event: any) {
         "hide_opion_set_json": JSON.stringify(this.hideOptionSet),
         "select_multiple": this.optionSetConditionForm.value.SelectMultiple == true ? 1 : 0,
         "enable_option_quantity": this.optionSetConditionForm.value.enableOptionQuantity = true ? 1 : 0,
-        "min_option_quantity": this.optionSetConditionForm.value.MinOptionsRequired,
-        "max_option_allowed": this.optionSetConditionForm.value.MaxOptionsAllowed,
-        "free_quantity": this.optionSetConditionForm.value.FreeQuantity,
+        "min_option_quantity": this.optionSetConditionForm.value.MinOptionsRequired =='' ? null : this.optionSetConditionForm.value.MinOptionsRequired,
+        "max_option_allowed": this.optionSetConditionForm.value.MaxOptionsAllowed=='' ? null : this.optionSetConditionForm.value.MaxOptionsAllowed,
+        "free_quantity": this.optionSetConditionForm.value.FreeQuantity=='' ? null : this.optionSetConditionForm.value.FreeQuantity,
         "option_set_dishes": JSON.stringify(this.choices),
         "inc_price_in_free": this.miscForm.value.PriceinFreeQuantityPromos = true ? 1 : 0,
         "created_by": JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,
@@ -445,9 +445,9 @@ onCellValueChanged(event: any) {
         "hide_opion_set_json": JSON.stringify(this.hideOptionSet),
         "select_multiple": this.optionSetConditionForm.value.SelectMultiple == true ? 1 : 0,
         "enable_option_quantity": this.optionSetConditionForm.value.enableOptionQuantity = true ? 1 : 0,
-        "min_option_quantity": this.optionSetConditionForm.value.MinOptionsRequired,
-        "max_option_allowed": this.optionSetConditionForm.value.MaxOptionsAllowed,
-        "free_quantity": this.optionSetConditionForm.value.FreeQuantity,
+        "min_option_quantity": this.optionSetConditionForm.value.MinOptionsRequired =='' ? null : this.optionSetConditionForm.value.MinOptionsRequired,
+        "max_option_allowed": this.optionSetConditionForm.value.MaxOptionsAllowed==''? null : this.optionSetConditionForm.value.MaxOptionsAllowed,
+        "free_quantity": this.optionSetConditionForm.value.FreeQuantity=='' ? null : this.optionSetConditionForm.value.FreeQuantity,
         "option_set_dishes": JSON.stringify(this.choices),
         "inc_price_in_free": this.miscForm.value.PriceinFreeQuantityPromos = true ? 1 : 0,
         "created_by": JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,

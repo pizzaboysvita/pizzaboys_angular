@@ -108,10 +108,19 @@
                                     <h6 class="f-w-600 p-1">Confirm Password<span class="text-danger">*</span></h6>
                                     <input type="password" formControlName="confirmPassword"
                                       placeholder="Enter Confirm Password" />
-                                    @if (staffForm.get('confirmPassword')?.touched &&
-                                    staffForm.get('confirmPassword')?.invalid) {
+                                    <!-- @if (staffForm.get('confirmPassword')?.touched &&
+                                    staffForm.hasError('mismatch')) {
                                     <div class="text-danger">Passwords must match</div>
-                                    }
+                                    } -->
+                                    <div *ngIf="staffForm.get('confirmPassword')?.touched">
+  <div *ngIf="staffForm.get('confirmPassword')?.hasError('required')" class="text-danger">
+    Confirm Password is required
+  </div>
+  <div *ngIf="staffForm.get('confirmPassword')?.dirty &&staffForm.hasError('mismatch')" class="text-danger">
+    Passwords must match
+  </div>
+</div>
+
                                   </div>
                                 </div>
 
