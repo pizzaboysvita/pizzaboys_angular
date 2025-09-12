@@ -117,6 +117,7 @@ export class MediaComponent implements OnInit {
   @Output() itemDecreased = new EventEmitter<CartItem>();
   @ViewChild("scrollContainer", { static: false }) scrollContainer!: ElementRef;
   // Removed duplicate declaration of modalContent
+  isOptionSelected: boolean = false;
   selectedCategory: any;
   categoriesList: any[] = [];
   dishList: DishFromAPI[] = [];
@@ -282,6 +283,7 @@ export class MediaComponent implements OnInit {
   }
 
   openIngredientsPopup(item: any) {
+     this.isOptionSelected = false;
     item.dishnote = ''
     this.selectedChildPerCombo = {};
     if (item.dish_type === 'combo') {
@@ -382,6 +384,7 @@ export class MediaComponent implements OnInit {
     this.cdr.detectChanges();
   }
   selectRadio(group: any, option: any) {
+    this.isOptionSelected=true
     console.log("Selected option:", option, group);
     group.option_set_array.forEach((opt: any) => {
 
@@ -467,7 +470,7 @@ console.log(">>>>>>>>>>>>???????????????",)
   combo_selectRadio(option: any, dishOptionSet: any, comboIndex: any, fullcomboDetails: any) {
     console.log("Selected option in combo:", comboIndex);
     console.log("Selected option in combo:", this.selectedDishFromList);
-
+    this.isOptionSelected = true;
     const comboDishDetails = this.selectedDishFromList.comboDishList[comboIndex].dish_option_set_array.filter((optSet: any) => optSet.option_set_id === dishOptionSet.option_set_id)[0].option_set_array;
     comboDishDetails.forEach((opt: any) => {
       opt.quantity = 1;
@@ -483,7 +486,13 @@ console.log(">>>>>>>>>>>>???????????????",)
     };
     this.cdr.detectChanges();
   }
+  getSelectedCount(dishOptionSet: any): number {
+  return dishOptionSet.option_set_array.filter((opt: any) => opt.quantity && opt.quantity > 0).length;
+}
   combo_increment(option: any, dishOptionSet: any, comboDishDetails: any, fullcomboDetails: any) {
+      if (!option.quantity && this.getSelectedCount(dishOptionSet) >= 5) {
+    return; // ignore click
+  }
     console.log(fullcomboDetails,'fullcomboDetails')
     option.quantity = (option.quantity || 0) + 1;
     if (option.quantity > 0) {

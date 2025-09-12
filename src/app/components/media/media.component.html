@@ -222,10 +222,10 @@
                             (click)="combo_decrement(option,dishOption,selectedChildPerCombo[comboIndex],selectedDishFromList)">-</button>
                           <span class="counter-value">{{ option.quantity }}</span>
                           <button class="counter-btn"
-                            (click)="combo_increment(option,dishOption,selectedChildPerCombo[comboIndex],selectedDishFromList)">+</button>
+                            (click)="combo_increment(option,dishOption,selectedChildPerCombo[comboIndex],selectedDishFromList)"  [disabled]="getSelectedCount(dishOption) >= 5">+</button>
                         </div>
                         <button *ngIf="!option.quantity" class="plus-btn"
-                          (click)="combo_increment(option,dishOption,selectedChildPerCombo[comboIndex],selectedDishFromList)">+</button>
+                          (click)="combo_increment(option,dishOption,selectedChildPerCombo[comboIndex],selectedDishFromList)"  [disabled]="getSelectedCount(dishOption) >= 5">+</button>
                       </div>
                     </ng-container>
 
@@ -309,10 +309,10 @@
                   <div class="counter-group" *ngIf="option.quantity > 0">
                     <button class="counter-btn" (click)="decrement(option); $event.stopPropagation()">-</button>
                     <span class="counter-value">{{ option.quantity }}</span>
-                    <button class="counter-btn" (click)="increment(option); $event.stopPropagation()">+</button>
+                    <button class="counter-btn" (click)="increment(option); $event.stopPropagation()" >+</button>
                   </div>
                   <button *ngIf="!option.quantity" class="plus-btn"
-                    (click)="increment(option); $event.stopPropagation()">+</button>
+                    (click)="increment(option); $event.stopPropagation()" [disabled]="getSelectedCount(dish_option) >= 5">+</button>
                 </div>
               </ng-container>
               <!-- Checkbox group -->
@@ -385,7 +385,7 @@
               <i class="ri-price-tag-3-line"></i>
             </button>
             <button class="btn fw-bold text-white" style="background: #f44336; min-width: 180px;"
-              (click)="comboAddItemToCart(selectedDishFromList); closePopup()">
+              (click)="comboAddItemToCart(selectedDishFromList); closePopup()"  [disabled]="!isOptionSelected">
               ADD DISH ( ${{ selectedDishFromList.duplicate_dish_price }} )
             </button>
           </div>
@@ -409,7 +409,7 @@
               <i class="ri-price-tag-3-line"></i>
             </button>
             <button class="btn fw-bold text-white" style="background: #f44336; min-width: 180px;"
-              (click)="addItemToCart(selectedDishFromList); closePopup()">
+              (click)="addItemToCart(selectedDishFromList); closePopup()"  [disabled]="!isOptionSelected">
               ADD DISH ( ${{ selectedDishFromList.duplicate_dish_price }} )
             </button>
           </div>

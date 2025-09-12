@@ -1,9 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-order-payments',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './order-payments.component.html',
   styleUrl: './order-payments.component.scss'
 })
@@ -18,9 +19,13 @@ splitBy = 2;
  payItems: any[] = [];     // selected items waiting for payment
 paidItems: any[] = [];    // confirmed paid items
   isModalOpen: boolean=true;
- constructor(public activeModal: NgbActiveModal, ) {}
+  showPopup: boolean=true;
+  confirmRemove = false;
+
+ constructor(public activeModal: NgbActiveModal,private cdr: ChangeDetectorRef ) {}
 
   ngOnInit(): void {
+  this.showPopup=true;
     this.payItems=[]
     this.paidItems= [];    // confirmed paid items
     this.unpaidItems=this.data
@@ -120,4 +125,43 @@ addPayment() {
 closeModal() {
   this.isModalOpen = false;
 }
+ closeNewModelPopup() {
+    this.showPopup = false;
+     this.cdr.detectChanges();
+  }
+toggleRemove() {
+  this.confirmRemove = !this.confirmRemove;
+  // If confirmRemove is true and clicked again → do actual remove
+  if (!this.confirmRemove) {
+    // Reset after cancel
+    return;
+  }
+}
+
+doRemove(tab: string) {
+  if (tab === 'partial' || tab === 'full') {
+    this.data = [];
+    this.totalPrice = 0;
+  }
+
+  if (tab === 'people') {
+    this.splitRows = [];
+    this.splitBy = 2;         // reset split count
+    this.isSplitPayment = false;
+  }
+
+  if (tab === 'items') {
+    this.unpaidItems = [];
+    this.payItems = [];
+    this.paidItems = [];
+    this.isSplitPayment = false;
+  }
+
+  // Reset confirmation
+  this.confirmRemove = false;
+
+  // Force refresh if OnPush
+  this.cdr.detectChanges();
+}
+
 }
