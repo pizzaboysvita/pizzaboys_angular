@@ -12,6 +12,8 @@ import * as FileSaver from 'file-saver';
 import { CardComponent } from '../../../shared/components/card/card.component';
 import { AddComponent } from './../add/add.component';
 import { InventoryService } from "../services/service.service";
+import { ApisService } from "../../../shared/services/apis.service";
+import { AppConstants } from "../../../app.constants";
 
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 
@@ -73,7 +75,7 @@ export class GroceryComponent implements OnInit {
     private fb: FormBuilder,
     private modalService: NgbModal,
     private router: Router,
-    private InventoryService: InventoryService,
+    private InventoryService: ApisService,
     private datePipe: DatePipe
   ) { }
 
@@ -89,12 +91,11 @@ export class GroceryComponent implements OnInit {
 
   // 🔹 Fetch inventory list
   loadInventory(): void {
-    this.InventoryService.getInventory(this.token).subscribe({
-      next: (res) => {
+    
+    this.InventoryService.getApi(AppConstants.api_end_points.inventory).subscribe({
+      next: (res:any) => {
         this.rowData = res.data || res;
         console.log("Inventory loaded:", this.rowData);
-
-        // window.location.reload();
 
       },
       error: (err) => {
@@ -113,21 +114,22 @@ export class GroceryComponent implements OnInit {
         this.loadInventory();
       }
     }).catch(() => { });
+    modalRef.componentInstance.editData = this.selectedItem; // Ensure it's in 'add' mode
   }
 
   // 🔹 Delete confirmation
   confirmDelete(modal: any) {
-    if (!this.selectedItem) return;
+    // if (!this.selectedItem) return;
 
-    this.InventoryService.deleteInventory(this.selectedItem.item_id, this.token).subscribe({
-      next: () => {
-        modal.close();
-        Swal.fire('Deleted!', `${this.selectedItem.item_name} has been removed.`, 'success');
-        this.loadInventory();
-        this.selectedItem = null;
-      },
-      error: () => Swal.fire('Error', 'Failed to delete item', 'error')
-    });
+    // this.InventoryService.deleteApi(AppConstants.api_end_points.inventory,{}).subscribe({
+    //   next: () => {
+    //     modal.close();
+    //     Swal.fire('Deleted!', `${this.selectedItem.item_name} has been removed.`, 'success');
+    //     this.loadInventory();
+    //     this.selectedItem = null;
+    //   },
+    //   error: () => Swal.fire('Error', 'Failed to delete item', 'error')
+    // });
   }
 
   // 🔹 Grid action handler
@@ -140,6 +142,8 @@ export class GroceryComponent implements OnInit {
       this.modalService.open(this.viewModalRef, { centered: true, backdrop: 'static' });
     }
     if (action === 'edit') {
+         this.selectedItem = event.data;
+         this.openNew()
       // TODO: Hook edit modal like AddComponent (update API)
     }
     if (action === 'delete') {

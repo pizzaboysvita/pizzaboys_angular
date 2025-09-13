@@ -3,6 +3,9 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { InventoryService } from '../services/service.service';
+import { ApisService } from '../../../shared/services/apis.service';
+import { AppConstants } from '../../../app.constants';
+import { SessionStorageService } from '../../../shared/services/session-storage.service';
 
 @Component({
   selector: 'app-add',
@@ -21,7 +24,7 @@ export class AddComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     public activeModal: NgbActiveModal,
-    private inventoryService: InventoryService
+    private inventoryService: ApisService,private sessionStorage: SessionStorageService
   ) {}
 
   ngOnInit(): void {
@@ -52,14 +55,20 @@ export class AddComponent implements OnInit {
     this.isSubmitting = true;
 
     if (this.editData) {
-      const payload = {
-        type: 'update',
-        item_id: this.editData.item_id,
-        ...this.inventoryForm.value,
-        updated_by: 102 // Example user ID
-      };
+      
+        const payload = {
+  "type": "update",
+  item_id:this.editData.item_id,
+  "item_name": this.inventoryForm.value.item_name,
+  "quantity": this.inventoryForm.value.quantity,
+  "unit": this.inventoryForm.value.unit,
+  "item_state": 'F',
+  "imported_from": this.inventoryForm.value.imported_from,
+  "created_by": JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,
+}
 
-      this.inventoryService.addInventory(payload, this.token).subscribe({
+
+      this.inventoryService.postApi(AppConstants.api_end_points.inventory, payload).subscribe({
         next: (res) => {
           console.log('Inventory updated:', res);
           this.isSubmitting = false;
@@ -72,11 +81,17 @@ export class AddComponent implements OnInit {
       });
     } else {
       const payload = {
-        type: 'insert',
-        ...this.inventoryForm.value
-      };
+  "type": "insert",
+  "item_name": this.inventoryForm.value.item_name,
+  "quantity": this.inventoryForm.value.quantity,
+  "unit": this.inventoryForm.value.unit,
+  "item_state": 'F',
+  "imported_from": this.inventoryForm.value.imported_from,
+  "created_by": JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,
+}
 
-      this.inventoryService.addInventory(payload, this.token).subscribe({
+
+     this.inventoryService.postApi(AppConstants.api_end_points.inventory, payload).subscribe({
         next: (res) => {
           console.log('Inventory added:', res);
           this.isSubmitting = false;

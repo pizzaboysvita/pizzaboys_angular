@@ -57,8 +57,8 @@ export class AddRestaurantsComponent {
       address: ['', Validators.required],
       city: ['', Validators.required],
       state: ['', Validators.required],
-      postalCode: [''],
-      country: [''],
+      postalCode: ['', Validators.required],
+      country: ['', Validators.required],
       status: ['1', Validators.required],
       image:[null,Validators.required]
     });

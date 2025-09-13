@@ -13,6 +13,7 @@ export const AppConstants = {
        optionSet:'/api/optionset',
        dish:'/api/dish',
        dishV2:'/api/dishV2',
-       orderList:'/api/order'
+       orderList:'/api/order',
+       inventory:'/api/settings/inventory',
     }
     }

@@ -8,7 +8,7 @@ import { CardComponent } from '../../../shared/components/card/card.component';
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [CardComponent, NgbNavModule, IngredientsComponent, GroceryComponent],
+  imports: [CardComponent, NgbNavModule, GroceryComponent],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.scss'
 })

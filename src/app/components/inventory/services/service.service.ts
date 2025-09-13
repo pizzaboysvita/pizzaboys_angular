@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 export class InventoryService {
 
   private baseUrl = 'http://78.142.47.247:3003/api';   // Base URL
-  private inventoryUrl = `${this.baseUrl}/settings/inventory`;  // Inventory endpoint
+  private inventoryUrl = `/settings/inventory`;  // Inventory endpoint
 
   constructor(private http: HttpClient) {}
 

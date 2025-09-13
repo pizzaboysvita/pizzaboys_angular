@@ -24,13 +24,19 @@
         Quantity is required
       </div>
     </div>
-
+ <div class="input-box mb-3">
+      <h6 class="fw-bold p-1">Units <span class="text-danger">*</span></h6>
+      <input type="text" placeholder="Enter Units" formControlName="unit" class="form-control" />
+      <div *ngIf="f['unit'].touched && f['unit'].invalid" class="text-danger mt-1">
+        Units are required
+      </div>
+    </div>
     <!-- Item State -->
     <div class="mb-3">
       <h6 class="fw-bold p-1">Item State <span class="text-danger">*</span></h6>
       <select class="form-select" formControlName="item_state">
-        <option value="D">Draft</option>
-        <option value="F">Final</option>
+        <option value="D">Dry Items</option>
+        <option value="F">Frozen</option>
       </select>
       <div *ngIf="f['item_state'].touched && f['item_state'].invalid" class="text-danger">
         Item State is required

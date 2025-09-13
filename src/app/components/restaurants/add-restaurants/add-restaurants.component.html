@@ -107,6 +107,9 @@
           <div class="input-box">
             <h6 class="f-w-600 p-1">Postal Code<span class="text-danger">*</span></h6>
             <input type="text" formControlName="postalCode" maxlength="10" (keypress)="allowOnlyNumbers($event)"  placeholder="Enter Postal Code" />
+              @if (storeForm.get('postalCode')?.touched && storeForm.get('postalCode')?.errors?.['required']) {
+              <div class="text-danger">Postal Code is required</div>
+            }
           </div>
         </div>
 
@@ -114,6 +117,9 @@
           <div class="input-box">
             <h6 class="f-w-600 p-1">Country<span class="text-danger">*</span></h6>
             <input type="text" formControlName="country" placeholder="Enter Country" />
+                @if (storeForm.get('country')?.touched && storeForm.get('country')?.errors?.['required']) {
+              <div class="text-danger">Country is required</div>
+            }
           </div>
         </div>
 

@@ -39,10 +39,8 @@ export class SidebarComponent {
     // this.menuItemsList= this.navService.customer_menu_items;
   }else{
    const permissionsFromApi= JSON.parse(JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).user.permissions)
-     this.menuItemsList = this.navService.customer_menu_items.filter((item:any) => {
-  const key = this.titleToPermissionKey[item.title];
-  return key && permissionsFromApi[key];
-});
+     this.menuItemsList = this.navService.customer_menu_items
+
 
 console.log( this.menuItemsList )
 
