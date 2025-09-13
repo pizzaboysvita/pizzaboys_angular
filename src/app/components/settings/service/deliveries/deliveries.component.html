@@ -1,4 +1,4 @@
-<div class="card-body">
+<form [formGroup]="deliveryForm" class="card-body">
     <ul class="nav nav-tabs mb-3" id="deliveryTabs" role="tablist">
         <li class="nav-item" role="presentation">
             <a class="nav-link active" id="general-tab" data-bs-toggle="tab" href="#delivery-general" role="tab"
@@ -23,341 +23,232 @@
     </ul>
 
     <div class="tab-content">
+        <!-- ================= GENERAL TAB ================= -->
         <div class="tab-pane fade show active" id="delivery-general" role="tabpanel" aria-labelledby="general-tab">
             <div class="mb-4">
                 <label class="form-check-label fw-bold">Enabled</label>
                 <div class="form-check form-switch mt-2">
-                    <input class="form-check-input" type="checkbox" role="switch" id="deliveryEnabled"
-                        [(ngModel)]="isDeliveryEnabled">
+                    <input class="form-check-input" type="checkbox" role="switch" formControlName="enabled" />
                 </div>
-                <small class="text-muted">Allow customers to place delivery orders</small>
             </div>
 
             <div class="mb-4">
                 <label for="prepTime" class="form-label fw-bold">Food Preparation Time (minutes)</label>
-                <input type="text" class="form-control" id="prepTime" [(ngModel)]="foodPrepTime" placeholder="40">
-                <small class="text-muted">Time in minutes required to prepare order. Will be used to calculate a
-                    customers wait time</small>
+                <input type="number" class="form-control" id="prepTime" formControlName="food_prep_time" />
             </div>
 
             <div class="mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <label class="form-label fw-bold">Food Preparation Time Periods</label>
-                    <span class="badge bg-secondary-subtle text-secondary">OPTIONAL</span>
-                </div>
-                <button class="btn btn-outline-secondary btn-sm mt-2">Add Food Prep Slot</button>
-                <small class="text-muted d-block mt-1">Will override the default food preparation time if one of
-                    these periods get matched</small>
-            </div>
-
-            <div class="mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <label for="deliveryNotes" class="form-label fw-bold">Delivery Notes</label>
-                    <span class="badge bg-secondary-subtle text-secondary">OPTIONAL</span>
-                </div>
-                <textarea class="form-control mt-2" id="deliveryNotes" rows="3" [(ngModel)]="deliveryNotes"></textarea>
-                <small class="text-muted">This will be shown to customers if they choose this order
-                    method</small>
+                <label for="deliveryNotes" class="form-label fw-bold">Delivery Notes</label>
+                <textarea class="form-control mt-2" id="deliveryNotes" rows="3"
+                    formControlName="delivery_notes"></textarea>
             </div>
 
             <div class="mb-4">
                 <label class="form-check-label fw-bold">Avoid Tolls</label>
                 <div class="form-check form-switch mt-2">
-                    <input class="form-check-input" type="checkbox" role="switch" id="avoidTolls"
-                        [(ngModel)]="avoidTolls">
+                    <input class="form-check-input" type="checkbox" role="switch" formControlName="avoid_tolls" />
                 </div>
-                <small class="text-muted">Avoid delivery routes with tolls when calculating delivery distances
-                    and driving times</small>
             </div>
 
             <div class="mb-4">
                 <label class="form-check-label fw-bold">Avoid Highways</label>
                 <div class="form-check form-switch mt-2">
-                    <input class="form-check-input" type="checkbox" role="switch" id="avoidHighways"
-                        [(ngModel)]="avoidHighways">
+                    <input class="form-check-input" type="checkbox" role="switch" formControlName="avoid_highways" />
                 </div>
-                <small class="text-muted">Avoid delivery routes with highways when calculating delivery
-                    distances and driving times</small>
             </div>
 
             <div class="mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <label for="blockAddresses" class="form-label fw-bold">Block Delivery Addresses</label>
-                    <span class="badge bg-secondary-subtle text-secondary">OPTIONAL</span>
-                </div>
+                <label for="blockAddresses" class="form-label fw-bold">Block Delivery Addresses</label>
                 <textarea class="form-control mt-2" id="blockAddresses" rows="3"
-                    [(ngModel)]="blockAddresses"></textarea>
-                <small class="text-muted">Enter address that you would like to block from placing orders. One
-                    address per line. The system will match an address containing any part of the text entered
-                    per line, which means a line containing just 'road' will block all addresses with the word
-                    'road' in it. Caution: you may get unintended matches</small>
+                    formControlName="block_addresses"></textarea>
             </div>
 
             <div class="mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <label for="defaultMenu" class="form-label fw-bold">Default Menu</label>
-                    <span class="badge bg-secondary-subtle text-secondary">OPTIONAL</span>
-                </div>
-                <select class="form-select mt-2" id="defaultMenu" [(ngModel)]="defaultMenu">
-                    <option>None</option>
+                <label for="defaultMenu" class="form-label fw-bold">Default Menu</label>
+                <select class="form-select mt-2" id="defaultMenu" formControlName="default_menu">
+                    <option value="">None</option>
                     <option>Menu 1</option>
                     <option>Menu 2</option>
                 </select>
-                <small class="text-muted">This menu will be auto selected when a customer chooses this
-                    service</small>
             </div>
-
-
         </div>
+
+        <!-- ================= CONDITIONS TAB ================= -->
         <div class="tab-pane fade" id="delivery-conditions" role="tabpanel" aria-labelledby="conditions-tab">
             <div class="mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <label for="minOrderAmount" class="form-label fw-bold">Minimum Order Amount ($)</label>
-                    <span class="badge bg-secondary-subtle text-secondary">OPTIONAL</span>
-                </div>
-                <input type="text" class="form-control mt-2" id="minOrderAmount" [(ngModel)]="minOrderAmount"
-                    placeholder="30.00">
-                <small class="text-muted">The minimum order amount required for a customer to proceed with checkout.
-                    Does not include other fees or taxes, only the customers cart value</small>
+                <label for="minOrderAmount" class="form-label fw-bold">Minimum Order Amount ($)</label>
+                <input type="number" class="form-control mt-2" id="minOrderAmount" formControlName="min_order_amount" />
             </div>
 
             <div class="mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <label for="maxDeliveryDistance" class="form-label fw-bold">Max Delivery Distance (km)</label>
-                    <span class="badge bg-secondary-subtle text-secondary">OPTIONAL</span>
-                </div>
-                <input type="text" class="form-control mt-2" id="maxDeliveryDistance" [(ngModel)]="maxDeliveryDistance"
-                    placeholder="6">
-                <small class="text-muted">Orders further than this distance will be rejected. Set to 0 for unlimited
-                    distance (not recommended)</small>
+                <label for="maxDeliveryDistance" class="form-label fw-bold">Max Delivery Distance (km)</label>
+                <input type="number" class="form-control mt-2" id="maxDeliveryDistance"
+                    formControlName="max_delivery_distance" />
             </div>
 
             <div class="mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <label for="maxDrivingTime" class="form-label fw-bold">Max Driving Time (minutes)</label>
-                    <span class="badge bg-secondary-subtle text-secondary">OPTIONAL</span>
-                </div>
-                <input type="text" class="form-control mt-2" id="maxDrivingTime" [(ngModel)]="maxDrivingTime"
-                    placeholder="45">
-                <small class="text-muted">Orders which take longer than this time to drive to will be rejected. Set to 0
-                    for unlimited driving time (not recommended)</small>
+                <label for="maxDrivingTime" class="form-label fw-bold">Max Driving Time (minutes)</label>
+                <input type="number" class="form-control mt-2" id="maxDrivingTime" formControlName="max_driving_time" />
             </div>
 
             <div class="d-grid mt-4">
-                <button type="button" class="btn btn-warning btn-lg">Save</button>
+                <button type="button" class="btn btn-warning btn-lg" (click)="saveDeliveryService()">Save</button>
             </div>
         </div>
 
-      <div class="tab-pane fade" id="delivery-fees" role="tabpanel" aria-labelledby="fees-tab">
-  <div class="p-3">
-
-    <!-- Fee Type Tabs -->
-    <h6 class="fw-bold mb-3">Fee Type</h6>
-    <ul class="nav nav-pills mb-4" id="feeTypeTabs" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" [class.active]="feeType==='fixed'" (click)="feeType='fixed'">Fixed</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" [class.active]="feeType==='range'" (click)="feeType='range'">Range</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" [class.active]="feeType==='formula'" (click)="feeType='formula'">Formula</button>
-      </li>
-    </ul>
-
-    <div class="tab-content">
-
-      <!-- Fixed Fee -->
-      <div *ngIf="feeType==='fixed'">
-        <label class="form-label fw-bold">Flat Delivery Fee ($)</label>
-        <input type="number" class="form-control mb-3" [(ngModel)]="fixedFee" placeholder="e.g. 5.00">
-        <small class="text-muted">A single flat fee charged for all deliveries</small>
-      </div>
-
-      <!-- Range Fee -->
-      <div *ngIf="feeType==='range'">
-        <div *ngFor="let range of feeRanges; let i = index" class="mb-3">
-          <div class="d-flex align-items-center gap-2">
-            <div class="flex-fill">
-              <label class="form-label">Up to (km)</label>
-              <input type="number" class="form-control" [(ngModel)]="range.km">
-            </div>
-            <div class="flex-fill">
-              <label class="form-label">Cost ($)</label>
-              <input type="number" class="form-control" [(ngModel)]="range.cost">
-            </div>
-            <div class="d-flex align-items-end gap-2">
-              <button type="button" class="btn btn-outline-secondary" (click)="addRange()" *ngIf="i===feeRanges.length-1">
-                <i class="bi bi-plus"></i>
-              </button>
-              <button type="button" class="btn btn-outline-danger" (click)="removeRange(i)">
-                <i class="bi bi-trash"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Formula Fee -->
-      <div *ngIf="feeType==='formula'">
-        <label class="form-label fw-bold">Formula</label>
-        <input type="text" class="form-control mb-3" [(ngModel)]="formula" placeholder="e.g. base + (km * rate)">
-        <small class="text-muted">Define a formula for calculating fees based on distance/time</small>
-      </div>
-    </div>
-
-    <hr>
-
-    <!-- Free Delivery Amount -->
-    <div class="mb-4">
-      <div class="d-flex justify-content-between align-items-center">
-        <label for="freeDelivery" class="form-label fw-bold">Free Delivery Amount ($)</label>
-        <span class="badge bg-secondary-subtle text-secondary">OPTIONAL</span>
-      </div>
-      <input type="number" id="freeDelivery" class="form-control" [(ngModel)]="freeDeliveryAmount">
-      <small class="text-muted">If a customer's cart exceeds this value, delivery will be free. Leave as 0 to disable</small>
-    </div>
-
-    <!-- Restrict Fee Times -->
-    <div class="mb-4">
-      <div class="d-flex justify-content-between align-items-center">
-        <label class="form-label fw-bold">Restrict Delivery Fee Times</label>
-        <span class="badge bg-secondary-subtle text-secondary">OPTIONAL</span>
-      </div>
-      <select class="form-select" [(ngModel)]="restrictFeeTime">
-        <option value="">-- Select --</option>
-        <option value="immediate">Immediate Orders Only</option>
-        <option value="later">Later Orders Only</option>
-      </select>
-      <small class="text-muted">Restrict the fee to orders now or at a later time. Leave empty for any time.</small>
-    </div>
-
-    <!-- Save Button -->
-    <div class="d-grid mt-4">
-      <button type="button" class="btn btn-save" (click)="saveFees()">Save</button>
-    </div>
-
-  </div>
-</div>
-
-
-    
-        <div class="tab-pane fade" id="delivery-zones" role="tabpanel" aria-labelledby="zones-tab">
+        <!-- ================= FEES TAB ================= -->
+        <div class="tab-pane fade" id="delivery-fees" role="tabpanel" aria-labelledby="fees-tab">
             <div class="p-3">
+                <h6 class="fw-bold mb-3">Fee Type</h6>
+                <ul class="nav nav-pills mb-4">
+                    <li class="nav-item">
+                        <button type="button" class="nav-link" [class.active]="deliveryForm.value.fee_type==='fixed'"
+                            (click)="deliveryForm.patchValue({fee_type: 'fixed'})">
+                            Fixed
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button type="button" class="nav-link" [class.active]="deliveryForm.value.fee_type==='range'"
+                            (click)="deliveryForm.patchValue({fee_type: 'range'})">
+                            Range
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button type="button" class="nav-link" [class.active]="deliveryForm.value.fee_type==='formula'"
+                            (click)="deliveryForm.patchValue({fee_type: 'formula'})">
+                            Formula
+                        </button>
+                    </li>
+                </ul>
 
-                <!-- Instructions -->
-                <h6 class="fw-bold mb-3">How Delivery Zones Work</h6>
-                <p class="text-muted">
-                    Use delivery zones to ensure delivery orders are accepted only within set areas. Adding delivery
-                    zones will override existing delivery fee and max driving distance settings.
-                </p>
-                <ol class="instructions-list">
-                    <li>
-                        Visit <a href="https://www.google.com/mymaps" target="_blank" class="link-primary">custom google
-                            maps</a> and login if needed
-                    </li>
-                    <li>Press the button that says "Create A New Map"</li>
-                    <li>
-                        Use the draw line tool to create your various delivery zones making sure to give them meaningful
-                        names that you can remember
-                    </li>
-                    <li>
-                        Delivery zones must be closed shapes. Do not create any additional layers
-                    </li>
-                    <li>
-                        Use the "Export to KML/KMZ" option and check the box that says "Export to a .KML file".
-                        Press download to get your map file and upload it here
-                    </li>
-                </ol>
+                <!-- Fixed Fee -->
+                <div *ngIf="deliveryForm.value.fee_type==='fixed'">
+                    <label class="form-label fw-bold">Flat Delivery Fee ($)</label>
+                    <input type="number" class="form-control mb-3" formControlName="fixed_fee" />
+                </div>
 
-                <hr>
+                <!-- Range Fee -->
+                <div *ngIf="deliveryForm.value.fee_type==='range'" formArrayName="range_fee">
+                    <div *ngFor="let group of rangeFeeArray.controls; let i=index" [formGroupName]="i" class="mb-3">
+                        <div class="d-flex gap-2">
+                            <div class="flex-fill">
+                                <label class="form-label">Min (km)</label>
+                                <input type="number" class="form-control" formControlName="min" />
+                            </div>
+                            <div class="flex-fill">
+                                <label class="form-label">Max (km)</label>
+                                <input type="number" class="form-control" formControlName="max" />
+                            </div>
+                            <div class="flex-fill">
+                                <label class="form-label">Fee ($)</label>
+                                <input type="number" class="form-control" formControlName="fee" />
+                            </div>
+                            <div class="d-flex align-items-end">
+                                <button type="button" class="btn btn-outline-danger" (click)="removeRange(i)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline-secondary mt-2" (click)="addRange()">+ Add
+                        Range</button>
+                </div>
 
-                <!-- Upload Section -->
-                <h6 class="fw-bold mb-3">Upload Delivery Zone File (.kml)</h6>
-                <div class="upload-box text-center" (click)="fileInput.click()">
-                    <input type="file" #fileInput accept=".kml" class="d-none" (change)="onFileSelected($event)">
-                    <div class="upload-content">
-                        <i class="bi bi-upload fs-2 text-muted"></i>
-                        <p class="text-muted mb-0">Drop your files here or click to select one</p>
-                        <small class="text-muted">Accepts .kml files</small>
+                <!-- Formula Fee -->
+                <div *ngIf="deliveryForm.value.fee_type==='formula'" formGroupName="formula_fee">
+                    <label class="form-label fw-bold">Formula Fee</label>
+                    <div class="d-flex gap-2">
+                        <input type="number" class="form-control" placeholder="Base" formControlName="base" />
+                        <input type="number" class="form-control" placeholder="Per Km" formControlName="per_km" />
                     </div>
                 </div>
 
-                <!-- Save Button -->
-                <div class="d-grid mt-4">
-                    <button type="button" class="btn btn-save" (click)="saveZones()">Save</button>
+                <hr />
+
+                <div class="mb-4">
+                    <label for="freeDelivery" class="form-label fw-bold">Free Delivery Amount ($)</label>
+                    <input type="number" id="freeDelivery" class="form-control"
+                        formControlName="free_delivery_amount" />
                 </div>
 
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Restrict Delivery Fee Times</label>
+                    <input type="text" class="form-control" formControlName="restrict_fee_times"
+                        placeholder="10:00-14:00" />
+                </div>
+
+                <div class="d-grid mt-4">
+                    <button type="button" class="btn btn-save" (click)="saveDeliveryService()">Save</button>
+                </div>
             </div>
         </div>
 
+        <!-- ================= ZONES TAB ================= -->
+        <div class="tab-pane fade" id="delivery-zones" role="tabpanel" aria-labelledby="zones-tab">
+            <div class="p-3">
+                <h6 class="fw-bold mb-3">Upload Delivery Zone File (.kml)</h6>
+                <div class="upload-box text-center" (click)="fileInput.click()">
+                    <input type="file" #fileInput accept=".kml" class="d-none" (change)="onFileSelected($event)" />
+                    <div class="upload-content">
+                        <i class="bi bi-upload fs-2 text-muted"></i>
+                        <p class="text-muted mb-0">Click to upload</p>
+                    </div>
+                </div>
+
+                <div class="d-grid mt-4">
+                    <button type="button" class="btn btn-save" (click)="saveDeliveryService()">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= ORDER TIMING TAB ================= -->
         <div class="tab-pane fade" id="delivery-order-timing" role="tabpanel" aria-labelledby="order-timing-tab">
             <div class="p-3">
-
-                <!-- Enable Immediate Orders -->
                 <div class="mb-4">
                     <label class="form-check-label fw-bold">Enable Immediate Orders</label>
                     <div class="form-check form-switch mt-2">
-                        <input class="form-check-input" type="checkbox" [(ngModel)]="enableImmediateOrders">
+                        <input class="form-check-input" type="checkbox" formControlName="enable_immediate_orders" />
                     </div>
-                    <small class="text-muted">Allows customers to place orders due immediately</small>
                 </div>
 
-                <!-- First Order Offset -->
                 <div class="mb-4">
                     <label for="firstOrderOffset" class="form-label fw-bold">First Order Offset (minutes)</label>
-                    <input type="number" id="firstOrderOffset" class="form-control" [(ngModel)]="firstOrderOffset">
-                    <small class="text-muted">How many minutes after your store opens will you accept the first
-                        order</small>
+                    <input type="number" id="firstOrderOffset" class="form-control"
+                        formControlName="first_order_offset" />
                 </div>
 
-                <!-- Last Order Offset -->
                 <div class="mb-4">
                     <label for="lastOrderOffset" class="form-label fw-bold">Last Order Offset (minutes)</label>
-                    <input type="number" id="lastOrderOffset" class="form-control" [(ngModel)]="lastOrderOffset">
-                    <small class="text-muted">How many minutes before your store closes will you accept the last
-                        order</small>
+                    <input type="number" id="lastOrderOffset" class="form-control"
+                        formControlName="last_order_offset" />
                 </div>
 
-                <!-- Enable Later Orders -->
                 <div class="mb-4">
                     <label class="form-check-label fw-bold">Enable Later Orders</label>
                     <div class="form-check form-switch mt-2">
-                        <input class="form-check-input" type="checkbox" [(ngModel)]="enableLaterOrders">
+                        <input class="form-check-input" type="checkbox" formControlName="enable_later_orders" />
                     </div>
-                    <small class="text-muted">Allows customers to place orders for a later date and time</small>
                 </div>
 
-                <!-- Maximum Days Ahead -->
                 <div class="mb-4">
                     <label for="maxDaysAhead" class="form-label fw-bold">Maximum Days Ahead</label>
-                    <input type="number" id="maxDaysAhead" class="form-control" [(ngModel)]="maxDaysAhead">
-                    <small class="text-muted">The number of days in advance customers can place orders</small>
+                    <input type="number" id="maxDaysAhead" class="form-control" formControlName="max_days_ahead" />
                 </div>
 
-                <!-- Time Interval -->
                 <div class="mb-4">
                     <label for="timeInterval" class="form-label fw-bold">Time Interval (minutes)</label>
-                    <input type="number" id="timeInterval" class="form-control" [(ngModel)]="timeInterval">
-                    <small class="text-muted">The number of minutes between each available order time slot</small>
+                    <input type="number" id="timeInterval" class="form-control" formControlName="time_interval" />
                 </div>
 
-                <!-- Order Offset -->
                 <div class="mb-4">
                     <label for="orderOffset" class="form-label fw-bold">Order Offset (minutes)</label>
-                    <input type="number" id="orderOffset" class="form-control" [(ngModel)]="orderOffset">
-                    <small class="text-muted">The minimum amount of time from now that an order for a later time must be
-                        placed</small>
+                    <input type="number" id="orderOffset" class="form-control" formControlName="order_offset" />
                 </div>
 
-                <!-- Save Button -->
                 <div class="d-grid mt-4">
-                    <button type="button" class="btn btn-save" (click)="saveOrderTiming()">Save</button>
+                    <button type="button" class="btn btn-save" (click)="saveDeliveryService()">Save</button>
                 </div>
-
             </div>
         </div>
-
-
     </div>
-</div>
+</form>
