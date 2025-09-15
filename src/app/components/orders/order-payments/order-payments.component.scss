@@ -1,6 +1,5 @@
 .modal-content {
   border-radius: 8px;
-
 }
 
 .nav-link {
@@ -30,7 +29,7 @@
     font-size: calc(15px + (16 - 15) * ((100vw - 320px) / (1920 - 320)));
     // margin-top: 20px;
     border: 1px solid #ef2917;
-    background: #ef2917;  
+    background: #ef2917;    
     border-radius: 10px;
     &:hover {
         color: #ef2917;
@@ -40,7 +39,9 @@
     }
     
 }
-
+.div-pointer{
+  cursor: pointer;
+}
 
 
 

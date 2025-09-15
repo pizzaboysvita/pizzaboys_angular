@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-order-payments',
-  imports: [CommonModule],
+  imports: [CommonModule,NgbNavModule],
   templateUrl: './order-payments.component.html',
   styleUrl: './order-payments.component.scss'
 })
@@ -22,7 +22,7 @@ paidItems: any[] = [];    // confirmed paid items
   showPopup: boolean=true;
   confirmRemove = false;
 
- constructor(public activeModal: NgbActiveModal,private cdr: ChangeDetectorRef ) {}
+ constructor(public modal: NgbModal,private cdr: ChangeDetectorRef ) {}
 
   ngOnInit(): void {
   this.showPopup=true;

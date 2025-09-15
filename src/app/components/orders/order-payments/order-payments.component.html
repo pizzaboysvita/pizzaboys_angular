@@ -1,11 +1,9 @@
-<!-- @if (showPopup) { -->
-<div class="modal" tabindex="-1" role="dialog" aria-hidden="true" [ngClass]="{ 'show d-block': showPopup }" >
-<div class="modal-dialog modal-xl modal-dialog-centered " role="document">
+
     <div class="modal-content">
       <!-- Header -->
           <div class="modal-header">
         <h5 class="modal-title">Order Payments</h5>
-        <button type="button" class="btn-close" (click)="closeNewModelPopup()"></button>
+        <button type="button" class="btn-close" (click)="modal.dismissAll()"></button>
       </div>
 
       <div class="modal-body p-0">
@@ -231,7 +229,7 @@
   
     @for (rowData of unpaidItems; track rowData; let ind = $index) {
       <div 
-        class="d-flex justify-content-between align-items-start py-2" 
+        class="d-flex justify-content-between align-items-start py-2 div-pointer" 
         [class.border-bottom]="ind < data.length - 1" (click)="moveToPay(rowData,ind)">
         <div>
           <span>{{ ind+1 }}</span> {{ rowData.dish_name }}
@@ -262,7 +260,7 @@
         
     @for (rowData of payItems; track rowData; let ind = $index) {
     <div
-         class="d-flex justify-content-between align-items-start border-bottom py-2" (click)="removeToPay(rowData,ind)">
+         class="d-flex justify-content-between align-items-start border-bottom py-2 div-pointer" (click)="removeToPay(rowData,ind)">
       <div>
         <span>{{ ind+1 }}</span> {{ rowData.dish_name }}
         <br />
@@ -425,6 +423,3 @@
         </button>
       </div> -->
     </div>
-    </div>
-    </div>
-  <!-- } -->
