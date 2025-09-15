@@ -260,59 +260,60 @@
                     </div>
                   </div><br>
 
-            <!-- Subcategories -->
-            @for (choice of choices; track choice; let i = $index) {
-            <!-- Main Menu Row -->
+               @for (menu of choices; track menu; let j = $index) {
+  <div class="row ps-4 py-1" style="font-size: 0.92rem;">
+    <div class="col d-flex align-items-center">
+      <i class="me-2" [ngClass]="menu.takeawayExpanded ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"
+        (click)="menu.takeawayExpanded = !menu.takeawayExpanded"
+        style="cursor: pointer; font-size: 1.3rem; color: black;"></i>
 
-            <div class="choice-container border">
-              <!-- Expanded Section -->
-              <!-- Takeaway toggle -->
-              <div class="row ps-4 py-1" style="font-size: 0.92rem;">
-                <div class="col d-flex align-items-center">
-                  <i class="me-2" [ngClass]="choice.takeawayExpanded ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"
-                    (click)="choice.takeawayExpanded = !choice.takeawayExpanded"
-                    style="cursor: pointer; font-size: 1.3rem; color: black;"></i>
-
-                  <input type="checkbox" id="checkbox-{{ i }}" class="form-check-input me-2"
-                    style="width: 18px !important;height: 18px !important;" [(ngModel)]="choice.checked"
-                    (change)="onChoiceToggle(choice)" />
-                  <label for="checkbox-{{ i }}" class="form-check-label mb-0">
-                    {{ choice.name }} Items
-                  </label>
-                </div>
-              </div>
-
-              @if (choice.takeawayExpanded) {
-              <!-- Subcategories -->
-              @for (sub of choice.subcategories; track sub; let j = $index) {
-              <div class="row ps-5 pb-0" style="font-size: 0.92rem;">
-                <div class="col d-flex align-items-center">
-                  <i class="me-2" [ngClass]="sub.expanded ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"
-                    (click)="sub.expanded = !sub.expanded"
-                    style="cursor: pointer; font-size: 1.3rem; color: black;"></i>
-                  <input type="checkbox" class="form-check-input me-2"
-                    style="width: 18px !important;height: 18px !important;" [(ngModel)]="sub.checked"
-                    (change)="onSubcategoryToggle(sub)" />
-                  <label class="form-check-label mb-0">{{ sub.name }}</label>
-                </div>
-              </div>
-
-              <!-- Sub-subcategories -->
-              @if (sub.expanded && sub.subSubcategories?.length) {
-              @for (subsub of sub.subSubcategories; track subsub; let k = $index) {
-              <div class="row ps-5 pb-1">
-                <div class="col d-flex align-items-center" style="margin-left: 2.5rem;">
-                  <input type="checkbox" class="form-check-input me-2" [(ngModel)]="subsub.checked"
-                    style="width: 18px !important;height: 18px !important;" />
-                  <label class="form-check-label mb-0">{{ subsub.name }}</label>
-                </div>
-              </div>
-              }
-              }
-              }
-              }
+      <input type="checkbox"
+        id="checkbox-{{ j }}"
+        class="form-check-input me-2"
+        [checked]="menu.checked"
+        [indeterminate]="menu.indeterminate"
+        (change)="onMenuToggle(menu, choices)"
+      />
+      <label for="checkbox-{{ j }}" class="form-check-label mb-0" style="font-size: 0.92rem;">
+        {{menu.name}}
+      </label>
+    </div>
+  </div>
+  @if (menu.takeawayExpanded) {
+   
+    @for (sub of menu.subcategories; track sub; let k = $index) {
+    
+      <div class="row ps-5 pb-0" style="font-size: 0.92rem; font-weight: normal;">
+        <div class="col d-flex align-items-center">
+          <i class="me-2" [ngClass]="sub.expanded ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"
+            (click)="sub.expanded = !sub.expanded"
+            style="cursor: pointer; font-size: 1.3rem; color: black;"></i>
+          <input type="checkbox"
+            class="form-check-input me-2"
+            [checked]="sub.checked"
+            [indeterminate]="sub.indeterminate"
+            (change)="onSubcategoryToggle(sub, menu.subcategories, menu)"
+          />
+          <label class="form-check-label mb-0 subcat-label">{{ sub.name }}</label>
+        </div>
+      </div>
+      @if (sub.expanded && sub.subSubcategories?.length) {
+        @for (subsub of sub.subSubcategories; track subsub; let l = $index) {
+          <div class="row ps-5 pb-1">
+            <div class="col d-flex align-items-center" style="font-size: 0.92rem;margin-left: 2.5rem;">
+              <input type="checkbox"
+                class="form-check-input me-2"
+                [checked]="subsub.checked"
+                (change)="onDishToggle(subsub, sub.subSubcategories, sub, menu.subcategories, menu)"
+              />
+              <label class="form-check-label mb-0 subcat-label">{{ subsub.name }}</label>
             </div>
-            }
+          </div>
+        }
+      }
+    }
+  }
+}
 
 
             <!-- <div class="tree-view">

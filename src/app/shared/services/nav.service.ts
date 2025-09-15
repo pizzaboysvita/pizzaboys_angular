@@ -279,7 +279,7 @@ export class NavService {
       level: 1,
       title: "Settings",
       path: "/settings",
-      icon: "ri-bowl-line",
+      icon: "ri-settings-2-line",
       type: "link",
       active: false,
     },
@@ -395,6 +395,22 @@ export class NavService {
       type: "link",
       active: false,
     },
+     {
+      level: 1,
+      title: "Settings",
+      path: "/settings",
+      icon: "ri-settings-line",
+      type: "link",
+      active: false,
+    },
+    {
+      level: 1,
+      title: "Inventory",
+      path: "/inventory",
+      icon: "ri-store-3-line",
+      type: "link",
+      active: false,
+    },
     // {
     //   level: 1,
     //   title: "Category",
@@ -427,23 +443,16 @@ export class NavService {
       type: "link",
       active: false,
     },
-    {
-      level: 1,
-      title: "Settings",
-      path: "/users/add-new-user",
-      icon: "ri-settings-line",
-      type: "link",
-      active: false,
-    },
+   
 
-    {
-      level: 1,
-      title: "Pos",
-      path: "/orders/order-detail",
-      icon: "ri-settings-line",
-      type: "link",
-      active: false,
-    },
+    // {
+    //   level: 1,
+    //   title: "Pos",
+    //   path: "/orders/order-detail",
+    //   icon: "ri-settings-line",
+    //   type: "link",
+    //   active: false,
+    // },
   ];
   pos_menu_items: menuItem[] = [
     {

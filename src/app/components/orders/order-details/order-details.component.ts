@@ -188,11 +188,11 @@ export class OrderDetailsComponent {
     this.showNewModelPopup = false;
   }
   submitOrder() {
-      // this.modalRef = this.modalService.open(OrderPaymentsComponent, {
-      //          size: "xl",
-      //          centered: true,
-      //        });
-      //        this.modalRef.componentInstance.data = this.totalCartDetails;
+    //   this.modalRef = this.modalService.open(OrderPaymentsComponent, {
+    //            size: "xl",
+    //            centered: true,
+    //          });
+    //          this.modalRef.componentInstance.data = this.totalCartDetails;
              
           
     // return

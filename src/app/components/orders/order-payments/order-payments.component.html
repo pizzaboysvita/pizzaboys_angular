@@ -1,8 +1,11 @@
-   <div class="modal-content ">
+<!-- @if (showPopup) { -->
+<div class="modal" tabindex="-1" role="dialog" aria-hidden="true" [ngClass]="{ 'show d-block': showPopup }" >
+<div class="modal-dialog modal-xl modal-dialog-centered " role="document">
+    <div class="modal-content">
       <!-- Header -->
-      <div class="modal-header">
+          <div class="modal-header">
         <h5 class="modal-title">Order Payments</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" ></button>
+        <button type="button" class="btn-close" (click)="closeNewModelPopup()"></button>
       </div>
 
       <div class="modal-body p-0">
@@ -93,11 +96,22 @@
                 <button class="btn btn-outline-warning d-flex align-items-center gap-2">
                     <i class="ri-smartphone-line"></i> <span>Mob. EFTPOS</span>
                 </button>
-                <button class="btn btn-outline-danger d-flex align-items-center gap-2">
-                    <i class="ri-close-line"></i> <span>Remove</span>
+                            <button 
+                  class="btn d-flex align-items-center gap-2"
+                  [ngClass]="confirmRemove ? 'btn btn-outline-warning' : 'btn-outline-danger'"
+                  (click)="confirmRemove ? doRemove('partial') : toggleRemove()"
+                >
+                  <i [class]="confirmRemove ? 'ri-check-line' : 'ri-close-line'"></i>
+                  <span>{{ confirmRemove ? 'Confirm' : 'Remove' }}</span>
                 </button>
+                  <button  class="btn btn-animation save-button-pay">
+                    PLACE ORDER & CLEAR
+              </button>
+                <!-- <button  class="btn btn-outline-danger d-flex align-items-center gap-2">
+          PLACE ORDER & CLEAR
+        </button> -->
                 </div>
-              
+                
             }
               <!-- Split By People -->
                 @if(activeTab === 'people'){
@@ -169,16 +183,24 @@
                 <button class="btn btn-outline-warning d-flex align-items-center gap-2">
                     <i class="ri-smartphone-line"></i> <span>Mob. EFTPOS</span>
                 </button>
-                <button class="btn btn-outline-danger d-flex align-items-center gap-2">
-                    <i class="ri-close-line"></i> <span>Remove</span>
+                <button 
+                  class="btn d-flex align-items-center gap-2"
+                  [ngClass]="confirmRemove ? 'btn btn-outline-warning' : 'btn-outline-danger'"
+                  (click)="confirmRemove ? doRemove('people') : toggleRemove()"
+                >
+                  <i [class]="confirmRemove ? 'ri-check-line' : 'ri-close-line'"></i>
+                  <span>{{ confirmRemove ? 'Confirm' : 'Remove' }}</span>
                 </button>
                 </div>
+                 <button  class="btn btn-animation save-button-pay w-100">
+                    PLACE ORDER & CLEAR
+              </button>
       </div>
 }@else{
         <span >No payments yet...</span>
 
 }
-    
+      
 
       <!-- <button class="btn btn-warning w-100 fw-bold text-uppercase mt-3">
         Place Order & Clear
@@ -361,10 +383,18 @@
                 <button class="btn btn-outline-warning d-flex align-items-center gap-2">
                     <i class="ri-smartphone-line"></i> <span>Mob. EFTPOS</span>
                 </button>
-                <button class="btn btn-outline-danger d-flex align-items-center gap-2">
-                    <i class="ri-close-line"></i> <span>Remove</span>
+                <button 
+                  class="btn d-flex align-items-center gap-2"
+                  [ngClass]="confirmRemove ? 'btn btn-outline-warning' : 'btn-outline-danger'"
+                  (click)="confirmRemove ? doRemove('items') : toggleRemove()"
+                >
+                  <i [class]="confirmRemove ? 'ri-check-line' : 'ri-close-line'"></i>
+                  <span>{{ confirmRemove ? 'Confirm' : 'Remove' }}</span>
                 </button>
                 </div>
+                <button  class="btn btn-animation save-button-pay w-100">
+                    PLACE ORDER & CLEAR
+              </button>
             }
       
 @else{
@@ -374,19 +404,27 @@
     </div>
   </div>
             }
-
+  
             </div>
-              <button class="btn btn-warning w-100 py-3 fw-bold">
+  <!-- <button class="btn btn-warning w-100 py-3 fw-bold">
           PLACE ORDER & CLEAR
-        </button>
-          </div>
+        </button> -->
+           </div>
         </div>
       </div>
 
       <!-- Footer -->
+        <!-- <div class="modal-footer justify-content-end">
+    <button class="btn btn-warning py-3 px-4 fw-bold">
+      PLACE ORDER & CLEAR
+    </button>
+  </div> -->
       <!-- <div class="modal-footer p-0">
-        <button class="btn btn-warning w-100 py-3 fw-bold">
+        <button class="btn btn-warning w-50 py-3 fw-bold">
           PLACE ORDER & CLEAR
         </button>
       </div> -->
     </div>
+    </div>
+    </div>
+  <!-- } -->
