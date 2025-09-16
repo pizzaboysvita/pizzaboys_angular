@@ -30,18 +30,19 @@ export class PickupsComponent implements OnInit {
     "Sunday",
   ];
 
-  constructor(private fb: FormBuilder, private settingsService: SettingsService) {}
+  constructor(
+    private fb: FormBuilder,
+    private settingsService: SettingsService
+  ) {}
 
   ngOnInit(): void {
     this.pickupForm = this.fb.group({
-      // General Tab
       enabled: [false],
-      food_prep_time: [null, [Validators.min(1)]], // default prep time (overridden by periods)
-      food_prep_periods: this.fb.array([]), // <-- FormArray for the slots
+      food_prep_time: [null, [Validators.min(1)]],
+      food_prep_periods: this.fb.array([]),
       pickup_notes: [""],
       default_menu: [""],
 
-      // Order Timing Tab
       enable_immediate_orders: [false],
       first_order_offset: [null, [Validators.min(0)]],
       last_order_offset: [null, [Validators.min(0)]],
@@ -51,58 +52,48 @@ export class PickupsComponent implements OnInit {
       order_offset: [null, [Validators.min(1)]],
     });
 
-    // Add one blank prep slot to show the UI by default (optional)
     this.addPrepSlot();
   }
 
-  // Getter for the FormArray
   get foodPrepPeriods(): FormArray {
     return this.pickupForm.get("food_prep_periods") as FormArray;
   }
 
-  // Create a FormGroup for a single slot (optionally prefilled with data)
   private createPrepSlot(data?: any): FormGroup {
     return this.fb.group({
       day: [data?.day ?? "Monday", Validators.required],
-      from: [data?.from ?? "09:00", Validators.required], // time string HH:MM
-      to: [data?.to ?? "21:00", Validators.required],     // time string HH:MM
+      from: [data?.from ?? "09:00", Validators.required],
+      to: [data?.to ?? "21:00", Validators.required],
       is_24_hour: [data?.is_24_hour ?? false],
-      prep_time: [data?.prep_time ?? null, Validators.required], // minutes
+      prep_time: [data?.prep_time ?? null, Validators.required],
     });
   }
 
-  // Add an empty or prefilled slot
   addPrepSlot(data?: any) {
     this.foodPrepPeriods.push(this.createPrepSlot(data));
   }
 
-  // Duplicate slot at index
   duplicatePrepSlot(index: number) {
     const source = this.foodPrepPeriods.at(index).value;
     this.addPrepSlot({ ...source });
   }
 
-  // Remove slot at index
   removePrepSlot(index: number) {
     this.foodPrepPeriods.removeAt(index);
   }
 
-  // Helper to check top-level control errors
   hasError(controlName: string, error: string): boolean {
     const control = this.pickupForm.get(controlName);
     return !!(control && control.touched && control.hasError(error));
   }
 
-  // Helper to check slot control errors
   slotHasError(slotIndex: number, controlName: string, error: string): boolean {
     const slot = this.foodPrepPeriods.at(slotIndex) as FormGroup;
     const control = slot.get(controlName);
     return !!(control && control.touched && control.hasError(error));
   }
 
-  // Save handler — builds payload and posts to service
   savePickupService(): void {
-    // mark touched so validation messages appear
     this.pickupForm.markAllAsTouched();
 
     if (this.pickupForm.invalid) {
@@ -112,9 +103,8 @@ export class PickupsComponent implements OnInit {
 
     this.isSubmitting = true;
 
-    // Use the form value directly — it includes food_prep_periods array
     const payload = {
-      type: "insert", // change to "update" when editing an existing pickup config
+      type: "insert",
       store_id: 10,
       ...this.pickupForm.value,
       created_by: 101,
