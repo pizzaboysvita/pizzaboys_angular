@@ -230,14 +230,25 @@
     @for (rowData of unpaidItems; track rowData; let ind = $index) {
       <div 
         class="d-flex justify-content-between align-items-start py-2 div-pointer" 
-        [class.border-bottom]="ind < data.length - 1" (click)="moveToPay(rowData,ind)">
+        [class.border-bottom]="ind < data.length - 1" >
         <div>
           <span>{{ ind+1 }}</span> {{ rowData.dish_name }}
           <br />
           <small>• {{ rowData.dish_type }}</small>
         </div>
-        <div class="fw-bold">${{ rowData.item_total_price }}</div>
-      </div>
+        <!-- <div class="fw-bold">${{ rowData.item_total_price }}</div> -->
+          <div class="text-end">
+      <div class="fw-bold mb-1">${{ rowData.item_total_price }}</div>
+      <a 
+   class="text-primary small fw-bold text-decoration-underline"
+   (click)="moveToPay(rowData, ind)">
+  Move to Pay
+</a>
+      <!-- <button class="btn btn-xs btn-primary" (click)="moveToPay(rowData, ind)">
+        Move to Pay
+      </button> -->
+    </div>
+  </div>
     }
 
     <div class="d-flex justify-content-between fw-bold border-top pt-2 mt-2">
@@ -260,13 +271,21 @@
         
     @for (rowData of payItems; track rowData; let ind = $index) {
     <div
-         class="d-flex justify-content-between align-items-start border-bottom py-2 div-pointer" (click)="removeToPay(rowData,ind)">
+         class="d-flex justify-content-between align-items-start border-bottom py-2 div-pointer">
       <div>
         <span>{{ ind+1 }}</span> {{ rowData.dish_name }}
         <br />
         <small>• {{ rowData.dish_type }}</small>
       </div>
-      <div class="fw-bold">${{ rowData.item_total_price }}</div>
+      <!-- <div class="fw-bold">${{ rowData.item_total_price }}</div>-->
+        <div class="text-end">
+      <div class="fw-bold mb-1">${{ rowData.item_total_price }}</div> 
+       <a 
+   class="text-primary small fw-bold text-decoration-underline"
+   (click)="removeToPay(rowData, ind)">
+  Removed to Pay
+</a>
+    </div>
     </div>
     }
      @if(payItems.length > 0){
