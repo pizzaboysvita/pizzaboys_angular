@@ -3,33 +3,448 @@
         <li [ngbNavItem]="1">
             <a ngbNavLink>General</a>
             <ng-template ngbNavContent>
-                <p>general hours content.</p>
+                <div class="tab-content-container">
+                    <div class="hours-section">
+                        <div class="hours-header-row">
+                            <span class="header-day">Day</span>
+                            <span class="header-time">Open</span>
+                            <span class="header-time">Close</span>
+                            <span class="header-24h">24 Hour</span>
+                            <span class="header-actions"></span>
+                        </div>
+                        <div cdkDropList (cdkDropListDropped)="onDrop($event)" class="hours-list">
+                            <div *ngFor="let slot of regularHours; let i = index" cdkDrag class="hour-row">
+                                <div class="day-cell">
+                                    <span class="drag-handle" cdkDragHandle>
+                                        <i class="ri ri-drag-drop-line"></i>
+                                    </span>
+                                    <select [(ngModel)]="slot.day" class="day-dropdown">
+                                        <option *ngFor="let day of daysOfWeek" [value]="day">{{ day }}</option>
+                                    </select>
+                                </div>
+                                <div class="time-cell">
+                                    <select [(ngModel)]="slot.openTime" [disabled]="slot.is24Hour">
+                                        <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
+                                    </select>
+                                </div>
+                                <div class="time-cell">
+                                    <select [(ngModel)]="slot.closeTime" [disabled]="slot.is24Hour">
+                                        <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
+                                    </select>
+                                </div>
+                                <div class="checkbox-cell">
+                                    <input type="checkbox" [(ngModel)]="slot.is24Hour" (change)="toggle24Hour(slot)">
+                                </div>
+                                <div class="actions-cell">
+                                    <span class="action-icon" (click)="copyTimeSlot(i)">
+                                        <i class="ri ri-file-copy-2-fill"></i>
+                                    </span>
+                                    <span class="action-icon" (click)="deleteTimeSlot(i)">
+                                        <i class="ri ri-delete-bin-3-fill"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="add-slot-btn" (click)="addTimeSlot()">+ Add Time Slot</button>
+                    </div>
+
+                    <hr />
+
+                    <div class="hours-section">
+                        <div class="special-hours-header">
+                            <h3>Special Hours</h3>
+                            <span class="optional-label">OPTIONAL</span>
+                        </div>
+                        <p>Set special opening hours for holidays or other periods. This will override your regular
+                            opening hours for your store location and all services.</p>
+                        <div class="hours-list">
+                            <div *ngFor="let slot of specialHours; let i = index" class="hour-row">
+                                <div class="day-cell">
+                                    <select [(ngModel)]="slot.day" class="day-dropdown">
+                                        <option *ngFor="let day of daysOfWeek" [value]="day">{{ day }}</option>
+                                    </select>
+                                </div>
+                                <div class="time-cell">
+                                    <select [(ngModel)]="slot.openTime" [disabled]="slot.is24Hour">
+                                        <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
+                                    </select>
+                                </div>
+                                <div class="time-cell">
+                                    <select [(ngModel)]="slot.closeTime" [disabled]="slot.is24Hour">
+                                        <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
+                                    </select>
+                                </div>
+                                <div class="checkbox-cell">
+                                    <input type="checkbox" [(ngModel)]="slot.is24Hour" (change)="toggle24Hour(slot)">
+                                </div>
+                                <div class="actions-cell">
+                                    <span class="action-icon" (click)="deleteSpecialTimeSlot(i)">
+                                        <i class="ri ri-delete-bin-3-fill"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="add-slot-btn" (click)="addSpecialHoursSlot()">+ Add Special Hours Slot</button>
+                    </div>
+                </div>
             </ng-template>
         </li>
+
         <li [ngbNavItem]="2">
             <a ngbNavLink>Pickup</a>
             <ng-template ngbNavContent>
-                <p>Pickup hours content.</p>
+                <div class="tab-content-container">
+                    <div class="hours-section">
+                        <div class="hours-header-row">
+                            <span class="header-day">Day</span>
+                            <span class="header-time">Open</span>
+                            <span class="header-time">Close</span>
+                            <span class="header-24h">24 Hour</span>
+                            <span class="header-actions"></span>
+                        </div>
+                        <div cdkDropList (cdkDropListDropped)="onDrop($event)" class="hours-list">
+                            <div *ngFor="let slot of pickupHours; let i = index" cdkDrag class="hour-row">
+                                <div class="day-cell">
+                                    <span class="drag-handle" cdkDragHandle>
+                                        <i class="ri ri-drag-drop-line"></i>
+                                    </span>
+                                    <select [(ngModel)]="slot.day" class="day-dropdown">
+                                        <option *ngFor="let day of daysOfWeek" [value]="day">{{ day }}</option>
+                                    </select>
+                                </div>
+                                <div class="time-cell">
+                                    <select [(ngModel)]="slot.openTime" [disabled]="slot.is24Hour">
+                                        <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
+                                    </select>
+                                </div>
+                                <div class="time-cell">
+                                    <select [(ngModel)]="slot.closeTime" [disabled]="slot.is24Hour">
+                                        <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
+                                    </select>
+                                </div>
+                                <div class="checkbox-cell">
+                                    <input type="checkbox" [(ngModel)]="slot.is24Hour" (change)="toggle24Hour(slot)">
+                                </div>
+                                <div class="actions-cell">
+                                    <span class="action-icon" (click)="copyTimeSlot(i)">
+                                        <i class="ri ri-file-copy-2-fill"></i>
+                                    </span>
+                                    <span class="action-icon" (click)="deletePickupTimeSlot(i)">
+                                        <i class="ri ri-delete-bin-3-fill"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="add-slot-btn" (click)="addPickupTimeSlot()">+ Add Time Slot</button>
+                    </div>
+
+                    <hr />
+
+                    <div class="hours-section">
+                        <div class="special-hours-header">
+                            <h3>Special Hours</h3>
+                            <span class="optional-label">OPTIONAL</span>
+                        </div>
+                        <p>Set special opening hours for holidays or other periods. This will override your regular
+                            opening hours for your store location and all services.</p>
+                        <div class="hours-list">
+                            <div *ngFor="let slot of pickupSpecialHours; let i = index" class="hour-row">
+                                <div class="day-cell">
+                                    <select [(ngModel)]="slot.day" class="day-dropdown">
+                                        <option *ngFor="let day of daysOfWeek" [value]="day">{{ day }}</option>
+                                    </select>
+                                </div>
+                                <div class="time-cell">
+                                    <select [(ngModel)]="slot.openTime" [disabled]="slot.is24Hour">
+                                        <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
+                                    </select>
+                                </div>
+                                <div class="time-cell">
+                                    <select [(ngModel)]="slot.closeTime" [disabled]="slot.is24Hour">
+                                        <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
+                                    </select>
+                                </div>
+                                <div class="checkbox-cell">
+                                    <input type="checkbox" [(ngModel)]="slot.is24Hour" (change)="toggle24Hour(slot)">
+                                </div>
+                                <div class="actions-cell">
+                                    <span class="action-icon" (click)="deletePickupSpecialTimeSlot(i)">
+                                        <i class="ri ri-delete-bin-3-fill"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="add-slot-btn" (click)="addPickupSpecialHoursSlot()">+ Add Special Hours
+                            Slot</button>
+                    </div>
+                </div>
             </ng-template>
         </li>
+
         <li [ngbNavItem]="3">
             <a ngbNavLink>Delivery</a>
             <ng-template ngbNavContent>
-                <p>Delivery hours content.</p>
+                <div class="tab-content-container">
+                    <div class="hours-section">
+                        <div class="hours-header-row">
+                            <span class="header-day">Day</span>
+                            <span class="header-time">Open</span>
+                            <span class="header-time">Close</span>
+                            <span class="header-24h">24 Hour</span>
+                            <span class="header-actions"></span>
+                        </div>
+                        <div cdkDropList (cdkDropListDropped)="onDrop($event)" class="hours-list">
+                            <div *ngFor="let slot of deliveryHours; let i = index" cdkDrag class="hour-row">
+                                <div class="day-cell">
+                                    <span class="drag-handle" cdkDragHandle>
+                                        <i class="ri ri-drag-drop-line"></i>
+                                    </span>
+                                    <select [(ngModel)]="slot.day" class="day-dropdown">
+                                        <option *ngFor="let day of daysOfWeek" [value]="day">{{ day }}</option>
+                                    </select>
+                                </div>
+                                <div class="time-cell">
+                                    <select [(ngModel)]="slot.openTime" [disabled]="slot.is24Hour">
+                                        <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
+                                    </select>
+                                </div>
+                                <div class="time-cell">
+                                    <select [(ngModel)]="slot.closeTime" [disabled]="slot.is24Hour">
+                                        <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
+                                    </select>
+                                </div>
+                                <div class="checkbox-cell">
+                                    <input type="checkbox" [(ngModel)]="slot.is24Hour" (change)="toggle24Hour(slot)">
+                                </div>
+                                <div class="actions-cell">
+                                    <span class="action-icon" (click)="deleteDeliveryTimeSlot(i)">
+                                        <i class="ri ri-delete-bin-3-fill"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="add-slot-btn" (click)="addDeliveryTimeSlot()">+ Add Time Slot</button>
+                    </div>
+
+                    <hr />
+
+                    <div class="hours-section">
+                        <div class="special-hours-header">
+                            <h3>Special Hours</h3>
+                            <span class="optional-label">OPTIONAL</span>
+                        </div>
+                        <p>Set special opening hours for holidays or other periods. This will override your regular
+                            opening hours for your store location and all services.</p>
+                        <div class="hours-list">
+                            <div *ngFor="let slot of deliverySpecialHours; let i = index" class="hour-row">
+                                <div class="day-cell">
+                                    <select [(ngModel)]="slot.day" class="day-dropdown">
+                                        <option *ngFor="let day of daysOfWeek" [value]="day">{{ day }}</option>
+                                    </select>
+                                </div>
+                                <div class="time-cell">
+                                    <select [(ngModel)]="slot.openTime" [disabled]="slot.is24Hour">
+                                        <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
+                                    </select>
+                                </div>
+                                <div class="time-cell">
+                                    <select [(ngModel)]="slot.closeTime" [disabled]="slot.is24Hour">
+                                        <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
+                                    </select>
+                                </div>
+                                <div class="checkbox-cell">
+                                    <input type="checkbox" [(ngModel)]="slot.is24Hour" (change)="toggle24Hour(slot)">
+                                </div>
+                                <div class="actions-cell">
+                                    <span class="action-icon" (click)="deleteDeliverySpecialTimeSlot(i)">
+                                        <i class="ri ri-delete-bin-3-fill"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="add-slot-btn" (click)="addDeliverySpecialHoursSlot()">+ Add Special Hours
+                            Slot</button>
+                    </div>
+                </div>
             </ng-template>
         </li>
+
         <li [ngbNavItem]="4">
             <a ngbNavLink>Dine In</a>
             <ng-template ngbNavContent>
-                <p>Dine In hours content.</p>
+                <div class="tab-content-container">
+                    <div class="hours-section">
+                        <div class="hours-header-row">
+                            <span class="header-day">Day</span>
+                            <span class="header-time">Open</span>
+                            <span class="header-time">Close</span>
+                            <span class="header-24h">24 Hour</span>
+                            <span class="header-actions"></span>
+                        </div>
+                        <div cdkDropList (cdkDropListDropped)="onDrop($event)" class="hours-list">
+                            <div *ngFor="let slot of dineInHours; let i = index" cdkDrag class="hour-row">
+                                <div class="day-cell">
+                                    <span class="drag-handle" cdkDragHandle>
+                                        <i class="ri ri-drag-drop-line"></i>
+                                    </span>
+                                    <select [(ngModel)]="slot.day" class="day-dropdown">
+                                        <option *ngFor="let day of daysOfWeek" [value]="day">{{ day }}</option>
+                                    </select>
+                                </div>
+                                <div class="time-cell">
+                                    <select [(ngModel)]="slot.openTime" [disabled]="slot.is24Hour">
+                                        <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
+                                    </select>
+                                </div>
+                                <div class="time-cell">
+                                    <select [(ngModel)]="slot.closeTime" [disabled]="slot.is24Hour">
+                                        <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
+                                    </select>
+                                </div>
+                                <div class="checkbox-cell">
+                                    <input type="checkbox" [(ngModel)]="slot.is24Hour" (change)="toggle24Hour(slot)">
+                                </div>
+                                <div class="actions-cell">
+                                    <span class="action-icon" (click)="deleteDineInTimeSlot(i)">
+                                        <i class="ri ri-delete-bin-3-fill"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="add-slot-btn" (click)="addDineInTimeSlot()">+ Add Time Slot</button>
+                    </div>
+
+                    <hr />
+
+                    <div class="hours-section">
+                        <div class="special-hours-header">
+                            <h3>Special Hours</h3>
+                            <span class="optional-label">OPTIONAL</span>
+                        </div>
+                        <p>Set special opening hours for holidays or other periods. This will override your regular
+                            opening hours for your store location and all services.</p>
+                        <div class="hours-list">
+                            <div *ngFor="let slot of dineInSpecialHours; let i = index" class="hour-row">
+                                <div class="day-cell">
+                                    <select [(ngModel)]="slot.day" class="day-dropdown">
+                                        <option *ngFor="let day of daysOfWeek" [value]="day">{{ day }}</option>
+                                    </select>
+                                </div>
+                                <div class="time-cell">
+                                    <select [(ngModel)]="slot.openTime" [disabled]="slot.is24Hour">
+                                        <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
+                                    </select>
+                                </div>
+                                <div class="time-cell">
+                                    <select [(ngModel)]="slot.closeTime" [disabled]="slot.is24Hour">
+                                        <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
+                                    </select>
+                                </div>
+                                <div class="checkbox-cell">
+                                    <input type="checkbox" [(ngModel)]="slot.is24Hour" (change)="toggle24Hour(slot)">
+                                </div>
+                                <div class="actions-cell">
+                                    <span class="action-icon" (click)="deleteDineInSpecialTimeSlot(i)">
+                                        <i class="ri ri-delete-bin-3-fill"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="add-slot-btn" (click)="addDineInSpecialHoursSlot()">+ Add Special Hours
+                            Slot</button>
+                    </div>
+                </div>
             </ng-template>
         </li>
+
         <li [ngbNavItem]="5">
             <a ngbNavLink>Table Bookings</a>
             <ng-template ngbNavContent>
-                <p>Table Bookings content.</p>
+                <div class="tab-content-container">
+                    <div class="hours-section">
+                        <div class="hours-header-row">
+                            <span class="header-day">Day</span>
+                            <span class="header-time">Open</span>
+                            <span class="header-time">Close</span>
+                            <span class="header-24h">24 Hour</span>
+                            <span class="header-actions"></span>
+                        </div>
+                        <div cdkDropList (cdkDropListDropped)="onDrop($event)" class="hours-list">
+                            <div *ngFor="let slot of tableBookingsHours; let i = index" cdkDrag class="hour-row">
+                                <div class="day-cell">
+                                    <span class="drag-handle" cdkDragHandle>
+                                        <i class="ri ri-drag-drop-line"></i>
+                                    </span>
+                                    <select [(ngModel)]="slot.day" class="day-dropdown">
+                                        <option *ngFor="let day of daysOfWeek" [value]="day">{{ day }}</option>
+                                    </select>
+                                </div>
+                                <div class="time-cell">
+                                    <select [(ngModel)]="slot.openTime" [disabled]="slot.is24Hour">
+                                        <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
+                                    </select>
+                                </div>
+                                <div class="time-cell">
+                                    <select [(ngModel)]="slot.closeTime" [disabled]="slot.is24Hour">
+                                        <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
+                                    </select>
+                                </div>
+                                <div class="checkbox-cell">
+                                    <input type="checkbox" [(ngModel)]="slot.is24Hour" (change)="toggle24Hour(slot)">
+                                </div>
+                                <div class="actions-cell">
+                                    <span class="action-icon" (click)="deleteTableBookingsTimeSlot(i)">
+                                        <i class="ri ri-delete-bin-3-fill"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="add-slot-btn" (click)="addTableBookingsTimeSlot()">+ Add Time Slot</button>
+                    </div>
+
+                    <hr />
+
+                    <div class="hours-section">
+                        <div class="special-hours-header">
+                            <h3>Special Hours</h3>
+                            <span class="optional-label">OPTIONAL</span>
+                        </div>
+                        <p>Set special opening hours for holidays or other periods. This will override your regular
+                            opening hours for your store location and all services.</p>
+                        <div class="hours-list">
+                            <div *ngFor="let slot of tableBookingsSpecialHours; let i = index" class="hour-row">
+                                <div class="day-cell">
+                                    <select [(ngModel)]="slot.day" class="day-dropdown">
+                                        <option *ngFor="let day of daysOfWeek" [value]="day">{{ day }}</option>
+                                    </select>
+                                </div>
+                                <div class="time-cell">
+                                    <select [(ngModel)]="slot.openTime" [disabled]="slot.is24Hour">
+                                        <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
+                                    </select>
+                                </div>
+                                <div class="time-cell">
+                                    <select [(ngModel)]="slot.closeTime" [disabled]="slot.is24Hour">
+                                        <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
+                                    </select>
+                                </div>
+                                <div class="checkbox-cell">
+                                    <input type="checkbox" [(ngModel)]="slot.is24Hour" (change)="toggle24Hour(slot)">
+                                </div>
+                                <div class="actions-cell">
+                                    <span class="action-icon" (click)="deleteTableBookingsSpecialTimeSlot(i)">
+                                        <i class="ri ri-delete-bin-3-fill"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="add-slot-btn" (click)="addTableBookingsSpecialHoursSlot()">+ Add Special Hours
+                            Slot</button>
+                    </div>
+                </div>
             </ng-template>
         </li>
     </ul>
     <div [ngbNavOutlet]="nav" class="mt-2"></div>
+    <button class="save-btn" (click)="save()">Save</button>
 </div>

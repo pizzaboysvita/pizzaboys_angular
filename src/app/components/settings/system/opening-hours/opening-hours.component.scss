@@ -1,107 +1,88 @@
-/* Secondary Tabs Styling */
-$primary-orange: #fd7e14;
-
-.nav-tabs.secondary-nav {
-  border-bottom: 1px solid #dee2e6;
-  .nav-item {
-    .nav-link {
-      color: #6c757d;
-      border: none;
-      background-color: transparent;
-      padding: 0.75rem 1rem;
-      transition: color 0.2s ease-in-out;
-
-      &:hover {
-        color: #000;
-        border-color: transparent;
-      }
-    }
-
-    &.active {
-      .nav-link {
-        color: #000;
-        font-weight: 500;
-        position: relative;
-        
-        &::after {
-          content: '';
-          position: absolute;
-          bottom: -1px;
-          left: 0;
-          width: 100%;
-          height: 2px;
-          background-color: $primary-orange;
-        }
-      }
-    }
-  }
+.tab-content-container {
+  padding: 20px;
 }
 
-/* Opening Hours Table Styling */
-.hours-table {
-  display: grid;
-  grid-template-columns: 1fr 100px 100px 70px 60px;
-  gap: 10px;
+.hours-section {
+  padding: 20px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.hours-header-row, .hour-row {
+  display: flex;
   align-items: center;
+  padding: 10px 20px;
+  border-bottom: 1px solid #eee;
+}
 
-  .hours-row {
-    display: contents; // Makes children act as if they are direct grid items
-    
-    &.header {
-      font-weight: 600;
-      color: #333;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #dee2e6;
-      margin-bottom: 10px;
-      display: grid; // Redefine grid for the header
-      grid-template-columns: inherit;
-    }
-    
-    div {
-      padding: 0.5rem 0.25rem;
-    }
-    
-    .day-label {
-      font-weight: 500;
-    }
+.hours-header-row {
+  font-weight: bold;
+  color: #555;
+  .header-day, .day-cell { flex: 0.5 0 200px; }
+  .header-time, .time-cell { flex: 0.25 0 100px; }
+  .header-24h, .checkbox-cell { flex: 0.1 0 50px; }
+  .header-actions, .actions-cell { flex: 0.1 0 80px; text-align: right; }
+}
 
-    .form-control {
-      height: 38px;
-    }
-
-    .actions {
-      i {
-        cursor: pointer;
-      }
-    }
+.hour-row {
+  background-color: #fff;
+  &.cdk-drag-preview {
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
   }
 }
 
-.add-slot-btn {
-  border: 1px dashed #ced4da;
-  color: #6c757d;
-  width: 100%;
-  &:hover {
-    background-color: #f8f9fa;
-  }
+.drag-handle {
+  cursor: grab;
+  margin-right: 15px;
+  img { height: 16px; }
 }
 
-.optional-badge {
-  background-color: #e9ecef;
-  color: #6c757d;
-  font-size: 0.75rem;
-  font-weight: 500;
-  padding: 0.25rem 0.5rem;
+.day-dropdown, select, input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.action-icon {
+  cursor: pointer;
+  margin-left: 10px;
+  img { height: 20px; }
+}
+
+.add-slot-btn, .save-btn {
+  background-color: #ff6600;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 20px;
+  font-weight: bold;
+}
+
+.special-hours-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  h3 { margin: 0; }
+}
+
+.optional-label {
+  background-color: #e0e0e0;
+  padding: 5px 10px;
   border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #777;
+}
+
+hr {
+  margin: 20px 0;
+  border-color: #ddd;
 }
 
 .save-btn {
-  background-color: $primary-orange;
-  border-color: $primary-orange;
-  font-weight: bold;
-  
-  &:hover {
-    background-color: darken($primary-orange, 10%);
-    border-color: darken($primary-orange, 10%);
-  }
+  width: fit-content;
 }
