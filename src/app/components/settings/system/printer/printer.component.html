@@ -166,15 +166,269 @@
             </li>
             <li [ngbNavItem]="3">
                 <a ngbNavLink>Printer Settings</a>
-                <ng-template ngbNavContent> printer settings content </ng-template>
+                <ng-template ngbNavContent>
+                    <div class="mt-4">
+                        <form>
+                            <!-- Printing Method -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Printing Method</label>
+                                <select class="form-select" [(ngModel)]="printer.printingMethod" name="printingMethod">
+                                    <option value="ESC/POS">ESC/POS</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <small class="form-text text-muted">
+                                    Determine whether the receipt should be printed through an installed printer driver
+                                    or ESC/POS format.
+                                </small>
+                            </div>
+
+                            <!-- Paper Width -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Paper Width (pixels)</label>
+                                <input type="number" class="form-control" [(ngModel)]="printer.paperWidth"
+                                    name="paperWidth" />
+                                <small class="form-text text-muted">
+                                    Think in your actual paper width, written in the width of the receipt image
+                                    generated.
+                                </small>
+                            </div>
+
+                            <!-- Paper Height -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Paper Height (pixels)</label>
+                                <input type="number" class="form-control" [(ngModel)]="printer.paperHeight"
+                                    name="paperHeight" />
+                                <small class="form-text text-muted">
+                                    This is not your actual paper height, rather it is the height of the receipt image
+                                    generated.
+                                </small>
+                            </div>
+
+                            <!-- Paper Scale Factor -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Paper Scale Factor</label>
+                                <input type="number" class="form-control" [(ngModel)]="printer.paperScaleFactor"
+                                    name="paperScaleFactor" />
+                                <small class="form-text text-muted">
+                                    Determines how "zoomed in" the image is. Usually a value of 2 will suit 80mm
+                                    printers.
+                                </small>
+                            </div>
+
+                            <!-- Paper Density -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Paper Density</label>
+                                <select class="form-select" [(ngModel)]="printer.paperDensity" name="paperDensity">
+                                    <option value="D24">D24</option>
+                                    <option value="D20">D20</option>
+                                    <option value="D15">D15</option>
+                                </select>
+                                <small class="form-text text-muted">Determined by your thermal printer. Most printers
+                                    support "D24".</small>
+                            </div>
+
+                            <!-- Font Size -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Font Size</label>
+                                <input type="number" class="form-control" [(ngModel)]="printer.fontSize"
+                                    name="fontSize" />
+                                <small class="form-text text-muted">The base font size used when generating your receipt
+                                    (1–24).</small>
+                            </div>
+
+                            <!-- Number of Beeps -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Number Of Beeps</label>
+                                <input type="number" class="form-control" [(ngModel)]="printer.numberOfBeeps"
+                                    name="numberOfBeeps" />
+                                <small class="form-text text-muted">Set how many times the printer should beep after
+                                    printing.</small>
+                            </div>
+
+                            <!-- Beep Method -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Beep Method</label>
+                                <select class="form-select" [(ngModel)]="printer.beepMethod" name="beepMethod">
+                                    <option value="internal">Internal</option>
+                                    <option value="external">External</option>
+                                </select>
+                                <small class="form-text text-muted">Choose which method will be used to send the
+                                    beep/alert.</small>
+                            </div>
+
+                            <!-- Paper Cut Type -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Paper Cut Type</label>
+                                <select class="form-select" [(ngModel)]="printer.paperCutType" name="paperCutType">
+                                    <option value="full">Full Cut</option>
+                                    <option value="partial">Partial Cut</option>
+                                </select>
+                                <small class="form-text text-muted">Determines which paper cut command is used at the
+                                    end of a print job.</small>
+                            </div>
+
+                            <!-- Characters Per Line -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Characters Per Line</label>
+                                <input type="number" class="form-control" [(ngModel)]="printer.charactersPerLine"
+                                    name="charactersPerLine" />
+                                <small class="form-text text-muted">
+                                    Enter the number of characters per line. Adjust this if text overflows.
+                                </small>
+                            </div>
+                        </form>
+                    </div>
+                </ng-template>
             </li>
+
             <li [ngbNavItem]="4">
                 <a ngbNavLink>Customization</a>
-                <ng-template ngbNavContent> customization content </ng-template>
+                <ng-template ngbNavContent>
+                    <div class="mt-4">
+                        <form>
+                            <!-- Layout Section -->
+                            <!-- Layout Section -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Layout</label>
+                                <div cdkDropList (cdkDropListDropped)="dropLayout($event)" class="list-group">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center"
+                                        *ngFor="let item of printer.layout" cdkDrag>
+                                        <span>
+                                            <span class="badge bg-secondary me-2">{{ printer.layout.indexOf(item) + 1
+                                                }}</span>
+                                            {{ item }}
+                                        </span>
+                                        <span class="drag-handle bi bi-arrows-move" cdkDragHandle></span>
+                                    </div>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Configure the order of the various receipt sections
+                                </small>
+                            </div>
+
+
+                            <!-- Detail Customization -->
+                            <!-- Detail Customization -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Detail Customization</label>
+                                <div cdkDropList (cdkDropListDropped)="dropDetail($event)">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center mb-2"
+                                        *ngFor="let detail of printer.detailCustomization" cdkDrag>
+                                        <div class="d-flex align-items-center">
+                                            <div class="form-check form-switch me-2">
+                                                <input type="checkbox" class="form-check-input"
+                                                    [(ngModel)]="detail.enabled" [name]="detail.key" />
+                                            </div>
+                                            {{ detail.label }}
+                                        </div>
+                                        <span class="drag-handle bi bi-arrows-move" cdkDragHandle></span>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-outline-secondary btn-sm mt-2"
+                                    (click)="resetDetailCustomization()">Reset</button>
+                                <small class="form-text text-muted">
+                                    Customize which order details are displayed on the receipt. Rearrange the order
+                                    using the drag handles.
+                                </small>
+                            </div>
+
+
+                            <!-- Dish Customization -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Dish Customization</label>
+                                <div *ngFor="let dish of printer.dishCustomization"
+                                    class="d-flex justify-content-between align-items-center mb-2">
+                                    <div>{{ dish.label }}</div>
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" class="form-check-input" [(ngModel)]="dish.enabled"
+                                            [name]="dish.key" />
+                                    </div>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Customize how dishes are displayed on receipts.
+                                </small>
+                            </div>
+
+                            <!-- Dish Tag Seat Sort Priority -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Dish Tag Seat Sort Priority</label>
+                                <select class="form-select" [(ngModel)]="printer.dishTagSortPriority"
+                                    name="dishTagSortPriority">
+                                    <option value="">Select from the dropdown or type to search...</option>
+                                    <option *ngFor="let option of dishTagOptions" [value]="option">{{ option }}</option>
+                                </select>
+                            </div>
+
+                            <!-- Show Order Totals -->
+                            <div class="mb-4 d-flex justify-content-between align-items-center">
+                                <label class="form-label fw-bold">Show Order Totals</label>
+                                <div class="form-check form-switch">
+                                    <input type="checkbox" class="form-check-input"
+                                        [(ngModel)]="printer.showOrderTotals" name="showOrderTotals" />
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </ng-template>
             </li>
+
             <li [ngbNavItem]="5">
                 <a ngbNavLink>Header & Footer</a>
-                <ng-template ngbNavContent> header & footer content </ng-template>
+                <ng-template ngbNavContent>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">
+                            Receipt Header
+                            <span class="optional-badge">OPTIONAL</span>
+                        </label>
+
+                        <!-- Rich Text Editor -->
+                        <quill-editor [(ngModel)]="printer.header" [styles]="{height: '100px'}"></quill-editor>
+
+                        <button type="button" class="btn btn-outline-warning btn-sm mt-2"
+                            (click)="clearHeader()">Clear</button>
+
+                        <small class="form-text text-muted">
+                            Customize your receipt header with information such as your store name, business number,
+                            etc.
+                        </small>
+                    </div>
+
+                    <hr class="dotted-divider" />
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">
+                            Receipt Header
+                            <span class="optional-badge">OPTIONAL</span>
+                        </label>
+
+                        <quill-editor [(ngModel)]="printer.header"
+                            [modules]="{ toolbar: [['bold', 'italic', 'underline'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], ['clean']] }"
+                            theme="snow" style="height:120px;">
+                        </quill-editor>
+
+                        <button type="button" class="btn btn-outline-warning btn-sm mt-2"
+                            (click)="clearHeader()">Clear</button>
+                    </div>
+
+                    <hr class="dotted-divider" />
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">
+                            Receipt Footer
+                            <span class="optional-badge">OPTIONAL</span>
+                        </label>
+
+                        <quill-editor [(ngModel)]="printer.footer"
+                            [modules]="{ toolbar: [['bold', 'italic', 'underline'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], ['clean']] }"
+                            theme="snow" style="height:120px;">
+                        </quill-editor>
+
+                        <button type="button" class="btn btn-outline-warning btn-sm mt-2"
+                            (click)="clearFooter()">Clear</button>
+                    </div>
+
+
+                </ng-template>
             </li>
             <li [ngbNavItem]="6">
                 <a ngbNavLink>Dishes to Print</a>
