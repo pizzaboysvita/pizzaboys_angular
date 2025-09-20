@@ -7,16 +7,16 @@ import { BehaviorSubject, Subject } from "rxjs";
 })
 export class ApisService {
 
-  // basesurl = "http://78.142.47.247:3003";
+  basesurl = "http://78.142.47.247:3003";
   
-  basesurl = 'http://localhost:3003'
+  // basesurl = 'http://localhost:3003'
   private change$ = new BehaviorSubject<boolean>(false);
   poschanges$ = this.change$.asObservable();
   constructor() {}
   private http = inject(HttpClient);
   isLoading = new BehaviorSubject<boolean>(false);
   getApi(endpoint: string) {
-    console.log("GET request URL -->", "http://78.142.47.247:3001" + endpoint);
+    console.log("GET request URL -->", "http://78.142.47.247:3003" + endpoint);
     return this.http.get(this.basesurl + endpoint);
   }
   postApi(endpoint: any, req_body: any) {
