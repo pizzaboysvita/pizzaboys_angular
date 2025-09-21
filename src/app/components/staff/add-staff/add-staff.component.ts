@@ -306,7 +306,7 @@ export class AddStaffComponent {
   }
   onSubmit() {
     // if (isValid) {
-console.log(this.staffForm.value)
+console.log(this.staffForm.controls,this.permissionForm.controls)
 // const restaurantControls = this.permissionForm.get('restaurant')['controls'];
 const restaurantGroup = this.permissionForm.get('restaurant') as FormGroup;
 const posGroup = this.permissionForm.get('pos') as FormGroup;

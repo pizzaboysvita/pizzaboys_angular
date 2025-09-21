@@ -128,7 +128,7 @@
       <!-- Selected options inside -->
       <ul class="ms-4 mb-1" style="font-size: 14px; list-style-type: disc;">
         <li *ngFor="let opt of standedOpt.choose_option">
-          {{ opt.name }} - ${{ opt.price }}
+          {{ opt.name }} <span *ngIf="opt.price"> - ${{ opt.price }}</span>
         </li>
       </ul>
     <!-- </div> -->
