@@ -14,14 +14,19 @@ splitBy = 2;
   splitRows: any;
   isSplitPayment: boolean=false;
   activeTab: string = 'full'; // default tab
-  totalPrice: any;
+  // totalPrice: number;
   unpaidItems: any;
  payItems: any[] = [];     // selected items waiting for payment
 paidItems: any[] = [];    // confirmed paid items
   isModalOpen: boolean=true;
   showPopup: boolean=true;
   confirmRemove = false;
-
+  paid: any;
+paymentAmount: number = 0;
+totalPrice: number = 0;
+remaining: number = this.totalPrice;
+payments: any[] = [];
+  fullArray:any =[];
  constructor(public modal: NgbModal,private cdr: ChangeDetectorRef ) {}
 
   ngOnInit(): void {
@@ -31,12 +36,20 @@ paidItems: any[] = [];    // confirmed paid items
     this.unpaidItems=this.data
     console.log(this.data);
     this.calculateTotal()
+this.remaining = this.totalPrice;
+
+
   }
  calculateTotal(): void {
     this.totalPrice = this.data.reduce(
       (sum: number, row: { item_total_price: any; }) => sum + (Number(row.item_total_price) || 0),
       0
     );
+    this.fullArray.push({
+    status: 'Pending',
+    type: 'New',
+    amount: this.totalPrice
+  });
   }
 setActiveTab(tab: string) {
   this.activeTab = tab;
@@ -95,9 +108,7 @@ for (let i = 0; i < this.splitBy; i++) {
 
   remaining -= splitAmount;
 }
-
-  console.log( this.splitRows);
-  
+this.fullArray=this.splitRows
 }
 moveToPay(item: any, index: number) {
   this.payItems.push(item);
@@ -164,4 +175,27 @@ doRemove(tab: string) {
   this.cdr.detectChanges();
 }
 
+
+
+
+appendNumber(num: any) {
+  this.paymentAmount = Number(String(this.paymentAmount) + String(num));
+  this.remaining = this.totalPrice - this.paymentAmount;
+}
+
+clearAmount() {
+  this.paymentAmount = 0;
+  this.remaining = this.totalPrice;
+}
+setPayment(percent: number) {
+  this.paymentAmount = (this.totalPrice * percent) / 100;
+}
+// addPayment() {
+//   if (this.paymentAmount > 0) {
+//     this.payments.push({ type: 'Cash', amount: this.paymentAmount, status: 'Pending' });
+//     this.paid = this.payments.reduce((sum, p) => sum + p.amount, 0);
+//     this.remaining = this.totalPrice - this.paid;
+//     this.paymentAmount = 0;
+//   }
+// }
 }
