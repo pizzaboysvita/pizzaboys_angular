@@ -149,7 +149,7 @@ export class OrderDetailsComponent {
   }
 
   get subtotal(): number {
-    console.log(this.totalCartDetails,'<<<<<<<<<<<------------------this.cartItems.')
+    // console.log(this.totalCartDetails,'<<<<<<<<<<<------------------this.cartItems.')
 
     return   this.totalCartDetails
       .reduce((sum: any, item: any) => sum + this.apiService.getItemSubtotal(item), 0)
@@ -163,7 +163,7 @@ export class OrderDetailsComponent {
 
   get total() {
     const fee = this.orderForm.value.orderType == 'delivery' ? this.deliveryfee : 0
-    console.log(this.cartItems,this.totalCartDetails ,'<<<<<<<<<<<------------------this.cartItems. 345')
+    // console.log(this.cartItems,this.totalCartDetails ,'<<<<<<<<<<<------------------this.cartItems. 345')
     return this.totalCartDetails
       .reduce((sum: any, item: any) => sum + this.apiService.getItemSubtotal(item), 0) + this.tax + fee;
     // return this.subtotal + this.tax - this.discount;
