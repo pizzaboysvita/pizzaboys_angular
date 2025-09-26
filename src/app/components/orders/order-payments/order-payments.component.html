@@ -43,7 +43,7 @@
              @if(activeTab === 'full'){
               <div class="row">
               <!-- Full & Partial -->
-                <div class="col-6 border-end p-3">
+                <div class="col-6 border-end p-3" *ngIf="splitCash">
     <div class="mb-3">
       <div class=" mb-2 fw-semibold"> 
   <span>Quick Percent:</span>
@@ -82,10 +82,10 @@
   <span>Remaining:</span>
   <span>${{ remaining }}</span>
 </div>
-      <button class="btn btn-outline-warning w-100 mt-2" (click)="addPayment()">ADD PAYMENT</button>
+      <button class="btn btn-outline-warning w-100 mt-2" (click)="fullAddPayment()">ADD PAYMENT</button>
     </div>
   </div>
-              <div class="col-6 ">
+              <div [ngClass]="splitCash ? 'col-6' : 'col-12'" >
 
               <div class=" border-bottom pb-2 mb-3">
                 <!-- Row 1: Total -->
@@ -101,7 +101,7 @@
                 </div>
                 </div>
                 <!-- Payment Table -->
-                <table class="table table-sm align-middle">
+                <table class="table table-sm align-middle" *ngIf="fullArray.length>0">
                   <thead style="background-color: #f9f9fa !important;">
                     <tr>
                       <th>Status</th>
@@ -114,8 +114,14 @@
                   <tbody style="background-color: #eeeeef;">
                        <!-- @for (rowData of data; track rowData;let ind = $index) { -->
                           @for (rowData of fullArray; track rowData;let ind = $index) {
-                    <tr>
-                      <td><span class="badge bg-warning  text-dark fs-16">{{rowData.status}}</span></td>
+                    <tr (click)=" rowData.status !== 'Success' && selectRow(rowData, ind)" 
+    [ngClass]="{'table-active': selectedRowIndex === ind}" 
+    style="cursor: pointer;">
+                      <td><span class="badge fs-16"   [ngClass]="{
+      'badge-pending': rowData.status === 'Pending',
+      'badge-success': rowData.status === 'Success',
+      'badge-failed': rowData.status === 'Failed'
+    }">{{rowData.status}}</span></td>
                       <td>{{rowData.type}}</td>
                       <td>${{rowData.amount}}</td>
                       <td>-</td>
@@ -126,8 +132,8 @@
                 </table>
 
                 <!-- Payment Buttons -->
-               <div class="d-flex flex-wrap gap-2 my-3">
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+               <div class="d-flex flex-wrap gap-2 my-3" *ngIf="fullArray.length>0" >
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2" [disabled]="!selectedRowData" (click)="openCashModal()">
                     <i class="ri-money-dollar-circle-line"></i> <span>Cash</span>
                 </button>
                 <button class="btn btn-outline-warning d-flex align-items-center gap-2">
@@ -204,8 +210,14 @@
                   </thead>
                   <tbody style="background-color: #eeeeef;">
                        @for (rowData of splitRows; track rowData;let ind = $index) {
-                    <tr>
-                      <td><span class="badge bg-warning  text-dark fs-16">{{rowData.status}}</span></td>
+                    <tr (click)=" rowData.status !== 'Success' && selectRow(rowData, ind)" 
+    [ngClass]="{'table-active': selectedRowIndex === ind}" 
+    style="cursor: pointer;">
+                      <td ><span class="badge fs-16"   [ngClass]="{
+      'badge-pending': rowData.status === 'Pending',
+      'badge-success': rowData.status === 'Success',
+      'badge-failed': rowData.status === 'Failed'
+    }">{{rowData.status}}</span></td>
                       <td>{{rowData.type}}</td>
                       <td>${{rowData.amount}}</td>
                       <td>-</td>
@@ -215,7 +227,7 @@
                   </tbody>
                 </table>
               <div class="d-flex flex-wrap gap-2 my-3">
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2" [disabled]="!selectedRowData" (click)="openCashModal()">
                     <i class="ri-money-dollar-circle-line"></i> <span>Cash</span>
                 </button>
                 <button class="btn btn-outline-warning d-flex align-items-center gap-2">
@@ -488,3 +500,54 @@
         </button>
       </div> -->
     </div>
+
+
+    
+<!-- Cash Payment Modal -->
+  <div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{ 'show d-block': showNewModelPopup }" style="background: rgba(0,0,0,0.5); z-index: 1040;">
+  <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+    <div class="modal-content p-3">
+
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">Cash Tender</h5>
+        <button type="button" class="btn-close" (click)="closeNewModelPopup()"></button>
+      </div>
+
+      <!-- Quick Cash Buttons -->
+      <div class="btn-group w-100 mb-3">
+        <button class="btn btn-outline-secondary border" (click)="setCashQuick(5)">$5</button>
+        <button class="btn btn-outline-secondary border" (click)="setCashQuick(10)">$10</button>
+        <button class="btn btn-outline-secondary border" (click)="setCashQuick(20)">$20</button>
+        <button class="btn btn-outline-secondary border" (click)="setCashQuick(50)">$50</button>
+        <button class="btn btn-outline-secondary border" (click)="setCashQuick(100)">$100</button>
+      </div>
+
+      <!-- Keypad -->
+      <div class="border rounded p-3 text-center">
+        <div class="fs-4 fw-bold mb-2 text-end">${{ cashpaymentAmount }}</div>
+
+        <div class="row g-2">
+          <div class="col-4"><button class="btn btn-light w-100" (click)="appendCashNumber(7)">7</button></div>
+          <div class="col-4"><button class="btn btn-light w-100" (click)="appendCashNumber(8)">8</button></div>
+          <div class="col-4"><button class="btn btn-light w-100" (click)="appendCashNumber(9)">9</button></div>
+
+          <div class="col-4"><button class="btn btn-light w-100" (click)="appendCashNumber(4)">4</button></div>
+          <div class="col-4"><button class="btn btn-light w-100" (click)="appendCashNumber(5)">5</button></div>
+          <div class="col-4"><button class="btn btn-light w-100" (click)="appendCashNumber(6)">6</button></div>
+
+          <div class="col-4"><button class="btn btn-light w-100" (click)="appendCashNumber(1)">1</button></div>
+          <div class="col-4"><button class="btn btn-light w-100" (click)="appendCashNumber(2)">2</button></div>
+          <div class="col-4"><button class="btn btn-light w-100" (click)="appendCashNumber(3)">3</button></div>
+
+          <div class="col-4"><button class="btn btn-light w-100" (click)="appendCashNumber(0)">0</button></div>
+          <div class="col-4"><button class="btn btn-light w-100" (click)="appendCashNumber('00')">00</button></div>
+          <div class="col-4"><button class="btn btn-danger w-100" (click)="clearCashAmount()">X</button></div>
+        </div>
+
+        <!-- Confirm -->
+        <button class="btn btn-warning w-100 mt-2" (click)="confirmCashPayment(); $event.stopPropagation()">Take Cash</button>
+      </div>
+    </div>
+  </div>
+</div>

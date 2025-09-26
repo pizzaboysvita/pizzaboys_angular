@@ -42,6 +42,27 @@
 // .div-pointer{
 //   cursor: pointer;
 // }
+.badge {
+  transition: all 0.4s ease; /* Smooth transition for background, border, text */
+}
+.badge-pending {
+  background-color: #ffc107 !important; /* Bootstrap warning */
+  color: #212529 !important;
+  border: 1px solid #ffc107;
+}
 
+/* Success: green with white text and border */
+.badge-success {
+  background-color: #28a745 !important; /* Bootstrap success */
+  color: #fff !important;
+  border: 1px solid #fff;
+}
+
+/* Failed: red with white text and border */
+.badge-failed {
+  background-color: #dc3545 !important; /* Bootstrap danger */
+  color: #fff !important;
+  border: 1px solid #fff;
+}
 
 
