@@ -10,33 +10,37 @@ import { NgbActiveModal, NgbModal, NgbNavModule } from '@ng-bootstrap/ng-bootstr
 })
 export class OrderPaymentsComponent {
   @Input() data: any;
-splitBy = 2;
+  splitBy = 2;
   splitRows: any;
   isSplitPayment: boolean=false;
   activeTab: string = 'full'; // default tab
   // totalPrice: number;
   unpaidItems: any;
- payItems: any[] = [];     // selected items waiting for payment
-paidItems: any[] = [];    // confirmed paid items
+  payItems: any[] = [];     // selected items waiting for payment
+  paidItems: any[] = [];    // confirmed paid items
   isModalOpen: boolean=true;
   showPopup: boolean=true;
   confirmRemove = false;
   paid: any;
-paymentAmount: number = 0;
-totalPrice: number = 0;
-remaining: number = this.totalPrice;
-payments: any[] = [];
+  paymentAmount: number = 0;
+  totalPrice: number = 0;
+  remaining: number = this.totalPrice;
+  payments: any[] = [];
   fullArray:any =[];
   splitCash: boolean;
-cashModal=false
+  cashModal=false
   showNewModelPopup = false;
   selectedRowIndex: number | null = null;
-selectedRowData: any = null;
+  selectedRowData: any = null;
   cashpaymentAmount: number;
   percentageJson:any=[];
   percentage: number=0;
   userJson: any=[];
-
+  tenderedAmount: number=0;
+  showChangeModal = false;
+  changeAmount = 0;
+  orderList: any=[];
+  totalPaid: any;
  constructor(public modal: NgbModal,private cdr: ChangeDetectorRef ) {}
 
   ngOnInit(): void {
@@ -45,8 +49,8 @@ selectedRowData: any = null;
     this.unpaidItems=this.data
     console.log(this.data);
     this.calculateTotal()
-this.remaining = this.totalPrice;
-this.paymentAmount =this.totalPrice;
+    this.remaining = this.totalPrice;
+    this.paymentAmount =this.totalPrice;
   }
  calculateTotal(): void {
     this.totalPrice = this.data.reduce(
@@ -56,7 +60,9 @@ this.paymentAmount =this.totalPrice;
     this.fullArray.push({
     status: 'Pending',
     type: 'New',
-    amount: this.totalPrice
+    amount: this.totalPrice,
+     tender:'-',
+    change:'-'
   });
   }
 setActiveTab(tab: string) {
@@ -113,9 +119,11 @@ for (let i = 0; i < this.splitBy; i++) {
   }
 
   this.splitRows.push({
-    status: 'Pending',
+    status: 'P ending',
     type: 'New',
-    amount: amount
+    amount: amount,
+    tender:'-',
+    change:'-'
   });
 
   remaining -= splitAmount;
@@ -238,7 +246,7 @@ openCashModal() {
   this.showNewModelPopup=true
 }
 setCashQuick(amount: number) {
-   this.cashpaymentAmount = amount;
+   this.tenderedAmount  = amount;
 }
 
 appendCashNumber(num: any) {
@@ -252,12 +260,25 @@ clearCashAmount() {
 // Confirm payment
 confirmCashPayment() {
  if (this.selectedRowIndex === null) return;
+  if (this.tenderedAmount > this.cashpaymentAmount) {
+    this.changeAmount = +(this.tenderedAmount - this.cashpaymentAmount).toFixed(2);
+  
+
+  }
+//   if (this.remainingAmount <= 0) {
+//   this.showChangeModal = true;   // ✅ open the summary modal
+// }
+    // this.showChangeModal = true;
+    //  this.showNewModelPopup = false;
+
 if(this.activeTab=='full'){
   // Update the selected row
   this.fullArray[this.selectedRowIndex].status = 'Success';
   this.fullArray[this.selectedRowIndex].type = 'Cash';
   this.fullArray[this.selectedRowIndex].amount = this.cashpaymentAmount;
-  
+  this.fullArray[this.selectedRowIndex].tender = this.tenderedAmount;
+  this.fullArray[this.selectedRowIndex].change = this.changeAmount;
+
   this.percentageJson.push({
     "amount": this.cashpaymentAmount,
     "percentage": this.percentage,
@@ -269,12 +290,17 @@ if(this.activeTab=='full'){
     payment_split_users_json: [],
     payment_split_items_json: []
   };
-  
+  this.totalPaid = this.fullArray
+    .filter((x: { status: string; }) => x.status === 'Success')
+    .reduce((sum: any, row: { amount: any; }) => sum + row.amount, 0);
+    
   }
 else if(this.activeTab =='people'){
     this.splitRows[this.selectedRowIndex].status = 'Success';
   this.splitRows[this.selectedRowIndex].type = 'Cash';
   this.splitRows[this.selectedRowIndex].amount = this.cashpaymentAmount;
+    this.splitRows[this.selectedRowIndex].tender = this.tenderedAmount;
+  this.splitRows[this.selectedRowIndex].change = this.changeAmount;
   console.log(this.percentageJson,"asasdsad");
     this.userJson.push({
     "amount": this.cashpaymentAmount,
@@ -289,13 +315,27 @@ else if(this.activeTab =='people'){
   console.log(payload);
 
 }
-
+ if (this.activeTab === 'full' && this.checkAllPaymentsSuccess()) {
+    this.collectSuccessfulPayments();
+    this.showNewModelPopup = false;
+    this.showChangeModal = true;   // open summary modal
+  }
+  
+ 
   // Close modal
   this.showNewModelPopup = false;
   // Reset selection
   this.selectedRowIndex = null;
   this.selectedRowData = null;
-  this.cashpaymentAmount = 0;
+  // this.cashpaymentAmount = 0;
   
+}
+ collectSuccessfulPayments() {
+  this.orderList = this.fullArray.filter((r: { status: string; }) => r.status === 'Success');
+  this.totalPaid = this.orderList.reduce((s: number, r: { amount: any; }) => s + (Number(r.amount) || 0), 0);
+}
+checkAllPaymentsSuccess() {
+  // true if every row has status 'Success'
+  return this.fullArray.length > 0 && this.fullArray.every((r: { status: string; }) => r.status === 'Success');
 }
 }

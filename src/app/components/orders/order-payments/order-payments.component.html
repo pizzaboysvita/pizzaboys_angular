@@ -119,13 +119,13 @@
     style="cursor: pointer;">
                       <td><span class="badge fs-16"   [ngClass]="{
       'badge-pending': rowData.status === 'Pending',
-      'badge-success': rowData.status === 'Success',
+      'badge-success': rowData.status === 'Success', 
       'badge-failed': rowData.status === 'Failed'
     }">{{rowData.status}}</span></td>
                       <td>{{rowData.type}}</td>
                       <td>${{rowData.amount}}</td>
-                      <td>-</td>
-                      <td>-</td>
+                      <td>{{rowData.tender}}</td>
+                      <td>{{rowData.change}}</td>
                     </tr>
                 }
                   </tbody>
@@ -220,8 +220,8 @@
     }">{{rowData.status}}</span></td>
                       <td>{{rowData.type}}</td>
                       <td>${{rowData.amount}}</td>
-                      <td>-</td>
-                      <td>-</td>
+                       <td>{{rowData.tender}}</td>
+                      <td>{{rowData.change}}</td>
                     </tr>
                 }
                   </tbody>
@@ -551,3 +551,112 @@
     </div>
   </div>
 </div>
+<!-- Change Payment Modal -->
+<!-- <div class="modal fade" tabindex="-1" role="dialog"
+     [ngClass]="{ 'show d-block': showChangeModal }"
+     style="background: rgba(0,0,0,0.5); z-index: 1050;">
+  <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+    <div class="modal-content p-3">
+
+      <h5 class="mb-3 text-center">Payment Summary</h5>
+
+      <table class="table table-sm mb-3">
+        <tbody>
+          <tr>
+            <td><strong>Bill Amount</strong></td>
+            <td class="text-end">${{ cashpaymentAmount }}</td>
+          </tr>
+          <tr>
+            <td><strong>Tendered</strong></td>
+            <td class="text-end">${{ tenderedAmount }}</td>
+          </tr>
+          <tr>
+            <td><strong>Change</strong></td>
+            <td class="text-end text-success fw-bold">${{ changeAmount }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="text-center">
+        <button class="btn btn-primary w-100" (click)="showChangeModal=false">
+          OK
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div> -->
+<div class="modal fade" tabindex="-1" role="dialog"
+     [ngClass]="{ 'show d-block': showChangeModal }"
+     style="background: rgba(0,0,0,0.5); z-index: 1050;">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content p-3">
+
+      <!-- Modal Header -->
+      <h5 class="mb-3 text-left">Order Placed </h5>
+   <table class="table table-sm mb-3">
+        <tbody>
+          <tr>
+            <td><strong>Bill Amount</strong></td>
+            <td class="text-end">${{ totalPaid }}</td>
+          </tr>
+          <tr> 
+            <td><strong>Tendered</strong></td>
+            <td class="text-end">${{ tenderedAmount }}</td>
+          </tr>
+          <tr>
+            <td><strong>Change</strong></td>
+            <td class="text-end ">${{ changeAmount }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <!-- ✅ Order Details Table -->
+      <!-- <h6 class="mb-2">Order Details</h6> -->
+      <table class="table table-sm table-bordered mb-3">
+        <thead class="table-light">
+          <tr>
+            <th>Status</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Tendered</th>
+            <th>Change</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let rowData of orderList; let ind = index"
+              (click)="rowData.status !== 'Success' && selectRow(rowData, ind)"
+              [ngClass]="{'table-active': selectedRowIndex === ind}"
+              style="cursor: pointer;">
+            <td>
+              <span class="badge fs-16"
+                [ngClass]="{
+                  'badge-pending': rowData.status === 'Pending',
+                  'badge-success': rowData.status === 'Success',
+                  'badge-failed': rowData.status === 'Failed'
+                }">
+                {{ rowData.status }}
+              </span>
+            </td>
+            <td>{{ rowData.type }}</td>
+            <td>${{ rowData.amount }}</td>
+            <td>${{ rowData.tender }}</td>
+            <td>${{ rowData.change }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ✅ Payment Summary Table -->
+   
+
+      <!-- ✅ OK Button -->
+      <div class="text-center">
+        <button class="btn btn-primary w-100" (click)="showChangeModal=false">
+          OK
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
