@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, Input, TemplateRef, ViewChild } from '@angular/core';
 import { NgbActiveModal, NgbModal, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
+import { SessionStorageService } from '../../../shared/services/session-storage.service';
 
 @Component({
   selector: 'app-order-payments',
@@ -41,13 +42,16 @@ export class OrderPaymentsComponent {
   changeAmount = 0;
   orderList: any=[];
   totalPaid: any;
- constructor(public modal: NgbModal,private cdr: ChangeDetectorRef ) {}
-
+  payload: { };
+  order_payments_json: any=[];
+  paymentType: any;
+  itemsJson: any;
+  isVoucherConfirm = false;
+ constructor(public modal: NgbModal,private cdr: ChangeDetectorRef,public activeModal: NgbActiveModal, private sessionStorageService: SessionStorageService) {}
   ngOnInit(): void {
     this.payItems=[]
     this.paidItems= [];    // confirmed paid items
     this.unpaidItems=this.data
-    console.log(this.data);
     this.calculateTotal()
     this.remaining = this.totalPrice;
     this.paymentAmount =this.totalPrice;
@@ -61,7 +65,7 @@ export class OrderPaymentsComponent {
     status: 'Pending',
     type: 'New',
     amount: this.totalPrice,
-     tender:'-',
+    tender:'-',
     change:'-'
   });
   }
@@ -69,7 +73,15 @@ setActiveTab(tab: string) {
   this.activeTab = tab;
   if(this.activeTab=='people' ||   this.activeTab=='items'){
   this.splitCash=true
-  this.fullArray=[]
+ // ✅ Keep only 'Success' rows in fullArray
+    const successfulRows = this.fullArray.filter((row: { status: string; }) => row.status === 'Success');
+    this.fullArray = successfulRows.length > 0 ? successfulRows : [];
+
+    // ✅ If empty, reset remaining & paymentAmount to totalPrice
+    if (this.fullArray.length === 0) {
+      this.remaining = this.totalPrice;
+      this.paymentAmount = this.totalPrice;
+    }
   }
 }
 incSplit() { 
@@ -77,6 +89,9 @@ incSplit() {
  }
 decSplit() { 
   if (this.splitBy > 1) this.splitBy--; 
+}
+allPaymentsSuccessful(): boolean {
+  return this.fullArray.length > 0 && this.fullArray.every((item: { status: string; }) => item.status === 'Success');
 }
 generateSplitPayments() {
   console.log(this.isSplitPayment);
@@ -119,7 +134,7 @@ for (let i = 0; i < this.splitBy; i++) {
   }
 
   this.splitRows.push({
-    status: 'P ending',
+    status: 'Pending',
     type: 'New',
     amount: amount,
     tender:'-',
@@ -128,7 +143,7 @@ for (let i = 0; i < this.splitBy; i++) {
 
   remaining -= splitAmount;
 }
-this.fullArray=this.splitRows
+// this.fullArray=this.splitRows
 }
 moveToPay(item: any, index: number) {
   this.payItems.push(item);
@@ -171,7 +186,6 @@ doRemove(tab: string) {
     this.data = [];
     this.totalPrice = 0;
   }
-
   if (tab === 'people') {
     this.splitRows = [];
     this.splitBy = 2;         // reset split count
@@ -184,17 +198,11 @@ doRemove(tab: string) {
     this.paidItems = [];
     this.isSplitPayment = false;
   }
-
   // Reset confirmation
   this.confirmRemove = false;
-
   // Force refresh if OnPush
   this.cdr.detectChanges();
 }
-
-
-
-
 appendNumber(num: any) {
   this.paymentAmount=0
   this.paymentAmount = Number(String(this.paymentAmount) + String(num));
@@ -215,7 +223,6 @@ fullAddPayment() {
     return; 
   }
   const newRow = {
-    // status: this.paymentAmount >= this.remaining ? 'Paid' : 'Partially Paid',
     status:'Pending',
     type: 'New', 
     amount: this.paymentAmount,
@@ -227,8 +234,6 @@ fullAddPayment() {
   // Reset entered amount
   this.paymentAmount =   this.remaining ;
 }
-
-
 selectRow(row: any, index: number) {
   this.selectedRowIndex = index;
   this.selectedRowData = row;
@@ -239,16 +244,30 @@ selectRow(row: any, index: number) {
   this.selectedRowData = null;
     this.showNewModelPopup = false;
   }
-openCashModal() {
-    if (!this.selectedRowData) return; // no row selected
 
+openCashModal(type:any) {
+  this.paymentType=type
+  console.log(type);
+  
+    if (!this.selectedRowData) return; // no row selected
   this.cashpaymentAmount = this.selectedRowData.amount; 
+  if(type =='Cash'){
   this.showNewModelPopup=true
+
+  }
+  else if(type =='Cash' || this.activeTab=='items'){
+  this.cashpaymentAmount = this.selectedRowData.item_total_price; 
+    this.confirmCashPayment()
+
+
+  }
+  else{
+    this.confirmCashPayment()
+  }
 }
 setCashQuick(amount: number) {
    this.tenderedAmount  = amount;
 }
-
 appendCashNumber(num: any) {
   this.cashpaymentAmount = Number(this.paymentAmount.toString() + num.toString());
 }
@@ -256,9 +275,10 @@ appendCashNumber(num: any) {
 clearCashAmount() {
   this.cashpaymentAmount = 0;
 }
-
 // Confirm payment
 confirmCashPayment() {
+  console.log('asjgasgd');
+
  if (this.selectedRowIndex === null) return;
   if (this.tenderedAmount > this.cashpaymentAmount) {
     this.changeAmount = +(this.tenderedAmount - this.cashpaymentAmount).toFixed(2);
@@ -274,7 +294,7 @@ confirmCashPayment() {
 if(this.activeTab=='full'){
   // Update the selected row
   this.fullArray[this.selectedRowIndex].status = 'Success';
-  this.fullArray[this.selectedRowIndex].type = 'Cash';
+  this.fullArray[this.selectedRowIndex].type =  this.paymentType;
   this.fullArray[this.selectedRowIndex].amount = this.cashpaymentAmount;
   this.fullArray[this.selectedRowIndex].tender = this.tenderedAmount;
   this.fullArray[this.selectedRowIndex].change = this.changeAmount;
@@ -285,21 +305,17 @@ if(this.activeTab=='full'){
     "user_name": "User A",
     "status": 1
   })
-     const payload = {
-    payment_split_percentage_json: this.percentageJson,
-    payment_split_users_json: [],
-    payment_split_items_json: []
-  };
+
   this.totalPaid = this.fullArray
     .filter((x: { status: string; }) => x.status === 'Success')
     .reduce((sum: any, row: { amount: any; }) => sum + row.amount, 0);
     
   }
 else if(this.activeTab =='people'){
-    this.splitRows[this.selectedRowIndex].status = 'Success';
-  this.splitRows[this.selectedRowIndex].type = 'Cash';
+  this.splitRows[this.selectedRowIndex].status = 'Success';
+  this.splitRows[this.selectedRowIndex].type =   this.paymentType;
   this.splitRows[this.selectedRowIndex].amount = this.cashpaymentAmount;
-    this.splitRows[this.selectedRowIndex].tender = this.tenderedAmount;
+  this.splitRows[this.selectedRowIndex].tender = this.tenderedAmount;
   this.splitRows[this.selectedRowIndex].change = this.changeAmount;
   console.log(this.percentageJson,"asasdsad");
     this.userJson.push({
@@ -307,35 +323,105 @@ else if(this.activeTab =='people'){
     "user_id": 201,
     "user_name": "User A"
   })
-    const payload = {
-    payment_split_percentage_json: [],
-    payment_split_users_json:this.userJson,
-    payment_split_items_json: []
-  };
-  console.log(payload);
-
+  //   this.payload = {
+  //   payment_split_percentage_json: [],
+  //   payment_split_users_json:this.userJson,
+  //   payment_split_items_json: []
+  // };
+  // console.log(this.payload);
 }
+else if(this.activeTab =='items'){
+  this.paidItems[this.selectedRowIndex].status = 'Success';
+  this.paidItems[this.selectedRowIndex].type =   this.paymentType;
+  this.paidItems[this.selectedRowIndex].amount = this.cashpaymentAmount;
+  this.paidItems[this.selectedRowIndex].tender = this.tenderedAmount;
+  this.paidItems[this.selectedRowIndex].change = this.changeAmount;
+  console.log(this.percentageJson,"asasdsad");
+    this.itemsJson.push({
+         "dish_id": this.selectedRowData.dish_id,
+      "user_id": 201,
+      "user_name": "User A",
+      "percentage":this.percentage,
+      "amount":  this.cashpaymentAmount
+//     },
+  })
+  //   this.payload = {
+  //   payment_split_percentage_json: [],
+  //   payment_split_users_json:this.userJson,
+  //   payment_split_items_json: []
+  // };
+  // console.log(this.payload);
+}
+  this.showNewModelPopup = false;
  if (this.activeTab === 'full' && this.checkAllPaymentsSuccess()) {
     this.collectSuccessfulPayments();
-    this.showNewModelPopup = false;
     this.showChangeModal = true;   // open summary modal
   }
-  
- 
-  // Close modal
-  this.showNewModelPopup = false;
-  // Reset selection
+  else if (this.activeTab === 'people' && this.checkAllPeoplePaymentsSuccess()) {
+    this.collectPeopleSuccessfulPayments();
+    this.showChangeModal = true;   // open summary modal
+  }
   this.selectedRowIndex = null;
   this.selectedRowData = null;
   // this.cashpaymentAmount = 0;
-  
 }
  collectSuccessfulPayments() {
   this.orderList = this.fullArray.filter((r: { status: string; }) => r.status === 'Success');
   this.totalPaid = this.orderList.reduce((s: number, r: { amount: any; }) => s + (Number(r.amount) || 0), 0);
 }
-checkAllPaymentsSuccess() {
-  // true if every row has status 'Success'
-  return this.fullArray.length > 0 && this.fullArray.every((r: { status: string; }) => r.status === 'Success');
+checkAllPaymentsSuccess(): boolean {
+  if (!this.fullArray.length) return false;
+  const allSuccess = this.fullArray.every((r: any) => r.status === 'Success');
+  const successTotal = this.fullArray
+    .filter((r: any) => r.status === 'Success')
+    .reduce((sum: number, r: any) => sum + (Number(r.amount) || 0), 0);
+  return allSuccess && successTotal === this.totalPrice;
+}
+ collectPeopleSuccessfulPayments() {
+  this.orderList = this.splitRows.filter((r: { status: string; }) => r.status === 'Success');
+  this.totalPaid = this.orderList.reduce((s: number, r: { amount: any; }) => s + (Number(r.amount) || 0), 0);
+}
+checkAllPeoplePaymentsSuccess(): boolean {
+  if (!this.splitRows.length) return false;
+  const allSuccess = this.splitRows.every((r: any) => r.status === 'Success');
+  const successTotal = this.splitRows
+    .filter((r: any) => r.status === 'Success')
+    .reduce((sum: number, r: any) => sum + (Number(r.amount) || 0), 0);
+  return allSuccess && successTotal === this.totalPrice;
+}
+  closeOrdersModal(){
+    this.showChangeModal=false
+    this.showNewModelPopup = false;
+      const newPayments = this.fullArray
+  .filter((x: any) => x.status === 'Success')
+  .map((x: any) => ({
+    payment_method: x.type,
+    payment_status: 'Completed',
+    amount: +x.amount,
+    payment_created_by:  JSON.parse(
+      this.sessionStorageService.getsessionStorage("loginDetails") as any
+    ).user.user_id
+  }));
+
+// ✅ Push each new payment to the existing array
+this.order_payments_json.push(...newPayments);
+     this.payload = {
+    payment_split_percentage_json: this.percentageJson,
+    payment_split_users_json: this.userJson,
+    payment_split_items_json: this.itemsJson,
+    order_payments_json:this.order_payments_json,
+  };
+    this.activeModal.close(this.payload);
+  }
+
+handleVoucherClick() {
+  if (!this.isVoucherConfirm) {
+    // 🔹 First click — show confirm state
+    this.isVoucherConfirm = true;
+  } else {
+    // 🔹 Second click — perform action and reset
+    this.openCashModal('Voucher');
+    this.isVoucherConfirm = false;
+  }
 }
 }

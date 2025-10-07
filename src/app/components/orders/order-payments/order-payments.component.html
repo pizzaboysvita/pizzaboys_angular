@@ -43,7 +43,7 @@
              @if(activeTab === 'full'){
               <div class="row">
               <!-- Full & Partial -->
-                <div class="col-6 border-end p-3" *ngIf="splitCash">
+                <div class="col-6 border-end p-3" *ngIf="splitCash && paymentAmount!=0">
     <div class="mb-3">
       <div class=" mb-2 fw-semibold"> 
   <span>Quick Percent:</span>
@@ -85,7 +85,7 @@
       <button class="btn btn-outline-warning w-100 mt-2" (click)="fullAddPayment()">ADD PAYMENT</button>
     </div>
   </div>
-              <div [ngClass]="splitCash ? 'col-6' : 'col-12'" >
+              <div [ngClass]="splitCash && paymentAmount!=0 ? 'col-6' : 'col-12'" >
 
               <div class=" border-bottom pb-2 mb-3">
                 <!-- Row 1: Total -->
@@ -133,16 +133,23 @@
 
                 <!-- Payment Buttons -->
                <div class="d-flex flex-wrap gap-2 my-3" *ngIf="fullArray.length>0" >
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2" [disabled]="!selectedRowData" (click)="openCashModal()">
+                <!-- [disabled]="!selectedRowData" -->
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2" (click)="openCashModal('Cash')">
                     <i class="ri-money-dollar-circle-line"></i> <span>Cash</span>
                 </button>
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2" (click)="openCashModal('EFTPOS')">
                     <i class="ri-bank-card-line"></i> <span>EFTPOS</span>
                 </button>
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                <!-- <button class="btn btn-outline-warning d-flex align-items-center gap-2" (click)="openCashModal('Voucher')">
                     <i class="ri-gift-line"></i> <span>Voucher</span>
-                </button>
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                </button> -->
+                <button 
+  class="btn btn-outline-warning d-flex align-items-center gap-2"
+  (click)="handleVoucherClick()">
+  <i [class]="isVoucherConfirm ? 'ri-check-line' : 'ri-gift-line'"></i>
+  <span>{{ isVoucherConfirm ? 'Confirm' : 'Voucher' }}</span>
+</button>
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2" (click)="openCashModal('MobEFTPOS')">
                     <i class="ri-smartphone-line"></i> <span>Mob. EFTPOS</span>
                 </button>
                             <button 
@@ -168,7 +175,7 @@
   <div class="row">
     <!-- Split Control -->
     <div class="col-6 border-end d-flex flex-column align-items-center p-4">
-       @if(!isSplitPayment){ 
+       @if(!isSplitPayment  && !allPaymentsSuccessful()){ 
 <div class="d-flex align-items-center gap-3 mb-3" style="max-width: 320px;">
   <span class="fw-bold">Split By</span>
 
@@ -183,6 +190,11 @@
       <button class="btn btn-outline-warning fw-bold text-uppercase"  (click)="generateSplitPayments()">
         Generate Split Payments
       </button>
+    }
+    @else if(allPaymentsSuccessful()){
+       <div class="text-center text-success fw-bold mt-4">
+      All payments successful — Split not allowed.
+    </div>
     }
     @else{
     <span>No balance remaining to split</span>  
@@ -227,16 +239,23 @@
                   </tbody>
                 </table>
               <div class="d-flex flex-wrap gap-2 my-3">
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2" [disabled]="!selectedRowData" (click)="openCashModal()">
+                <!-- [disabled]="!selectedRowData" -->
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2"  (click)="openCashModal('Cash')">
                     <i class="ri-money-dollar-circle-line"></i> <span>Cash</span>
                 </button>
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2" (click)="openCashModal('EFTPOS')">
                     <i class="ri-bank-card-line"></i> <span>EFTPOS</span>
                 </button>
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
-                    <i class="ri-gift-line"></i> <span>Voucher</span>
-                </button>
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                <!-- <button class="btn btn-outline-warning d-flex align-items-center gap-2" (click)="openCashModal('Voucher')">
+                    <i class="ri-gift-line" ></i> <span>Voucher</span>
+                </button> -->
+                                <button 
+  class="btn btn-outline-warning d-flex align-items-center gap-2"
+  (click)="handleVoucherClick()">
+  <i [class]="isVoucherConfirm ? 'ri-check-line' : 'ri-gift-line'"></i>
+  <span>{{ isVoucherConfirm ? 'Confirm' : 'Voucher' }}</span>
+</button>
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2" (click)="openCashModal('MobEFTPOS')">
                     <i class="ri-smartphone-line"></i> <span>Mob. EFTPOS</span>
                 </button>
                 <button 
@@ -430,12 +449,19 @@
         </thead>
         <tbody style="background-color: #eeeeef;">
           @for (rowData of paidItems; track rowData; let ind = $index) {
-            <tr>
-              <td><span class="badge bg-warning  text-dark fs-16">Pending</span></td>
-                      <td>{{rowData.dish_type}}</td>
+            <tr (click)=" rowData.status !== 'Success' && selectRow(rowData, ind)" 
+    [ngClass]="{'table-active': selectedRowIndex === ind}" 
+    style="cursor: pointer;">
+                      <td><span class="badge fs-16"   [ngClass]="{
+      'badge-pending': rowData.status === 'Pending',
+      'badge-success': rowData.status === 'Success', 
+      'badge-failed': rowData.status === 'Failed'
+    }">{{rowData?.status}}</span></td>
+    
+                      <td>{{rowData.dish_type}} {{rowData.dish_id}}</td>
                       <td>${{rowData.item_total_price}}</td>
-                      <td>-</td>
-                      <td>-</td>
+                        <td>{{rowData?.tender}}</td>
+                      <td>{{rowData?.change}}</td>
             </tr>
           }
         </tbody>
@@ -446,28 +472,35 @@
 
   
               <div class="d-flex flex-wrap gap-2 my-3">
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                  <!-- [disabled]="!selectedRowData" -->
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2"  (click)="openCashModal('Cash')">
                     <i class="ri-money-dollar-circle-line"></i> <span>Cash</span>
                 </button>
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2" (click)="openCashModal('EFTPOS')">
                     <i class="ri-bank-card-line"></i> <span>EFTPOS</span>
                 </button>
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
-                    <i class="ri-gift-line"></i> <span>Voucher</span>
-                </button>
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                <!-- <button class="btn btn-outline-warning d-flex align-items-center gap-2" (click)="openCashModal('Voucher')">
+                    <i class="ri-gift-line" ></i> <span>Voucher</span>
+                </button> -->
+                                <button 
+  class="btn btn-outline-warning d-flex align-items-center gap-2"
+  (click)="handleVoucherClick()">
+  <i [class]="isVoucherConfirm ? 'ri-check-line' : 'ri-gift-line'"></i>
+  <span>{{ isVoucherConfirm ? 'Confirm' : 'Voucher' }}</span>
+</button>
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2" (click)="openCashModal('MobEFTPOS')">
                     <i class="ri-smartphone-line"></i> <span>Mob. EFTPOS</span>
                 </button>
                 <button 
                   class="btn d-flex align-items-center gap-2"
                   [ngClass]="confirmRemove ? 'btn btn-outline-warning' : 'btn-outline-danger'"
-                  (click)="confirmRemove ? doRemove('items') : toggleRemove()"
+                  (click)="confirmRemove ? doRemove('people') : toggleRemove()"
                 >
                   <i [class]="confirmRemove ? 'ri-check-line' : 'ri-close-line'"></i>
                   <span>{{ confirmRemove ? 'Confirm' : 'Remove' }}</span>
                 </button>
                 </div>
-                <button  class="btn btn-animation save-button-pay w-100">
+                 <button  class="btn btn-animation save-button-pay w-100">
                     PLACE ORDER & CLEAR
               </button>
             }
@@ -552,40 +585,7 @@
   </div>
 </div>
 <!-- Change Payment Modal -->
-<!-- <div class="modal fade" tabindex="-1" role="dialog"
-     [ngClass]="{ 'show d-block': showChangeModal }"
-     style="background: rgba(0,0,0,0.5); z-index: 1050;">
-  <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
-    <div class="modal-content p-3">
 
-      <h5 class="mb-3 text-center">Payment Summary</h5>
-
-      <table class="table table-sm mb-3">
-        <tbody>
-          <tr>
-            <td><strong>Bill Amount</strong></td>
-            <td class="text-end">${{ cashpaymentAmount }}</td>
-          </tr>
-          <tr>
-            <td><strong>Tendered</strong></td>
-            <td class="text-end">${{ tenderedAmount }}</td>
-          </tr>
-          <tr>
-            <td><strong>Change</strong></td>
-            <td class="text-end text-success fw-bold">${{ changeAmount }}</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="text-center">
-        <button class="btn btn-primary w-100" (click)="showChangeModal=false">
-          OK
-        </button>
-      </div>
-
-    </div>
-  </div>
-</div> -->
 <div class="modal fade" tabindex="-1" role="dialog"
      [ngClass]="{ 'show d-block': showChangeModal }"
      style="background: rgba(0,0,0,0.5); z-index: 1050;">
@@ -593,8 +593,28 @@
     <div class="modal-content p-3">
 
       <!-- Modal Header -->
-      <h5 class="mb-3 text-left">Order Placed </h5>
-   <table class="table table-sm mb-3">
+     <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">Order Placed</h5>
+        <button type="button" class="btn-close" (click)="closeOrdersModal()"></button>
+      </div>
+      <div class="p-3 border rounded mb-1">
+  <div class="d-flex justify-content-between mb-2">
+    <strong>Bill Amount</strong>
+    <span>${{ totalPaid }}</span>
+  </div>
+
+  <div class="d-flex justify-content-between mb-2">
+    <strong>Tendered</strong>
+    <span>${{ tenderedAmount }}</span>
+  </div>
+
+  <div class="d-flex justify-content-between mb-2">
+    <strong>Change</strong>
+    <span class="text-success fw-bold">${{ changeAmount }}</span>
+  </div>
+</div>
+
+   <!-- <table class="table table-sm mb-3">
         <tbody>
           <tr>
             <td><strong>Bill Amount</strong></td>
@@ -608,8 +628,12 @@
             <td><strong>Change</strong></td>
             <td class="text-end ">${{ changeAmount }}</td>
           </tr>
+          <tr>
+            <td><strong>Change</strong></td>
+            <td class="text-end ">${{ changeAmount }}</td>
+          </tr>
         </tbody>
-      </table>
+      </table> -->
       <!-- ✅ Order Details Table -->
       <!-- <h6 class="mb-2">Order Details</h6> -->
       <table class="table table-sm table-bordered mb-3">
@@ -650,7 +674,7 @@
 
       <!-- ✅ OK Button -->
       <div class="text-center">
-        <button class="btn btn-primary w-100" (click)="showChangeModal=false">
+        <button class="btn btn-primary w-100" (click)="closeOrdersModal()">
           OK
         </button>
       </div>

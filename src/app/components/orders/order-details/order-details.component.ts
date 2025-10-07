@@ -48,6 +48,7 @@ export class OrderDetailsComponent {
   deliveryfee: any = 5.90;
   totalCartDetails: any=[];
   modalRef: any;
+  paymentdetails: any;
   constructor(private apiService: ApisService, private fb: FormBuilder, private el: ElementRef, private modal: NgbModal, private toastr: ToastrService, private cdr: ChangeDetectorRef, private sessionStorageService: SessionStorageService,private modalService: NgbModal) {
     this.markers = [];
     this.zoom = 3;
@@ -194,9 +195,14 @@ export class OrderDetailsComponent {
              });
              this.modalRef.componentInstance.data = this.totalCartDetails;
              
-          
-    return
-    console.log(this.cartItems, 'this.cartItems opennnnnnnnnnnn ')
+            this.modalRef.result.then(
+    (result: { updatedCart: any; }) => {
+      if (result) {
+        console.log('Modal closed with data:', result);
+        // Do something with the returned data
+       this.paymentdetails = result;
+        console.log(this.paymentdetails);
+        console.log(this.cartItems, 'this.cartItems opennnnnnnnnnnn ')
     this.orderItemsDetails = this.cartItems.map((item: any) => ({
       dish_id: item.dish_id,
       dish_note: item.dishnote,
@@ -256,9 +262,15 @@ export class OrderDetailsComponent {
       unitnumber: this.orderForm.value.unitNumber,
       delivery_notes: this.orderForm.value.deliveryNote,
       "gst_price": this.tax,
-      combo_order_details:this.totalCartDetails
+      combo_order_details:this.totalCartDetails,
+      order_payments_json:this.paymentdetails.order_payments_json,
+      payment_split_percentage_json:this.paymentdetails.payment_split_percentage_json, 
+      payment_split_users_json:this.paymentdetails.payment_split_users_json,
+      payment_split_items_json:this.paymentdetails.payment_split_items_json
     }
     console.log(reqbody, 'new----------> 123')
+    
+
     this.apiService.postApi('/api/order', reqbody).subscribe((res: any) => {
       console.log(res, 'new----------> 123')
       if (res && res.code == 1) {
@@ -266,6 +278,14 @@ export class OrderDetailsComponent {
         this.cartItems = [];
       }
     })
+        
+      }
+    },
+    (reason: any) => {
+      console.log('Modal dismissed:', reason);
+    }
+  );
+    
   }
   getAddressAutocomplete() {
     console.log('addressInput')
