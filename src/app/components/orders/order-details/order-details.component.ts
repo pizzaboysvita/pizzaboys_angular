@@ -208,6 +208,9 @@ export class OrderDetailsComponent {
       dish_note: item.dishnote,
       quantity: item.dish_quantity,
       price: item.duplicate_dish_price,
+      // base:item.selectedOptions.name,
+      // base_price:item.selectedOptions.price
+  
 
     }));
     this.toppingDetails = this.cartItems.flatMap((dish: any) =>
@@ -215,6 +218,7 @@ export class OrderDetailsComponent {
         .filter((opt: any) => opt.selected)
         .map((opt: any) => ({
           dish_id: dish.dish_id,
+          // inventory_id
           name: opt.name,
           price: opt.price,
           quantity: opt.quantity
@@ -228,6 +232,7 @@ export class OrderDetailsComponent {
           name: opt.name,
           price: opt.price,
           quantity: opt.quantity
+          // inventory_id
         }))
     );
     console.log(this.toppingDetails, 'this.cartItems opennnnnnnnnnnn ')
@@ -269,9 +274,8 @@ export class OrderDetailsComponent {
       payment_split_items_json:this.paymentdetails.payment_split_items_json
     }
     console.log(reqbody, 'new----------> 123')
-    
-
-    this.apiService.postApi('/api/order', reqbody).subscribe((res: any) => {
+    // /api/order
+    this.apiService.postApi('/api/order/v2 ', reqbody).subscribe((res: any) => {
       console.log(res, 'new----------> 123')
       if (res && res.code == 1) {
         this.toastr.success(res.message, 'Success');

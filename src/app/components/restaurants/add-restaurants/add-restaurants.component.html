@@ -34,7 +34,7 @@
         <div class="col-xl-6">
           <div class="input-box">
             <h6 class="f-w-600 p-1">Phone Number<span class="text-danger">*</span></h6>
-            <input type="text" formControlName="phoneNumber" placeholder="Enter Phone Number" mask="(00)-000 0000" maxlength="16" />
+            <input type="text" formControlName="phoneNumber" placeholder="Enter Phone Number" mask="(000)-000 0000" maxlength="16" />
              @if (storeForm.get('phoneNumber')?.touched && storeForm.get('phoneNumber')?.hasError('required')) {
                               <div class="text-danger">Phone Nuber is required</div>
                               }

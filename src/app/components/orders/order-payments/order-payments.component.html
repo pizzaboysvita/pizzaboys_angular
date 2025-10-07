@@ -458,7 +458,8 @@
       'badge-failed': rowData.status === 'Failed'
     }">{{rowData?.status}}</span></td>
     
-                      <td>{{rowData.dish_type}} {{rowData.dish_id}}</td>
+                      <!-- <td>{{rowData.dish_type}}</td> -->
+                      <td>{{rowData.type}}</td>
                       <td>${{rowData.item_total_price}}</td>
                         <td>{{rowData?.tender}}</td>
                       <td>{{rowData?.change}}</td>
