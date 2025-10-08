@@ -1,147 +1,117 @@
-<div class="modal-header">
-  <h4 class="modal-title">Create Fee</h4>
-  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('Cross click')"></button>
-</div>
+<div class="modal" *ngIf="isOpen()">
+  <div class="modal-content">
+    <button type="button" class="close-button" (click)="closeModal()">✖</button>
+    <h2>Create Conditional Fee</h2>
 
-<div class="modal-body p-4">
-  <form>
-    <!-- Fee Name -->
-    <div class="mb-4">
-      <label for="feeName" class="form-label fw-bold">Name</label>
-      <input type="text" class="form-control" id="feeName" name="name" [(ngModel)]="fee.name" />
-      <small class="form-text text-muted">
-        Give this fee a meaningful name. It will be displayed on your customers
-        receipt if it's applied.
-      </small>
-    </div>
-    <hr class="dotted-divider" />
-
-    <!-- Fixed Fee -->
-    <div class="mb-4">
-      <label class="form-label fw-bold">Fixed Fee</label>
-      <div class="input-group">
-        <span class="input-group-text">$</span>
-        <input type="number" class="form-control" id="fixedFee" name="fixed_fee" [(ngModel)]="fee.fixed_fee" />
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <!-- Fee Name -->
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" formControlName="fee_name" placeholder="Enter fee name" />
+        <small>
+          Give this fee a meaningful name. It will be displayed on your customers receipt if it's applied
+        </small>
       </div>
-      <small class="form-text text-muted">
-        This fixed amount will be added to your customers cart total
-      </small>
-    </div>
-    <hr class="dotted-divider" />
 
-    <!-- Percent Fee -->
-    <div class="mb-4">
-      <label class="form-label fw-bold">Percent Fee</label>
-      <div class="input-group">
-        <input type="number" class="form-control" id="percentFee" name="percent_fee" [(ngModel)]="fee.percent_fee" />
-        <span class="input-group-text">%</span>
+      <!-- Fixed Fee -->
+      <div class="form-group">
+        <label>Fixed Fee</label>
+        <div class="input-prefix">
+          <span>$</span>
+          <input type="number" formControlName="fixed_fee" placeholder="0.00" />
+        </div>
+        <small>This fixed amount will be added to your customers cart total</small>
       </div>
-      <small class="form-text text-muted">
-        Will add the respective percentage fee based off the customers cart
-        total
-      </small>
-    </div>
-    <hr class="dotted-divider" />
 
-    <!-- Fee Match Condition -->
-    <div class="mb-4">
-      <label class="form-label fw-bold">Fee Match Condition</label>
-      <div>
-        <button type="button" class="btn btn-outline-primary me-2" [class.active]="fee.match_condition === 'any'"
-          (click)="fee.match_condition = 'any'">
-          Any
-        </button>
-        <button type="button" class="btn btn-outline-primary" [class.active]="fee.match_condition === 'specific'"
-          (click)="fee.match_condition = 'specific'">
-          Specific
-        </button>
+      <!-- Percent Fee -->
+      <div class="form-group">
+        <label>Percent Fee</label>
+        <div class="input-prefix">
+          <span>%</span>
+          <input type="number" formControlName="percent_fee" placeholder="0" />
+        </div>
+        <small>Will add the respective percentage fee based off the customers cart total</small>
       </div>
-      <small class="form-text text-muted">
-        Determines under what conditions the fee will apply.
-      </small>
-    </div>
-    <hr class="dotted-divider" />
 
-    <!-- Order Times -->
-    <div class="mb-4">
-      <div class="d-flex justify-content-between align-items-center">
-        <label for="orderTimes" class="form-label fw-bold">Order Times</label>
-        <span class="optional-badge">OPTIONAL</span>
+      <!-- Fee Match Condition -->
+      <div class="form-group">
+        <label>Fee Match Condition</label>
+        <div class="toggle-group">
+          <button type="button" [class.active]="form.value.fee_match_condition==='ANY'"
+            (click)="form.get('fee_match_condition')?.setValue('ANY')">Any</button>
+          <button type="button" [class.active]="form.value.fee_match_condition==='SPECIFIC'"
+            (click)="form.get('fee_match_condition')?.setValue('SPECIFIC')">Specific</button>
+        </div>
+        <small>
+          Determines under what conditions the fee will apply.
+          <strong>Any:</strong> if one condition is met.
+          <strong>Specific:</strong> only if all conditions are met.
+        </small>
       </div>
-      <input type="text" class="form-control" id="orderTimes" name="order_times" [(ngModel)]="fee.order_times"
-        placeholder="Select from the dropdown or type to search..." />
-      <small class="form-text text-muted">
-        Leave empty for this fee to apply for all order times
-      </small>
-    </div>
-    <hr class="dotted-divider" />
 
-    <!-- Services -->
-    <div class="mb-4">
-      <div class="d-flex justify-content-between align-items-center">
-        <label for="services" class="form-label fw-bold">Services</label>
-        <span class="optional-badge">OPTIONAL</span>
-      </div>
-      <input type="text" class="form-control" id="services" name="services" [(ngModel)]="fee.services"
-        placeholder="Select from the dropdown or type to search..." />
-    </div>
-    <hr class="dotted-divider" />
-
-    <!-- Payments -->
-    <div class="mb-4">
-      <div class="d-flex justify-content-between align-items-center">
-        <label for="payments" class="form-label fw-bold">Payments</label>
-        <span class="optional-badge">OPTIONAL</span>
-      </div>
-      <input type="text" class="form-control" id="payments" name="payments" [(ngModel)]="fee.payments"
-        placeholder="Select from the dropdown or type to search..." />
-    </div>
-    <hr class="dotted-divider" />
-
-    <!-- Applicable Hours -->
-    <div class="mb-4">
-      <div class="d-flex justify-content-between">
-        <label class="form-label fw-bold">Applicable Hours</label>
-        <span class="optional-badge">OPTIONAL</span>
-      </div>
-      <button class="btn btn-primary w-25 mb-3" type="button" (click)="toggleTimeSlots()">
-        <span *ngIf="!showTimeSlots">Add Time Slot</span>
-        <span *ngIf="showTimeSlots">Remove Time Slot</span>
-      </button>
-
-      <div *ngIf="showTimeSlots">
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label for="startHour">Start Time</label>
-            <input type="time" class="form-control" id="startHour" [(ngModel)]="startTime" name="start_time" />
-          </div>
-          <div class="col-md-6 mb-3">
-            <label for="endHour">End Time</label>
-            <input type="time" class="form-control" id="endHour" [(ngModel)]="endTime" name="end_time" />
+      <!-- Order Times -->
+      <div class="form-group">
+        <label>Order Times <span class="optional">(OPTIONAL)</span></label>
+        <div formArrayName="order_times" class="time-slots">
+          <div *ngFor="let group of orderTimes.controls; let i = index" [formGroupName]="i" class="time-slot">
+            <select formControlName="day">
+              <option value="">Select day</option>
+              <option *ngFor="let d of days" [value]="d">{{ d }}</option>
+            </select>
+            <input type="time" formControlName="start" /> to
+            <input type="time" formControlName="end" />
+            <button type="button" class="remove" (click)="removeOrderTime(i)">✖</button>
           </div>
         </div>
+        <button type="button" class="add-btn" (click)="addOrderTime()">+ Add Order Time</button>
+        <small>Select which order times this fee will apply to. Leave empty for all.</small>
       </div>
-    </div>
-    <hr class="dotted-divider" />
 
-    <!-- Disable Fee -->
-    <div class="mb-4 d-flex flex-column">
-      <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="disableFee" name="disable_fee"
-          [(ngModel)]="fee.disable_fee" />
-        <label class="form-check-label fw-bold" for="disableFee">
+      <!-- Services -->
+      <div class="form-group">
+        <label>Services <span class="optional">(OPTIONAL)</span></label>
+        <ng-select [items]="serviceOptions" [multiple]="true" formControlName="services"
+          placeholder="Select services"></ng-select>
+        <small>Select which services this fee will be applicable for. Leave empty for all</small>
+      </div>
+
+      <!-- Payments -->
+      <div class="form-group">
+        <label>Payments <span class="optional">(OPTIONAL)</span></label>
+        <ng-select [items]="paymentOptions" [multiple]="true" formControlName="payments"
+          placeholder="Select payments"></ng-select>
+        <small>Select which payment methods this fee will be applicable for. Leave empty for all</small>
+      </div>
+
+      <!-- Applicable Hours -->
+      <div class="form-group">
+        <label>Applicable Hours <span class="optional">(OPTIONAL)</span></label>
+        <div formArrayName="applicable_hours" class="time-slots">
+          <div *ngFor="let group of applicableHours.controls; let i = index" [formGroupName]="i" class="time-slot">
+            <input type="time" formControlName="start" /> to
+            <input type="time" formControlName="end" />
+            <button type="button" class="remove" (click)="removeApplicableHour(i)">✖</button>
+          </div>
+        </div>
+        <button type="button" class="add-btn" (click)="addApplicableHour()">+ Add Time Slot</button>
+        <small>Leave empty for all hours. Times must not overlap.</small>
+      </div>
+
+      <!-- Disable Fee -->
+      <div class="form-group toggle">
+        <label>
+          <input type="checkbox" formControlName="disable_fee" />
           Disable Fee
         </label>
+        <small>Disable this fee without deleting it</small>
       </div>
-      <small class="form-text text-muted">
-        Disable this fee to stop it from being applied without deleting it
-      </small>
-    </div>
-  </form>
-</div>
 
-<div class="modal-footer">
-  <button type="button" class="btn btn-primary w-100" (click)="saveFee()">
-    Save
-  </button>
+      <!-- Messages -->
+      <div class="error-message" *ngIf="errorMessage()">{{ errorMessage() }}</div>
+      <div class="success-message" *ngIf="successMessage()">{{ successMessage() }}</div>
+
+      <!-- Save Button -->
+      <button type="submit" class="save-btn" [disabled]="loading()">Save</button>
+    </form>
+  </div>
 </div>

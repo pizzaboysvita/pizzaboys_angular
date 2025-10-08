@@ -127,41 +127,56 @@
                                 <!-- Address -->
                                 <div class="col-xl-6">
                                   <div class="input-box">
-                                    <h6 class="f-w-600 p-1">Address</h6>
+                                    <h6 class="f-w-600 p-1">Address<span class="text-danger">*</span></h6>
                                     <input type="text" formControlName="address" placeholder="Enter Address" />
+                                      @if (staffForm.get('address')?.touched && staffForm.get('address')?.errors?.['required']) {
+              <div class="text-danger">Address is required</div>
+            }
                                   </div>
                                 </div>
 
                                 <!-- Country -->
                                 <div class="col-xl-6">
                                   <div class="input-box">
-                                    <h6 class="f-w-600 p-1">Country</h6>
+                                    <h6 class="f-w-600 p-1">Country<span class="text-danger">*</span></h6>
                                     <input type="text" formControlName="country" placeholder="Enter Country" />
+                                            @if (staffForm.get('country')?.touched && staffForm.get('country')?.errors?.['required']) {
+              <div class="text-danger">Country is required</div>
+            }
                                   </div>
                                 </div>
 
                                 <!-- State -->
                                 <div class="col-xl-6">
                                   <div class="input-box">
-                                    <h6 class="f-w-600 p-1">State</h6>
+                                    <h6 class="f-w-600 p-1">State<span class="text-danger">*</span></h6>
                                     <input type="text" formControlName="state" placeholder="Enter State" />
+                                            @if (staffForm.get('state')?.touched && staffForm.get('state')?.errors?.['required']) {
+              <div class="text-danger">State is required</div>
+            }
                                   </div>
                                 </div>
 
                                 <!-- City -->
                                 <div class="col-xl-6">
                                   <div class="input-box">
-                                    <h6 class="f-w-600 p-1">City</h6>
+                                    <h6 class="f-w-600 p-1">City<span class="text-danger">*</span></h6>
                                     <input type="text" formControlName="city" placeholder="Enter City" />
+                                            @if (staffForm.get('city')?.touched && staffForm.get('city')?.errors?.['required']) {
+              <div class="text-danger">City is required</div>
+            }
                                   </div>
                                 </div>
 
                                 <!-- POS Pin -->
                                 <div class="col-xl-6">
                                   <div class="input-box">
-                                    <h6 class="f-w-600 p-1">POS Pin Number</h6>
+                                    <h6 class="f-w-600 p-1">POS Pin Number<span class="text-danger">*</span></h6>
                                     <input type="password" formControlName="posPin"   (keypress)="allowOnlyNumbers($event)" 
                                       placeholder="Enter POS Pin Number" />
+                                              @if (staffForm.get('posPin')?.touched && staffForm.get('posPin')?.errors?.['required']) {
+              <div class="text-danger">POS Pin Number is required</div>
+            }
                                   </div>
                                 </div>
 
@@ -171,6 +186,7 @@
                                     <h6 class="f-w-600 p-1">Status</h6>
                                     <label class="switch">
                                       <input type="checkbox" formControlName="status" />
+
                                       <span class="slider round"></span>
                                     </label>
                                   </div>

@@ -302,7 +302,7 @@ selectedStore='-1'
 
         // Merge state
         this.choices = this.mergeChoiceStates(builtChoices, savedChoices);
-
+console.log(this.choices,'choicesssssssssss')
         // this.selectedMenuId=this.menuList[0]
 
         // this.totalcategoryList=categoryRes.categories
@@ -385,15 +385,15 @@ onCellValueChanged(event: any) {
       }
     }
   }
-  onSubcategoryToggle(sub: any) {
-    const isChecked = sub.checked;
+  // onSubcategoryToggle(sub: any) {
+  //   const isChecked = sub.checked;
 
-    if (sub.subSubcategories && sub.subSubcategories.length > 0) {
-      for (let subsub of sub.subSubcategories) {
-        subsub.checked = isChecked;
-      }
-    }
-  }
+  //   if (sub.subSubcategories && sub.subSubcategories.length > 0) {
+  //     for (let subsub of sub.subSubcategories) {
+  //       subsub.checked = isChecked;
+  //     }
+  //   }
+  // }
 
   toggleExpand(index: number) {
     this.choices[index].expanded = !this.choices[index].expanded;
@@ -543,4 +543,62 @@ onCellValueChanged(event: any) {
   // }
 
 
+  onMenuToggle(menu: any, menuList: any) {
+
+    console.log(menuList,'menuuuuuuuuuuuuuuu')
+    menu.checked = !menu.checked;
+    menu.indeterminate = false;
+    if (menu.categories) {
+      menu.categories.forEach((sub: any) => {
+        sub.checked = menu.checked;
+        sub.indeterminate = false;
+        if (sub.dishes) {
+          sub.dishes.forEach((dish: any) => dish.checked = menu.checked);
+        }
+      });
+    }
+
+    // this.updateParentState(menuList);
+  }
+
+   onSubcategoryToggle(sub: any, subList: any, menu: any) {
+    sub.checked = !sub.checked;
+    sub.indeterminate = false;
+    if (sub.dishes) {
+      sub.dishes.forEach((dish: any) => dish.checked = sub.checked);
+    }
+    this.updateSubcategoryState(subList, menu);
+  }
+    updateSubcategoryState(subList: any, menu: any) {
+    const checked = subList.filter((s: any) => s.checked).length;
+    const indeterminate = subList.filter((s: any) => s.indeterminate).length;
+    if (checked === subList.length) {
+      menu.checked = true;
+      menu.indeterminate = false;
+    } else if (checked === 0 && indeterminate === 0) {
+      menu.checked = false;
+      menu.indeterminate = false;
+    } else {
+      menu.checked = false;
+      menu.indeterminate = true;
+    }
+  }
+    onDishToggle(dish: any, dishList: any, sub: any, subList: any, menu: any) {
+    dish.checked = !dish.checked;
+    this.updateDishState(dishList, sub, subList, menu);
+  }
+   updateDishState(dishList: any, sub: any, subList: any, menu: any) {
+    const checked = dishList.filter((d: any) => d.checked).length;
+    if (checked === dishList.length) {
+      sub.checked = true;
+      sub.indeterminate = false;
+    } else if (checked === 0) {
+      sub.checked = false;
+      sub.indeterminate = false;
+    } else {
+      sub.checked = false;
+      sub.indeterminate = true;
+    }
+    this.updateSubcategoryState(subList, menu);
+  }
 }

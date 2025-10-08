@@ -1,0 +1,53 @@
+<div class="modal-header">
+  <h5 class="modal-title">
+    {{ editData ? 'Edit Inventory' : 'Add Inventory' }}
+  </h5>
+  <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>
+</div>
+
+<div class="modal-body">
+  <form [formGroup]="inventoryForm">
+    <!-- Item Name -->
+    <div class="input-box mb-3">
+      <h6 class="fw-bold p-1">Item Name <span class="text-danger">*</span></h6>
+      <input type="text" placeholder="Enter Item Name" formControlName="item_name" class="form-control" />
+      <div *ngIf="f['item_name'].touched && f['item_name'].invalid" class="text-danger mt-1">
+        Item Name is required
+      </div>
+    </div>
+
+    <!-- Quantity -->
+    <div class="input-box mb-3">
+      <h6 class="fw-bold p-1">Quantity <span class="text-danger">*</span></h6>
+      <input type="number" placeholder="Enter Quantity" formControlName="quantity" class="form-control" />
+      <div *ngIf="f['quantity'].touched && f['quantity'].invalid" class="text-danger mt-1">
+        Quantity is required
+      </div>
+    </div>
+ <div class="input-box mb-3">
+      <h6 class="fw-bold p-1">Units <span class="text-danger">*</span></h6>
+      <input type="text" placeholder="Enter Units" formControlName="unit" class="form-control" />
+      <div *ngIf="f['unit'].touched && f['unit'].invalid" class="text-danger mt-1">
+        Units are required
+      </div>
+    </div>
+    <!-- Item State -->
+    <div class="mb-3">
+      <h6 class="fw-bold p-1">Item State <span class="text-danger">*</span></h6>
+      <select class="form-select" formControlName="item_state">
+        <option value="D">Dry Items</option>
+        <option value="F">Frozen</option>
+      </select>
+      <div *ngIf="f['item_state'].touched && f['item_state'].invalid" class="text-danger">
+        Item State is required
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
+  <button type="button" class="btn btn-animation save-button font-family" [disabled]="isSubmitting" (click)="save()">
+    {{ isSubmitting ? (editData ? 'Updating...' : 'Saving...') : (editData ? 'Update' : 'Save') }}
+  </button>
+</div>

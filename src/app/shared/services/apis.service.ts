@@ -7,7 +7,7 @@ import { BehaviorSubject, Subject } from "rxjs";
 })
 export class ApisService {
 
-  basesurl = "http://78.142.47.247:3003";
+  basesurl = "http://78.142.47.247:3004";
   
   // basesurl = 'http://localhost:3003'
   private change$ = new BehaviorSubject<boolean>(false);
@@ -16,7 +16,7 @@ export class ApisService {
   private http = inject(HttpClient);
   isLoading = new BehaviorSubject<boolean>(false);
   getApi(endpoint: string) {
-    console.log("GET request URL -->", "http://78.142.47.247:3001" + endpoint);
+    console.log("GET request URL -->", "http://78.142.47.247:3003" + endpoint);
     return this.http.get(this.basesurl + endpoint);
   }
   postApi(endpoint: any, req_body: any) {
@@ -112,6 +112,11 @@ export class ApisService {
   convertDishObject(dish: any) {
     // Initialize option set array
     dish.dish_ingredient_array = JSON.parse(dish.dish_ingredients_json);
+
+    dish.dish_ingredient_array.forEach((element: any) => {
+      element.selected = true;
+      // element.quantity = 0;
+    });
     let dish_option_set_array = [];
     try {
       // Parse dish_option_set_json if present
@@ -331,14 +336,20 @@ export class ApisService {
           combo_selected_dishes: selectedDishes,
         };
       } else {
-        return {
-          ...element,
-          dish_name: element.dish_name,
-          dish_id: element.dish_id,
-          // dish_quantity: element.dish_quantity,
-          dish_type: element.dish_type,
-          // combo_selected_dishes: chosen
-          standed_option_selected_array: element.dish_option_set_array
+        
+        const dish_ingredient_array = element.dish_ingredient_array
+          .filter((ingredient: any) => ingredient.selected === false) // only false
+          .map((ingredient: any) => ({
+           // category label
+          
+              name: ingredient.name,
+            
+          }));
+         const dish_ingredient_array_obj = {
+            dish_opt_type: "Ingredients",
+            choose_option: dish_ingredient_array
+          }
+        const standed_option_selected_array = element.dish_option_set_array
             .map((optionSet: any) => {
               const chosen = optionSet.option_set_array
                 .filter((opt: any) => opt.selected)
@@ -349,11 +360,27 @@ export class ApisService {
                 }));
 
               return {
+              
                 dish_opt_type: optionSet.dispaly_name, // <-- fixed spelling
                 choose_option: chosen,
               };
             })
-            .filter((item: any) => item.choose_option.length > 0),
+            .filter((item: any) => item.choose_option.length > 0);
+const mergedArray = [
+  ...standed_option_selected_array, // Options
+   dish_ingredient_array_obj,
+];
+        // console.log(dish_ingredient_array_obj, 'element.dish_ingredient_array')
+        return {
+          ...element,
+          dish_name: element.dish_name,
+          dish_id: element.dish_id,
+          // dish_quantity: element.dish_quantity,
+          dish_type: element.dish_type,
+          // combo_selected_dishes: chosen
+
+          standed_option_selected_array: mergedArray
+          
         };
       }
     });

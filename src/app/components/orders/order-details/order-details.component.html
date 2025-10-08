@@ -29,6 +29,13 @@
           {{orderDueDetails}}
         </button>
       </div>
+<div class="icon-row d-flex mb-3">
+  <div class="icon-box"><i class="ri-file-line"></i></div>
+  <div class="icon-box" (click)="openCustomerModal()"><i class="ri-user-line" ></i></div>
+  <div class="icon-box"><i class="ri-price-tag-line"></i></div>
+  <div class="icon-box"><i class="ri-hand-palm-line"></i></div>
+   <div class="icon-box"><i class="ri-shopping-cart-line"></i></div>
+</div>
 
       <!-- Order Items List -->
       <div style="height: 400px; overflow-y: auto;overflow-x: hidden">
@@ -128,7 +135,7 @@
       <!-- Selected options inside -->
       <ul class="ms-4 mb-1" style="font-size: 14px; list-style-type: disc;">
         <li *ngFor="let opt of standedOpt.choose_option">
-          {{ opt.name }} - ${{ opt.price }}
+          {{ opt.name }} <span *ngIf="opt.price"> - ${{ opt.price }}</span>
         </li>
       </ul>
     <!-- </div> -->
@@ -272,6 +279,54 @@
          </form>
          <button class="btn fw-bold text-white " style="background: #f44336;margin-left: 30%;" (click)="submitDUeOrder()">Submit</button>
       </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog"
+     [ngClass]="{ 'show d-block': showCustomerModal }"
+     style="background: rgba(0,0,0,0.5); z-index: 1050;">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content p-3">
+
+      <!-- Modal Header -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Customer</h5>
+        <button type="button" class="btn-close" (click)="closeCustomerModal()"></button>
+      </div>
+
+      <!-- Search / Input Fields -->
+      <div class="p-3 border rounded mb-3">
+        <div class="row g-3">
+          <div class="col-md-12">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" [(ngModel)]="customer.name" placeholder="Enter Name">
+          </div>
+          <div class="col-md-12">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" [(ngModel)]="customer.email" placeholder="Enter Email">
+          </div>
+          <div class="col-md-12">
+            <label class="form-label">Phone</label>
+            <input type="tel" class="form-control" [(ngModel)]="customer.phone" placeholder="Enter Phone">
+          </div>
+        </div>
+      </div>
+
+      
+      <!-- OK Button -->
+      <!-- <div class="text-center">
+          <button class="btn btn-primary w-100" (click)="clear()">
+        Clear
+        </button>
+        <button class="btn btn-primary w-50" (click)="closeCustomerModal()">
+          OK
+        </button>
+      </div> -->
+      <div class="d-flex justify-content-end gap-2 mt-3">
+  <button class="btn btn-secondary" (click)="clear()">Clear Customer</button>
+  <button class="btn btn-primary" (click)="closeCustomerModal()">OK</button>
+</div>
+
     </div>
   </div>
 </div>

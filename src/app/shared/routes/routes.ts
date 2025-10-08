@@ -39,7 +39,7 @@ export const content: Routes = [
 
 
 
-     {
+    {
         path: 'settings/profile-setting',
         loadChildren: () => import('../../components/setting/setting.routes'),
     },
@@ -65,13 +65,13 @@ export const content: Routes = [
         path: 'menus',
         loadChildren: () => import('../../components/menus/menus.routes'),
     },
-     {
+    {
         path: 'settings',
         loadChildren: () => import('../../components/settings/settings.routes'),
     },
     {
         path: 'inventory',
-        loadChildren: () => import('../../components/dashboard/inventory/inventory/inventory.routes'),
-    },
-  
+        loadChildren: () => import('../../components/inventory/inventory/inventory.routes'),
+    }
+
 ]

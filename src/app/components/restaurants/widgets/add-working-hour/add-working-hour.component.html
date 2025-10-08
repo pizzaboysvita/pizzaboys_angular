@@ -66,7 +66,14 @@
     @for(row of workingHours;track row;let i = $index){
     <tr >
         @for(col of columns;track col){
-      <td >{{ row[col.dataField] }}</td>
+      <td >
+        <!-- {{ row[col.dataField] }} -->
+             @if(col.dataField === 'id') {
+              {{ i + 1 }}
+            } @else {
+              {{ row[col.dataField] }}
+            }
+      </td>
         }
        <td>
            <ul>

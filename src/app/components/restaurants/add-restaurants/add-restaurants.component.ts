@@ -47,6 +47,7 @@ export class AddRestaurantsComponent {
   }
 
     ngOnInit() {
+    sessionStorage.removeItem('workingHours');
     this.storeForm = this.fb.group({
       storeName: ['', Validators.required],
   email: ['',   [Validators.required,
@@ -57,8 +58,8 @@ export class AddRestaurantsComponent {
       address: ['', Validators.required],
       city: ['', Validators.required],
       state: ['', Validators.required],
-      postalCode: [''],
-      country: [''],
+      postalCode: ['', Validators.required],
+      country: ['', Validators.required],
       status: ['1', Validators.required],
       image:[null,Validators.required]
     });
@@ -100,6 +101,7 @@ console.log(req_body)
 this.apis.postApi(AppConstants.api_end_points.store_list,formData).subscribe((data:any)=>{
   console.log(data)
   if(data.code ==1){
+    sessionStorage.removeItem('workingHours');
      Swal.fire('Success!',data.message, 'success').then(
       (result) => {
   if (result) {

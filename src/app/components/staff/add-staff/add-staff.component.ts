@@ -135,11 +135,11 @@ export class AddStaffComponent {
         ],
         password: ["", [Validators.required, Validators.minLength(6)]],
         confirmPassword: ["", Validators.required],
-        address: [""],
-        country: [""],
-        state: [""],
-        city: [""],
-        posPin: [""],
+        address: ["",Validators.required],
+        country: ["",Validators.required],
+        state: ["",Validators.required],
+        city: ["",Validators.required],
+        posPin: ["",Validators.required],
         status: [""],
       },
       {
@@ -306,7 +306,7 @@ export class AddStaffComponent {
   }
   onSubmit() {
     // if (isValid) {
-console.log(this.staffForm.value)
+console.log(this.staffForm.controls,this.permissionForm.controls)
 // const restaurantControls = this.permissionForm.get('restaurant')['controls'];
 const restaurantGroup = this.permissionForm.get('restaurant') as FormGroup;
 const posGroup = this.permissionForm.get('pos') as FormGroup;
