@@ -43,7 +43,7 @@
              @if(activeTab === 'full'){
               <div class="row">
               <!-- Full & Partial -->
-                <div class="col-6 border-end p-3" *ngIf="splitCash && paymentAmount!=0">
+                <div class="col-6 border-end p-3" *ngIf="splitCash && !isFullyPaid">
     <div class="mb-3">
       <div class=" mb-2 fw-semibold"> 
   <span>Quick Percent:</span>
@@ -85,7 +85,7 @@
       <button class="btn btn-outline-warning w-100 mt-2" (click)="fullAddPayment()">ADD PAYMENT</button>
     </div>
   </div>
-              <div [ngClass]="splitCash && paymentAmount!=0 ? 'col-6' : 'col-12'" >
+              <div [ngClass]="splitCash && !isFullyPaid ? 'col-6' : 'col-12'" >
 
               <div class=" border-bottom pb-2 mb-3">
                 <!-- Row 1: Total -->

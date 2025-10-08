@@ -49,10 +49,17 @@ export class OrderDetailsComponent {
   totalCartDetails: any=[];
   modalRef: any;
   paymentdetails: any;
+  comboOrderDetails: any[] = [];
+  showCustomerModal: boolean;
   constructor(private apiService: ApisService, private fb: FormBuilder, private el: ElementRef, private modal: NgbModal, private toastr: ToastrService, private cdr: ChangeDetectorRef, private sessionStorageService: SessionStorageService,private modalService: NgbModal) {
     this.markers = [];
     this.zoom = 3;
   }
+    customer = {
+    name: '',
+    email: '',
+    phone: ''
+  };
   filterOptions = ['Cash', 'Card', 'E-Wallet'];
   selectedOption = 'Cash';
 
@@ -189,11 +196,13 @@ export class OrderDetailsComponent {
     this.showNewModelPopup = false;
   }
   submitOrder() {
+   this.comboOrderDetails=[]
       this.modalRef = this.modalService.open(OrderPaymentsComponent, {
                size: "xl",
                centered: true,
              });
              this.modalRef.componentInstance.data = this.totalCartDetails;
+             this.modalRef.componentInstance.customer = this.customer;
              
             this.modalRef.result.then(
     (result: { updatedCart: any; }) => {
@@ -203,6 +212,7 @@ export class OrderDetailsComponent {
        this.paymentdetails = result;
         console.log(this.paymentdetails);
         console.log(this.cartItems, 'this.cartItems opennnnnnnnnnnn ')
+        
     this.orderItemsDetails = this.cartItems.map((item: any) => ({
       dish_id: item.dish_id,
       dish_note: item.dishnote,
@@ -213,6 +223,34 @@ export class OrderDetailsComponent {
   
 
     }));
+
+this.cartItems.forEach((dish: any) => {
+  // Parse if JSON string
+  let choices = [];
+  if (typeof dish.dish_choices_json === 'string') {
+    try {
+      choices = JSON.parse(dish.dish_choices_json);
+    } catch (e) {
+      console.error('Invalid JSON in dish_choices_json:', dish.dish_choices_json);
+      choices = [];
+    }
+  } else if (Array.isArray(dish.dish_choices_json)) {
+    choices = dish.dish_choices_json;
+  }
+
+  // Now push combo details
+  choices.forEach((opt: any) => {
+    if(this.comboOrderDetails.filter(x=>(x.combo_id!=dish.dish_id  && x.combo_name!=dish.dish_name && x.price!=dish.duplicate_dish_price ))){
+      this.comboOrderDetails.push({
+        combo_id: dish.dish_id,
+        combo_name: dish.dish_name,
+        price: dish.duplicate_dish_price
+      });
+    }
+  });
+});
+
+    console.log(this.comboOrderDetails);
     this.toppingDetails = this.cartItems.flatMap((dish: any) =>
       dish.selectedOptions
         .filter((opt: any) => opt.selected)
@@ -247,7 +285,8 @@ export class OrderDetailsComponent {
       "total_price": this.subtotal,
       "total_quantity": this.cartItems.length,
       "store_id": user.store_id,
-      "order_type": this.orderForm.get('orderType')?.value,
+      // "order_type": this.orderForm.get('orderType')?.value,
+      "order_type": this.orderForm.get('orderType')?.value === 'pickup' ? 1 : 2,
       "pickup_datetime": new Date(),
       "delivery_address": this.orderForm.get('deliveryAddress')?.value,
       "delivery_fees": this.deliveryfee,
@@ -257,9 +296,9 @@ export class OrderDetailsComponent {
       "order_status": "Confirmed",
       "order_created_by": user.store_id,
       "order_details_json": this.orderItemsDetails,
-      "payment_method": "Card",
-      "payment_status": "Completed",
-      "payment_amount": this.total,
+      // "payment_method": "Card",
+      // "payment_status": "Completed",
+      // "payment_amount": this.total,
       "order_due": this.orderdueForm.get('orderDue')?.value,
       "order_due_datetime": this.orderdueForm.get('orderDateTime')?.value,
       "topping_details": this.toppingDetails,
@@ -267,7 +306,7 @@ export class OrderDetailsComponent {
       unitnumber: this.orderForm.value.unitNumber,
       delivery_notes: this.orderForm.value.deliveryNote,
       "gst_price": this.tax,
-      combo_order_details:this.totalCartDetails,
+      combo_order_details:this.comboOrderDetails,
       order_payments_json:this.paymentdetails.order_payments_json,
       payment_split_percentage_json:this.paymentdetails.payment_split_percentage_json, 
       payment_split_users_json:this.paymentdetails.payment_split_users_json,
@@ -358,7 +397,26 @@ export class OrderDetailsComponent {
     this.showOrderDuePopup = false
     this.showNewModelPopup=false
   }
+  closeCustomerModal(){
+  this.showCustomerModal=false
 }
+  openCustomerModal(){
+   this.customer = {
+    name: '',
+    email: '',
+    phone: ''
+  };
+  this.showCustomerModal=true
+}
+clear(){
+  this.customer = {
+    name: '',
+    email: '',
+    phone: ''
+  };
+}
+}
+
 export interface CartItem {
   name: string;      // Item name
   price: number;     // Item price
