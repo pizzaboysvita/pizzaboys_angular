@@ -11,6 +11,8 @@ import { SessionStorageService } from '../../../shared/services/session-storage.
 })
 export class OrderPaymentsComponent {
   @Input() data: any;
+  @Input() customer: any;
+
   splitBy = 2;
   splitRows: any;
   isSplitPayment: boolean=false;
@@ -48,6 +50,7 @@ export class OrderPaymentsComponent {
   paymentType: any;
   itemsJson: any=[];
   isVoucherConfirm = false;
+  paymentAmountStr: string;
  constructor(public modal: NgbModal,private cdr: ChangeDetectorRef,public activeModal: NgbActiveModal, private sessionStorageService: SessionStorageService) {}
   ngOnInit(): void {
     this.payItems=[]
@@ -211,20 +214,49 @@ doRemove(tab: string) {
   // Force refresh if OnPush
   this.cdr.detectChanges();
 }
+// appendNumber(num: any) {
+//   this.paymentAmount=0
+//   this.paymentAmount = Number(String(this.paymentAmount) + String(num));
+//   this.remaining = this.totalPrice - this.paymentAmount;
+// }
 appendNumber(num: any) {
-  this.paymentAmount=0
-  this.paymentAmount = Number(String(this.paymentAmount) + String(num));
-  this.remaining = this.totalPrice - this.paymentAmount;
+  // Initialize string if undefined
+  if (!this.paymentAmountStr) {
+    this.paymentAmountStr = '';
+  }
+
+  // Prevent multiple leading zeros (optional)
+  if (this.paymentAmountStr === '' && (num === 0 || num === '00')) {
+    return;
+  }
+
+  // Append the number pressed
+  this.paymentAmountStr += String(num);
+
+  // Convert to number safely
+  this.paymentAmount = Number(this.paymentAmountStr) || 0;
+
+  // Update remaining
+  // this.remaining = this.totalPrice - this.paymentAmount;
+  // this.remaining = this.remaining - this.paymentAmount;
+
 }
 
 clearAmount() {
+   this.paymentAmountStr = '';
   this.paymentAmount = 0;
   this.remaining = this.totalPrice;
 }
 setPayment(percent: number) {
   this.percentage=percent
-  this.paymentAmount = (this.totalPrice * percent) / 100;
-    this.remaining = this.totalPrice - this.paymentAmount;
+  this.paymentAmount = (this.remaining * percent) / 100;
+    // this.remaining = this.totalPrice - this.paymentAmount;
+    
+    this.remaining = this.remaining - this.paymentAmount;
+}
+get isFullyPaid(): boolean {
+  const totalPaid = this.fullArray?.reduce((sum: any, p: { amount: any; }) => sum + (p.amount || 0), 0);
+  return totalPaid >= this.totalPrice;
 }
 fullAddPayment() {
   if (!this.paymentAmount || this.paymentAmount <= 0) {
@@ -241,6 +273,7 @@ fullAddPayment() {
   this.remaining = this.totalPrice - this.fullArray.reduce((sum: any, row: { amount: any; }) => sum + row.amount, 0);
   // Reset entered amount
   this.paymentAmount =   this.remaining ;
+  this.paymentAmountStr = '';
 }
 selectRow(row: any, index: number) {
   this.selectedRowIndex = index;
@@ -304,7 +337,7 @@ if(this.activeTab=='full'){
   this.percentageJson.push({
     "amount": this.cashpaymentAmount,
     "percentage": this.percentage,
-    "user_name": "User A",
+    "user_name": this.customer.name,
     "status": 1
   })
 
@@ -323,7 +356,7 @@ else if(this.activeTab =='people'){
     this.userJson.push({
     "amount": this.cashpaymentAmount,
     "user_id": 201,
-    "user_name": "User A"
+    "user_name": this.customer.name
   })
   //   this.payload = {
   //   payment_split_percentage_json: [],
@@ -342,7 +375,7 @@ else if(this.activeTab =='items'){
     this.itemsJson.push({
       "dish_id": this.selectedRowData?.dish_id,
       "user_id": 201,
-      "user_name": "User A",
+      "user_name": this.customer.name,
       "percentage":this.percentage,
       "amount":  this.cashpaymentAmount
 //     },
