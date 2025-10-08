@@ -15,6 +15,7 @@ export class OrderPaymentsComponent {
   splitRows: any;
   isSplitPayment: boolean=false;
   activeTab: string = 'full'; // default tab
+  // activeTab: 'full' | 'items' | 'people' = 'full';
   // totalPrice: number;
   unpaidItems: any;
   payItems: any[] = [];     // selected items waiting for payment
@@ -45,7 +46,7 @@ export class OrderPaymentsComponent {
   payload: { };
   order_payments_json: any=[];
   paymentType: any;
-  itemsJson: any;
+  itemsJson: any=[];
   isVoucherConfirm = false;
  constructor(public modal: NgbModal,private cdr: ChangeDetectorRef,public activeModal: NgbActiveModal, private sessionStorageService: SessionStorageService) {}
   ngOnInit(): void {
@@ -163,7 +164,14 @@ getPayTotal() {
 }
 addPayment() {
   console.log("this.addPayment");
-  this.paidItems.push(...this.payItems);  
+  // this.paidItems.push(...this.payItems);  
+  this.paidItems.push(
+  ...this.payItems.map(item => ({
+    ...item,
+    status: 'Pending',
+    type: 'New'
+  }))
+);
   console.log(this.paidItems,'paiditems');
     this.payItems = [];
   // this.totalPrice = this.paidItems.reduce((sum, i) => sum + i.price, 0);
@@ -251,15 +259,11 @@ openCashModal(type:any) {
   
     if (!this.selectedRowData) return; // no row selected
   this.cashpaymentAmount = this.selectedRowData.amount; 
+  if(this.activeTab=='items'){
+      this.cashpaymentAmount = this.selectedRowData.item_total_price; 
+    }
   if(type =='Cash'){
   this.showNewModelPopup=true
-
-  }
-  else if(type =='Cash' || this.activeTab=='items'){
-  this.cashpaymentAmount = this.selectedRowData.item_total_price; 
-    this.confirmCashPayment()
-
-
   }
   else{
     this.confirmCashPayment()
@@ -282,8 +286,6 @@ confirmCashPayment() {
  if (this.selectedRowIndex === null) return;
   if (this.tenderedAmount > this.cashpaymentAmount) {
     this.changeAmount = +(this.tenderedAmount - this.cashpaymentAmount).toFixed(2);
-  
-
   }
 //   if (this.remainingAmount <= 0) {
 //   this.showChangeModal = true;   // ✅ open the summary modal
@@ -338,19 +340,14 @@ else if(this.activeTab =='items'){
   this.paidItems[this.selectedRowIndex].change = this.changeAmount;
   console.log(this.percentageJson,"asasdsad");
     this.itemsJson.push({
-         "dish_id": this.selectedRowData.dish_id,
+      "dish_id": this.selectedRowData?.dish_id,
       "user_id": 201,
       "user_name": "User A",
       "percentage":this.percentage,
       "amount":  this.cashpaymentAmount
 //     },
   })
-  //   this.payload = {
-  //   payment_split_percentage_json: [],
-  //   payment_split_users_json:this.userJson,
-  //   payment_split_items_json: []
-  // };
-  // console.log(this.payload);
+
 }
   this.showNewModelPopup = false;
  if (this.activeTab === 'full' && this.checkAllPaymentsSuccess()) {
@@ -359,6 +356,10 @@ else if(this.activeTab =='items'){
   }
   else if (this.activeTab === 'people' && this.checkAllPeoplePaymentsSuccess()) {
     this.collectPeopleSuccessfulPayments();
+    this.showChangeModal = true;   // open summary modal
+  }
+    else if (this.activeTab === 'items' && this.checkAllItemsPaymentsSuccess()) {
+    this.collectItemsSuccessfulPayments();
     this.showChangeModal = true;   // open summary modal
   }
   this.selectedRowIndex = null;
@@ -385,6 +386,18 @@ checkAllPeoplePaymentsSuccess(): boolean {
   if (!this.splitRows.length) return false;
   const allSuccess = this.splitRows.every((r: any) => r.status === 'Success');
   const successTotal = this.splitRows
+    .filter((r: any) => r.status === 'Success')
+    .reduce((sum: number, r: any) => sum + (Number(r.amount) || 0), 0);
+  return allSuccess && successTotal === this.totalPrice;
+}
+ collectItemsSuccessfulPayments() {
+  this.orderList = this.paidItems.filter((r: { status: string; }) => r.status === 'Success');
+  this.totalPaid = this.orderList.reduce((s: number, r: { amount: any; }) => s + (Number(r.amount) || 0), 0);
+}
+checkAllItemsPaymentsSuccess(): boolean {
+  if (!this.paidItems.length) return false;
+  const allSuccess = this.paidItems.every((r: any) => r.status === 'Success');
+  const successTotal = this.paidItems
     .filter((r: any) => r.status === 'Success')
     .reduce((sum: number, r: any) => sum + (Number(r.amount) || 0), 0);
   return allSuccess && successTotal === this.totalPrice;
