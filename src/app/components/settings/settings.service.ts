@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, map } from "rxjs";
 
 @Injectable({
   providedIn: "root",
@@ -12,7 +12,7 @@ export class SettingsService {
 
   private getAuthHeaders(): HttpHeaders {
     const authToken =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJfaWQiOjF9LCJpYXQiOjE3NTc0OTQ3ODQsImV4cCI6MTc1NzQ5ODM4NH0.8B7XdjQyZccFhJFS8CA1kzGVbzCQs_y8cyOwUW1oV2k";
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJfaWQiOjF9LCJpYXQiOjE3NTgxOTY5NzEsImV4cCI6MTc1ODIwMDU3MX0.Y0kEk97i-XYBhTKGp_05FJvYfnd-MCEpoaUR2t1iMKc";
 
     if (!authToken) {
       throw new Error("Authentication token not found.");
@@ -20,10 +20,10 @@ export class SettingsService {
 
     return new HttpHeaders({
       Authorization: `Bearer ${authToken}`,
-      "Content-Type": "application/json",
     });
   }
 
+  // ---------- Existing methods ----------
   createPromoCode(promoCodeData: any): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.post(`${this.baseUrl}/promocode`, promoCodeData, {
@@ -55,4 +55,68 @@ export class SettingsService {
       { headers }
     );
   }
+
+  // // ---------- Working Hours ----------
+  // getWorkingHours(storeId: number): Observable<any[]> {
+  //   const headers = this.getAuthHeaders();
+  //   return this.http
+  //     .get<any>(`${this.baseUrl}/store/${storeId}`, { headers })
+  //     .pipe(
+  //       map((store) => {
+  //         try {
+  //           return JSON.parse(store.working_hours); // backend stores as string
+  //         } catch {
+  //           return [];
+  //         }
+  //       })
+  //     );
+  // }
+
+  // updateWorkingHours(storeId: number, workingHours: any[]): Observable<any> {
+  //   const headers = this.getAuthHeaders();
+
+  //   const payload = {
+  //     type: "update",
+  //     store_id: storeId,
+  //     working_hours: workingHours,
+  //   };
+
+  //   const formData = new FormData();
+  //   formData.append("body", JSON.stringify(payload));
+
+  //   return this.http.post(`${this.baseUrl}/store`, formData, { headers });
+  // }
+  // GET working hours (array of {type, day, from, to})
+
+  // ---------- Working Hours ----------
+getWorkingHours(storeId: number): Observable<any> {
+  const payload = { type: "get", store_id: storeId };
+
+  const formData = new FormData();
+  formData.append("body", JSON.stringify(payload));
+
+  return this.http.post<any>(`${this.baseUrl}/store`, formData, {
+    headers: this.getAuthHeaders(),
+  });
+}
+
+// ✅ Update working hours (minimal required fields)
+updateWorkingHours(storeId: number, workingHours: any[]): Observable<any> {
+  const payload = {
+    type: "update",
+    store_id: storeId,
+    working_hours: workingHours,
+  };
+
+  console.log("Update Working Hours Payload:", payload);
+
+  const formData = new FormData();
+  formData.append("body", JSON.stringify(payload));
+
+  return this.http.post(`${this.baseUrl}/store`, formData, {
+    headers: this.getAuthHeaders(),
+  });
+}
+
+
 }
