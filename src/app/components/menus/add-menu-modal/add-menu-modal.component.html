@@ -20,7 +20,7 @@
                     <div class="input-box">
                       <div class="d-flex align-items-center justify-content-between mb-2">
                         <h6>Name</h6>
-                        <span class="optional-tag">Required</span>
+                        <span class="optional-tag optional-label">Required</span>
                       </div>
                       <input type="text" placeholder="Enter Name" formControlName="name">
                       @if((menuForm.get('name')?.touched ||menuForm.get('name')?.dirty) &&
@@ -101,7 +101,7 @@
                       <!-- <span class="choose-img-box font-family" > -->
                       <div class="d-flex align-items-center justify-content-between mb-2">
                         <h6>Upload Images</h6>
-                        <span class="optional-tag">Required</span>
+                        <span class="optional-tag optional-label">Required</span>
                       </div>
 
 
@@ -154,7 +154,7 @@
                     <div class="input-box position-relative">
                       <div class="d-flex align-items-center justify-content-between mb-2">
                         <h6>Store</h6>
-                        <span class="optional-tag">Required</span>
+                        <span class="optional-tag optional-label">Required</span>
                       </div>
                       <ng-select [items]="storeList" [searchable]="true" [multiple]="true" bindLabel="store_name"
                         bindValue="store_id" placeholder="Select from the dropdown or type to search..."

@@ -23,7 +23,7 @@
 
                       <div class="d-flex align-items-center justify-content-between mb-1">
                         <h6>Name</h6>
-                        <span class="optional-tag">Required</span>
+                        <span class="optional-tag optional-label">Required</span>
                       </div>
                       <input type="text" placeholder="Enter Name" formControlName="name" />
                     </div>
@@ -122,7 +122,7 @@
                     <div class="input-box position-relative">
                       <div class="d-flex align-items-center justify-content-between mb-2">
                         <h6>Store</h6>
-                        <span class="optional-tag">Required</span>
+                        <span class="optional-tag optional-label">Required</span>
                       </div>
                       <ng-select [items]="storeList" [searchable]="true" [multiple]="false" bindLabel="store_name" (change)="getMenuList()"
                         bindValue="store_id" placeholder="Select from the dropdown or type to search..."
@@ -190,7 +190,7 @@
                         placeholder="Select or type to search"></ng-select> -->
                       <div class="d-flex align-items-center justify-content-between mb-2">
                         <h6>Applicable Hours</h6>
-                        <span class="optional-tag">OPTIONAL</span>
+                        <!-- <span class="optional-tag">OPTIONAL</span> -->
                       </div>
                       <!-- <button type="button" class="btn btn-outline-primary btn-sm" (click)="addTimeSlot()">Add Time Slot</button> -->
                       <button type="button" class="add-time-slot-btn" (click)="addNewRow()">
