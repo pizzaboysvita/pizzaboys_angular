@@ -25,6 +25,7 @@ export class OrderPaymentsComponent {
   isModalOpen: boolean=true;
   showPopup: boolean=true;
   confirmRemove = false;
+  showEftModal=false
   paid: any;
   paymentAmount: number = 0;
   totalPrice: number = 0;
@@ -75,7 +76,7 @@ export class OrderPaymentsComponent {
   }
 setActiveTab(tab: string) {
   this.activeTab = tab;
-  if(this.activeTab=='people' ||   this.activeTab=='items'){
+  if(this.activeTab =='people' ||   this.activeTab =='items'){
   this.splitCash=true
  // ✅ Keep only 'Success' rows in fullArray
     const successfulRows = this.fullArray.filter((row: { status: string; }) => row.status === 'Success');
@@ -87,6 +88,18 @@ setActiveTab(tab: string) {
       this.paymentAmount = this.totalPrice;
     }
   }
+    if(this.activeTab =='full' ||   this.activeTab =='items'){
+    this.isSplitPayment = false;
+
+   const splitfulRows = this.splitRows.filter((row: { status: string; }) => row.status === 'Success');
+    this.splitRows = splitfulRows.length > 0 ? splitfulRows : [];
+    }
+     if(this.activeTab =='full' ||   this.activeTab =='people'){
+    this.isSplitPayment = false;
+   const splitfulRows = this.paidItems.filter((row: { status: string; }) => row.status === 'Success');
+    this.paidItems = splitfulRows.length > 0 ? splitfulRows : [] ;
+    if (!splitfulRows.length) this.unpaidItems = this.data;
+    }
 }
 incSplit() { 
   this.splitBy++;
@@ -298,6 +311,9 @@ openCashModal(type:any) {
   if(type =='Cash'){
   this.showNewModelPopup=true
   }
+  if(type='EFTPOS'){
+       this.showEftModal=true
+  }
   else{
     this.confirmCashPayment()
   }
@@ -397,6 +413,7 @@ else if(this.activeTab =='items'){
   }
   this.selectedRowIndex = null;
   this.selectedRowData = null;
+  this.showEftModal=false
   // this.cashpaymentAmount = 0;
 }
  collectSuccessfulPayments() {

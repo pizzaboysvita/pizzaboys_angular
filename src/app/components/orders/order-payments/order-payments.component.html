@@ -208,7 +208,7 @@
         <div><strong>Total</strong><br><strong>Paid</strong></div>
         <div><strong>${{totalPrice}}</strong><br><strong>$0.00</strong></div>
       </div>
-@if(isSplitPayment){
+@if(isSplitPayment && splitRows.length>0){
   <div class="text-muted text-center py-5">
          <table class="table table-sm align-middle"  >
                   <thead style="background-color: #f9f9fa !important;">
@@ -683,5 +683,50 @@
     </div>
   </div>
 </div>
+<div class="modal fade" tabindex="-1" role="dialog"
+     [ngClass]="{ 'show d-block': showEftModal }"
+     style="background: rgba(0,0,0,0.5); z-index: 1050;">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content p-3">
+
+      <!-- Modal Header -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <!-- <h5 class="mb-0">Payment Screen</h5> -->
+        <button type="button" class="btn-close" (click)="showEftModal=false"></button>
+      </div>
+
+      <!-- ✅ Image Display Section -->
+      <!-- <div class="text-center border rounded p-3 mb-3 bg-light">
+        <img
+          src="assets/images/payment-screen.png"
+          alt="Payment Screen"
+          class="img-fluid rounded shadow"
+          style="max-height: 500px; object-fit: contain;"
+        >
+      </div> -->
+
+      <!-- ✅ Summary Details -->
+      <div class="p-3 border rounded mb-3 bg-white">
+        <div class="d-flex justify-content-center mb-2">
+          <strong>Bill Amount</strong><br>
+          <!-- <span>${{ cashpaymentAmount }}</span> -->
+        </div>
+ <div class="d-flex justify-content-center mb-2">
+          <!-- <strong>Bill Amount</strong><br> -->
+          <span>${{ cashpaymentAmount }}</span>
+        </div>
+        
+
+      <!-- ✅ OK Button -->
+         <div class="d-flex justify-content-end gap-2 mt-3">
+       
+  <button class="btn btn-secondary" (click)="showEftModal=false">Cancel</button>
+  <button class="btn btn-primary" (click)="confirmCashPayment()">OK</button>
+</div>
+
+    </div>
+  </div>
+</div>
+
 
 
