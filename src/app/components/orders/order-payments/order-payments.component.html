@@ -41,9 +41,53 @@
           <div class="col-10">
             <div class="tab-content p-3">
              @if(activeTab === 'full'){
+              <div class="row">
               <!-- Full & Partial -->
-              
-              <div class="border-bottom pb-2 mb-3">
+                <div class="col-6 border-end p-3" *ngIf="splitCash && !isFullyPaid">
+    <div class="mb-3">
+      <div class=" mb-2 fw-semibold"> 
+  <span>Quick Percent:</span>
+</div>
+    <div class="btn-group w-100">
+  <button class="btn btn-outline-secondary border" (click)="setPayment(10)">10%</button>
+  <button class="btn btn-outline-secondary border" (click)="setPayment(15)">15%</button>
+  <button class="btn btn-outline-secondary border" (click)="setPayment(20)">20%</button>
+  <button class="btn btn-outline-secondary border" (click)="setPayment(25)">25%</button>
+  <button class="btn btn-outline-secondary border" (click)="setPayment(50)">50%</button>
+  <button class="btn btn-outline-secondary border" (click)="setPayment(100)">100%</button>
+</div>
+    </div>
+
+    <!-- Keypad -->
+    <div class="border rounded p-3 text-center">
+      <div class="fs-4 fw-bold mb-2  text-end">${{paymentAmount}}</div>
+      <div class="row g-2">
+        <div class="col-4"><button class="btn btn-light w-100" (click)="appendNumber(7)">7</button></div>
+        <div class="col-4"><button class="btn btn-light w-100" (click)="appendNumber(8)">8</button></div>
+        <div class="col-4"><button class="btn btn-light w-100" (click)="appendNumber(9)">9</button></div>
+
+        <div class="col-4"><button class="btn btn-light w-100" (click)="appendNumber(4)">4</button></div>
+        <div class="col-4"><button class="btn btn-light w-100" (click)="appendNumber(5)">5</button></div>
+        <div class="col-4"><button class="btn btn-light w-100" (click)="appendNumber(6)">6</button></div>
+
+        <div class="col-4"><button class="btn btn-light w-100" (click)="appendNumber(1)">1</button></div>
+        <div class="col-4"><button class="btn btn-light w-100" (click)="appendNumber(2)">2</button></div>
+        <div class="col-4"><button class="btn btn-light w-100" (click)="appendNumber(3)">3</button></div>
+
+        <div class="col-4"><button class="btn btn-light w-100" (click)="appendNumber(0)">0</button></div>
+        <div class="col-4"><button class="btn btn-light w-100" (click)="appendNumber('00')">00</button></div>
+        <div class="col-4"><button class="btn btn-danger w-100" (click)="clearAmount()">X</button></div>
+      </div>
+    <div class="mt-3 fw-semibold d-flex justify-content-between">
+  <span>Remaining:</span>
+  <span>${{ remaining }}</span>
+</div>
+      <button class="btn btn-outline-warning w-100 mt-2" (click)="fullAddPayment()">ADD PAYMENT</button>
+    </div>
+  </div>
+              <div [ngClass]="splitCash && !isFullyPaid ? 'col-6' : 'col-12'" >
+
+              <div class=" border-bottom pb-2 mb-3">
                 <!-- Row 1: Total -->
                 <div class="d-flex justify-content-between">
                     <div class="fs-6 fw-semibold ">Total</div>
@@ -57,7 +101,7 @@
                 </div>
                 </div>
                 <!-- Payment Table -->
-                <table class="table table-sm align-middle">
+                <table class="table table-sm align-middle" *ngIf="fullArray.length>0">
                   <thead style="background-color: #f9f9fa !important;">
                     <tr>
                       <th>Status</th>
@@ -69,29 +113,43 @@
                   </thead>
                   <tbody style="background-color: #eeeeef;">
                        <!-- @for (rowData of data; track rowData;let ind = $index) { -->
-                    <tr>
-                      <td><span class="badge bg-warning  text-dark fs-16">Pending</span></td>
-                      <td>New</td>
-                      <td>${{totalPrice}}</td>
-                      <td>-</td>
-                      <td>-</td>
+                          @for (rowData of fullArray; track rowData;let ind = $index) {
+                    <tr (click)=" rowData.status !== 'Success' && selectRow(rowData, ind)" 
+    [ngClass]="{'table-active': selectedRowIndex === ind}" 
+    style="cursor: pointer;">
+                      <td><span class="badge fs-16"   [ngClass]="{
+      'badge-pending': rowData.status === 'Pending',
+      'badge-success': rowData.status === 'Success', 
+      'badge-failed': rowData.status === 'Failed'
+    }">{{rowData.status}}</span></td>
+                      <td>{{rowData.type}}</td>
+                      <td>${{rowData.amount}}</td>
+                      <td>{{rowData.tender}}</td>
+                      <td>{{rowData.change}}</td>
                     </tr>
-                <!-- } -->
+                }
                   </tbody>
                 </table>
 
                 <!-- Payment Buttons -->
-               <div class="d-flex flex-wrap gap-2 my-3">
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+               <div class="d-flex flex-wrap gap-2 my-3" *ngIf="fullArray.length>0" >
+                <!-- [disabled]="!selectedRowData" -->
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2" (click)="openCashModal('Cash')">
                     <i class="ri-money-dollar-circle-line"></i> <span>Cash</span>
                 </button>
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2" (click)="openCashModal('EFTPOS')">
                     <i class="ri-bank-card-line"></i> <span>EFTPOS</span>
                 </button>
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                <!-- <button class="btn btn-outline-warning d-flex align-items-center gap-2" (click)="openCashModal('Voucher')">
                     <i class="ri-gift-line"></i> <span>Voucher</span>
-                </button>
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                </button> -->
+                <button 
+  class="btn btn-outline-warning d-flex align-items-center gap-2"
+  (click)="handleVoucherClick()">
+  <i [class]="isVoucherConfirm ? 'ri-check-line' : 'ri-gift-line'"></i>
+  <span>{{ isVoucherConfirm ? 'Confirm' : 'Voucher' }}</span>
+</button>
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2" (click)="openCashModal('MobEFTPOS')">
                     <i class="ri-smartphone-line"></i> <span>Mob. EFTPOS</span>
                 </button>
                             <button 
@@ -109,14 +167,15 @@
           PLACE ORDER & CLEAR
         </button> -->
                 </div>
-                
+                </div>
+               </div> 
             }
               <!-- Split By People -->
                 @if(activeTab === 'people'){
   <div class="row">
     <!-- Split Control -->
     <div class="col-6 border-end d-flex flex-column align-items-center p-4">
-       @if(!isSplitPayment){ 
+       @if(!isSplitPayment  && !allPaymentsSuccessful()){ 
 <div class="d-flex align-items-center gap-3 mb-3" style="max-width: 320px;">
   <span class="fw-bold">Split By</span>
 
@@ -131,6 +190,11 @@
       <button class="btn btn-outline-warning fw-bold text-uppercase"  (click)="generateSplitPayments()">
         Generate Split Payments
       </button>
+    }
+    @else if(allPaymentsSuccessful()){
+       <div class="text-center text-success fw-bold mt-4">
+      All payments successful — Split not allowed.
+    </div>
     }
     @else{
     <span>No balance remaining to split</span>  
@@ -158,27 +222,40 @@
                   </thead>
                   <tbody style="background-color: #eeeeef;">
                        @for (rowData of splitRows; track rowData;let ind = $index) {
-                    <tr>
-                      <td><span class="badge bg-warning  text-dark fs-16">{{rowData.status}}</span></td>
+                    <tr (click)=" rowData.status !== 'Success' && selectRow(rowData, ind)" 
+    [ngClass]="{'table-active': selectedRowIndex === ind}" 
+    style="cursor: pointer;">
+                      <td ><span class="badge fs-16"   [ngClass]="{
+      'badge-pending': rowData.status === 'Pending',
+      'badge-success': rowData.status === 'Success',
+      'badge-failed': rowData.status === 'Failed'
+    }">{{rowData.status}}</span></td>
                       <td>{{rowData.type}}</td>
                       <td>${{rowData.amount}}</td>
-                      <td>-</td>
-                      <td>-</td>
+                       <td>{{rowData.tender}}</td>
+                      <td>{{rowData.change}}</td>
                     </tr>
                 }
                   </tbody>
                 </table>
               <div class="d-flex flex-wrap gap-2 my-3">
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                <!-- [disabled]="!selectedRowData" -->
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2"  (click)="openCashModal('Cash')">
                     <i class="ri-money-dollar-circle-line"></i> <span>Cash</span>
                 </button>
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2" (click)="openCashModal('EFTPOS')">
                     <i class="ri-bank-card-line"></i> <span>EFTPOS</span>
                 </button>
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
-                    <i class="ri-gift-line"></i> <span>Voucher</span>
-                </button>
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                <!-- <button class="btn btn-outline-warning d-flex align-items-center gap-2" (click)="openCashModal('Voucher')">
+                    <i class="ri-gift-line" ></i> <span>Voucher</span>
+                </button> -->
+                                <button 
+  class="btn btn-outline-warning d-flex align-items-center gap-2"
+  (click)="handleVoucherClick()">
+  <i [class]="isVoucherConfirm ? 'ri-check-line' : 'ri-gift-line'"></i>
+  <span>{{ isVoucherConfirm ? 'Confirm' : 'Voucher' }}</span>
+</button>
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2" (click)="openCashModal('MobEFTPOS')">
                     <i class="ri-smartphone-line"></i> <span>Mob. EFTPOS</span>
                 </button>
                 <button 
@@ -230,14 +307,25 @@
     @for (rowData of unpaidItems; track rowData; let ind = $index) {
       <div 
         class="d-flex justify-content-between align-items-start py-2 div-pointer" 
-        [class.border-bottom]="ind < data.length - 1" (click)="moveToPay(rowData,ind)">
+        [class.border-bottom]="ind < data.length - 1" >
         <div>
           <span>{{ ind+1 }}</span> {{ rowData.dish_name }}
           <br />
           <small>• {{ rowData.dish_type }}</small>
         </div>
-        <div class="fw-bold">${{ rowData.item_total_price }}</div>
-      </div>
+        <!-- <div class="fw-bold">${{ rowData.item_total_price }}</div> -->
+          <div class="text-end">
+      <div class="fw-bold mb-1">${{ rowData.item_total_price }}</div>
+      <a 
+   class="text-primary small fw-bold text-decoration-underline"
+   (click)="moveToPay(rowData, ind)">
+  Move to Pay
+</a>
+      <!-- <button class="btn btn-xs btn-primary" (click)="moveToPay(rowData, ind)">
+        Move to Pay
+      </button> -->
+    </div>
+  </div>
     }
 
     <div class="d-flex justify-content-between fw-bold border-top pt-2 mt-2">
@@ -260,13 +348,21 @@
         
     @for (rowData of payItems; track rowData; let ind = $index) {
     <div
-         class="d-flex justify-content-between align-items-start border-bottom py-2 div-pointer" (click)="removeToPay(rowData,ind)">
+         class="d-flex justify-content-between align-items-start border-bottom py-2 div-pointer">
       <div>
         <span>{{ ind+1 }}</span> {{ rowData.dish_name }}
         <br />
         <small>• {{ rowData.dish_type }}</small>
       </div>
-      <div class="fw-bold">${{ rowData.item_total_price }}</div>
+      <!-- <div class="fw-bold">${{ rowData.item_total_price }}</div>-->
+        <div class="text-end">
+      <div class="fw-bold mb-1">${{ rowData.item_total_price }}</div> 
+       <a 
+   class="text-primary small fw-bold text-decoration-underline"
+   (click)="removeToPay(rowData, ind)">
+  Removed to Pay
+</a>
+    </div>
     </div>
     }
      @if(payItems.length > 0){
@@ -353,12 +449,20 @@
         </thead>
         <tbody style="background-color: #eeeeef;">
           @for (rowData of paidItems; track rowData; let ind = $index) {
-            <tr>
-              <td><span class="badge bg-warning  text-dark fs-16">Pending</span></td>
-                      <td>{{rowData.dish_type}}</td>
+            <tr (click)=" rowData.status !== 'Success' && selectRow(rowData, ind)" 
+    [ngClass]="{'table-active': selectedRowIndex === ind}" 
+    style="cursor: pointer;">
+                      <td><span class="badge fs-16"   [ngClass]="{
+      'badge-pending': rowData.status === 'Pending',
+      'badge-success': rowData.status === 'Success', 
+      'badge-failed': rowData.status === 'Failed'
+    }">{{rowData?.status}}</span></td>
+    
+                      <!-- <td>{{rowData.dish_type}}</td> -->
+                      <td>{{rowData.type}}</td>
                       <td>${{rowData.item_total_price}}</td>
-                      <td>-</td>
-                      <td>-</td>
+                        <td>{{rowData?.tender}}</td>
+                      <td>{{rowData?.change}}</td>
             </tr>
           }
         </tbody>
@@ -369,28 +473,35 @@
 
   
               <div class="d-flex flex-wrap gap-2 my-3">
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                  <!-- [disabled]="!selectedRowData" -->
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2"  (click)="openCashModal('Cash')">
                     <i class="ri-money-dollar-circle-line"></i> <span>Cash</span>
                 </button>
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2" (click)="openCashModal('EFTPOS')">
                     <i class="ri-bank-card-line"></i> <span>EFTPOS</span>
                 </button>
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
-                    <i class="ri-gift-line"></i> <span>Voucher</span>
-                </button>
-                <button class="btn btn-outline-warning d-flex align-items-center gap-2">
+                <!-- <button class="btn btn-outline-warning d-flex align-items-center gap-2" (click)="openCashModal('Voucher')">
+                    <i class="ri-gift-line" ></i> <span>Voucher</span>
+                </button> -->
+                                <button 
+  class="btn btn-outline-warning d-flex align-items-center gap-2"
+  (click)="handleVoucherClick()">
+  <i [class]="isVoucherConfirm ? 'ri-check-line' : 'ri-gift-line'"></i>
+  <span>{{ isVoucherConfirm ? 'Confirm' : 'Voucher' }}</span>
+</button>
+                <button class="btn btn-outline-warning d-flex align-items-center gap-2" (click)="openCashModal('MobEFTPOS')">
                     <i class="ri-smartphone-line"></i> <span>Mob. EFTPOS</span>
                 </button>
                 <button 
                   class="btn d-flex align-items-center gap-2"
                   [ngClass]="confirmRemove ? 'btn btn-outline-warning' : 'btn-outline-danger'"
-                  (click)="confirmRemove ? doRemove('items') : toggleRemove()"
+                  (click)="confirmRemove ? doRemove('people') : toggleRemove()"
                 >
                   <i [class]="confirmRemove ? 'ri-check-line' : 'ri-close-line'"></i>
                   <span>{{ confirmRemove ? 'Confirm' : 'Remove' }}</span>
                 </button>
                 </div>
-                <button  class="btn btn-animation save-button-pay w-100">
+                 <button  class="btn btn-animation save-button-pay w-100">
                     PLACE ORDER & CLEAR
               </button>
             }
@@ -423,3 +534,154 @@
         </button>
       </div> -->
     </div>
+
+
+    
+<!-- Cash Payment Modal -->
+  <div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{ 'show d-block': showNewModelPopup }" style="background: rgba(0,0,0,0.5); z-index: 1040;">
+  <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+    <div class="modal-content p-3">
+
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">Cash Tender</h5>
+        <button type="button" class="btn-close" (click)="closeNewModelPopup()"></button>
+      </div>
+
+      <!-- Quick Cash Buttons -->
+      <div class="btn-group w-100 mb-3">
+        <button class="btn btn-outline-secondary border" (click)="setCashQuick(5)">$5</button>
+        <button class="btn btn-outline-secondary border" (click)="setCashQuick(10)">$10</button>
+        <button class="btn btn-outline-secondary border" (click)="setCashQuick(20)">$20</button>
+        <button class="btn btn-outline-secondary border" (click)="setCashQuick(50)">$50</button>
+        <button class="btn btn-outline-secondary border" (click)="setCashQuick(100)">$100</button>
+      </div>
+
+      <!-- Keypad -->
+      <div class="border rounded p-3 text-center">
+        <div class="fs-4 fw-bold mb-2 text-end">${{ cashpaymentAmount }}</div>
+
+        <div class="row g-2">
+          <div class="col-4"><button class="btn btn-light w-100" (click)="appendCashNumber(7)">7</button></div>
+          <div class="col-4"><button class="btn btn-light w-100" (click)="appendCashNumber(8)">8</button></div>
+          <div class="col-4"><button class="btn btn-light w-100" (click)="appendCashNumber(9)">9</button></div>
+
+          <div class="col-4"><button class="btn btn-light w-100" (click)="appendCashNumber(4)">4</button></div>
+          <div class="col-4"><button class="btn btn-light w-100" (click)="appendCashNumber(5)">5</button></div>
+          <div class="col-4"><button class="btn btn-light w-100" (click)="appendCashNumber(6)">6</button></div>
+
+          <div class="col-4"><button class="btn btn-light w-100" (click)="appendCashNumber(1)">1</button></div>
+          <div class="col-4"><button class="btn btn-light w-100" (click)="appendCashNumber(2)">2</button></div>
+          <div class="col-4"><button class="btn btn-light w-100" (click)="appendCashNumber(3)">3</button></div>
+
+          <div class="col-4"><button class="btn btn-light w-100" (click)="appendCashNumber(0)">0</button></div>
+          <div class="col-4"><button class="btn btn-light w-100" (click)="appendCashNumber('00')">00</button></div>
+          <div class="col-4"><button class="btn btn-danger w-100" (click)="clearCashAmount()">X</button></div>
+        </div>
+
+        <!-- Confirm -->
+        <button class="btn btn-warning w-100 mt-2" (click)="confirmCashPayment(); $event.stopPropagation()">Take Cash</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Change Payment Modal -->
+
+<div class="modal fade" tabindex="-1" role="dialog"
+     [ngClass]="{ 'show d-block': showChangeModal }"
+     style="background: rgba(0,0,0,0.5); z-index: 1050;">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content p-3">
+
+      <!-- Modal Header -->
+     <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">Order Placed</h5>
+        <button type="button" class="btn-close" (click)="closeOrdersModal()"></button>
+      </div>
+      <div class="p-3 border rounded mb-1">
+  <div class="d-flex justify-content-between mb-2">
+    <strong>Bill Amount</strong>
+    <span>${{ totalPaid }}</span>
+  </div>
+
+  <div class="d-flex justify-content-between mb-2">
+    <strong>Tendered</strong>
+    <span>${{ tenderedAmount }}</span>
+  </div>
+
+  <div class="d-flex justify-content-between mb-2">
+    <strong>Change</strong>
+    <span class="text-success fw-bold">${{ changeAmount }}</span>
+  </div>
+</div>
+
+   <!-- <table class="table table-sm mb-3">
+        <tbody>
+          <tr>
+            <td><strong>Bill Amount</strong></td>
+            <td class="text-end">${{ totalPaid }}</td>
+          </tr>
+          <tr> 
+            <td><strong>Tendered</strong></td>
+            <td class="text-end">${{ tenderedAmount }}</td>
+          </tr>
+          <tr>
+            <td><strong>Change</strong></td>
+            <td class="text-end ">${{ changeAmount }}</td>
+          </tr>
+          <tr>
+            <td><strong>Change</strong></td>
+            <td class="text-end ">${{ changeAmount }}</td>
+          </tr>
+        </tbody>
+      </table> -->
+      <!-- ✅ Order Details Table -->
+      <!-- <h6 class="mb-2">Order Details</h6> -->
+      <table class="table table-sm table-bordered mb-3">
+        <thead class="table-light">
+          <tr>
+            <th>Status</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Tendered</th>
+            <th>Change</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let rowData of orderList; let ind = index"
+              (click)="rowData.status !== 'Success' && selectRow(rowData, ind)"
+              [ngClass]="{'table-active': selectedRowIndex === ind}"
+              style="cursor: pointer;">
+            <td>
+              <span class="badge fs-16"
+                [ngClass]="{
+                  'badge-pending': rowData.status === 'Pending',
+                  'badge-success': rowData.status === 'Success',
+                  'badge-failed': rowData.status === 'Failed'
+                }">
+                {{ rowData.status }}
+              </span>
+            </td>
+            <td>{{ rowData.type }}</td>
+            <td>${{ rowData.amount }}</td>
+            <td>${{ rowData.tender }}</td>
+            <td>${{ rowData.change }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ✅ Payment Summary Table -->
+   
+
+      <!-- ✅ OK Button -->
+      <div class="text-center">
+        <button class="btn btn-primary w-100" (click)="closeOrdersModal()">
+          OK
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+

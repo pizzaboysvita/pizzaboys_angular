@@ -305,9 +305,13 @@ export class MediaComponent implements OnInit {
       item['dish_option_set_array'].forEach((optionSet: any) => {
         optionSet.option_type = optionSet.dispaly_name == "Base" ? "radio" : optionSet.dispaly_name == "Extra Meat Toppings" ? "counter" : "counter";
       })
+      console.log(item['dish_ingredient_array'], 'item.dish_option_set_array')
       item['dish_quantity'] = 1; // Ensure quantity is set
       this.selectedDishFromList = item;
       this.selectedDishFromList.duplicate_dish_price = item.dish_price
+      item['dish_ingredient_array'].forEach((ingredient: any) => {
+        ingredient.selected = true; // Default all ingredients to selected
+      });
       this.cartItems = [item]
       this.showPopup = true;
       this.cdr.detectChanges();

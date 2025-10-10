@@ -203,3 +203,37 @@ body.modal-open {
   overflow: hidden !important;
   
 }
+.icon-row {
+  height: 40px;
+  min-height: 40px;
+  display: flex;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  border-radius: 0px; /* rounded corners for the whole row */
+  overflow: hidden;   /* ensures child right borders don’t overflow corners */
+}
+
+.icon-box {
+  padding: 15px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s;
+  border-right: 1px solid #ccc;
+  font-size: 20px;
+  cursor: pointer;
+
+}
+
+.icon-box:last-child {
+  border-right: none; /* no right border for last icon */
+}
+
+.icon-box:hover {
+  background-color: #aaa;
+  // color: #007bff;
+  border-color: #c1c1c1;
+}

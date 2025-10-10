@@ -172,8 +172,8 @@
                                 <p class="mod-title">{{combo_opt.dish_opt_type}}</p>
                                    @for (opt_typ of combo_opt.choose_option; track opt_typ) {
                                 <li style="margin-bottom: 5px;">{{ opt_typ.name }} 
-                                  
-                                    <span style="background-color: #d1d2da;
+
+                                    <span *ngIf="opt_typ.price" style="background-color: #d1d2da; 
     width: 30px;
     height: 20px;
     border-radius: 5px;
