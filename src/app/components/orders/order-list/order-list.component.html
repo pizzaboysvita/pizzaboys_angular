@@ -33,13 +33,14 @@
           </ul>
         </div>
       </div>
-        <div body>
+      <div body>
         <div style="overflow: auto">
           <ag-grid-angular class="ag-theme-alpine font-family my-grid" style="width: 100%" [columnDefs]="tableConfig"
-            [rowData]="orderList" [domLayout]="'autoHeight'" [pagination]="true" [paginationPageSize]="10"
-            [gridOptions]="gridOptions" [suppressColumnVirtualisation]="true" (cellClicked)="onCellClicked($event)"
+            [rowData]="orderList" [gridOptions]="gridOptions" [pagination]="true" [paginationPageSize]="10"
+            [domLayout]="'autoHeight'" [suppressColumnVirtualisation]="true"
             [defaultColDef]="{ flex: 1, minWidth: 100, sortable: true }">
           </ag-grid-angular>
+
         </div>
       </div>
     </app-card>
