@@ -1,23 +1,19 @@
 import { Component, OnInit } from "@angular/core";
-import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { CommonModule } from "@angular/common";
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { DragDropModule } from "@angular/cdk/drag-drop";
+import {
+  FormArray,
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+} from "@angular/forms";
 import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
-
-interface TimeSlot {
-  day: string;
-  openTime: string;
-  closeTime: string;
-  is24Hour: boolean;
-}
-
-interface SpecialTimeSlot {
-  day: string;
-  openTime: string;
-  closeTime: string;
-  is24Hour: boolean;
-}
+import {
+  CdkDragDrop,
+  DragDropModule,
+  moveItemInArray,
+} from "@angular/cdk/drag-drop";
+import { SettingsService } from "../../settings.service";
 
 @Component({
   selector: "app-opening-hours",
@@ -26,36 +22,23 @@ interface SpecialTimeSlot {
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    DragDropModule,
     NgbModule,
+    DragDropModule,
   ],
   templateUrl: "./opening-hours.component.html",
   styleUrls: ["./opening-hours.component.scss"],
 })
 export class OpeningHoursComponent implements OnInit {
-  activeService = 1;
+  activeService: "general" | "pickup" | "delivery" = "general";
 
-  // Data arrays for General hours
-  regularHours: TimeSlot[] = [];
-  specialHours: SpecialTimeSlot[] = [];
+  form = this.fb.group({
+    general: this.fb.array([]),
+    pickup: this.fb.array([]),
+    delivery: this.fb.array([]),
+    special: this.fb.array([]),
+  });
 
-  // Data arrays for Pickup hours
-  pickupHours: TimeSlot[] = [];
-  pickupSpecialHours: SpecialTimeSlot[] = [];
-
-  // Data arrays for Delivery hours
-  deliveryHours: TimeSlot[] = [];
-  deliverySpecialHours: SpecialTimeSlot[] = [];
-
-  // Data arrays for Dine In hours
-  dineInHours: TimeSlot[] = [];
-  dineInSpecialHours: SpecialTimeSlot[] = [];
-
-  // Data arrays for Table Bookings hours
-  tableBookingsHours: TimeSlot[] = [];
-  tableBookingsSpecialHours: SpecialTimeSlot[] = [];
-
-  daysOfWeek: string[] = [
+  days = [
     "Monday",
     "Tuesday",
     "Wednesday",
@@ -65,197 +48,208 @@ export class OpeningHoursComponent implements OnInit {
     "Sunday",
   ];
 
-  timeOptions: string[] = [];
+  storeId = 33;
 
-  constructor() {
-    this.timeOptions = this.generateTimeOptions();
-  }
+  loading = false;
+  error = "";
+
+  constructor(private fb: FormBuilder, private settings: SettingsService) {}
 
   ngOnInit(): void {
-    // Component starts with empty time slot lists.
+    ["general", "pickup", "delivery"].forEach((t: any) => this.initDefaults(t));
+
+    this.loadFromApi();
   }
 
-  // --- Helper Methods ---
-  private generateTimeOptions(): string[] {
-    const times = [];
-    for (let h = 0; h < 24; h++) {
-      for (let m = 0; m < 60; m += 30) {
-        const hour = h.toString().padStart(2, "0");
-        const minute = m.toString().padStart(2, "0");
-        times.push(`${hour}:${minute}`);
-      }
-    }
-    return times;
+  // ---------------- form array getters ----------------
+  getGeneral(): FormArray {
+    return this.form.get("general") as FormArray;
+  }
+  getPickup(): FormArray {
+    return this.form.get("pickup") as FormArray;
+  }
+  getDelivery(): FormArray {
+    return this.form.get("delivery") as FormArray;
+  }
+  getSpecial(): FormArray {
+    return this.form.get("special") as FormArray;
   }
 
-  toggle24Hour(slot: TimeSlot | SpecialTimeSlot) {
-    if (slot.is24Hour) {
-      slot.openTime = "00:00";
-      slot.closeTime = "23:59";
-    } else {
-      slot.openTime = "09:00";
-      slot.closeTime = "17:00";
-    }
+  getSlotsArray(type: "general" | "pickup" | "delivery"): FormArray {
+    return this.form.get(type) as FormArray;
   }
 
-  onDrop(event: CdkDragDrop<string[]>) {
-    moveItemInArray(this.regularHours, event.previousIndex, event.currentIndex);
+  // ---------------- create slot factories ----------------
+  private createSlotGroup(data?: any): FormGroup {
+    return this.fb.group({
+      day: [data?.day ?? "Monday"],
+      from: [data?.from ?? "10:30"],
+      to: [data?.to ?? "22:00"],
+      is24Hour: [!!data?.is24Hour],
+    });
   }
 
-  save() {
-    console.log("General Hours:", this.regularHours, this.specialHours);
-    console.log("Pickup Hours:", this.pickupHours, this.pickupSpecialHours);
-    console.log(
-      "Delivery Hours:",
-      this.deliveryHours,
-      this.deliverySpecialHours
+  private createSpecialGroup(data?: any): FormGroup {
+    return this.fb.group({
+      date: [data?.date ?? ""], // yyyy-mm-dd string
+      from: [data?.from ?? "09:00"],
+      to: [data?.to ?? "17:00"],
+      isAllDay: [!!data?.isAllDay],
+    });
+  }
+
+  private initDefaults(type: "general" | "pickup" | "delivery") {
+    const arr = this.getSlotsArray(type);
+    if (arr.length) return;
+    this.days.forEach((day) =>
+      arr.push(this.createSlotGroup({ day, from: "09:00", to: "17:00" }))
     );
-    console.log("Dine In Hours:", this.dineInHours, this.dineInSpecialHours);
-    console.log(
-      "Table Bookings Hours:",
-      this.tableBookingsHours,
-      this.tableBookingsSpecialHours
+  }
+
+  // ---------------- API load ----------------
+  loadFromApi(): void {
+    this.loading = true;
+    this.settings.getWorkingHours(this.storeId).subscribe({
+      next: (data) => {
+        ["general", "pickup", "delivery"].forEach((t: any) => {
+          const arr = this.getSlotsArray(t);
+          arr.clear();
+        });
+        this.getSpecial().clear();
+
+        (data || []).forEach((item: any) => {
+          const isSpecial = !!item.special;
+          const type = (item.type || "general") as
+            | "general"
+            | "pickup"
+            | "delivery"
+            | "special";
+          if (isSpecial) {
+            this.getSpecial().push(this.createSpecialGroup({ ...item }));
+          } else {
+            const arr = this.getSlotsArray(
+              type as "general" | "pickup" | "delivery"
+            );
+            arr.push(this.createSlotGroup({ ...item }));
+          }
+        });
+
+        ["general", "pickup", "delivery"].forEach((t: any) => {
+          const arr = this.getSlotsArray(t);
+          if (arr.length === 0) this.initDefaults(t);
+        });
+
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.error = "Failed to load working hours";
+        this.loading = false;
+      },
+    });
+  }
+
+  // ---------------- slot operations (reactive) ----------------
+  addSlot(type: "general" | "pickup" | "delivery") {
+    this.getSlotsArray(type).push(this.createSlotGroup());
+  }
+
+  copySlot(type: "general" | "pickup" | "delivery", index: number) {
+    const arr = this.getSlotsArray(type);
+    const val = arr.at(index).value;
+    arr.insert(index + 1, this.createSlotGroup({ ...val }));
+  }
+
+  removeSlot(type: "general" | "pickup" | "delivery", index: number) {
+    this.getSlotsArray(type).removeAt(index);
+  }
+
+  dropSlots(
+    event: CdkDragDrop<any[]>,
+    type: "general" | "pickup" | "delivery"
+  ) {
+    const arr = this.getSlotsArray(type);
+    moveItemInArray(arr.controls, event.previousIndex, event.currentIndex);
+    arr.updateValueAndValidity();
+  }
+
+  // ---------------- special hours operations ----------------
+  addSpecial(typeFor?: "general" | "pickup" | "delivery") {
+    this.getSpecial().push(this.createSpecialGroup({}));
+  }
+
+  copySpecial(index: number) {
+    const val = this.getSpecial().at(index).value;
+    this.getSpecial().insert(index + 1, this.createSpecialGroup({ ...val }));
+  }
+
+  removeSpecial(index: number) {
+    this.getSpecial().removeAt(index);
+  }
+
+  dropSpecial(event: CdkDragDrop<any[]>) {
+    moveItemInArray(
+      this.getSpecial().controls,
+      event.previousIndex,
+      event.currentIndex
     );
-    alert("Hours saved!");
+    this.getSpecial().updateValueAndValidity();
   }
 
-  // --- General Hours Methods ---
-  addTimeSlot() {
-    this.regularHours.push({
-      day: this.daysOfWeek[0],
-      openTime: "09:00",
-      closeTime: "17:00",
-      is24Hour: false,
+  // ---------------- saving: map to API format and POST ----------------
+ saveAll(): void {
+  const merged: any[] = [];
+
+  ["general", "pickup", "delivery"].forEach((t: any) => {
+    const arr = this.getSlotsArray(t);
+    arr.controls.forEach((ctrl) => {
+      const v = ctrl.value;
+      merged.push({
+        type: t,
+        day: v.day,
+        from: v.from,
+        to: v.to,
+        is24Hour: !!v.is24Hour,
+        special: false,
+      });
     });
-  }
+  });
 
-  deleteTimeSlot(index: number) {
-    this.regularHours.splice(index, 1);
-  }
-
-  copyTimeSlot(index: number) {
-    const slotToCopy = { ...this.regularHours[index] };
-    this.regularHours.splice(index + 1, 0, slotToCopy);
-  }
-
-  addSpecialHoursSlot() {
-    this.specialHours.push({
-      day: this.daysOfWeek[0],
-      openTime: "09:00",
-      closeTime: "17:00",
-      is24Hour: false,
+  this.getSpecial().controls.forEach((ctrl) => {
+    const v = ctrl.value;
+    merged.push({
+      type: v.type ?? "general",
+      date: v.date,
+      from: v.from,
+      to: v.to,
+      isAllDay: !!v.isAllDay,
+      special: true,
     });
+  });
+
+  // ✅ Log the payload to debug
+  console.log("Final merged payload:", merged);
+
+  this.settings.updateWorkingHours(this.storeId, merged).subscribe({
+    next: (res) => {
+      alert("Working hours saved successfully");
+      this.loadFromApi();
+    },
+    error: (err) => {
+      console.error("API error:", err);
+      this.error = "Failed to save working hours";
+    },
+  });
+}
+
+
+  // ✅ Return slots for current service, cast as FormGroup[]
+  getSlots(type: "general" | "pickup" | "delivery"): FormGroup[] {
+    return this.getSlotsArray(type).controls as FormGroup[];
   }
 
-  deleteSpecialTimeSlot(index: number) {
-    this.specialHours.splice(index, 1);
-  }
-
-  // --- Pickup Hours Methods ---
-  addPickupTimeSlot() {
-    this.pickupHours.push({
-      day: this.daysOfWeek[0],
-      openTime: "09:00",
-      closeTime: "17:00",
-      is24Hour: false,
-    });
-  }
-
-  deletePickupTimeSlot(index: number) {
-    this.pickupHours.splice(index, 1);
-  }
-
-  addPickupSpecialHoursSlot() {
-    this.pickupSpecialHours.push({
-      day: this.daysOfWeek[0],
-      openTime: "09:00",
-      closeTime: "17:00",
-      is24Hour: false,
-    });
-  }
-
-  deletePickupSpecialTimeSlot(index: number) {
-    this.pickupSpecialHours.splice(index, 1);
-  }
-
-  // --- Delivery Hours Methods ---
-  addDeliveryTimeSlot() {
-    this.deliveryHours.push({
-      day: this.daysOfWeek[0],
-      openTime: "09:00",
-      closeTime: "17:00",
-      is24Hour: false,
-    });
-  }
-
-  deleteDeliveryTimeSlot(index: number) {
-    this.deliveryHours.splice(index, 1);
-  }
-
-  addDeliverySpecialHoursSlot() {
-    this.deliverySpecialHours.push({
-      day: this.daysOfWeek[0],
-      openTime: "09:00",
-      closeTime: "17:00",
-      is24Hour: false,
-    });
-  }
-
-  deleteDeliverySpecialTimeSlot(index: number) {
-    this.deliverySpecialHours.splice(index, 1);
-  }
-
-  // --- Dine In Hours Methods ---
-  addDineInTimeSlot() {
-    this.dineInHours.push({
-      day: this.daysOfWeek[0],
-      openTime: "09:00",
-      closeTime: "17:00",
-      is24Hour: false,
-    });
-  }
-
-  deleteDineInTimeSlot(index: number) {
-    this.dineInHours.splice(index, 1);
-  }
-
-  addDineInSpecialHoursSlot() {
-    this.dineInSpecialHours.push({
-      day: this.daysOfWeek[0],
-      openTime: "09:00",
-      closeTime: "17:00",
-      is24Hour: false,
-    });
-  }
-
-  deleteDineInSpecialTimeSlot(index: number) {
-    this.dineInSpecialHours.splice(index, 1);
-  }
-
-  // --- Table Bookings Hours Methods ---
-  addTableBookingsTimeSlot() {
-    this.tableBookingsHours.push({
-      day: this.daysOfWeek[0],
-      openTime: "09:00",
-      closeTime: "17:00",
-      is24Hour: false,
-    });
-  }
-
-  deleteTableBookingsTimeSlot(index: number) {
-    this.tableBookingsHours.splice(index, 1);
-  }
-
-  addTableBookingsSpecialHoursSlot() {
-    this.tableBookingsSpecialHours.push({
-      day: this.daysOfWeek[0],
-      openTime: "09:00",
-      closeTime: "17:00",
-      is24Hour: false,
-    });
-  }
-
-  deleteTableBookingsSpecialTimeSlot(index: number) {
-    this.tableBookingsSpecialHours.splice(index, 1);
+  // ✅ Return special slots, cast as FormGroup[]
+  getSpecials(): FormGroup[] {
+    return this.getSpecial().controls as FormGroup[];
   }
 }
