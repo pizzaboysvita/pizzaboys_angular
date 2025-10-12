@@ -54,7 +54,7 @@ export class ViewRestaurantsComponent {
     this.storeForm = this.fb.group({
       storeName: ['', Validators.required],
       email: ['', [Validators.required, Validators?.email]],
-      phoneNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
+      phoneNumber: ['', [Validators.required]],
       password: [''],
       address: ['', Validators.required],
       city: ['', Validators.required],

@@ -75,7 +75,7 @@ export class AddRestaurantsComponent {
       ],
       phoneNumber: [
         "",
-        [Validators.required, Validators.pattern(/^[0-9]{10}$/)],
+        [Validators.required]
       ],
       password: ["", [Validators.required, Validators.minLength(6)]],
       address: ["", Validators.required],
