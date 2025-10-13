@@ -281,7 +281,7 @@ delete
     this.loginUser = JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user
 
     this.categoriesForm = this.formBuilder.group({
-      store: [''],
+      store: ['-1'],
       address: [''],
       status: ['']
     });
@@ -376,7 +376,7 @@ delete
   }
   getmenuList() {
 
-    this.apiService.getApi(AppConstants.api_end_points.menu + '?store_id=' + -1).subscribe((data: any) => {
+    this.apiService.getApi(AppConstants.api_end_points.menu + '?store_id=' + this.categoriesForm.value.store).subscribe((data: any) => {
       if (data) {
 
         // data.data.forEach((item: any) => {

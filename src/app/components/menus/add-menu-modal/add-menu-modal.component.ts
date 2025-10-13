@@ -290,7 +290,7 @@ isHide=false
       "delivery_surcharge": this.surchargeForm.value.deliverySurcharge,
       "managed_delivery_surcharge": this.surchargeForm.value.managedDeliverySurcharge,
       "dine_in_surcharge": this.surchargeForm.value.dineInSurcharge,
-      "store_id":this.conditionForm.getRawValue().store.toString(),
+      "store_id": this.conditionForm.value.store.length ==0?this.storeList.map((item:any)=>item.store_id):this.conditionForm.value.store,
       menu_image: this.uploadImagUrl,
       "created_by": JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).user.user_id,
     }
