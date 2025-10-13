@@ -11,8 +11,8 @@
       <!-- <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
           <h6 class="fw-bold  mb-1">Order Details</h6> -->
-          <!-- <div class="text-muted" style="font-size: 12px;">#ORD-3291</div> -->
-        <!-- </div>
+      <!-- <div class="text-muted" style="font-size: 12px;">#ORD-3291</div> -->
+      <!-- </div>
         <div class="maerail-btn-icons" (click)="orderList()">
           <span class="material-symbols-outlined" style="font-size: 18px;">more_vert</span>
         </div>
@@ -42,7 +42,7 @@
         <!-- <div class="checkout-detail p-0"> -->
         <ul>
           @for (item of totalCartDetails; track item) {
-            @if(item.dish_type =='combo'){
+          @if(item.dish_type =='combo'){
           <li class="mb-3">
             <div class="horizontal-product-box">
               <div class="row align-items-start">
@@ -61,48 +61,47 @@
                 <!-- Right: Dish Info -->
                 <!-- Right: Dish Info -->
                 <div class="col-9">
-  <!-- Dish Name and Price -->
-  <div class="d-flex justify-content-between">
-    <h6 class="mb-0" style="font-size: 14px;"><b>{{ item.dish_name }}</b></h6>
-    <h6 class="mb-0 fw-bold" style="font-size: 14px;">${{ item.item_total_price }}</h6>
-  </div>
+                  <!-- Dish Name and Price -->
+                  <div class="d-flex justify-content-between">
+                    <h6 class="mb-0" style="font-size: 14px;"><b>{{ item.dish_name }}</b></h6>
+                    <h6 class="mb-0 fw-bold" style="font-size: 14px;">${{ item.item_total_price }}</h6>
+                  </div>
 
-  <!-- Ingredients and their prices -->
-  <div *ngFor="let comboOpt of item.combo_selected_dishes" class="mt-1">
-    <!-- Combo option + dish name -->
-    <div style="font-size: 14px;">
-      <span style="text-decoration: underline; font-weight: 600;">
-    {{ comboOpt.combo_option_name }}
-  </span> ({{ comboOpt.combo_option_dish_name }})
-    </div>
+                  <!-- Ingredients and their prices -->
+                  <div *ngFor="let comboOpt of item.combo_selected_dishes" class="mt-1">
+                    <!-- Combo option + dish name -->
+                    <div style="font-size: 14px;">
+                      <span style="text-decoration: underline; font-weight: 600;">
+                        {{ comboOpt.combo_option_name }}
+                      </span> ({{ comboOpt.combo_option_dish_name }})
+                    </div>
 
-    <!-- Each option set -->
-    <div *ngFor="let option of comboOpt.combo_option_selected_array" class="ms-3">
-      <div style="font-size: 14px; font-weight: 500;">
-        {{ option.dish_opt_type }}
-      </div>
+                    <!-- Each option set -->
+                    <div *ngFor="let option of comboOpt.combo_option_selected_array" class="ms-3">
+                      <div style="font-size: 14px; font-weight: 500;">
+                        {{ option.dish_opt_type }}
+                      </div>
 
-      <!-- Selected options inside -->
-      <ul class="ms-4 mb-1" style="font-size: 14px; list-style-type: disc;">
-        <li *ngFor="let opt of option.choose_option">
-          {{ opt.name }} - ${{ opt.price }}
-        </li>
-        
-      </ul>
-    </div>
-  </div>
-  <div class="d-flex align-items-center gap-3">
+                      <!-- Selected options inside -->
+                      <ul class="ms-4 mb-1" style="font-size: 14px; list-style-type: disc;">
+                        <li *ngFor="let opt of option.choose_option">
+                          {{ opt.name }} - ${{ opt.price }}
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                    <div class="d-flex align-items-center gap-3">
   <i class="ri-edit-2-line text-primary fs-5" style="cursor: pointer;" (click)="editItem(item)"></i>
   <i class="ri-delete-bin-line text-danger fs-5" style="cursor: pointer;" (click)="removeItems(item)"></i>
 </div>
-</div>
+                </div>
 
 
               </div>
             </div>
           </li>
-        }@else if (item.dish_type =='standard'){
- <li class="mb-3">
+          }@else if (item.dish_type =='standard'){
+          <li class="mb-3">
             <div class="horizontal-product-box">
               <div class="row align-items-start">
                 <!-- Left: Image + Quantity -->
@@ -119,48 +118,43 @@
 
                 <!-- Right: Dish Info -->
                 <!-- Right: Dish Info -->
-                 <div class="col-9">
-  <!-- Dish Name and Price -->
-  <div class="d-flex justify-content-between">
-    <h6 class="mb-0" style="font-size: 14px;"><b>{{ item.dish_name }}</b></h6>
-    <h6 class="mb-0 fw-bold" style="font-size: 14px;">${{ item.item_total_price }}</h6>
-  </div>
+                <div class="col-9">
+                  <!-- Dish Name and Price -->
+                  <div class="d-flex justify-content-between">
+                    <h6 class="mb-0" style="font-size: 14px;"><b>{{ item.dish_name }}</b></h6>
+                    <h6 class="mb-0 fw-bold" style="font-size: 14px;">${{ item.item_total_price }}</h6>
+                  </div>
 
-  <!-- Ingredients and their prices -->
-  <div *ngFor="let standedOpt of item.standed_option_selected_array" class="mt-1">
-    <!-- Combo option + dish name -->
-   
+                  <!-- Ingredients and their prices -->
+                  <div *ngFor="let standedOpt of item.standed_option_selected_array" class="mt-1">
+                    <!-- Combo option + dish name -->
 
-    <!-- Each option set -->
-    <!-- <div *ngFor="let option of standedOpt.combo_option_selected_array" class="ms-3"> -->
-      <div style="font-size: 14px; font-weight: 500;">
-        {{ standedOpt.dish_opt_type }}
-      </div>
 
-      <!-- Selected options inside -->
-      <ul class="ms-4 mb-1" style="font-size: 14px; list-style-type: disc;">
-        <li *ngFor="let opt of standedOpt.choose_option">
-          {{ opt.name }} <span *ngIf="opt.price"> - ${{ opt.price }}</span>
-        </li>
-         
-      </ul>
-    
-    <!-- </div> -->
+                    <!-- Each option set -->
+                    <!-- <div *ngFor="let option of standedOpt.combo_option_selected_array" class="ms-3"> -->
+                    <div style="font-size: 14px; font-weight: 500;">
+                      {{ standedOpt.dish_opt_type }}
+                    </div>
 
-  </div>
-   <div class="d-flex align-items-center gap-3">
+                    <!-- Selected options inside -->
+                    <ul class="ms-4 mb-1" style="font-size: 14px; list-style-type: disc;">
+                      <li *ngFor="let opt of standedOpt.choose_option">
+                        {{ opt.name }} <span *ngIf="opt.price"> - ${{ opt.price }}</span>
+                      </li>
+                    </ul>
+                    <!-- </div> -->
+                  </div>
+                    <div class="d-flex align-items-center gap-3">
   <i class="ri-edit-2-line text-primary fs-5" style="cursor: pointer;" (click)="editItem(item)"></i>
   <i class="ri-delete-bin-line text-danger fs-5" style="cursor: pointer;" (click)="removeItems(item)"></i>
 </div>
-
-</div>
+                </div>
 
               </div>
             </div>
               
           </li>
-         
-        }
+          }
           }
         </ul>
         <!-- </div> -->
@@ -179,11 +173,11 @@
           <span class="fw-semibold">${{ tax }}</span>
         </div>
         @if(orderForm.value.orderType =='delivery'){
-          <div class="d-flex justify-content-between mb-2">
+        <div class="d-flex justify-content-between mb-2">
           <span class="text-muted">Delivery Fee</span>
           <span class="fw-semibold">${{ deliveryfee }}</span>
         </div>
-      }
+        }
         <div class="d-flex justify-content-between fw-bold mb-3">
           <span>Total</span>
           <span>${{ total.toFixed(2) }}</span>
@@ -261,7 +255,8 @@
   </div>
 </div>
 
-<div class="modal fade show d-block" tabindex="-1" role="dialog" [ngClass]="{ 'show d-block': showOrderDuePopup }" style="  background: rgba(0,0,0,0.5);  /* <-- dim effect */
+<div class="modal fade show d-block" tabindex="-1" role="dialog" [ngClass]="{ 'show d-block': showOrderDuePopup }"
+  style="  background: rgba(0,0,0,0.5);  /* <-- dim effect */
   z-index: 1040; ">
   <div class="modal-dialog modal-sm  modal-dialog-centered" role="document">
     <div class="modal-content">
@@ -274,7 +269,7 @@
 
       <!-- Body -->
       <div class="modal-body">
-         <form [formGroup]="orderdueForm">
+        <form [formGroup]="orderdueForm">
 
           <!-- Order Type -->
           <div class="mb-3">
@@ -284,15 +279,15 @@
               <option value="Later">Later</option>
             </select>
           </div>
-      <div class="mb-3" *ngIf="orderdueForm.get('orderDue')?.value == 'Later'">
+          <div class="mb-3" *ngIf="orderdueForm.get('orderDue')?.value == 'Later'">
             <label class="form-label">Date and Time</label>
-            <input type="datetime-local"
-              placeholder="Select date and Time" formControlName="orderDateTime" />
+            <input type="datetime-local" placeholder="Select date and Time" formControlName="orderDateTime" />
           </div>
-    
 
-         </form>
-         <button class="btn fw-bold text-white " style="background: #f44336;margin-left: 30%;" (click)="submitDUeOrder()">Submit</button>
+
+        </form>
+        <button class="btn fw-bold text-white " style="background: #f44336;margin-left: 30%;"
+          (click)="submitDUeOrder()">Submit</button>
       </div>
     </div>
   </div>

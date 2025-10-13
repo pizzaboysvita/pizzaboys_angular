@@ -305,13 +305,13 @@ delete
     this.loginUser= JSON.parse(this.session.getsessionStorage('loginDetails') as any).user
    
     this.menuSearchForm = this.fb.group({
-      store: [-1],
+      store: [[-1]],
       menuName: [''],
       status: ['']
     })
      if(this.loginUser.role_id !=1){
       this.menuSearchForm.patchValue({
-        store: this.loginUser.store_id
+        store: [this.loginUser.store_id] 
       })
       this.menuSearchForm.get('store')?.disable(); 
     }else{
@@ -400,19 +400,26 @@ delete
       }
     })
   }
-  getmenuList() {
+   getmenuList() {
+    const selectedStores = this.menuSearchForm.getRawValue().store;
 
-    this.apis.getApi(AppConstants.api_end_points.menu + '?store_id=' + this.menuSearchForm.getRawValue().store).subscribe((data: any) => {
+    let storeParam = Array.isArray(selectedStores)
+      ? selectedStores.join(',')
+      : selectedStores;
+
+    if (storeParam == -1 || storeParam === '-1') storeParam = '';
+
+    this.apis.getApi(`${AppConstants.api_end_points.menu}?store_id=${storeParam}`).subscribe((data: any) => {
       if (data) {
-        console.log(data)
         data.data.forEach((item: any) => {
-          item.status = item.status == 1 ? 'Active' : item.status == 0 ? 'In-Active' : ''
-        })
-        this.menuItemsList = data.data
-        this.menuItemsSortingList = data.data
+          item.status = item.status == 1 ? 'Active' : item.status == 0 ? 'In-Active' : '';
+        });
+        this.menuItemsList = data.data;
+        this.menuItemsSortingList = data.data;
       }
-    })
+    });
   }
+
   storeNameData(data: any) {
     console.log(this.storeList, 'storeeeeee namee')
     const storeName = this.storeList.find((store: any) => store.store_id == data)
