@@ -51,6 +51,10 @@ export class OrderDetailsComponent {
   paymentdetails: any;
   comboOrderDetails: any[] = [];
   showCustomerModal: boolean;
+  selectedItemForEdit: any;
+  selectedDishFromList: any;
+  showPopup: boolean;
+  isEditing: boolean;
   constructor(private apiService: ApisService, private fb: FormBuilder, private el: ElementRef, private modal: NgbModal, private toastr: ToastrService, private cdr: ChangeDetectorRef, private sessionStorageService: SessionStorageService,private modalService: NgbModal) {
     this.markers = [];
     this.zoom = 3;
@@ -110,40 +114,96 @@ export class OrderDetailsComponent {
 
   @ViewChild(GoogleMap) map!: GoogleMap;
 
-  addToCart(item: any) {
-    console.log(item,'>>>>>>>>>>>>>>> Add To cart')
+//   addToCart(item: any) {
+//     console.log(item,'>>>>>>>>>>>>>>> Add To cart')
 
+//     const existingItem = this.cartItems.find((cartItem: any) => cartItem.dish_id === item.dish_id);
+//     console.log(existingItem, 'existingItem')
+//     if (existingItem) {
+//       // If item already exists in the cart, just update the quantity
+//       existingItem.dish_quantity++;
+//     } else {
+//       // console.log(  this.moveSelectedOptionsToMainObject(item), 'moveSelectedOptionsToMainObject')
+//       this.cartItems.push({ ...item });
+//       // if(item.dish_type =='combo'){
+//   this.totalCartDetails=this.apiService.transformData(this.cartItems)
+// // }
+//       console.log(this.totalCartDetails, 'this.totalCartDetails')
+//       if (this.cartItems.length > 1) {
+//         this.cartItems.forEach((cartItem: any) => {
+//           if (cartItem.dish_type == 'standard') {
+//             this.comboDishDetails.forEach((comboItem: any) => {
+//               if (comboItem.combo_item_dish_id == cartItem.dish_id) {
+//                 console.log(comboItem, 'comboItem')
+//                 this.toastr.success(comboItem.dish_name + ' ' + comboItem.dish_price, 'Check Combo Options');
+//                 // 
+//                 // cartItem.dish_quantity = 1; // Initialize quantity for each item
+//               }
+//             });
+//           }
+//         })
+//       }
+//       // this.moveSelectedOptionsToMainObject(item);
+//     }
+//     console.log(this.cartItems, '  this.cartItems')
+//   }
+addToCart(item: any) {
+  console.log(item, '>>>>>>>>>>>>>>> Add To cart');
 
-    const existingItem = this.cartItems.find((cartItem: any) => cartItem.dish_id === item.dish_id);
-    console.log(existingItem, 'existingItem')
-    if (existingItem) {
-      // If item already exists in the cart, just update the quantity
-      existingItem.dish_quantity++;
+  const existingIndex = this.cartItems.findIndex(
+    (cartItem: any) => cartItem.dish_id === item.dish_id
+  );
+
+  if (existingIndex > -1) {
+    // ✅ Item already exists in cart
+    const existingItem = this.cartItems[existingIndex];
+
+    // ✅ If editing, reflect changes (no duplicate)
+    if (this.isEditing) {
+      console.log('🟢 Updating existing item with edited details...');
+      this.cartItems[existingIndex] = {
+        ...existingItem,
+        ...item, // merge all latest edits
+        dish_option_set_array: [...(item.dish_option_set_array || [])],
+        dish_ingredient_array: [...(item.dish_ingredient_array || [])],
+      };
     } else {
-      // console.log(  this.moveSelectedOptionsToMainObject(item), 'moveSelectedOptionsToMainObject')
-      this.cartItems.push({ ...item });
-      // if(item.dish_type =='combo'){
-  this.totalCartDetails=this.apiService.transformData(this.cartItems)
-// }
-      console.log(this.totalCartDetails, 'this.totalCartDetails')
-      if (this.cartItems.length > 1) {
-        this.cartItems.forEach((cartItem: any) => {
-          if (cartItem.dish_type == 'standard') {
-            this.comboDishDetails.forEach((comboItem: any) => {
-              if (comboItem.combo_item_dish_id == cartItem.dish_id) {
-                console.log(comboItem, 'comboItem')
-                this.toastr.success(comboItem.dish_name + ' ' + comboItem.dish_price, 'Check Combo Options');
-                // 
-                // cartItem.dish_quantity = 1; // Initialize quantity for each item
-              }
-            });
-          }
-        })
-      }
-      // this.moveSelectedOptionsToMainObject(item);
+      // ✅ If not editing, just increase quantity
+      existingItem.dish_quantity++;
     }
-    console.log(this.cartItems, '  this.cartItems')
+  } else {
+    // ✅ If it’s a new item, push to cart
+    this.cartItems.push({ ...item });
   }
+
+  // ✅ Always recalc total and refresh references
+  this.totalCartDetails = this.apiService.transformData(this.cartItems);
+
+  // ✅ Combo check logic (unchanged)
+  if (this.cartItems.length > 1) {
+    this.cartItems.forEach((cartItem: any) => {
+      if (cartItem.dish_type === 'standard') {
+        this.comboDishDetails.forEach((comboItem: any) => {
+          if (comboItem.combo_item_dish_id === cartItem.dish_id) {
+            console.log(comboItem, 'comboItem');
+            this.toastr.success(
+              `${comboItem.dish_name} ${comboItem.dish_price}`,
+              'Check Combo Options'
+            );
+          }
+        });
+      }
+    });
+  }
+
+  // ✅ Trigger change detection
+  this.cartItems = [...this.cartItems];
+   
+  this.cdr.detectChanges();
+
+  console.log(this.cartItems, 'Updated cartItems after add/edit');
+}
+
   increaseModalQuantity(item: any) {
     console.log(item, 'increaseModalQuantity')
     item['dish_quantity']++;
@@ -186,6 +246,29 @@ export class OrderDetailsComponent {
     console.log(this.cartItems)
   }
 
+removeItems(item: any) {
+  // Remove the item from cartItems
+  this.cartItems = this.cartItems.filter((cartItem: { dish_id: any; }) => cartItem.dish_id !== item.dish_id);
+
+  // Recalculate each item's duplicate_dish_price
+  this.cartItems.forEach((cartItem: { duplicate_dish_price: number; }) => {
+    cartItem.duplicate_dish_price = this.apiService.getItemSubtotal(cartItem);
+  });
+
+  // Update total price
+  this.totalPrice = this.cartItems.reduce(
+    (sum: any, cartItem: { duplicate_dish_price: any; }) => sum + cartItem.duplicate_dish_price,
+    0
+  );
+
+  // Update cart reference if needed
+  this.totalCartDetails = [...this.cartItems];
+
+  // Trigger Angular change detection
+  this.cdr.detectChanges();
+
+  console.log(this.cartItems, 'Updated cartItems after removal');
+}
 
  
   showNewModelPopup = false;
@@ -319,6 +402,7 @@ this.cartItems.forEach((dish: any) => {
       if (res && res.code == 1) {
         this.toastr.success(res.message, 'Success');
         this.cartItems = [];
+        this.totalCartDetails=[]
       }
     })
         
@@ -415,6 +499,15 @@ clear(){
     phone: ''
   };
 }
+ @ViewChild(MediaComponent) mediaComponent!: MediaComponent;
+
+  editItem(item: any) {
+    this.isEditing=true
+    if (this.mediaComponent) {
+      this.mediaComponent.openEditPopup(item); // ✅ call popup method from media
+    }
+  }
+
 }
 
 export interface CartItem {
