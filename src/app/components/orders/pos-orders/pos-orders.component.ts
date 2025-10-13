@@ -313,7 +313,7 @@ export class PosOrdersComponent {
   constructor(
     private apiService: ApisService,
     private sessionStorage: SessionStorageService,
-     private modalService: NgbModal
+     public modalService: NgbModal
 
   ) {}
 

@@ -1,10 +1,12 @@
 import { CommonModule } from "@angular/common";
 import { Component, input, Input } from "@angular/core";
-import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap"; 
+import { NgbActiveModal, NgbModal } from "@ng-bootstrap/ng-bootstrap"; 
 import { ApisService } from "../../../shared/services/apis.service";
 import { AppConstants } from "../../../app.constants";
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { SessionStorageService } from "../../../shared/services/session-storage.service";
+import { ToastrService } from "ngx-toastr";
+import Swal from "sweetalert2";
 
 @Component({
   selector: "app-order-dialog",
@@ -55,7 +57,7 @@ currentStatus:any // <-- backend API or dynamic status
   totalOrdermerged:any
   orderForm:FormGroup
   orderDishDetails:any=[]
-  constructor(public activeModal: NgbActiveModal, private session:SessionStorageService,private apis: ApisService,private fb:FormBuilder) {}
+  constructor(public modal: NgbModal,private toastr: ToastrService,private session:SessionStorageService,private apis: ApisService,private fb:FormBuilder) {}
 
   ngOnInit(): void {
     this.orderDishDetails=JSON.parse(this.data.combo_details_json)
@@ -132,14 +134,35 @@ currentStatus:any // <-- backend API or dynamic status
   }
   updatedOrder(){
     const reqbody={
- "order_id": this.data.order_master_id,
+  "order_id": this.data.order_master_id,
   "order_status": this.orderForm.value.status,
   "updated_by":  JSON.parse(this.session.getsessionStorage('loginDetails') as any).user.user_id
- 
 }
-this.apis.putApi(AppConstants.api_end_points.orderList,reqbody).subscribe((data)=>{
-  console.log(data)
-})
+this.apis.putApi(AppConstants.api_end_points.orderList,reqbody).subscribe((data:any)=>{
+      if (data && data.code == 1) {
+         Swal.fire('Success!',data.message, 'success').then(
+              (result) => {
+          if (result) {
+                    this.modal.dismissAll();
+          }}
+             );
+
+      }
+      else{
+             Swal.fire('Success!',data.message, 'success').then(
+              (result) => {
+          if (result) {
+                    this.modal.dismissAll();
+
+          
+          }}
+             );
+      }
+    })
+        
+     
+    
+ 
 
   }
   // component.ts
