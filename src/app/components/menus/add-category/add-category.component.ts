@@ -209,6 +209,7 @@ isHide=false
   
 console.log(this.menuForm.value.store,'selected store idddddddddddddd')
     this.apis.getApi(`/api/menu?store_id=${this.menuForm.value.store ==''?-1:this.menuForm.value.store}`).subscribe((res: any) => {
+      console.log(res,'menu listttttttttttttttt')
       if (res.code == "1") {
         this.menuList = res.data;
         

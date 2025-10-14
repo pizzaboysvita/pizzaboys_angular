@@ -332,7 +332,7 @@ this.selectedPreset =staff.role_id
 
     const formValues = this.staffForm.getRawValue();
     const permissionValues = this.permissionForm.getRawValue();
-
+console.log(formValues,permissionValues)
     if (!permissionValues.store) {
       Swal.fire("Error", "Please select a store", "error");
       return;
@@ -370,13 +370,13 @@ this.selectedPreset =staff.role_id
       updated_by: 1,
       refresh_token: "",
       permissions,
-      store_id: permissionValues.store,
+      store_id: this.permissionForm.getRawValue().store,
     };
 
     if (!this.file && this.profileImage && this.profileImage !== this.defaultImage) {
       reqBody.profiles = this.profileImage;
     }
-
+console.log(reqBody)
     const formData = new FormData();
     // if (this.file) {
       formData.append("image", this.file?this.file:'');

@@ -305,7 +305,7 @@ delete
     this.loginUser= JSON.parse(this.session.getsessionStorage('loginDetails') as any).user
    
     this.menuSearchForm = this.fb.group({
-      store: [[-1]],
+      store: ['-1'],
       menuName: [''],
       status: ['']
     })
@@ -402,14 +402,14 @@ delete
   }
    getmenuList() {
     const selectedStores = this.menuSearchForm.getRawValue().store;
-
+console.log(selectedStores, 'selected storeee')
     let storeParam = Array.isArray(selectedStores)
       ? selectedStores.join(',')
       : selectedStores;
 
     if (storeParam == -1 || storeParam === '-1') storeParam = '';
 
-    this.apis.getApi(`${AppConstants.api_end_points.menu}?store_id=${storeParam}`).subscribe((data: any) => {
+    this.apis.getApi(`${AppConstants.api_end_points.menu}?store_id=${-1}`).subscribe((data: any) => {
       if (data) {
         data.data.forEach((item: any) => {
           item.status = item.status == 1 ? 'Active' : item.status == 0 ? 'In-Active' : '';
