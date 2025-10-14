@@ -416,41 +416,109 @@ openEditPopup(item: any) {
   }
 }
 
+  // openIngredientsPopup(item: any) {
+  //    this.isOptionSelected = false;
+  //   item.dishnote = ''
+  //   this.selectedChildPerCombo = {};
+  //   if (item.dish_type === 'combo') {
+
+  //     this.comboDishDetails = []
+
+  //     item.dish_choices_json_array = this.filterIndeterminateCategories(JSON.parse(item.dish_choices_json));
+  //     this.selectedDishFromList = item;
+  //     item['dish_quantity'] = 1; // Ensure quantity is set
+  //     this.selectedDishFromList = item;
+  //     this.selectedDishFromList.duplicate_dish_price = item.dish_price
+  //     this.cartItems = [item]
+  //     this.showPopup = true;
+
+  //     console.log("Opening combo ingredients popup for item:", item);
+  //     console.log(this.selectedDishFromList, 'selectedDishFromList 123 456')
+  //   } else {
+  //     this.cartItems = []
+  //     item['dish_option_set_array'].forEach((optionSet: any) => {
+  //       optionSet.option_type = optionSet.dispaly_name == "Base" ? "radio" : optionSet.dispaly_name == "Extra Meat Toppings" ? "counter" : "counter";
+  //     })
+  //     console.log(item['dish_ingredient_array'], 'item.dish_option_set_array')
+  //     item['dish_quantity'] = 1; // Ensure quantity is set
+  //     this.selectedDishFromList = item;
+  //     this.selectedDishFromList.duplicate_dish_price = item.dish_price
+  //     item['dish_ingredient_array'].forEach((ingredient: any) => {
+  //       ingredient.selected = true; // Default all ingredients to selected
+  //     });
+  //     this.cartItems = [item]
+  //     this.showPopup = true;
+  //     this.cdr.detectChanges();
+  //   }
+  // }
   openIngredientsPopup(item: any) {
-     this.isOptionSelected = false;
-    item.dishnote = ''
-    this.selectedChildPerCombo = {};
-    if (item.dish_type === 'combo') {
+  this.isOptionSelected = false;
+  this.selectedChildPerCombo = {};
+  item.dishnote = '';
 
-      this.comboDishDetails = []
+  if (item.dish_type === 'combo') {
+    this.comboDishDetails = [];
 
-      item.dish_choices_json_array = this.filterIndeterminateCategories(JSON.parse(item.dish_choices_json));
-      this.selectedDishFromList = item;
-      item['dish_quantity'] = 1; // Ensure quantity is set
-      this.selectedDishFromList = item;
-      this.selectedDishFromList.duplicate_dish_price = item.dish_price
-      this.cartItems = [item]
-      this.showPopup = true;
+    // ✅ Parse combo items freshly (no old selections)
+    const parsedChoices = JSON.parse(item.dish_choices_json || '[]');
+    item.dish_choices_json_array = this.filterIndeterminateCategories(parsedChoices);
 
-      console.log("Opening combo ingredients popup for item:", item);
-      console.log(this.selectedDishFromList, 'selectedDishFromList 123 456')
-    } else {
-      this.cartItems = []
-      item['dish_option_set_array'].forEach((optionSet: any) => {
-        optionSet.option_type = optionSet.dispaly_name == "Base" ? "radio" : optionSet.dispaly_name == "Extra Meat Toppings" ? "counter" : "counter";
-      })
-      console.log(item['dish_ingredient_array'], 'item.dish_option_set_array')
-      item['dish_quantity'] = 1; // Ensure quantity is set
-      this.selectedDishFromList = item;
-      this.selectedDishFromList.duplicate_dish_price = item.dish_price
-      item['dish_ingredient_array'].forEach((ingredient: any) => {
-        ingredient.selected = true; // Default all ingredients to selected
+    // Reset selection state
+    item.dish_choices_json_array.forEach((choice: any) => {
+      choice.menuItems?.forEach((menu: any) => {
+        menu.categories?.forEach((cat: any) => {
+          cat.dishes?.forEach((dish: any) => {
+            dish.selected = false;
+            dish.option_set_array?.forEach((opt: any) => {
+              opt.selected = false;
+              opt.quantity = 0;
+            });
+          });
+        });
       });
-      this.cartItems = [item]
-      this.showPopup = true;
-      this.cdr.detectChanges();
-    }
+    });
+
+    item.dish_quantity = 1;
+    item.duplicate_dish_price = item.dish_price;
+    this.selectedDishFromList = item;
+    this.cartItems = [item];
+    this.showPopup = true;
+
+    console.log('Opening combo ingredients popup for item:', item);
+  } else {
+    this.cartItems = [];
+
+    // ✅ Reset radio/counter options
+    item.dish_option_set_array.forEach((optionSet: any) => {
+      optionSet.option_type =
+        optionSet.dispaly_name === 'Base'
+          ? 'radio'
+          : optionSet.dispaly_name === 'Extra Meat Toppings'
+          ? 'counter'
+          : 'counter';
+
+      optionSet.option_set_array.forEach((opt: any) => {
+        opt.selected = false;
+        opt.quantity = 0;
+      });
+    });
+
+    // ✅ Reset ingredients
+    item.dish_ingredient_array?.forEach((ingredient: any) => {
+      ingredient.selected = true; // default checked
+    });
+
+    item.dish_quantity = 1;
+    item.duplicate_dish_price = item.dish_price;
+    this.selectedDishFromList = item;
+    this.cartItems = [item];
+    this.showPopup = true;
+    this.cdr.detectChanges();
+
+    console.log('Opening standard dish popup for item:', item);
   }
+}
+
   filterIndeterminateCategories(menuData: any[]) {
     return menuData.map(menuGroup => ({
       ...menuGroup,
