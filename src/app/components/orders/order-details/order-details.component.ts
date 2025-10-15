@@ -83,7 +83,7 @@ export class OrderDetailsComponent {
     });
     this.orderdueForm = this.fb.group({
       orderDue: ['ASAP', Validators.required],
-      orderDateTime: ['', Validators.required]
+      orderDateTime: [new Date(), Validators.required]
     });
     this.orderDueDetails = this.orderdueForm.value.orderDue;
     const userId = JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).user.store_id;
@@ -147,6 +147,64 @@ export class OrderDetailsComponent {
 //     }
 //     console.log(this.cartItems, '  this.cartItems')
 //   }
+// addToCart(item: any) {
+//   console.log(item, '>>>>>>>>>>>>>>> Add To cart');
+
+//   const existingIndex = this.cartItems.findIndex(
+//     (cartItem: any) => cartItem.dish_id === item.dish_id
+//   );
+
+//   if (existingIndex > -1) {
+//     // ✅ Item already exists in cart
+
+//     // ✅ If editing, reflect changes (no duplicate)
+//     if (this.isEditing) {
+//     const existingItem = this.cartItems[existingIndex];
+
+//       console.log('🟢 Updating existing item with edited details...');
+//       this.cartItems[existingIndex] = {
+//         ...existingItem,
+//         ...item, // merge all latest edits
+//         dish_option_set_array: [...(item.dish_option_set_array || [])],
+//         dish_ingredient_array: [...(item.dish_ingredient_array || [])],
+//       };
+//     } else {
+//           const existingItem = this.cartItems[existingIndex];
+//       // ✅ If not editing, just increase quantity
+//       existingItem.dish_quantity++;
+//     }
+//   } else {
+//     // ✅ If it’s a new item, push to cart
+//     this.cartItems.push({ ...item });
+//   }
+
+//   // ✅ Always recalc total and refresh references
+//   this.totalCartDetails = this.apiService.transformData(this.cartItems);
+
+//   // ✅ Combo check logic (unchanged)
+//   if (this.cartItems.length > 1) {
+//     this.cartItems.forEach((cartItem: any) => {
+//       if (cartItem.dish_type === 'standard') {
+//         this.comboDishDetails.forEach((comboItem: any) => {
+//           if (comboItem.combo_item_dish_id === cartItem.dish_id) {
+//             console.log(comboItem, 'comboItem');
+//             this.toastr.success(
+//               `${comboItem.dish_name} ${comboItem.dish_price}`,
+//               'Check Combo Options'
+//             );
+//           }
+//         });
+//       }
+//     });
+//   }
+
+//   // ✅ Trigger change detection
+//   this.cartItems = [...this.cartItems];
+   
+//   this.cdr.detectChanges();
+
+//   console.log(this.cartItems, 'Updated cartItems after add/edit');
+// }
 addToCart(item: any) {
   console.log(item, '>>>>>>>>>>>>>>> Add To cart');
 
@@ -154,29 +212,33 @@ addToCart(item: any) {
     (cartItem: any) => cartItem.dish_id === item.dish_id
   );
 
-  if (existingIndex > -1) {
-    // ✅ Item already exists in cart
-    const existingItem = this.cartItems[existingIndex];
+  const existingItem = existingIndex > -1 ? this.cartItems[existingIndex] : null;
 
-    // ✅ If editing, reflect changes (no duplicate)
-    if (this.isEditing) {
-      console.log('🟢 Updating existing item with edited details...');
-      this.cartItems[existingIndex] = {
-        ...existingItem,
-        ...item, // merge all latest edits
-        dish_option_set_array: [...(item.dish_option_set_array || [])],
-        dish_ingredient_array: [...(item.dish_ingredient_array || [])],
-      };
-    } else {
-      // ✅ If not editing, just increase quantity
-      existingItem.dish_quantity++;
-    }
-  } else {
-    // ✅ If it’s a new item, push to cart
+  // ✏️ CASE 1: If editing and item exists → Update it
+  if (this.isEditing && existingItem) {
+    console.log("🟢 Editing mode — updating existing item...");
+    this.cartItems[existingIndex] = {
+      ...existingItem,
+      ...item, // Merge all updated fields
+      dish_option_set_array: [...(item.dish_option_set_array || [])],
+      dish_ingredient_array: [...(item.dish_ingredient_array || [])],
+    };
+  }
+
+  // 🆕 CASE 2: If NOT editing and item does NOT exist → Add new
+  else if (!this.isEditing && !existingItem) {
+    console.log("🆕 Adding new item to cart...");
     this.cartItems.push({ ...item });
   }
 
-  // ✅ Always recalc total and refresh references
+  // 🚫 CASE 3: If NOT editing and item already exists → Skip (do nothing)
+  else if (!this.isEditing && existingItem) {
+    console.log("🚫 Item already exists in cart — skipping add.");
+    // No changes
+    return;
+  }
+
+  // ✅ Recalculate totals
   this.totalCartDetails = this.apiService.transformData(this.cartItems);
 
   // ✅ Combo check logic (unchanged)
@@ -198,11 +260,11 @@ addToCart(item: any) {
 
   // ✅ Trigger change detection
   this.cartItems = [...this.cartItems];
-   
   this.cdr.detectChanges();
 
-  console.log(this.cartItems, 'Updated cartItems after add/edit');
+  console.log(this.cartItems, '🧾 Updated cartItems after add/edit');
 }
+
 
   increaseModalQuantity(item: any) {
     console.log(item, 'increaseModalQuantity')

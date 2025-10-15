@@ -12,7 +12,8 @@ import { SessionStorageService } from '../../../shared/services/session-storage.
 export class OrderPaymentsComponent {
   @Input() data: any;
   @Input() customer: any;
-
+isLoading = false;
+progressValue = 10;
   splitBy = 2;
   splitRows: any;
   isSplitPayment: boolean=false;
@@ -308,11 +309,15 @@ openCashModal(type:any) {
   if(this.activeTab=='items'){
       this.cashpaymentAmount = this.selectedRowData.item_total_price; 
     }
-  if(type =='Cash'){
+  if(type == 'Cash'){
   this.showNewModelPopup=true
   }
-  if(type='EFTPOS'){
+  else if(type=='EFTPOS'){
        this.showEftModal=true
+       this.isLoading = true;
+         setTimeout(() => {
+    this.isLoading = false;
+  }, 2000);
   }
   else{
     this.confirmCashPayment()

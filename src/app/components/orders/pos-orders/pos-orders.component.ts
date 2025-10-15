@@ -202,7 +202,7 @@ export class PosOrdersComponent {
     {
 
 
-      field: 'due',
+      field: 'order_due',
       headerName: 'Placed',
       suppressMenu: true,
       unSortIcon: true,
