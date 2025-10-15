@@ -11,6 +11,7 @@ import { ApisService } from "../../../shared/services/apis.service";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { SessionStorageService } from "../../../shared/services/session-storage.service";
 import { OrderDialogComponent } from "../order-dialog/order-dialog.component"; // 👈 Import your dialog component
+import { DatePipe } from "@angular/common";
 
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
@@ -69,6 +70,7 @@ interface OrderData {
 @Component({
   selector: "app-pos-orders",
   imports: [AgGridAngular],
+  providers: [DatePipe], // ✅ provide DatePipe here
   templateUrl: "./pos-orders.component.html",
   styleUrl: "./pos-orders.component.scss",
 })
@@ -198,6 +200,7 @@ export class PosOrdersComponent {
       suppressMenu: true,
       unSortIcon: true,
       tooltipValueGetter: (p: ITooltipParams) => p.value,
+      valueFormatter: params => this.datePipe.transform(params.value, 'dd-MM-yyyy, h:mm a') ?? ''
     },
     {
 
@@ -313,7 +316,8 @@ export class PosOrdersComponent {
   constructor(
     private apiService: ApisService,
     private sessionStorage: SessionStorageService,
-     public modalService: NgbModal
+     public modalService: NgbModal,
+     private datePipe: DatePipe
 
   ) {}
 
