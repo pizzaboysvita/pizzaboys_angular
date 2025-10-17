@@ -563,7 +563,7 @@
     <div class="col-2" *ngFor="let value of [5, 10, 20, 50, 100]">
       <button
         class="btn w-100 btn btn-outline-secondary" 
-        [disabled]="cashpaymentAmount < value"
+        [disabled]="cashpaymentAmount > value"
        
         (click)="setCashQuick(value)"
       >
@@ -719,7 +719,7 @@
         </div> -->
  <div class="d-flex justify-content-center mb-2">
           <!-- <strong>Bill Amount</strong><br> -->
-          <span class=" border rounded p-2">${{ cashpaymentAmount }}</span>
+          <span class=" border rounded p-2" style="color: #eeeeef;">${{ cashpaymentAmount }}</span>
         </div>
         
 

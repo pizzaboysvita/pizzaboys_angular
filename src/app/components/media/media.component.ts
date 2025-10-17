@@ -596,14 +596,14 @@ openEditPopup(item: any) {
 
     
     console.log("Selected option:", option, group);
-   if(
-      this.isEditing !=true
-   ){
+  //  if(
+  //     this.isEditing !=true
+  //  ){
      group.option_set_array.forEach((opt: any) => {
       opt.selected = (opt === option);; // Deselect all options in the group
 
     })
-  }
+  // }
    
     // option.selected =  !option.selected;
     option.quantity = 1; // Reset quantity when selecting a new option

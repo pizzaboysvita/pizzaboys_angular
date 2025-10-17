@@ -1,4 +1,4 @@
-<div class="media profile-media">
+<!-- <div class="media profile-media">
     
     <div class="user-name-hide media-body">
         @if(userDetails.store_name){
@@ -9,6 +9,39 @@
        
     </div>
     <img class="user-profile rounded-circle" [src]="userDetails.profiles" alt="">
+</div> -->
+<div class="media profile-media align-items-center">
+  <div class="user-name-hide media-body ms-2">
+<!-- {{userDetails.store_name}} -->
+     @if(userDetails.store_name){
+ <span class="store-name d-block" >
+      Store Name: {{ userDetails?.store_name  }}
+    </span>
+     }
+    <!--  User Name -->
+    <span class="user-name d-block">
+      User Name: {{ userDetails?.first_name }} {{ userDetails?.last_name }}
+    </span>
+
+    <!-- Role -->
+    <p class="role mb-0">
+      Role: {{
+        userDetails?.role_id == 1
+          ? 'Admin'
+          : userDetails?.role_id == 3
+          ? 'POS'
+          : 'Manager'
+      }}
+      <i class="ri-arrow-down-s-line align-middle ms-1"></i>
+    </p>
+  </div>
+
+  <!-- Profile Image -->
+  <img
+    class="user-profile rounded-circle ms-3"
+    [src]="userDetails?.profiles"
+    alt="User"
+  />
 </div>
 <ul class="profile-dropdown onhover-show-div">
     <li>

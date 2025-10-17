@@ -223,6 +223,7 @@ addToCart(item: any) {
       dish_option_set_array: [...(item.dish_option_set_array || [])],
       dish_ingredient_array: [...(item.dish_ingredient_array || [])],
     };
+    this.isEditing=false
   }
 
   // 🆕 CASE 2: If NOT editing and item does NOT exist → Add new
