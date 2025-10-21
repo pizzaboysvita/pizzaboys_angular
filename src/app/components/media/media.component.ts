@@ -224,7 +224,7 @@ export class MediaComponent implements OnInit {
           dishRes.data
         );
         console.log("Processed Menu:", processedMenu);
-        this.categoriesList = processedMenu.filter(x=>(x.hide_category_in_POS==0));
+        this.categoriesList = processedMenu.filter(x=>(x.hide_category_in_POS == 0));
         this.totalDishList = dishRes.data;
         if (this.categoriesList && this.categoriesList.length > 0) {
           this.selectedCategory = this.categoriesList[0];

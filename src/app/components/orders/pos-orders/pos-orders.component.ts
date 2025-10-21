@@ -101,27 +101,41 @@ export class PosOrdersComponent {
         <div class="d-flex align-items-center gap-2 position-relative">
           <div class="rounded-circle d-flex align-items-center justify-content-center"
                style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
-             <i class="ri-shopping-bag-2-line"></i>
+             <i class="ri-shopping-bag-line"></i>
           </div>
           
           <span class="badge bg-primary position-absolute"
                 style="    width: 30px; height: 20px; top: 25px; left: 25px; font-size: 0.65rem;">POS</span>
         </div>
       `;
-    }else{
-      return `
-        <div class="d-flex align-items-center gap-2 position-relative">
-          <div class="rounded-circle d-flex align-items-center justify-content-center"
-               style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
-             <i class="ri-shopping-bag-2-line"></i>
-          </div>
+    }  else if(orderType == 0){
+           return `
+         <div class="d-flex align-items-center gap-2 position-relative">
+           <div class="rounded-circle d-flex align-items-center justify-content-center"
+                style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
+              <i class="ri-shopping-bag-line"></i>
+           </div>
+            <span class="badge bg-primary position-absolute"
+                 style="    width: 30px; height: 20px; top: 25px; left: 25px; font-size: 0.65rem;">Web</span>
+         </div>
+           
           
-         
-        </div>
-      `;
-    }
-
-
+       `;
+        }
+          else {
+           return `
+         <div class="d-flex align-items-center gap-2 position-relative">
+           <div class="rounded-circle d-flex align-items-center justify-content-center"
+                style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
+              <i class="ri-shopping-bag-line"></i>
+           </div>
+            <span class="badge bg-primary position-absolute"
+                 style="    width: 30px; height: 20px; top: 25px; left: 25px; font-size: 0.65rem;">App</span>
+         </div>
+           
+          
+       `;
+        }
    
   }
 }
@@ -336,7 +350,12 @@ export class PosOrdersComponent {
              if (data) {
 data.categories.forEach((element: any) => {
     element.due = this.transform(element.ordr_created_datetime);
-  element.order_master_id = 'P-'+element.order_master_id;
+  // element.order_master_id = 'P-'+element.order_master_id;
+   if (element.is_pos_order === 1) {
+            element.order_master_id = "P-" + element.order_master_id;
+          } else {
+            element.order_master_id = element.order_master_id; // keep as is
+          }
 })
               this.orderList = data.categories
              console.log(data, 'order list data');
