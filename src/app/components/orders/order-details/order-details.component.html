@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-xl-8">
-    <app-media (itemAdded)="addToCart($event)"></app-media>
+    <app-media (itemAdded)="addToCart($event)" (popupClosed)="onPopupClosed()"></app-media>
   </div>
   <div class="col-xl-4">
 
