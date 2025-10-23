@@ -147,14 +147,14 @@ export class CategoryComponent implements OnInit {
 
         // mapping values
         const statusMap: Record<string | number, string> = {
-          1: "Show of POS",
-          0: "Hide of POS",
+          0: "Show of POS",
+          1: "Hide of POS",
           // keep as string if API sends it
         };
 
         const options = [
-          { value: 1, label: "Show of POS" },
-          { value: 0, label: "Hide of POS" },
+          { value: 0, label: "Show of POS" },
+          { value: 1, label: "Hide of POS" },
         ];
 
         const selected = statusMap[params.value] ?? params.value ?? "";
@@ -200,14 +200,14 @@ export class CategoryComponent implements OnInit {
 
         // mapping values
         const statusMap: Record<string | number, string> = {
-          1: "Show in Web",
-          0: "Hide in Web",
+          0: "Show in Web",
+          1: "Hide in Web",
           // keep as string if API sends it
         };
 
         const options = [
-          { value: 1, label: "Show in Web" },
-          { value: 0, label: "Hide in Web" },
+          { value: 0, label: "Show in Web" },
+          { value: 1, label: "Hide in Web" },
         ];
 
         const selected = statusMap[params.value] ?? params.value ?? "";
@@ -446,11 +446,11 @@ delete
                 : categorie.status == 1
                 ? "Active"
                 : "--";
-            categorie.hide_category_in_POS = categorie.hide_category_in_POS = 1
-              ? "Hide in POS"
-              : categorie.hide_category_in_POS == 0
-              ? "Show in POS"
-              : "--";
+            // categorie.hide_category_in_POS = categorie.hide_category_in_POS = 1
+            //   ? "Hide in POS"
+            //   : categorie.hide_category_in_POS == 0
+            //   ? "Show in POS"
+            //   : "--";
           });
           this.rowData = res.categories;
         } else {
