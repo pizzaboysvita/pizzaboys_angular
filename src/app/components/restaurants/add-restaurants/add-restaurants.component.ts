@@ -200,4 +200,8 @@ export class AddRestaurantsComponent {
       event.preventDefault();
     }
   }
+   goBack() {
+    console.log('Going back to restaurant list');
+    this.router.navigate(['/restaurants/restaurants-list']);
+  }
 }

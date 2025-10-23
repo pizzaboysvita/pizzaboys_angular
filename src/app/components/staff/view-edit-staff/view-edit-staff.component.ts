@@ -403,5 +403,7 @@ console.log(reqBody)
       },
     });
   }
-
+  goBack() {
+   this.router.navigate(["/staff/staff-list"]);
+  }
 }

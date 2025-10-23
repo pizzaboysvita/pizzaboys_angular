@@ -420,5 +420,9 @@ console.log(this.file)
     event.preventDefault();
   }
 }
+   goBack() {
+   this.router.navigate(["/staff/staff-list"]);
+  }
+
 
 }
