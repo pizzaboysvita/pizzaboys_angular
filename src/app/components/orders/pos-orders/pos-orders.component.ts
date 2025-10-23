@@ -11,6 +11,7 @@ import { ApisService } from "../../../shared/services/apis.service";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { SessionStorageService } from "../../../shared/services/session-storage.service";
 import { OrderDialogComponent } from "../order-dialog/order-dialog.component"; // 👈 Import your dialog component
+import { DatePipe } from "@angular/common";
 
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
@@ -69,6 +70,7 @@ interface OrderData {
 @Component({
   selector: "app-pos-orders",
   imports: [AgGridAngular],
+  providers: [DatePipe], // ✅ provide DatePipe here
   templateUrl: "./pos-orders.component.html",
   styleUrl: "./pos-orders.component.scss",
 })
@@ -99,27 +101,41 @@ export class PosOrdersComponent {
         <div class="d-flex align-items-center gap-2 position-relative">
           <div class="rounded-circle d-flex align-items-center justify-content-center"
                style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
-             <i class="ri-shopping-bag-2-line"></i>
+             <i class="ri-shopping-bag-line"></i>
           </div>
           
           <span class="badge bg-primary position-absolute"
                 style="    width: 30px; height: 20px; top: 25px; left: 25px; font-size: 0.65rem;">POS</span>
         </div>
       `;
-    }else{
-      return `
-        <div class="d-flex align-items-center gap-2 position-relative">
-          <div class="rounded-circle d-flex align-items-center justify-content-center"
-               style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
-             <i class="ri-shopping-bag-2-line"></i>
-          </div>
+    }  else if(orderType == 0){
+           return `
+         <div class="d-flex align-items-center gap-2 position-relative">
+           <div class="rounded-circle d-flex align-items-center justify-content-center"
+                style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
+              <i class="ri-shopping-bag-line"></i>
+           </div>
+            <span class="badge bg-primary position-absolute"
+                 style="    width: 30px; height: 20px; top: 25px; left: 25px; font-size: 0.65rem;">Web</span>
+         </div>
+           
           
-         
-        </div>
-      `;
-    }
-
-
+       `;
+        }
+          else {
+           return `
+         <div class="d-flex align-items-center gap-2 position-relative">
+           <div class="rounded-circle d-flex align-items-center justify-content-center"
+                style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
+              <i class="ri-shopping-bag-line"></i>
+           </div>
+            <span class="badge bg-primary position-absolute"
+                 style="    width: 30px; height: 20px; top: 25px; left: 25px; font-size: 0.65rem;">App</span>
+         </div>
+           
+          
+       `;
+        }
    
   }
 }
@@ -198,6 +214,7 @@ export class PosOrdersComponent {
       suppressMenu: true,
       unSortIcon: true,
       tooltipValueGetter: (p: ITooltipParams) => p.value,
+      valueFormatter: params => this.datePipe.transform(params.value, 'dd-MM-yyyy, h:mm a') ?? ''
     },
     {
 
@@ -313,7 +330,8 @@ export class PosOrdersComponent {
   constructor(
     private apiService: ApisService,
     private sessionStorage: SessionStorageService,
-     public modalService: NgbModal
+     public modalService: NgbModal,
+     private datePipe: DatePipe
 
   ) {}
 
@@ -332,7 +350,12 @@ export class PosOrdersComponent {
              if (data) {
 data.categories.forEach((element: any) => {
     element.due = this.transform(element.ordr_created_datetime);
-  element.order_master_id = 'P-'+element.order_master_id;
+  // element.order_master_id = 'P-'+element.order_master_id;
+   if (element.is_pos_order === 1) {
+            element.order_master_id = "P-" + element.order_master_id;
+          } else {
+            element.order_master_id = element.order_master_id; // keep as is
+          }
 })
               this.orderList = data.categories
              console.log(data, 'order list data');

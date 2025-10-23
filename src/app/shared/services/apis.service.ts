@@ -7,7 +7,7 @@ import { BehaviorSubject, Subject } from "rxjs";
 })
 export class ApisService {
 
-  basesurl = "http://78.142.47.247:3004";
+  basesurl = "http://78.142.47.247:3003";
   
   // basesurl = 'http://localhost:3003'
   private change$ = new BehaviorSubject<boolean>(false);
@@ -221,21 +221,23 @@ export class ApisService {
   }
   getItemSubtotal(item: any): number {
     // Sum (price * quantity) for each selected option
-    console.log(item, "optionsTotal");
-    const optionsTotal = item.dish_option_set_array
-      .flatMap((optSet: any) => optSet.option_set_array)
-      .filter((option: any) => option.selected)
+    // console.log(item, "optionsTotal");
+    const optionsTotal = item?.dish_option_set_array
+      .flatMap((optSet: any) => optSet?.option_set_array)
+      .filter((option: any) => option?.selected)
       .reduce((sum: number, option: any) => {
-        const price = Number(option.price) || 0;
-        const qty = Number(option.quantity) || 0;
+        const price = Number(option?.price) || 0;
+        const qty = Number(option?.quantity) || 0;
         return sum + price * qty;
       }, 0);
-    console.log(optionsTotal, "optionsTotal");
+    // console.log(optionsTotal, "optionsTotal");
     const subtotal =
       (Number(item.dish_price) + optionsTotal) * Number(item.dish_quantity);
 
     // ✅ store subtotal inside item itself
     item.item_total_price = subtotal;
+    // console.log(subtotal);
+    
     return subtotal;
   }
 
