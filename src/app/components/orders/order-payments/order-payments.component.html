@@ -317,7 +317,7 @@
           <div class="text-end">
       <div class="fw-bold mb-1">${{ rowData.item_total_price }}</div>
       <a 
-   class="text-primary small fw-bold text-decoration-underline"
+   class="text-primary small fw-bold text-decoration-underline a-pointer"
    (click)="moveToPay(rowData, ind)">
   Move to Pay
 </a>
@@ -358,7 +358,7 @@
         <div class="text-end">
       <div class="fw-bold mb-1">${{ rowData.item_total_price }}</div> 
        <a 
-   class="text-primary small fw-bold text-decoration-underline"
+   class="text-primary small fw-bold text-decoration-underline a-pointer"
    (click)="removeToPay(rowData, ind)">
   Removed to Pay
 </a>
@@ -411,30 +411,7 @@
       </div>
 
   <div class="text-muted text-center py-5">
-    @if(isSplitPayment){
-         <table class="table table-sm align-middle"  >
-                  <thead style="background-color: #f9f9fa !important;">
-                    <tr>
-                      <th>Status</th>
-                      <th>Type</th>
-                      <th>Amount</th>
-                      <th>Tender</th>
-                      <th>Change</th>
-                    </tr>
-                  </thead>
-                  <tbody style="background-color: #eeeeef;">
-                       @for (rowData of splitRows; track rowData;let ind = $index) {
-                    <tr>
-                      <td><span class="badge bg-warning  text-dark fs-16">{{rowData.status}}</span></td>
-                      <td>{{rowData.type}}</td>
-                      <td>${{rowData.amount}}</td>
-                      <td>-</td>
-                      <td>-</td>
-                    </tr>
-                }
-                  </tbody>
-                </table>
-            }
+ 
                 @if(paidItems.length > 0) {
     <div class="text-muted">
       <table class="table table-sm align-middle">
@@ -469,7 +446,7 @@
       </table>
     </div>
   } 
-  @if(isSplitPayment || paidItems.length > 0){
+  @if(paidItems.length > 0){
 
   
               <div class="d-flex flex-wrap gap-2 my-3">
@@ -564,9 +541,7 @@
       <button
         class="btn w-100 btn btn-outline-secondary" 
         [disabled]="cashpaymentAmount > value"
-       
-        (click)="setCashQuick(value)"
-      >
+        (click)="setCashQuick(value)">
         ${{ value }}
       </button>
     </div>
