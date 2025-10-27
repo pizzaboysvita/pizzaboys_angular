@@ -20,13 +20,15 @@ import { SessionStorageService } from "../../../shared/services/session-storage.
 import FileSaver from "file-saver";
 import * as ExcelJS from "exceljs";
 import Swal from "sweetalert2";
-import { DatePipe } from "@angular/common";
+import { CommonModule, DatePipe } from "@angular/common";
 import {
   FormBuilder,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
+  Validators,
 } from "@angular/forms";
+import { ToastrService } from "ngx-toastr";
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
   store_id: string;
@@ -47,7 +49,7 @@ interface RowData {
     AgGridAngular,
     NgSelectModule,
     FormsModule,
-    ReactiveFormsModule,
+    ReactiveFormsModule,CommonModule
   ],
   templateUrl: "./add-menus.component.html",
   styleUrl: "./add-menus.component.scss",
@@ -58,8 +60,11 @@ export class AddMenusComponent {
   @ViewChild("confirmModal") confirmModalRef!: TemplateRef<any>;
   public products = ProductsList;
   stausList = ["Active", "In-Active"];
-
+  showCopyMenuModal=false
   menuSearchForm: FormGroup;
+  copyMenuForm:FormGroup;
+    file: File;
+  uploadImagUrl: string | ArrayBuffer | null;
   columnDefs: ColDef<RowData>[] = [
     // <-- Important to give <RowData> here!
     {
@@ -269,33 +274,40 @@ export class AddMenusComponent {
       },
     },
     {
-      headerName: "Actions",
-      cellRenderer: (params: any) => {
-        return `
-        <div style="display: flex; align-items: center; gap:15px;">
-          <button class="btn btn-sm  p-0" data-action="view" title="View">
-         <span class="material-symbols-outlined text-primary">
-visibility
-</span>
-          </button>
-          <button class="btn btn-sm p-0" data-action="edit" title="Edit">
-         <span class="material-symbols-outlined text-success">
-edit
-</span>
-          </button>
-          <button class="btn btn-sm p-0" data-action="delete" title="Delete">
-        <span class="material-symbols-outlined text-danger">
-delete
-</span>
-          </button>
-        </div>
-      `;
-      },
-      minWidth: 150,
-      flex: 1,
-    },
-  ];
+  headerName: "Actions",
+  cellRenderer: (params: any) => {
+    return `
+      <div style="display: flex; align-items: center; gap:15px;">
+        <button class="btn btn-sm p-0" data-action="view" title="View">
+          <span class="material-symbols-outlined text-primary">
+            visibility
+          </span>
+        </button>
+        <button class="btn btn-sm p-0" data-action="edit" title="Edit">
+          <span class="material-symbols-outlined text-success">
+            edit
+          </span>
+        </button>
+        <button class="btn btn-sm p-0" data-action="delete" title="Delete">
+          <span class="material-symbols-outlined text-danger">
+            delete
+          </span>
+        </button>
+        <button class="btn btn-sm p-0" data-action="copy" title="Copy Menu">
+          <span class="material-symbols-outlined text-info">
+            content_copy
+          </span>
+        </button>
+        
+      </div>
+    `;
+  },
+  minWidth: 180,
+  flex: 1,
+}
 
+  ];
+//  <button class="btn btn-sm btn-outline-info" data-action="copy">Copy</button>
   public menuList = [
     { id: 1, name: "TakeWay Menu" },
     { id: 2, name: "Seasonal menu" },
@@ -316,7 +328,7 @@ delete
     private fb: FormBuilder,
     private apis: ApisService,
     private session: SessionStorageService,
-    private modalService: NgbModal
+    private modalService: NgbModal,private toastr: ToastrService,
   ) {}
 
   getFrom() {
@@ -328,6 +340,11 @@ delete
       store: ["-1"],
       menuName: [""],
       status: [""],
+    });
+      this.copyMenuForm = this.fb.group({
+      store: ["" ,[Validators.required]],
+      image:[null,[Validators.required]]
+     
     });
     if (this.loginUser.role_id != 1) {
       this.menuSearchForm.patchValue({
@@ -490,6 +507,15 @@ delete
       console.log("deleteeeeeeeee");
       this.openConfirmPopup();
     }
+    else if (action === "copy") {
+      console.log("copy");
+      this.openCopyPopup();
+    }
+  }
+  openCopyPopup(){
+this.copyMenuForm.reset();
+  this.showCopyMenuModal=true
+  this.uploadImagUrl=null
   }
   openConfirmPopup() {
     this.modelRef = this.modalService.open(this.confirmModalRef, {
@@ -643,4 +669,81 @@ delete
     this.getFrom();
     this.getmenuList();
   }
+  closeCopyMenuModal(){
+    this.showCopyMenuModal=false;
+  }
+     onSelectFile(event: Event): void {
+  const input = event.target as HTMLInputElement;
+
+  if (input.files && input.files[0]) {
+    console.log(input.files[0])
+    this.file = input.files[0];
+    console.log()
+     this.copyMenuForm.get('image')?.setValue(this.file);
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      this.uploadImagUrl = reader.result; // this will update the image source
+    };
+
+    reader.readAsDataURL(this.file); // convert image to base64 URL
+  }
+}
+removeImage(){
+    this.uploadImagUrl = null;
+    this.copyMenuForm.get('image')?.setValue(null);
+    // this.file = null;
+}
+copyMenu() {
+  if (this.copyMenuForm.invalid) {
+    this.copyMenuForm.markAllAsTouched();
+    return;
+  }
+
+  const selectedStores = this.copyMenuForm.value.store;
+  if (!selectedStores || selectedStores.length === 0) {
+    alert('Please select at least one store.');
+    return;
+  }
+
+  const reqBody = {
+    "type": "copy",
+    menu_id: this.menuData?.dish_menu_id ,
+    store_id: selectedStores,
+    created_by: 1
+  };
+
+  // Create FormData
+  const formData = new FormData();
+  formData.append('body', JSON.stringify(reqBody)); // add JSON as text
+  // formData.append('image', this.menuData.menu_image); // add image file
+  formData.append('image', this.file); // add image file
+
+
+  console.log('FormData =>', reqBody, this.menuData.menu_image);
+  
+  this.apis.postApi(AppConstants.api_end_points.menuV2, formData).subscribe((data: any) => {
+      console.log(data)
+      if (data.code == 1) {
+        console.log(data)
+        Swal.fire('Success!', data.message, 'success').then(
+          (result) => {
+            if (result) {
+              console.log('User clicked OK');
+              this.showCopyMenuModal=false;
+              this.getmenuList()
+
+            }
+          })
+      }
+      else{
+      this.toastr.error(data.message || "Failed to add Copy Menu", "Error");
+        
+      }
+
+
+    })
+
+}
+
 }
