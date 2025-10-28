@@ -1,0 +1,33 @@
+.profile-media {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #cccccc;
+}
+
+.profile-media .store-name,
+.profile-media .user-name {
+  font-size: 13px !important;
+  font-weight: 400;
+  line-height: 1.4;
+}
+.profile-media .role {
+  font-weight: 400;
+  line-height: 1.4;
+}
+.profile-media .store-name {
+  font-weight: 400;
+  color: #cccccc;
+}
+
+.profile-media .role {
+  font-size: 13px;
+  color: #cccccc;
+}
+
+.profile-media .user-profile {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #cccccc;
+  object-fit: cover;
+}

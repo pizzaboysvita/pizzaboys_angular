@@ -223,6 +223,7 @@ addToCart(item: any) {
       dish_option_set_array: [...(item.dish_option_set_array || [])],
       dish_ingredient_array: [...(item.dish_ingredient_array || [])],
     };
+    this.isEditing=false
   }
 
   // 🆕 CASE 2: If NOT editing and item does NOT exist → Add new
@@ -264,7 +265,10 @@ addToCart(item: any) {
 
   console.log(this.cartItems, '🧾 Updated cartItems after add/edit');
 }
-
+onPopupClosed() {
+  console.log('Popup closed — resetting edit mode');
+  this.isEditing = false;  // 🔹 This resets in the parent
+}
 
   increaseModalQuantity(item: any) {
     console.log(item, 'increaseModalQuantity')
@@ -309,22 +313,28 @@ addToCart(item: any) {
   }
 
 removeItems(item: any) {
+  console.log(this.totalCartDetails);
+  console.log( this.cartItems);
+  
   // Remove the item from cartItems
-  this.cartItems = this.cartItems.filter((cartItem: { dish_id: any; }) => cartItem.dish_id !== item.dish_id);
+  this.totalCartDetails = this.totalCartDetails.filter((cartItem: { dish_id: any; }) => cartItem.dish_id !== item.dish_id);
+  console.log( this.totalCartDetails,"after");
 
-  // Recalculate each item's duplicate_dish_price
-  this.cartItems.forEach((cartItem: { duplicate_dish_price: number; }) => {
+  // // Recalculate each item's duplicate_dish_price
+  this.totalCartDetails.forEach((cartItem: { duplicate_dish_price: number; }) => {
     cartItem.duplicate_dish_price = this.apiService.getItemSubtotal(cartItem);
   });
 
   // Update total price
-  this.totalPrice = this.cartItems.reduce(
+  this.totalPrice = this.totalCartDetails.reduce(
     (sum: any, cartItem: { duplicate_dish_price: any; }) => sum + cartItem.duplicate_dish_price,
     0
   );
+  console.log();
+  
 
   // Update cart reference if needed
-  this.totalCartDetails = [...this.cartItems];
+   this.cartItems = [...this.totalCartDetails];
 
   // Trigger Angular change detection
   this.cdr.detectChanges();

@@ -69,6 +69,7 @@ interface OrderData {
 @Component({
   selector: "app-pos-orders",
   imports: [AgGridAngular],
+  providers: [DatePipe], // ✅ provide DatePipe here
   templateUrl: "./pos-orders.component.html",
   styleUrl: "./pos-orders.component.scss",
 })
@@ -101,7 +102,7 @@ export class PosOrdersComponent {
         <div class="d-flex align-items-center gap-2 position-relative">
           <div class="rounded-circle d-flex align-items-center justify-content-center"
                style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
-             <i class="ri-shopping-bag-2-line"></i>
+             <i class="ri-shopping-bag-line"></i>
           </div>
           
           <span class="badge bg-primary position-absolute"
@@ -193,6 +194,7 @@ export class PosOrdersComponent {
       suppressMenu: true,
       unSortIcon: true,
       tooltipValueGetter: (p: ITooltipParams) => p.value,
+      valueFormatter: params => this.datePipe.transform(params.value, 'dd-MM-yyyy, h:mm a') ?? ''
     },
     {
       field: "order_due",

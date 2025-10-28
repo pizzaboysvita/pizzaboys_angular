@@ -183,6 +183,9 @@ export class AddCategoryComponent implements OnInit {
       //  this.getMenuList();
       this.PatchValuesForm();
     }
+      if (this.type === 'View') {
+    this.menuForm.disable();
+  }
   }
   // PatchValuesForm() {
   //   //  this.getMenuList();

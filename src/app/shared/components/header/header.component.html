@@ -18,7 +18,8 @@
       <!-- <a href="" class="logo-login"><img src="assets/pizzaImg/pizza-black-1.png" class="img-fluid" alt=""></a> -->
     <div class="welcome-title">
         @if(ishidepos == 'true'){
-          <a href="" class="logo-login"><img src="assets/pizzaImg/pizza-black-1.png" class="img-fluid" alt=""></a>
+            <!-- pizza-black-1.png -->
+          <a href="" class="logo-login"><img src="assets/pizzaImg/pizza-black-2.JPG" class="img-fluid" alt="" style="height: 62px !important;"></a>
         }
 @if(ishidepos != 'true'){
         <h5>
@@ -54,7 +55,7 @@
             } 
              @if (users.user.role_id==3) {
             <li class="onhover-dropdown" (click)="orderList()">
-               <i class="ri-shopping-bag-2-line"></i>
+               <i class="ri-shopping-bag-2-line" style="color: white;"></i>
             </li>
         }
             <!-- <li class="onhover-dropdown">

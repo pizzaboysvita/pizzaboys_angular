@@ -224,7 +224,7 @@ export class MediaComponent implements OnInit {
           dishRes.data
         );
         console.log("Processed Menu:", processedMenu);
-        this.categoriesList = processedMenu.filter(x=>(x.hide_category_in_POS==0));
+        this.categoriesList = processedMenu.filter(x=>(x.hide_category_in_POS == 0));
         this.totalDishList = dishRes.data;
         if (this.categoriesList && this.categoriesList.length > 0) {
           this.selectedCategory = this.categoriesList[0];
@@ -377,24 +377,7 @@ openEditPopup(item: any) {
           : 'counter';
     });
 
-    // ✅ Restore selected radio options here
   
-    // ✅ Restore ingredient selections
-     item['dish_option_set_array'].forEach((optionSet: any) => {
-      if (optionSet.option_type === 'radio') {
-        const selectedOpt = optionSet.option_set_array.find((opt: any) => opt.selected === true);
-
-        if (selectedOpt) {
-          console.log( selectedOpt,"ajssadasdasd");
-         selectedOpt.selected = selectedOpt; // 🔹 store reference for [checked]
-          
-          // optionSet.selectedOption = selectedOpt; // 🔹 store reference for [checked]
-          // selectedOpt.selected = selectedOpt; // 🔹 store reference for [checked]
-           this.cartItems = [item];
-         this.selectRadio(optionSet, selectedOpt);
-        }
-      }
-    });
     item['dish_ingredient_array']?.forEach((ingredient: any) => {
       if (ingredient.selected === undefined) {
         ingredient.selected = true;
@@ -407,12 +390,35 @@ openEditPopup(item: any) {
     this.selectedDishFromList = item;
     this.selectedDishFromList.duplicate_dish_price = item.dish_price;
  
+  // ✅ Restore selected radio options here
+  
+    // ✅ Restore ingredient selections
+     item['dish_option_set_array'].forEach((optionSet: any) => {
+         console.log( optionSet,"ajssadasdasd");
+      if (optionSet.option_type === 'radio') {
+        const selectedOpt = optionSet.option_set_array.find((opt: any) => opt.selected === true);
+         console.log( selectedOpt,"ajssadasdasd");
 
-    this.cartItems = [item];
+        if (selectedOpt) {
+          console.log( selectedOpt,"ajssadasdasd");
+         selectedOpt.selected = true; // 🔹 store reference for [checked]
+          
+          // optionSet.selectedOption = selectedOpt; // 🔹 store reference for [checked]
+          // selectedOpt.selected = selectedOpt; // 🔹 store reference for [checked]
+           this.cartItems = [item];
+        this.selectRadio(optionSet, selectedOpt);
+            
+          
+       
+        }
+      }
+    });
+     this.cartItems = [item];
     this.showPopup = true;
     this.cdr.detectChanges();
-
     console.log('Editing standard dish:', item);
+  
+  
   }
 }
 
@@ -452,6 +458,7 @@ openEditPopup(item: any) {
   //   }
   // }
   openIngredientsPopup(item: any) {
+      this.isEditing = false;
   this.isOptionSelected = false;
   this.selectedChildPerCombo = {};
   item.dishnote = '';
@@ -541,17 +548,31 @@ openEditPopup(item: any) {
     }));
   }
 
-  closePopup() {
-    this.showPopup = false;
-    this.selectedDishFromList = null;
-    this.selectedItemForModal = null;
-    this.modalNotes = "";
-    this.modalQuantity = 1;
-    this.expandedIndex = null;
-    this.cdr.detectChanges();
-  }
+  // closePopup() {
+  //   this.showPopup = false;
+  //   this.isEditing = false;
+  //   this.selectedDishFromList = null;
+  //   this.selectedItemForModal = null;
+  //   this.modalNotes = "";
+  //   this.modalQuantity = 1;
+  //   this.expandedIndex = null;
+  //   this.cdr.detectChanges();
+  // }
 
+@Output() popupClosed = new EventEmitter<void>();
 
+closePopup() {
+  this.showPopup = false;
+  this.isEditing = false;
+  this.selectedDishFromList = null;
+  this.selectedItemForModal = null;
+  this.modalNotes = "";
+  this.modalQuantity = 1;
+  this.expandedIndex = null;
+  // Emit event to notify parent
+  this.popupClosed.emit();
+  this.cdr.detectChanges();
+}
 
   increaseModalQuantity(item: any) {
     item['dish_quantity']++;
@@ -591,20 +612,23 @@ openEditPopup(item: any) {
   }
   selectRadio(group: any, option: any) {
     this.isOptionSelected=true
-    console.log(group,"group");
-    console.log(option,"option");
-
-    
-    console.log("Selected option:", option, group);
-   if(
-      this.isEditing !=true
+    if(
+     this.isEditing !=true
    ){
      group.option_set_array.forEach((opt: any) => {
       opt.selected = (opt === option);; // Deselect all options in the group
 
     })
   }
-   
+  else{
+   group.option_set_array.forEach((opt: any) => {
+  // ✅ If this option is the one user clicked, set selected = true
+  // ❌ Otherwise, set selected = false
+  opt.selected = (opt === option);
+});
+
+
+  }
     // option.selected =  !option.selected;
     option.quantity = 1; // Reset quantity when selecting a new option
  

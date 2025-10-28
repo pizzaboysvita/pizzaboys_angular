@@ -113,7 +113,7 @@
                         <!-- Delete Icon -->
                         <!-- <button class="icon-button delete" (click)="removeImage()" title="Delete">❌</button> -->
                         <!-- <button class="icon-button" >×</button> -->
-                        <button class="icon-button" (click)="removeImage()" >✕</button>
+                        <button class="icon-button" *ngIf="type !='View'" (click)="removeImage()" >✕</button>
 
 
 
@@ -121,7 +121,7 @@
                       }@else{
                       <!-- File input (shown when no preview) -->
                       <!-- <ng-template #uploadInput> -->
-                      <input type="file" accept="image/*" (change)="onSelectFile($event)" />
+                      <input type="file" accept="image/*" (change)=" type !='View' && onSelectFile($event)" />
                       }
                       <!-- <input autocomplete="off" id="fileInput"class="mt-1" type="file" accept="image/*"
                         (change)="onSelectFile($event)"> -->

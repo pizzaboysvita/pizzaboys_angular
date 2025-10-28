@@ -109,30 +109,37 @@ export class ViewRestaurantsComponent {
         this.storeForm.get(key)?.markAsTouched();
       });
     } else {
+      let reqbody: any = {
+  type: "update",
+  store_id: this.storeData.store_id,
+  store_name: this.storeForm.value.storeName,
+  email: this.storeForm.value.email,
+  phone: this.storeForm.value.phoneNumber,
+  city: this.storeForm.value.city,
+  location: this.storeForm.value.address,
+  image: this.uploadImagUrl_data,
+  status:
+    this.storeForm.value.status === "Active"
+      ? 1
+      : this.storeForm.value.status === "Inactive"
+      ? 0
+      : "",
+  street_address: this.storeForm.value.address,
+  state: this.storeForm.value.state,
+  country: this.storeForm.value.country,
+  zip_code: "94406",
+  working_hours: this.workinghours,
+  created_by: 1,
+  updated_by: 1,
+};
 
-      const reqbody = {
-        "type": "update",
-        "store_id": this.storeData.store_id,
-        "store_name": this.storeForm.value.storeName,
-        "email": this.storeForm.value.email,
-        "phone": this.storeForm.value.phoneNumber,
-        "city": this.storeForm.value.city,
-        "location": this.storeForm.value.address,
-        "image": this.uploadImagUrl_data,
-        "status": this.storeForm.value.status == 'Active' ? 1 : this.storeForm.value.status == 'Inactive' ? 0 : '',
-        "street_address": this.storeForm.value.address,
-        "password_hash": this.storeForm.value.password,
-        "state": this.storeForm.value.state,
-        "country": this.storeForm.value.country,
-        "zip_code": "94406",
-        "working_hours": this.workinghours,
-        "created_by": 1,
+// ✅ Add password_hash only if provided
+if (this.storeForm.value.password?.trim()) {
+  reqbody.password_hash = this.storeForm.value.password;
+}
 
-        "updated_by": 1,
-      }
+console.log(reqbody);
 
-
-      console.log(reqbody)
       const formData = new FormData();
 
       formData.append('image', this.file ? this.file : ''); // Attach Blob with a filename
