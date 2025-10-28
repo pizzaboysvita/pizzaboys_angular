@@ -12,6 +12,7 @@ import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { SessionStorageService } from "../../../shared/services/session-storage.service";
 import { OrderDialogComponent } from "../order-dialog/order-dialog.component";
 import { OrderprintdialogComponent } from "../orderprintdialog/orderprintdialog.component";
+import { DatePipe } from "@angular/common";
 
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
@@ -325,7 +326,7 @@ export class PosOrdersComponent {
   constructor(
     private apiService: ApisService,
     private sessionStorage: SessionStorageService,
-    public modalService: NgbModal
+    public modalService: NgbModal,private datePipe: DatePipe
   ) {}
 
   ngOnInit() {
