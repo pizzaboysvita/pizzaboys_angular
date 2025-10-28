@@ -113,9 +113,12 @@
                         <!-- Delete Icon -->
                         <!-- <button class="icon-button delete" (click)="removeImage()" title="Delete">❌</button> -->
                         <!-- <button class="icon-button" >×</button> -->
-                        <button class="icon-button" (click)="removeImage()">
-                          ✕
-                        </button>
+                         @if(type !='View'){
+                            <button class="icon-button" (click)="removeImage()">
+                                                      ✕
+                                                    </button>
+                         }
+                        
                       </div>
                       }@else{
                       <!-- File input (shown when no preview) -->
@@ -123,7 +126,7 @@
                       <input
                         type="file"
                         accept="image/*"
-                        (change)="onSelectFile($event)"
+                        (change)="type !='View' && onSelectFile($event)"
                       />
                       }
                       <!-- </ng-template> -->

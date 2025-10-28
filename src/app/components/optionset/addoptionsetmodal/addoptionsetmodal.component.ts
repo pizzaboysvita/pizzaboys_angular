@@ -204,6 +204,7 @@ optType=[
   storeList: any;
   reqbody: any
   storesList: any;
+  isViewMode: boolean;
   constructor(private fb: FormBuilder, public modal: NgbModal,private toastr: ToastrService, private apis: ApisService, private sessionStorage: SessionStorageService) {
     this.optionSetForm = this.fb.group({
       name: ['',Validators.required],
@@ -235,6 +236,12 @@ selectedStore='-1'
     this.storeListItem()
     this.getMenuCategoryDishData();
     this.patchValue();
+      if (this.type === 'View') {
+        this.isViewMode=true
+    this.miscForm.disable();
+     this.optionSetConditionForm.disable();
+     this.optionSetForm.disable();
+  }
   }
   addNewRow() {
     console.log("new datat")

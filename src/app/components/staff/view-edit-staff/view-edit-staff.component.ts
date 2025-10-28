@@ -383,7 +383,7 @@ console.log(reqBody)
     // }
     formData.append("body", JSON.stringify(reqBody));
 
-    this.apis.postApi(AppConstants.api_end_points.staff, formData).subscribe({
+    this.apis.postApi(AppConstants.api_end_points.staffV2, formData).subscribe({
       next: (res: any) => {
         // 🔍 Debug log (optional)
         console.log("API response:", res);

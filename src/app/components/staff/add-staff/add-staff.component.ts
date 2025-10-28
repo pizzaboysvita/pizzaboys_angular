@@ -384,7 +384,7 @@ console.log(this.file)
     formData.append("image", this.file); // Attach Blob with a filename
     formData.append("body", JSON.stringify(req_body));
     this.apis
-      .postApi(AppConstants.api_end_points.staff, formData)
+      .postApi(AppConstants.api_end_points.staffV2, formData)
       .subscribe((data: any) => {
         if (data.code == 1) {
           console.log(data);
