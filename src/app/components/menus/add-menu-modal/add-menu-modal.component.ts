@@ -10,11 +10,12 @@ import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-mod
 import { ColDef, ITooltipParams, ModuleRegistry } from "@ag-grid-community/core";
 import { ToastrService } from 'ngx-toastr';
 import { SessionStorageService } from '../../../shared/services/session-storage.service';
+import { CommonModule } from '@angular/common';
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 @Component({
   selector: 'app-add-menu-modal',
   standalone: true,
-  imports: [NgbNavModule, NgSelectModule, FormsModule, ReactiveFormsModule,AgGridAngular],
+  imports: [NgbNavModule, NgSelectModule, FormsModule, ReactiveFormsModule,AgGridAngular,CommonModule],
   templateUrl: './add-menu-modal.component.html',
   styleUrls: ['./add-menu-modal.component.scss']
 })
@@ -177,8 +178,10 @@ isHide=false
       posDispalyname: [''],
       hideMenu: ['']
     })
+       
     this.buildForm()
     this.getStoreList()
+  
   }
   getStoreList() {
     this.apis.getApi(AppConstants.api_end_points.store_list).subscribe((data: any) => {
@@ -202,6 +205,12 @@ isHide=false
   }
   ngOnInit() {
     this.patchValue()
+    if (this.type === 'View') {
+    this.menuForm.disable();
+     this.posForm.disable();
+     this.conditionForm.disable();
+      this.surchargeForm.disable();
+  }
     console.log('Received data:', this.myData);
   }
   patchValue() {

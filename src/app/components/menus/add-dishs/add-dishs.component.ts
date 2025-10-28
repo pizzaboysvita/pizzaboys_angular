@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-add-dishs',
+  standalone: true,
   imports: [NgbNavModule, NgSelectModule, FormsModule, ReactiveFormsModule, CommonModule],
   templateUrl: './add-dishs.component.html',
   styleUrl: './add-dishs.component.scss'
@@ -39,6 +40,8 @@ export class AddDishsComponent {
   previewUrl: string | ArrayBuffer | null = null;
   selectedFile: File | null = null;
   checkedDishString: string;
+  isView=true;
+  isViewMode: boolean;
   constructor(private fb: FormBuilder, public modal: NgbModal, private router: Router, private apiService: ApisService, private sessionStorage: SessionStorageService) { }
 
   ngOnInit() {
@@ -64,6 +67,10 @@ export class AddDishsComponent {
     this.getOptionSets()
     this.getMenuCategoryDishData()
     this.patchValue()
+      if (this.type === 'View') {
+       this.isViewMode=true
+    this.menuForm.disable();
+  }
   }
   storeList() {
     this.apiService
