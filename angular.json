@@ -50,20 +50,40 @@
             ]
           },
           "configurations": {
-            "production": {
+          
+            "stg": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.stg.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",
                   "maximumWarning": "15mb",
                   "maximumError": "20mb"
-                },
+                }
+              ],
+              "optimization": true,
+              "sourceMap": true
+            },
+              "prod": {
+              "fileReplacements": [
                 {
-                  "type": "anyComponentStyle",
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "budgets": [
+                {
+                  "type": "initial",
                   "maximumWarning": "15mb",
                   "maximumError": "20mb"
                 }
               ],
-              "outputHashing": "all"
+              "optimization": true,
+              "sourceMap": true
             },
             "development": {
               "optimization": false,
@@ -71,13 +91,16 @@
               "sourceMap": true
             }
           },
-          "defaultConfiguration": "production"
+          "defaultConfiguration": "stg"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
-            "production": {
-              "buildTarget": "zomo-admin:build:production"
+            "prod": {
+              "buildTarget": "zomo-admin:build:prod"
+            },
+             "stg": {
+              "buildTarget": "zomo-admin:build:stg"
             },
             "development": {
               "buildTarget": "zomo-admin:build:development"

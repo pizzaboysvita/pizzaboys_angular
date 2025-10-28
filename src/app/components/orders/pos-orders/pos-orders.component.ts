@@ -328,6 +328,7 @@ export class PosOrdersComponent {
     private sessionStorage: SessionStorageService,
     public modalService: NgbModal,private datePipe: DatePipe
   ) {}
+  
 
   ngOnInit() {
     this.getStaffList();
