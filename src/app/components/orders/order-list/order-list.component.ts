@@ -286,9 +286,7 @@ export class OrderListComponent {
         return select;
       },
     },
-    {
-      headerName: "View",
-    },
+   
     {
       headerName: "Actions",
       minWidth: 140,
