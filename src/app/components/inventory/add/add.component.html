@@ -7,6 +7,25 @@
 
 <div class="modal-body">
   <form [formGroup]="inventoryForm">
+     <div class="col-12">
+                    <div class="input-box">
+                      <!-- <h6>Store Type</h6> -->
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Store Type</h6>
+                        <span class="optional-tag">Required</span>
+                      </div>
+                      <ng-select [items]="storesList" [searchable]="true" [multiple]="false" bindLabel="store_name"
+                        bindValue="store_id" placeholder="Select from the dropdown or type to search"
+                        formControlName="storeName" >
+                      </ng-select>
+                      @if((inventoryForm.get('storeName')?.touched ||inventoryForm.get('storeName')?.dirty) &&
+                      inventoryForm.get('storeName')?.hasError('required')){
+                      <div class="text-danger">
+                        Store Type is required
+                      </div>
+                      }
+                    </div>
+                  </div>
     <!-- Item Name -->
     <div class="input-box mb-3">
       <h6 class="fw-bold p-1">Item Name <span class="text-danger">*</span></h6>

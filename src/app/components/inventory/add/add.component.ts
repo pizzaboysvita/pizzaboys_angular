@@ -6,11 +6,12 @@ import { InventoryService } from '../services/service.service';
 import { ApisService } from '../../../shared/services/apis.service';
 import { AppConstants } from '../../../app.constants';
 import { SessionStorageService } from '../../../shared/services/session-storage.service';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
   selector: 'app-add',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule,NgSelectModule],
   templateUrl: './add.component.html',
   styleUrls: ['./add.component.scss']
 })
@@ -18,7 +19,7 @@ export class AddComponent implements OnInit {
   @Input() editData: any = null;   // ✅ For editing
   inventoryForm!: FormGroup;
   isSubmitting = false;
-
+  storesList:any
   private token = 'YOUR_JWT_TOKEN'; // Replace with your real token from auth
 
   constructor(
@@ -28,7 +29,9 @@ export class AddComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.storeList();
     this.inventoryForm = this.fb.group({
+      storeName:['',Validators.required],
       item_name: ['', Validators.required],
       quantity: [null, [Validators.required, Validators.min(1)]],
       unit: ['kg', Validators.required],
@@ -45,7 +48,18 @@ export class AddComponent implements OnInit {
   get f() {
     return this.inventoryForm.controls;
   }
+  storeList() {
+    this.inventoryService
+      .getApi(AppConstants.api_end_points.store_list)
+      .subscribe((data:any) => {
+        if (data) {
+          console.log(data);
+           data.unshift({ store_id: '', store_name: 'All Stores' })
+          this.storesList = data;
+        }
+      });
 
+  }
   save() {
     if (this.inventoryForm.invalid) {
       this.inventoryForm.markAllAsTouched();
@@ -59,6 +73,7 @@ export class AddComponent implements OnInit {
         const payload = {
   "type": "update",
   item_id:this.editData.item_id,
+  "store_id":this.inventoryForm.value.storeName,
   "item_name": this.inventoryForm.value.item_name,
   "quantity": this.inventoryForm.value.quantity,
   "unit": this.inventoryForm.value.unit,
@@ -82,6 +97,7 @@ export class AddComponent implements OnInit {
     } else {
       const payload = {
   "type": "insert",
+  "store_id":this.inventoryForm.value.storeName,
   "item_name": this.inventoryForm.value.item_name,
   "quantity": this.inventoryForm.value.quantity,
   "unit": this.inventoryForm.value.unit,

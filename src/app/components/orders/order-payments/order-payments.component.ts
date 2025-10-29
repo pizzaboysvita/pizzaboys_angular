@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, Input, TemplateRef, ViewChild } from '@angular/core';
 import { NgbActiveModal, NgbModal, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { SessionStorageService } from '../../../shared/services/session-storage.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-order-payments',
@@ -36,7 +37,7 @@ progressValue = 10;
   splitCash: boolean;
   cashModal=false
   showNewModelPopup = false;
-  selectedRowIndex: number | null = null;
+  selectedRowIndex: number | any = null;
   selectedRowData: any = null;
   cashpaymentAmount: number;
   percentageJson:any=[];
@@ -53,7 +54,7 @@ progressValue = 10;
   itemsJson: any=[];
   isVoucherConfirm = false;
   paymentAmountStr: string;
- constructor(public modal: NgbModal,private cdr: ChangeDetectorRef,public activeModal: NgbActiveModal, private sessionStorageService: SessionStorageService) {}
+ constructor(public modal: NgbModal,private cdr: ChangeDetectorRef,public activeModal: NgbActiveModal, private sessionStorageService: SessionStorageService,private toastr: ToastrService,) {}
   ngOnInit(): void {
     this.payItems=[]
     this.paidItems= [];    // confirmed paid items
@@ -75,6 +76,23 @@ progressValue = 10;
     change:'-'
   });
   }
+  setDefaultSelectedRow() {
+  if (!this.fullArray || this.fullArray.length === 0) return;
+
+  // Find the first non-success row
+  const firstNonSuccessIndex = this.fullArray.findIndex(
+    (row: any) => row.status !== 'Success'
+  );
+
+  // If found, select it; otherwise, select the first row
+  this.selectedRowIndex =
+    firstNonSuccessIndex !== -1 ? firstNonSuccessIndex : 0;
+
+  // Also call your selection logic (optional)
+  const selectedRow = this.fullArray[this.selectedRowIndex];
+  this.selectRow(selectedRow, this.selectedRowIndex);
+}
+
 setActiveTab(tab: string) {
   this.activeTab = tab;
   if(this.activeTab =='people' ||   this.activeTab =='items'){
@@ -273,8 +291,15 @@ appendNumber(num: any) {
 
 clearAmount() {
    this.paymentAmountStr = '';
-  this.paymentAmount = 0;
+  if(this.fullArray.length>0){
+      const totalPaid = this.fullArray?.reduce((sum: any, p: { amount: any; }) => sum + (p.amount || 0), 0);
+        this.remaining = this.totalPrice - totalPaid;
+        this.paymentAmount =  this.remaining ;
+  }
+  else{
   this.remaining = this.totalPrice;
+  this.paymentAmount =  this.remaining ;
+  }
 }
 setPayment(percent: number) {
   this.percentage=percent
@@ -290,6 +315,10 @@ get isFullyPaid(): boolean {
 fullAddPayment() {
   if (!this.paymentAmount || this.paymentAmount <= 0) {
     return; 
+  }
+    if (this.paymentAmount > this.remaining) {
+    this.toastr.warning("Entered amount exceeds the remaining balance!", "Warning");
+    return;
   }
   const newRow = {
     status:'Pending',

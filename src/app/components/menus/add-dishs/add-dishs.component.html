@@ -392,8 +392,70 @@
           </ng-template>
         </li>
         }
-      </ul>
+   <li [ngbNavItem]="3" class="nav-item m-0">
+          <button ngbNavLink class="nav-link" type="button">Add Inventory</button>
+        <ng-template ngbNavContent>
+  <div class="inventory-section p-3 border rounded">
+    <div class="row align-items-center g-2 mb-3">
+      <!-- Dropdown -->
+      <div class="col-md-5 col-sm-12">
+        <select class="form-select" [(ngModel)]="selectedInventoryItem">
+        <option value="" disabled selected>Select Item</option>
+        <option *ngFor="let inventory of inventoryList" [ngValue]="inventory">
+          {{ inventory.item_name }}
+        </option>
+       </select>
+      </div>
+      <!-- Input Field -->
+      <div class="col-md-5 col-sm-12">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Enter Quantity"
+          [(ngModel)]="quantity"
+        />
+      </div>
+      <!-- Add Button -->
+      <div class="col-md-2 col-sm-12 text-md-start text-center">
+           <button class="btn addChoice-button" type="button" (click)="type !='View' && addDishInventory()">Add
+                        Item</button>
+        <!-- <button body class="btn btn-animation  save-button" (click)="addDishInventory()" style="margin-top: 1px;"
+      type="button"><i class="ri-add-circle-line"></i>&nbsp; Add Item</button>&nbsp; -->
+      </div>
+    </div>
 
+  <div *ngIf="dishInventory.length > 0" class="mt-3 inventory-list">
+  <!-- Header Row -->
+  <div class="row fw-semibold text-black bg-light py-2 rounded-top">
+    <div class="col-md-6 col-sm-12">Item Name</div>
+    <div class="col-md-4 col-sm-12">Quantity</div>
+    <div class="col-md-2 col-sm-12 ">Action</div>
+  </div>
+  <!-- Data Rows -->
+  <div
+    *ngFor="let item of dishInventory; let i = index"
+    class="row align-items-center border-start border-end border-bottom p-1 "
+  >
+    <div class="col-md-6 col-sm-12 fw-semibold">{{ item.item_name }}</div>
+    <div class="col-md-4 col-sm-12 fw-semibold">{{ item.quantity }}</div>
+    <div class="col-md-2 col-sm-12 text-md-end text-center">
+      <button
+        class="btn btn-outline-danger btn-lg"
+        (click)="type !='View' && removeDishInventory(i)"
+      >
+        <i class="ri-delete-bin-line"></i>
+      </button>
+    </div>
+  </div>
+</div>
+<!-- Empty State -->
+<div *ngIf="dishInventory.length === 0" class="text-muted small text-center mt-3">
+  No Items added yet.
+</div>
+  </div>
+</ng-template>
+</li>
+      </ul>
     </div>
     <div class="col-12" [ngbNavOutlet]="nav"></div>
   </div>
