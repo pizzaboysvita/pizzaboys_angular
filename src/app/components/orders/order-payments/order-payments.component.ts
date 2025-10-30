@@ -54,6 +54,7 @@ progressValue = 10;
   itemsJson: any=[];
   isVoucherConfirm = false;
   paymentAmountStr: string;
+  newPayments:any=[];
  constructor(public modal: NgbModal,private cdr: ChangeDetectorRef,public activeModal: NgbActiveModal, private sessionStorageService: SessionStorageService,private toastr: ToastrService,) {}
   ngOnInit(): void {
     this.payItems=[]
@@ -504,19 +505,27 @@ checkAllItemsPaymentsSuccess(): boolean {
   closeOrdersModal(){
     this.showChangeModal=false
     this.showNewModelPopup = false;
-      const newPayments = this.fullArray
-  .filter((x: any) => x.status === 'Success')
-  .map((x: any) => ({
-    payment_method: x.type,
-    payment_status: 'Completed',
-    amount: +x.amount,
-    payment_created_by:  JSON.parse(
-      this.sessionStorageService.getsessionStorage("loginDetails") as any
-    ).user.user_id
-  }));
+    this.newPayments = [];
 
-// ✅ Push each new payment to the existing array
-this.order_payments_json.push(...newPayments);
+[this.fullArray, this.splitRows, this.paidItems].forEach(arr => {
+  if (Array.isArray(arr)) {
+    const successPayments = arr
+      .filter(x => x.status?.trim() === 'Success')
+      .map(x => ({
+        payment_method: x.type,
+        payment_status: 'Completed',
+        amount: +x.amount,
+        payment_created_by: JSON.parse(
+          this.sessionStorageService.getsessionStorage("loginDetails") as any
+        ).user.user_id
+      }));
+
+    this.newPayments.push(...successPayments);
+  }
+});
+
+this.order_payments_json.push(...this.newPayments);
+
      this.payload = {
     payment_split_percentage_json: this.percentageJson,
     payment_split_users_json: this.userJson,
@@ -535,5 +544,23 @@ handleVoucherClick() {
     this.openCashModal('Voucher');
     this.isVoucherConfirm = false;
   }
+}
+//items
+hasAnySuccess(): boolean {
+  const fullSuccess = this.fullArray?.some((row: any) => row.status === 'Success');
+  const splitSuccess = this.splitRows?.some((row: any) => row.status === 'Success');
+  return fullSuccess || splitSuccess;
+}
+//for full
+hasSplitSuccess(): boolean {
+  const paidItems = this.paidItems?.some((row: any) => row.status === 'Success');
+  const splitSuccess = this.splitRows?.some((row: any) => row.status === 'Success');
+  return paidItems || splitSuccess;
+}
+//people
+hasItemsSuccess(): boolean {
+  const paidSuccess  = this.paidItems?.some((row: any) => row.status === 'Success');
+  const fullSuccess = this.fullArray?.some((row: any) => row.status === 'Success');
+  return paidSuccess || fullSuccess;
 }
 }

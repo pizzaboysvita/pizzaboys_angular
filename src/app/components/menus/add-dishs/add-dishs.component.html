@@ -393,7 +393,7 @@
         </li>
         }
    <li [ngbNavItem]="3" class="nav-item m-0">
-          <button ngbNavLink class="nav-link" type="button">Add Inventory</button>
+          <button ngbNavLink class="nav-link" type="button">Inventory Items </button>
         <ng-template ngbNavContent>
   <div class="inventory-section p-3 border rounded">
     <div class="row align-items-center g-2 mb-3">
@@ -436,7 +436,7 @@
     *ngFor="let item of dishInventory; let i = index"
     class="row align-items-center border-start border-end border-bottom p-1 "
   >
-    <div class="col-md-6 col-sm-12 fw-semibold">{{ item.item_name }}</div>
+    <div class="col-md-6 col-sm-12 fw-semibold">{{ item.inventory_item_name }}</div>
     <div class="col-md-4 col-sm-12 fw-semibold">{{ item.quantity }}</div>
     <div class="col-md-2 col-sm-12 text-md-end text-center">
       <button

@@ -9,6 +9,7 @@ import { AppConstants } from '../../../app.constants';
 import { forkJoin } from 'rxjs';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-add-dishs',
@@ -45,9 +46,10 @@ export class AddDishsComponent {
   inventoryList: any = [];
   dish_inventory_json: any=[] ;
   selectedInventoryItem: any = '';
-quantity: string = '';
-dishInventory: any= [];
-  constructor(private fb: FormBuilder, public modal: NgbModal, private router: Router, private apiService: ApisService, private sessionStorage: SessionStorageService) { }
+  quantity: string = '';
+  // dishInventory: any= [];
+  dishInventory: any[] = [];
+  constructor(private fb: FormBuilder, public modal: NgbModal, private router: Router,private toastr: ToastrService,private apiService: ApisService, private sessionStorage: SessionStorageService) { }
 
   ngOnInit() {
     console.log(this.myData)
@@ -123,15 +125,25 @@ dishInventory: any= [];
       this.previewUrl = this.myData.dish_image;
       // dish_choices_json
       let parsed;
-try {
-  parsed = JSON.parse(this.myData.dish_inventory_json);
-  if (typeof parsed === 'string') {
-    parsed = JSON.parse(parsed);
+      console.log(this.dishInventory);
+if (this.myData?.dish_inventory_json) {
+  try {
+    let parsed = JSON.parse(this.myData.dish_inventory_json);
+
+    // If it's a stringified string (double JSON), parse again
+    if (typeof parsed === 'string') parsed = JSON.parse(parsed);
+
+    // ✅ Only assign if parsed is a valid array
+    this.dishInventory = Array.isArray(parsed) && parsed.length > 0 ? parsed : [];
+  } catch (e) {
+    console.error('Error parsing dish_inventory_json', e);
+    this.dishInventory = [];
   }
-  this.dishInventory = parsed;
-} catch (e) {
-  console.error('Invalid JSON:', e);
+} else {
+  // ✅ When no data present at all
+  this.dishInventory = [];
 }
+
     // this.dishInventory= JSON.parse(this.myData.dish_inventory_json)
     console.log(  this.dishInventory,'  this.dishInventory');
     
@@ -274,7 +286,8 @@ try {
     }
     if( this.dishInventory.length>0){
         this.dish_inventory_json = JSON.stringify(
-    this.dishInventory.map((item: { inventory_item_id: any; quantity: any; unit: any; }) => ({
+    this.dishInventory.map((item: { inventory_item_id: any; quantity: any; unit: any;inventory_item_name:any }) => ({
+      inventory_item_name:item?.inventory_item_name,
       inventory_item_id: item?.inventory_item_id,
       quantity: Number(item?.quantity),
       unit: item?.unit
@@ -282,6 +295,8 @@ try {
   ) 
     }else{
       this.dish_inventory_json=[]
+       this.toastr.info("Dish Inventory items is required.", "Info");
+       return
     }
    
     if (this.type == 'Edit') {
@@ -470,7 +485,7 @@ addDishInventory() {
   }
 
   this.dishInventory.push({
-    item_name: this.selectedInventoryItem.item_name,
+    inventory_item_name: this.selectedInventoryItem.item_name,
     inventory_item_id:this.selectedInventoryItem.item_id,
     quantity: this.quantity.trim(),
     unit:this.selectedInventoryItem.unit
