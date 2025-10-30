@@ -1,6 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { BehaviorSubject, Subject } from "rxjs";
+import { environment } from "../../../environments/environment";
 
 @Injectable({
   providedIn: "root",
@@ -16,23 +17,23 @@ export class ApisService {
   private http = inject(HttpClient);
   isLoading = new BehaviorSubject<boolean>(false);
   getApi(endpoint: string) {
-    console.log("GET request URL -->", "http://78.142.47.247:3003" + endpoint);
-    return this.http.get(this.basesurl + endpoint);
+    console.log("GET request URL -->", environment.apiUrl + endpoint);
+    return this.http.get(environment.apiUrl + endpoint);
   }
   postApi(endpoint: any, req_body: any) {
-    return this.http.post(this.basesurl + endpoint, req_body);
+    return this.http.post(environment.apiUrl + endpoint, req_body);
   }
   putApi(endpoint: any, req_body: any) {
-    return this.http.put(this.basesurl + endpoint, req_body);
+    return this.http.put(environment.apiUrl + endpoint, req_body);
   }
 
   deleteApi(endpoint: any) {
-    return this.http.delete(this.basesurl + endpoint);
+    return this.http.delete(environment.apiUrl + endpoint);
   }
   patchStatusApi(reqbody: any) {
     console.log(reqbody, "patchStatusApi");
 
-    return this.http.put(this.basesurl + "/api/updatedetails", reqbody);
+    return this.http.put(environment.apiUrl + "/api/updatedetails", reqbody);
   }
 
   show(): void {
