@@ -70,7 +70,7 @@ interface OrderData {
 @Component({
   selector: "app-pos-orders",
   imports: [AgGridAngular],
-  providers: [DatePipe], // ✅ provide DatePipe here
+  providers: [DatePipe],
   templateUrl: "./pos-orders.component.html",
   styleUrl: "./pos-orders.component.scss",
 })
@@ -97,30 +97,44 @@ export class PosOrdersComponent {
         const orderType = params.value;
 
         const backgroundColor = "rgb(81, 163, 81)";
-
         if (orderType == 1) {
           return `
-        <div class="d-flex align-items-center gap-2 position-relative">
-          <div class="rounded-circle d-flex align-items-center justify-content-center"
-               style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
-             <i class="ri-shopping-bag-line"></i>
-          </div>
+         <div class="d-flex align-items-center gap-2 position-relative">
+           <div class="rounded-circle d-flex align-items-center justify-content-center"
+                style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
+              <i class="ri-shopping-bag-line"  style=" font-size: 18px;"></i>
+           </div>
+           
+           <span class="badge bg-primary position-absolute"
+                 style="    width: 30px; height: 20px; top: 25px; left: 25px; font-size: 0.65rem;">POS</span>
+         </div>
+       `;
+        } else if (orderType == 0) {
+          return `
+         <div class="d-flex align-items-center gap-2 position-relative">
+           <div class="rounded-circle d-flex align-items-center justify-content-center"
+                style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
+              <i class="ri-shopping-bag-line"></i>
+           </div>
+            <span class="badge bg-primary position-absolute"
+                 style="    width: 30px; height: 20px; top: 25px; left: 25px; font-size: 0.65rem;">Web</span>
+         </div>
+           
           
-          <span class="badge bg-primary position-absolute"
-                style="    width: 30px; height: 20px; top: 25px; left: 25px; font-size: 0.65rem;">POS</span>
-        </div>
-      `;
+       `;
         } else {
           return `
-        <div class="d-flex align-items-center gap-2 position-relative">
-          <div class="rounded-circle d-flex align-items-center justify-content-center"
-               style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
-             <i class="ri-shopping-bag-2-line"></i>
-          </div>
+         <div class="d-flex align-items-center gap-2 position-relative">
+           <div class="rounded-circle d-flex align-items-center justify-content-center"
+                style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
+              <i class="ri-shopping-bag-line"></i>
+           </div>
+            <span class="badge bg-primary position-absolute"
+                 style="    width: 30px; height: 20px; top: 25px; left: 25px; font-size: 0.65rem;">App</span>
+         </div>
+           
           
-         
-        </div>
-      `;
+       `;
         }
       },
     },
@@ -180,22 +194,15 @@ export class PosOrdersComponent {
       unSortIcon: true,
       tooltipValueGetter: (p: ITooltipParams) => p.value,
     },
-    // {
-    //   field: "phone_number",
-    //   headerName: "Phone Number",
-    //   field: "phone_number",
-    //   headerName: "Due",
-    //   suppressMenu: true,
-    //   unSortIcon: true,
-    //   tooltipValueGetter: (p: ITooltipParams) => p.value,
-    // },
+
     {
       field: "order_due_datetime",
       headerName: "Due",
       suppressMenu: true,
       unSortIcon: true,
       tooltipValueGetter: (p: ITooltipParams) => p.value,
-      valueFormatter: params => this.datePipe.transform(params.value, 'dd-MM-yyyy, h:mm a') ?? ''
+      valueFormatter: (params) =>
+        this.datePipe.transform(params.value, "dd-MM-yyyy, h:mm a") ?? "",
     },
     {
       field: "order_due",
@@ -226,14 +233,13 @@ export class PosOrdersComponent {
     },
     {
       headerName: "Actions",
-      // field: "actions",
       suppressMenu: true,
       unSortIcon: true,
       minWidth: 120,
       cellRenderer: () => {
         return `
       <div class="d-flex align-items-center justify-content-center gap-2">
-        <button class="btn btn-sm btn-outline-success" data-action="print" title="Print Order">
+        <button type="button" class="btn btn-sm btn-outline-success" data-action="print" title="Print Order">
           <i class="ri-printer-line"></i>
         </button>
       </div>
@@ -298,7 +304,7 @@ export class PosOrdersComponent {
     //   },
     //   minWidth: 150,
     //   flex: 1,
-    // },
+    // }
   ];
 
   // staff_list: any;
@@ -326,37 +332,14 @@ export class PosOrdersComponent {
   constructor(
     private apiService: ApisService,
     private sessionStorage: SessionStorageService,
-    public modalService: NgbModal,private datePipe: DatePipe
+    public modalService: NgbModal,
+    private datePipe: DatePipe
   ) {}
-  
 
   ngOnInit() {
     this.getStaffList();
     this.getOrderList();
   }
-
-  // getOrderList() {
-  //   const store_id = JSON.parse(
-  //     this.sessionStorage.getsessionStorage("loginDetails") as any
-  //   ).user.store_id;
-  //   this.apiService
-  //     .getApi(
-  //       AppConstants.api_end_points.orderList +
-  //         "?store_id=" +
-  //         store_id +
-  //         "&type=web"
-  //     )
-  //     .subscribe((data: any) => {
-  //       if (data) {
-  //         data.categories.forEach((element: any) => {
-  //           element.due = this.transform(element.ordr_created_datetime);
-  //           element.order_master_id = "P-" + element.order_master_id;
-  //         });
-  //         this.orderList = data.categories;
-  //         console.log(data, "order list data");
-  //       }
-  //     });
-  // }
 
   getOrderList() {
     const store_id = JSON.parse(
@@ -412,117 +395,31 @@ export class PosOrdersComponent {
       });
   }
 
-  // onCellClicked(event: any): void {
-  //   console.log("PPPPPPPPPPPPPPpppnnnnnnnnnnnnnnnn", event.data);
-  //   // if (event.node.data) {
-  //   let result1 = event.data.order_master_id.replace("P-", "");
-  //   this.apiService
-  //     .getApi(
-  //       AppConstants.api_end_points.orderList +
-  //         "?order_id=" +
-  //         result1 +
-  //         "&type=web"
-  //     )
-  //     .subscribe((response: any) => {
-  //       console.log(response, "order details");
-  //       if (response.code == 1) {
-  //         this.orderDetails = response.categories[0];
-  //         this.modalRef = this.modalService.open(OrderDialogComponent, {
-  //           size: "lg",
-  //           centered: true,
-  //         });
-  //         this.modalRef.componentInstance.data = this.orderDetails;
-  //       }
-  //     });
-
-  //   // }
-  // }
-
-  // onCellClicked(event: any): void {
-  //   const isActionColumn = event.colDef.headerName === "Actions";
-  //   if (isActionColumn) {
-  //     return;
-  //   }
-  //   if (event.node.data) {
-  //     const mockOrderData: OrderData = {
-  //       orderNumber: 4800,
-  //       name: event.node.data.fullname,
-  //       email: event.node.data.user_email,
-  //       phone: event.node.data.phone_number.toString(),
-  //       type: "Pickup",
-  //       placed: "22/08/2025 at 05:14 pm",
-  //       due: "Now / ASAP",
-  //       estReadyTime: "22/08/2025 at 05:35 pm",
-  //       lastUpdated: "10 minutes",
-  //       status: "Complete",
-  //       dishes: [
-  //         {
-  //           qty: 1,
-  //           item: "Classic Cheese Pizza",
-  //           price: 13.89,
-  //           mods: ["Large (+4.00)", "Hollandaise Sauce (+$0.90)"],
-  //           remove: ["Tomato Base"],
-  //           notes: "BBQ base sauce please",
-  //         },
-  //         {
-  //           qty: 1,
-  //           item: "Banana & Caramel Pizza",
-  //           price: 8.99,
-  //           mods: ["Small (-$4.00)"],
-  //         },
-  //       ],
-  //       payments: {
-  //         cartTotal: 22.88,
-  //         cardFee: 0.96,
-  //         gst: 3.11,
-  //         total: 23.84,
-  //         method: "Stripe (Successful)",
-  //       },
-  //       log: [
-  //         {
-  //           description:
-  //             'Print request sent to printer "Online Ordering - Customer"',
-  //           timestamp: "22/08/2025 at 05:14 pm",
-  //         },
-  //         {
-  //           description: 'Status updated from "Confirmed" to "Ready"',
-  //           timestamp: "22/08/2025 at 05:35 pm",
-  //         },
-  //         {
-  //           description: 'Status updated from "Ready" to "Complete"',
-  //           timestamp: "22/08/2025 at 05:45 pm",
-  //         },
-  //       ],
-  //     };
-  //     const modalRef = this.modalService.open(OrderDialogComponent, {
-  //       size: "md",
-  //       centered: true,
-  //     });
-  //     modalRef.componentInstance.data = mockOrderData;
-  //   }
-  // }
   onCellClicked(event: any): void {
+    console.log("👉 Cell clicked:", event);
     const target = event.event?.target as HTMLElement;
     const actionButton = target.closest("button[data-action]");
     const rowData = event.data;
 
-    if (actionButton && actionButton.getAttribute("data-action") === "print") {
+    if (actionButton?.getAttribute("data-action") === "print") {
       event.event.stopPropagation();
+      event.event.preventDefault();
       this.openPrintDialog(rowData);
       return;
     }
 
-    if (!actionButton && rowData) {
+    if (event.colDef.headerName === "Actions") {
+      return;
+    }
+
+    if (rowData) {
       const orderId = rowData.order_master_id.replace("P-", "");
       this.apiService
         .getApi(
-          AppConstants.api_end_points.orderList +
-            "?order_id=" +
-            orderId +
-            "&type=web"
+          `${AppConstants.api_end_points.orderList}?order_id=${orderId}&type=web`
         )
         .subscribe((response: any) => {
-          if (response.code === 1) {
+          if (response.code === "1" || 1) {
             this.orderDetails = response.categories[0];
             this.modalRef = this.modalService.open(OrderDialogComponent, {
               size: "lg",

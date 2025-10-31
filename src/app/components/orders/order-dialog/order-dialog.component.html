@@ -1,54 +1,49 @@
-
-<div class="modal-content" >
+<div class="modal-content">
     <div class="header">
         <div class="order-number"># P-{{ data.order_master_id }}</div>
-        <div class="est-ready-time" style="text-align: end;">
-            Est. Ready Time - {{ data.order_created_datetime | date:'medium' }}
+        <div class="est-ready-time" style="text-align: end">
+            Est. Ready Time - {{ data.order_created_datetime | date : "medium" }}
             <br />
             <small>Last updated {{ transform(data.order_created_datetime) }}</small>
         </div>
     </div>
     <hr class="m-0" />
     <div class="modal-body pt-0">
-    <ol class="progtrckr">
-  <li *ngFor="let step of statuses" 
-      [ngClass]="getStepClass(step)">
-    <h5 style="font-weight: 500; font-size: 12px;">
-      {{ step }}
-    </h5>
-  </li>
-</ol>
+        <ol class="progtrckr">
+            <li *ngFor="let step of statuses" [ngClass]="getStepClass(step)">
+                <h5 style="font-weight: 500; font-size: 12px">
+                    {{ step }}
+                </h5>
+            </li>
+        </ol>
 
-
-       <div class="row p-3">
-          <form [formGroup]="orderForm">
-
-         
-             <div class="col-12">
-                <!-- <div class="col-md-6"> -->
-                <div class="input-box">
-                    <h6>Change Status</h6>
-                    <select class="form-select" name="carlist" formControlName="status">
-                        @for (item of statusList; track item) {
-                        <option [value]="item.id">{{ item .name}}</option>
-                        }
-                    </select>
-                    <!-- </div> -->
+        <div class="row p-3">
+            <form [formGroup]="orderForm">
+                <div class="col-12">
+                    <!-- <div class="col-md-6"> -->
+                    <div class="input-box">
+                        <h6>Change Status</h6>
+                        <select class="form-select" name="carlist" formControlName="status">
+                            @for (item of statusList; track item) {
+                            <option [value]="item.id">{{ item.name }}</option>
+                            }
+                        </select>
+                        <!-- </div> -->
+                    </div>
                 </div>
-            </div>
-              <div class="col-12 mt-2">
-                <!-- <div class="col-md-6"> -->
-                <div class="input-box">
-                    <h6>Modify Est.Ready Time</h6>
-                    <select class="form-select" name="carlist" formControlName="modifyEstTime">
-                        @for (item of modiftime; track item) {
-                        <option value="">{{ item.name }}</option>
-                        }
-                    </select>
-                    <!-- </div> -->
+                <div class="col-12 mt-2">
+                    <!-- <div class="col-md-6"> -->
+                    <div class="input-box">
+                        <h6>Modify Est.Ready Time</h6>
+                        <select class="form-select" name="carlist" formControlName="modifyEstTime">
+                            @for (item of modiftime; track item) {
+                            <option value="">{{ item.name }}</option>
+                            }
+                        </select>
+                        <!-- </div> -->
+                    </div>
                 </div>
-            </div>
-             <!-- <div class="col-12 mt-2"> -->
+                <!-- <div class="col-12 mt-2"> -->
                 <!-- <div class="col-md-6"> -->
                 <!-- <div class="input-box">
                     <h6>Action</h6>
@@ -57,10 +52,10 @@
                         <option [value]="item.id">{{ item.name }}</option>
                         }
                     </select> -->
-                    <!-- </div> -->
                 <!-- </div> -->
-            <!-- </div> -->
-              </form>
+                <!-- </div> -->
+                <!-- </div> -->
+            </form>
         </div>
 
         <!-- <button class="complete-button">
@@ -84,181 +79,172 @@
         </div>
 
         <div class="tab-content">
-            <div *ngIf="activeTab === 'details'">
-                <div class="row-info">
-                    <p>Type:</p>
-                    <span>{{ data.order_type ==1?'Pickup':data.order_type==0?'Delivery':'--' }}</span>
+            <div class="tab-content">
+                <div *ngIf="activeTab === 'details'">
+                    <!-- details unchanged -->
+                    <div class="row-info">
+                        <p>Type:</p>
+                        <span>
+                            {{
+                            data.order_type == 1
+                            ? "Pickup"
+                            : data.order_type == 0
+                            ? "Delivery"
+                            : "--"
+                            }}
+                        </span>
+                    </div>
+                    <div class="row-info">
+                        <p>Placed:</p>
+                        <span>{{ data.order_created_datetime | date : "medium" }}</span>
+                    </div>
+                    <div class="row-info">
+                        <p>Due:</p>
+                        <span>{{ data.order_due_datetime | date : "medium" }}</span>
+                    </div>
+                    <div *ngIf="data.name" class="row-info">
+                        <p>Name:</p>
+                        <span>{{ data.name }}</span>
+                    </div>
+                    <div *ngIf="data.email" class="row-info">
+                        <p>E-Mail:</p>
+                        <span>{{ data.email }}</span>
+                    </div>
+                    <div *ngIf="data.phone_number" class="row-info">
+                        <p>Phone:</p>
+                        <span>{{ data.phone_number }}</span>
+                    </div>
                 </div>
-                <div class="row-info">
-                    <p>Placed:</p>
-                    <span>{{ data.order_created_datetime |date:'medium' }}</span>
-                </div>
-                <div class="row-info">
-                    <p>Due:</p>
-                    <span>{{ data.order_due_datetime | date:'medium' }}</span>
-                </div>
-                @if(data.name){
-                <div class="row-info">
-                    <p>Name:</p>
-                    <span>{{ data.name }}</span>
-                </div>
-            }
-                @if(data.email){
-                <div class="row-info">
-                    <p>E-Mail:</p>
-                    <span>{{ data.email }}</span>
-                </div>
-            }
-            @if(data.phone_number){
 
-                <div class="row-info">
-                    <p>Phone:</p>
-                    <span>{{ data.phone_number }}</span>
-                </div>
-            }
-            </div>
+                <div *ngIf="activeTab === 'dishes'">
+                    <div class="dishes-header">
+                        <span class="header-qty">Qty</span>
+                        <span class="header-item">Item</span>
+                        <span class="header-price">Price</span>
+                    </div>
 
-            <div *ngIf="activeTab === 'dishes'">
-                <div class="dishes-header">
-                    <span class="header-qty">Qty</span>
-                    <span class="header-item">Item</span>
-                    <span class="header-price">Price</span>
-                </div>
-                @for (item of orderDishDetails; track item) {
-            @if(item.dish_type =='standard'){
-                <div class="dish-item" >
-                    <div class="item-details-row">
-                        <span class="qty">{{ item.dish_quantity }}</span>
-                        <div class="item-name-details">
-                            <span class="item-name">{{ item.dish_name }}</span>
-                             @for (optiondish of item.standed_option_selected_array; track optiondish) {
-                            <div class="item-mods">
-                                <p class="mod-title">{{optiondish.dish_opt_type}}</p>
-                                   @for (opt_typ of optiondish.choose_option; track opt_typ) {
-                                <li style="margin-bottom: 5px;">{{ opt_typ.name }} 
-                                  
-                                    <span style="background-color: #d1d2da;
-    width: 30px;
-    height: 20px;
-    border-radius: 5px;
-    text-align: center;">${{opt_typ.price}}</span>
-    </li>
-}
+                    <!-- use merged items (toppings + ingredients) -->
+                    <ng-container *ngFor="let item of totalOrdermerged">
+                        <div class="dish-item">
+                            <div class="item-details-row">
+                                <span class="qty">{{ item.quantity ?? item.dish_quantity ?? 1 }}</span>
+
+                                <div class="item-name-details">
+                                    <span class="item-name">{{ item.dish_name ?? item.dish_name }}</span>
+
+                                    <!-- selected_options: generic array of modifiers (toppings/ingredients) -->
+                                    <div *ngIf="item.selected_options?.length" class="item-mods">
+                                        <p class="mod-title">Base / Mods</p>
+                                        <ul style="padding-left: 18px; margin: 6px 0;">
+                                            <li *ngFor="let opt of item.selected_options"
+                                                style="margin-bottom:6px; list-style: disc;">
+                                                {{ opt.name }}
+                                                <span *ngIf="opt.price"
+                                                    style="background-color: #d1d2da; padding: 2px 6px; border-radius: 6px; margin-left:8px;">
+                                                    +${{ formatPrice(opt.price) }}
+                                                </span>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- if you also want combo display when orderDishDetails is populated -->
+                                    <div *ngIf="item.dish_type === 'combo' && item.combo_selected_dishes?.length">
+                                        <div *ngFor="let combo of item.combo_selected_dishes" style="margin-top:6px;">
+                                            <div style="font-size:13px;"><u>{{ combo.combo_option_name }}</u> ({{
+                                                combo.combo_option_dish_name }})</div>
+                                            <div *ngFor="let combo_opt of combo.combo_option_selected_array"
+                                                class="item-mods" style="margin-left:6px;">
+                                                <p class="mod-title">{{ combo_opt.dish_opt_type }}</p>
+                                                <ul style="padding-left: 18px; margin: 6px 0;">
+                                                    <li *ngFor="let opt of combo_opt.choose_option"
+                                                        style="margin-bottom:6px;">
+                                                        {{ opt.name }}
+                                                        <span *ngIf="opt.price"
+                                                            style="background-color:#d1d2da; padding:2px 6px; border-radius:6px; margin-left:8px;">
+                                                            +${{ formatPrice(opt.price) }}
+                                                        </span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <span class="price">${{ formatPrice(item.item_total_price) }}</span>
                             </div>
-                        }
-                            <!-- <div class="item-mods" *ngIf="dish.remove && dish.remove.length > 0">
-                                <p class="mod-title">Remove Ingredients</p>
-                                <div *ngFor="let remove of dish.remove">{{ remove }}</div>
-                            </div> -->
-                            <!-- <div class="item-notes" *ngIf="dish.notes">
-                                <p class="mod-title">Notes:</p>
-                                <div>{{ dish.notes }}</div>
-                            </div> -->
+
+                            <hr style="border:none;border-top:1px dashed #e6e6e6;margin:8px 0;">
                         </div>
-                        <span class="price">${{ item.item_total_price.toFixed(2) }}</span>
+                    </ng-container>
+
+                    <!-- bill summary -->
+                    <div class="bill-summary">
+                        <div class="summary-row">
+                            <p>Cart</p>
+                            <span>${{ formatPrice(data.payments?.cartTotal ?? data.cart_total ?? data.total_price)
+                                }}</span>
+                        </div>
+
+                        <div class="summary-row">
+                            <p>EFTPOS Surcharge</p>
+                            <span>${{ formatPrice(data.payments?.cardFee ?? data.card_fee ?? 0) }}</span>
+                        </div>
+
+                        <div class="summary-row" *ngIf="data.delivery_fees">
+                            <p>Delivery Fees</p>
+                            <span>${{ formatPrice(data.delivery_fees) }}</span>
+                        </div>
+
+                        <div class="summary-row">
+                            <p>GST (15%) inc. in price</p>
+                            <span>${{ formatPrice(data.gst_price ?? (data.payments?.gst_price)) }}</span>
+                        </div>
+
+                        <div class="summary-row total-row">
+                            <p>Total</p>
+                            <span>${{ formatPrice(data.payment_amount ?? data.total_price) }}</span>
+                        </div>
                     </div>
                 </div>
-            }@else if(item.dish_type =="combo"){
-                <div class="dish-item" >
-                    <div class="item-details-row">
-                        <span class="qty">{{ item.dish_quantity }}</span>
-                        <div class="item-name-details">
-                            <span class="item-name">{{ item.dish_name }}</span>
-                             @for (combooption of item.combo_selected_dishes; track combooption) {
-<span><u>{{combooption.combo_option_name}} </u>({{combooption.combo_option_dish_name}})</span>
+                <div *ngIf="activeTab === 'payments'">
+                    <div class="payment-row">
+                        <div class="payment-icon"><i class="ri-money-dollar-circle-line"></i></div>
+                        <div class="payment-details">
+                            <p>{{ data.payment_method }}</p>
+                            <small style="margin-left:-3%">{{ data.payment_status ?? 'Successful' }}</small>
+                        </div>
+                        <div class="payment-amount">${{ formatPrice(data.payment_amount ?? data.total_price) }}</div>
+                    </div>
+                </div>
+                <div *ngIf="activeTab === 'log'">
+                    <div class="p-3">
+                        <div class="fw-semibold mb-2 text-muted small">Sorted from newest to oldest</div>
 
- @for (combo_opt of combooption.combo_option_selected_array; track combo_opt) {
-                            <div class="item-mods">
-                                <p class="mod-title">{{combo_opt.dish_opt_type}}</p>
-                                   @for (opt_typ of combo_opt.choose_option; track opt_typ) {
-                                <li style="margin-bottom: 5px;">{{ opt_typ.name }} 
-
-                                    <span *ngIf="opt_typ.price" style="background-color: #d1d2da; 
-    width: 30px;
-    height: 20px;
-    border-radius: 5px;
-    text-align: center;">${{opt_typ.price}}</span>
-    </li>
-}
+                        <div *ngFor="let log of orderlogs; let i = index" class="log-item border-bottom pb-2 mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="badge bg-light text-dark fw-semibold px-2">{{ log.id }}</span>
+                                <span class="text-muted small">{{ log.time }}</span>
                             </div>
-                        }
-                        }
-                            <!-- <div class="item-mods" *ngIf="dish.remove && dish.remove.length > 0">
-                                <p class="mod-title">Remove Ingredients</p>
-                                <div *ngFor="let remove of dish.remove">{{ remove }}</div>
-                            </div> -->
-                            <!-- <div class="item-notes" *ngIf="dish.notes">
-                                <p class="mod-title">Notes:</p>
-                                <div>{{ dish.notes }}</div>
-                            </div> -->
+
+                            <div class="fw-bold text-uppercase">{{ log.title }}</div>
+                            <div *ngIf="log.description" class="text-muted small mt-1">{{ log.description }}</div>
+
+                            <button *ngIf="log.type === 'edit'"
+                                class="btn btn-outline-secondary btn-sm mt-2">DETAILS</button>
                         </div>
-                        <span class="price">${{ item.item_total_price.toFixed(2) }}</span>
                     </div>
-                </div>
-            }
-            }
-                <div class="bill-summary">
-                    <div class="summary-row">
-                        <p>Cart</p>
-                        <span>${{ data.payments?.cartTotal?.toFixed(2) }}</span>
-                    </div>
-                    <div class="summary-row">
-                        <p>Credit / Debit Card Fee</p>
-                        <span>${{ data.payments?.cardFee?.toFixed(2) }}</span>
-                    </div>
-                    @if(data.delivery_fees){
-                    <div class="summary-row">
-                        <p>Delivery Fees</p>
-                        <span>${{ data.delivery_fees }}</span>
-                    </div>
-                }
-                    <div class="summary-row">
-                        <p>GST (15%) inc. in price</p>
-                        <span>${{ data.gst_price }}</span>
-                    </div>
-                    
 
-                    <div class="summary-row total-row">
-                        <p>Total</p>
-                        <span>${{ data.payment_amount }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <div *ngIf="activeTab === 'payments'">
-                <div class="payment-row">
-                    <div class="payment-icon">
-                        <i class="ri-money-dollar-circle-line"></i>
-                    </div>
-                    <div class="payment-details">
-                        <p>{{ data.payment_method }}</p>
-                        <small style="margin-left: -3%;">Successful</small>
-                    </div>
-                    <div class="payment-amount" >${{ data.total_price }}</div>
-                </div>
-            </div>
-
-
-            <div *ngIf="activeTab === 'log'">
-                <small>Sorted from newest to oldest</small>
-                <div class="log-entry" *ngFor="let entry of orderlogs; let i = index">
-                    <div class="d-flex align-items-center">
-                        <div class="log-number">{{ orderlogs.length - i }}
-                        </div> <span class="ms-2">
-                            {{ entry.new_status }}</span>
-                    </div>
-                    <div class="log-details p-1">
-                        <p>Updated from "{{ entry.new_status }}" to "{{ entry.old_status }}" </p>
-                        <small>{{ entry.status_created_on }}</small>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
-      <div class="modal-footer">
-    <button class="btn btn-cancel" type="button" ><i class="ri-close-circle-line"></i>
-      &nbsp;Cancel</button>
-    <button body class="btn btn-animation  save-button" style="margin-left: 10px;" (click)="updatedOrder()"
-      type="button"><i class="ri-add-circle-line"></i>&nbsp; Update Order</button>&nbsp;
-  </div>
+    <div class="modal-footer">
+        <button class="btn btn-cancel" type="button">
+            <i class="ri-close-circle-line"></i> &nbsp;Cancel
+        </button>
+        <button body class="btn btn-animation save-button" style="margin-left: 10px" (click)="updatedOrder()"
+            type="button">
+            <i class="ri-add-circle-line"></i>&nbsp; Update Order
+        </button>
+    </div>
 </div>
