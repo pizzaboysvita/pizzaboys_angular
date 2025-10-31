@@ -1,0 +1,95 @@
+<div class="modal-body">
+    <div id="print-section" class="receipt">
+        <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+
+        <h2 class="title">{{ storeDetails?.store_name || 'Pizza Boyz - Ellerslie' }}</h2>
+        <p>{{ storeDetails?.address || '64 Michaels Avenue, Auckland' }}</p>
+        <p>GST No: {{ storeDetails?.gst_number || '134 262 354' }}</p>
+        <p>PH: {{ storeDetails?.phone || '09 600 1231' }}</p>
+        <p>{{ storeDetails?.website || 'www.pizzaboyz.co.nz' }}</p>
+
+        <h3 class="order-id">#{{ data?.order_master_id }}</h3>
+
+        <!-- ORDER INFO -->
+        <div class="info">
+            <div class="line-row"><span>Status</span><span>{{ data?.order_status }}</span></div>
+            <div class="dotted"></div>
+            <div class="line-row"><span>Type</span><span>{{ data?.order_type === 1 ? 'Pickup' : 'Delivery' }}</span>
+            </div>
+            <div class="dotted"></div>
+            <div class="line-row">
+                <span>Placed</span><span>{{ data?.order_created_datetime | date:'dd/MM/yyyy hh:mma' }}</span>
+            </div>
+            <div class="dotted"></div>
+            <div class="line-row"><span>Due</span><span>{{ data?.order_due || 'ASAP' }}</span></div>
+            <div class="dotted"></div>
+            <div class="line-row">
+                <span>Est. Ready</span><span>{{ data?.pickup_datetime | date:'dd/MM, hh:mma' }}</span>
+            </div>
+            <div class="dotted"></div>
+            <div class="line-row"><span>Pay. Method</span><span>{{ data?.payment_method }}</span></div>
+        </div>
+
+        <!-- ITEMS -->
+        <table class="items">
+            <thead>
+                <tr>
+                    <th>Qty</th>
+                    <th>Item</th>
+                    <th class="right">Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of orderItems">
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.dish_name }}</td>
+                    <td class="right">{{ item.price | currency:'$' }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- TOTALS -->
+        <div class="summary">
+            <div class="line-row"><span>Cart</span><span>{{ data?.total_price | currency:'$' }}</span></div>
+            <div class="dotted"></div>
+            <div class="line-row"><span>GST (15%) inc. in price</span><span>{{ data?.gst_price | currency:'$' }}</span>
+            </div>
+            <div class="dotted"></div>
+            <hr class="solid" />
+            <div class="line-row total"><strong>Total</strong><strong>{{ data?.total_price | currency:'$' }}</strong>
+            </div>
+        </div>
+        <!-- Split Payment Section -->
+        <div class="no-print">
+            <div *ngIf="paymentDetails?.length">
+                <hr />
+                <button class="btn btn-sm btn-outline-secondary w-100 mt-1" (click)="toggleSplitView()">
+                    {{ showSplitDetails ? 'Hide Split Details' : 'Show Split Details' }}
+                </button>
+
+                <div *ngIf="showSplitDetails" class="split-section mt-2">
+                    <div *ngFor="let section of getSplitDetails(); trackBy: trackByTitle">
+                        <div class="fw-bold">{{ section.title }}</div>
+                        <div *ngFor="let entry of section.data">{{ entry }}</div>
+                        <hr class="solid" />
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="paymentDetails && paymentDetails.length > 1" class="mt-2">
+                <label class="form-label fw-bold">Select Split Bill:</label>
+                <select class="form-select" [(ngModel)]="selectedSplitIndex">
+                    <option [ngValue]="-1">Full Bill</option>
+                    <option *ngFor="let p of paymentDetails; let i = index" [ngValue]="i">
+                        Split {{ i + 1 }} - {{ p.payment_method }} (${{ p.amount?.toFixed(2) }})
+                    </option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-outline-secondary" (click)="activeModal.dismiss()">Cancel</button>
+    <button class="btn btn-primary" (click)="print()">Print</button>
+</div>

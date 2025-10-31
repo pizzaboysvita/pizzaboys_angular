@@ -10,17 +10,18 @@ import { AppConstants } from "../../../app.constants";
 import { ApisService } from "../../../shared/services/apis.service";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { SessionStorageService } from "../../../shared/services/session-storage.service";
-import { OrderDialogComponent } from "../order-dialog/order-dialog.component"; // 👈 Import your dialog component
+import { OrderDialogComponent } from "../order-dialog/order-dialog.component";
+import { OrderprintdialogComponent } from "../orderprintdialog/orderprintdialog.component";
+import { DatePipe } from "@angular/common";
 
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
-
-  order_type:string,
-  is_pos_order:string
-  order_master_id:Number,
-  total_price:string,
-  total_quantity:string,
-  order_status:string,
+  order_type: string;
+  is_pos_order: string;
+  order_master_id: Number;
+  total_price: string;
+  total_quantity: string;
+  order_status: string;
   user_email: string;
   profiles: string;
   phone_number: number;
@@ -28,11 +29,11 @@ interface RowData {
   status: string;
   address: string;
   store_name: string;
-  due:String
-  email:string;
-  order_due:string;
-  payment_method:string;
-  order_due_datetime:string
+  due: String;
+  email: string;
+  order_due: string;
+  payment_method: string;
+  order_due_datetime: string;
 }
 
 interface OrderData {
@@ -69,6 +70,7 @@ interface OrderData {
 @Component({
   selector: "app-pos-orders",
   imports: [AgGridAngular],
+  providers: [DatePipe], // ✅ provide DatePipe here
   templateUrl: "./pos-orders.component.html",
   styleUrl: "./pos-orders.component.scss",
 })
@@ -80,34 +82,36 @@ export class PosOrdersComponent {
   gridOptions = {
     pagination: true,
     rowHeight: 60,
+    suppressRowClickSelection: false,
+    suppressCellFocus: true,
   };
-  tableConfig: ColDef<RowData>[] = [
-{
-  field: 'is_pos_order',
-  headerName: 'Type',
-  sortable: true,
-  suppressMenu: true,
-  unSortIcon: true,
-  cellRenderer: (params: any):any => {
-    const orderType = params.value;
-  
-    const backgroundColor ='rgb(81, 163, 81)';
 
-    // If order_type = 1 → POS circle with badge
-    if (orderType == 1) {
-      return `
+  tableConfig: ColDef<RowData>[] = [
+    {
+      field: "is_pos_order",
+      headerName: "Type",
+      sortable: true,
+      suppressMenu: true,
+      unSortIcon: true,
+      cellRenderer: (params: any): any => {
+        const orderType = params.value;
+
+        const backgroundColor = "rgb(81, 163, 81)";
+
+        if (orderType == 1) {
+          return `
         <div class="d-flex align-items-center gap-2 position-relative">
           <div class="rounded-circle d-flex align-items-center justify-content-center"
                style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
-             <i class="ri-shopping-bag-2-line"></i>
+             <i class="ri-shopping-bag-line"></i>
           </div>
           
           <span class="badge bg-primary position-absolute"
                 style="    width: 30px; height: 20px; top: 25px; left: 25px; font-size: 0.65rem;">POS</span>
         </div>
       `;
-    }else{
-      return `
+        } else {
+          return `
         <div class="d-flex align-items-center gap-2 position-relative">
           <div class="rounded-circle d-flex align-items-center justify-content-center"
                style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
@@ -117,17 +121,13 @@ export class PosOrdersComponent {
          
         </div>
       `;
-    }
-
-
-   
-  }
-}
-,
-   {
+        }
+      },
+    },
+    {
       field: "order_master_id",
       headerName: "#/Name",
-      suppressHeaderMenuButton: true, // updated from deprecated `suppressMenu`
+      suppressHeaderMenuButton: true,
       unSortIcon: true,
       tooltipValueGetter: (p: ITooltipParams) => p.value,
       // cellRenderer: (params: any) => {
@@ -165,12 +165,10 @@ export class PosOrdersComponent {
       //     return colors[index];
       //   }
       // }
-
-    }
-    ,
- {
-      field: 'phone_number',
-      headerName: 'Phone',
+    },
+    {
+      field: "phone_number",
+      headerName: "Phone",
       suppressMenu: true,
       unSortIcon: true,
       tooltipValueGetter: (p: ITooltipParams) => p.value,
@@ -192,18 +190,16 @@ export class PosOrdersComponent {
     //   tooltipValueGetter: (p: ITooltipParams) => p.value,
     // },
     {
-   
-      field: 'order_due_datetime',
-      headerName: 'Due',
+      field: "order_due_datetime",
+      headerName: "Due",
       suppressMenu: true,
       unSortIcon: true,
       tooltipValueGetter: (p: ITooltipParams) => p.value,
+      valueFormatter: params => this.datePipe.transform(params.value, 'dd-MM-yyyy, h:mm a') ?? ''
     },
     {
-
-
-      field: 'due',
-      headerName: 'Placed',
+      field: "order_due",
+      headerName: "Placed",
       suppressMenu: true,
       unSortIcon: true,
       tooltipValueGetter: (p: ITooltipParams) => p.value,
@@ -215,19 +211,36 @@ export class PosOrdersComponent {
       unSortIcon: true,
       tooltipValueGetter: (p: ITooltipParams) => p.value,
     },
-{
-      field: 'payment_method',
-      headerName: 'Payment',
+    {
+      field: "payment_method",
+      headerName: "Payment",
       suppressMenu: true,
       unSortIcon: true,
       tooltipValueGetter: (p: ITooltipParams) => p.value,
     },
 
-   {
-  headerName: 'Status',
-  field: 'order_status',
- tooltipValueGetter: (p: ITooltipParams) => p.value,
+    {
+      headerName: "Status",
+      field: "order_status",
+      tooltipValueGetter: (p: ITooltipParams) => p.value,
     },
+    {
+      headerName: "Actions",
+      // field: "actions",
+      suppressMenu: true,
+      unSortIcon: true,
+      minWidth: 120,
+      cellRenderer: () => {
+        return `
+      <div class="d-flex align-items-center justify-content-center gap-2">
+        <button class="btn btn-sm btn-outline-success" data-action="print" title="Print Order">
+          <i class="ri-printer-line"></i>
+        </button>
+      </div>
+    `;
+      },
+    },
+
     // {
     //     headerName: "Status",
     //     field: "status",
@@ -313,54 +326,117 @@ export class PosOrdersComponent {
   constructor(
     private apiService: ApisService,
     private sessionStorage: SessionStorageService,
-     public modalService: NgbModal
-
+    public modalService: NgbModal,private datePipe: DatePipe
   ) {}
+  
 
   ngOnInit() {
     this.getStaffList();
-    this.getOrderList()
+    this.getOrderList();
   }
 
+  // getOrderList() {
+  //   const store_id = JSON.parse(
+  //     this.sessionStorage.getsessionStorage("loginDetails") as any
+  //   ).user.store_id;
+  //   this.apiService
+  //     .getApi(
+  //       AppConstants.api_end_points.orderList +
+  //         "?store_id=" +
+  //         store_id +
+  //         "&type=web"
+  //     )
+  //     .subscribe((data: any) => {
+  //       if (data) {
+  //         data.categories.forEach((element: any) => {
+  //           element.due = this.transform(element.ordr_created_datetime);
+  //           element.order_master_id = "P-" + element.order_master_id;
+  //         });
+  //         this.orderList = data.categories;
+  //         console.log(data, "order list data");
+  //       }
+  //     });
+  // }
 
-   
+  getOrderList() {
+    const store_id = JSON.parse(
+      this.sessionStorage.getsessionStorage("loginDetails") as any
+    ).user.store_id;
 
- 
-         getOrderList() {
-      const store_id = JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.store_id;
-           this.apiService.getApi(AppConstants.api_end_points.orderList+'?store_id='+store_id+'&type=web').subscribe((data: any) => {
-             if (data) {
-data.categories.forEach((element: any) => {
-    element.due = this.transform(element.ordr_created_datetime);
-  element.order_master_id = 'P-'+element.order_master_id;
-})
-              this.orderList = data.categories
-             console.log(data, 'order list data');
-             }
-           })
-         }
+    this.apiService
+      .getApi(
+        AppConstants.api_end_points.orderList +
+          "?store_id=" +
+          store_id +
+          "&type=web"
+      )
+      .subscribe((data: any) => {
+        if (data && data.categories) {
+          data.categories.forEach((element: any) => {
+            try {
+              let items = [];
 
+              if (typeof element.order_items === "string") {
+                items = JSON.parse(element.order_items);
+              } else {
+                items = element.order_items || [];
+              }
 
-  onCellClicked(event: any): void {
-  
-    console.log("PPPPPPPPPPPPPPpppnnnnnnnnnnnnnnnn",event.data)
-    // if (event.node.data) {
-     let result1 = event.data.order_master_id.replace("P-", "")
-     this.apiService.getApi(AppConstants.api_end_points.orderList + '?order_id=' + result1 + '&type=web').subscribe((response:any) => {
-      console.log(response, 'order details');
-      if(response.code ==1){
-this.orderDetails = response.categories[0];
-  this.modalRef = this.modalService.open(OrderDialogComponent, {
-        size: "lg",
-        centered: true,
+              const grouped = Object.values(
+                items.reduce((acc: any, item: any) => {
+                  if (!acc[item.dish_id]) {
+                    acc[item.dish_id] = { ...item, quantity: 0 };
+                  }
+                  acc[item.dish_id].quantity += item.quantity;
+                  return acc;
+                }, {})
+              );
+
+              element.order_items = grouped;
+            } catch (err) {
+              console.error(
+                "Error parsing order_items for order:",
+                element,
+                err
+              );
+              element.order_items = [];
+            }
+
+            element.due = this.transform(element.ordr_created_datetime);
+            element.order_master_id = "P-" + element.order_master_id;
+          });
+
+          this.orderList = data.categories;
+          console.log("✅ Cleaned Order List:", this.orderList);
+        }
       });
-      this.modalRef.componentInstance.data = this.orderDetails;
-      }
-    });
-   
-     
-    // }
   }
+
+  // onCellClicked(event: any): void {
+  //   console.log("PPPPPPPPPPPPPPpppnnnnnnnnnnnnnnnn", event.data);
+  //   // if (event.node.data) {
+  //   let result1 = event.data.order_master_id.replace("P-", "");
+  //   this.apiService
+  //     .getApi(
+  //       AppConstants.api_end_points.orderList +
+  //         "?order_id=" +
+  //         result1 +
+  //         "&type=web"
+  //     )
+  //     .subscribe((response: any) => {
+  //       console.log(response, "order details");
+  //       if (response.code == 1) {
+  //         this.orderDetails = response.categories[0];
+  //         this.modalRef = this.modalService.open(OrderDialogComponent, {
+  //           size: "lg",
+  //           centered: true,
+  //         });
+  //         this.modalRef.componentInstance.data = this.orderDetails;
+  //       }
+  //     });
+
+  //   // }
+  // }
 
   // onCellClicked(event: any): void {
   //   const isActionColumn = event.colDef.headerName === "Actions";
@@ -425,6 +501,47 @@ this.orderDetails = response.categories[0];
   //     modalRef.componentInstance.data = mockOrderData;
   //   }
   // }
+  onCellClicked(event: any): void {
+    const target = event.event?.target as HTMLElement;
+    const actionButton = target.closest("button[data-action]");
+    const rowData = event.data;
+
+    if (actionButton && actionButton.getAttribute("data-action") === "print") {
+      event.event.stopPropagation();
+      this.openPrintDialog(rowData);
+      return;
+    }
+
+    if (!actionButton && rowData) {
+      const orderId = rowData.order_master_id.replace("P-", "");
+      this.apiService
+        .getApi(
+          AppConstants.api_end_points.orderList +
+            "?order_id=" +
+            orderId +
+            "&type=web"
+        )
+        .subscribe((response: any) => {
+          if (response.code === 1) {
+            this.orderDetails = response.categories[0];
+            this.modalRef = this.modalService.open(OrderDialogComponent, {
+              size: "lg",
+              centered: true,
+            });
+            this.modalRef.componentInstance.data = this.orderDetails;
+          }
+        });
+    }
+  }
+
+  openPrintDialog(order: any): void {
+    const modalRef = this.modalService.open(OrderprintdialogComponent, {
+      size: "md",
+      centered: true,
+    });
+    modalRef.componentInstance.data = order;
+  }
+
   getStaffList() {
     this.apiService
       .getApi(AppConstants.api_end_points.staff + "?user_id=-1")
@@ -432,7 +549,7 @@ this.orderDetails = response.categories[0];
         if (data) {
           data.data.forEach((element: any) => {
             // element.option=''
-          
+
             (element.user_image = null),
               (element.fullname = element.first_name + " " + element.last_name);
             element.status =
@@ -447,23 +564,23 @@ this.orderDetails = response.categories[0];
         }
       });
   }
-   transform(value: string | Date): string {
-    if (!value) return '';
-    
+  transform(value: string | Date): string {
+    if (!value) return "";
+
     const created = new Date(value).getTime();
     const now = Date.now();
     const diffMs = now - created;
 
-    const diffMin = Math.floor(diffMs / 60000); // ms → minutes
-    const diffHr  = Math.floor(diffMin / 60);
+    const diffMin = Math.floor(diffMs / 60000);
+    const diffHr = Math.floor(diffMin / 60);
     const diffDay = Math.floor(diffHr / 24);
 
     if (diffMin < 60) {
-      return `${diffMin} min${diffMin !== 1 ? 's' : ''} ago`;
+      return `${diffMin} min${diffMin !== 1 ? "s" : ""} ago`;
     } else if (diffHr < 24) {
-      return `${diffHr} hour${diffHr !== 1 ? 's' : ''} ago`;
+      return `${diffHr} hour${diffHr !== 1 ? "s" : ""} ago`;
     } else {
-      return `${diffDay} day${diffDay !== 1 ? 's' : ''} ago`;
+      return `${diffDay} day${diffDay !== 1 ? "s" : ""} ago`;
     }
   }
 }

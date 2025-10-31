@@ -12,7 +12,8 @@ import { SessionStorageService } from '../../../shared/services/session-storage.
 export class OrderPaymentsComponent {
   @Input() data: any;
   @Input() customer: any;
-
+isLoading = false;
+progressValue = 10;
   splitBy = 2;
   splitRows: any;
   isSplitPayment: boolean=false;
@@ -21,7 +22,7 @@ export class OrderPaymentsComponent {
   // totalPrice: number;
   unpaidItems: any;
   payItems: any[] = [];     // selected items waiting for payment
-  paidItems: any[] = [];    // confirmed paid items
+  paidItems: any = [];    // confirmed paid items
   isModalOpen: boolean=true;
   showPopup: boolean=true;
   confirmRemove = false;
@@ -79,27 +80,42 @@ setActiveTab(tab: string) {
   if(this.activeTab =='people' ||   this.activeTab =='items'){
   this.splitCash=true
  // ✅ Keep only 'Success' rows in fullArray
-    const successfulRows = this.fullArray.filter((row: { status: string; }) => row.status === 'Success');
-    this.fullArray = successfulRows.length > 0 ? successfulRows : [];
-
+    // const successfulRows = this.fullArray.filter((row: { status: string; }) => row.status === 'Success');
+    // this.fullArray = successfulRows.length > 0 ? successfulRows : [];
+    // console.log(this.fullArray );
+    
+const hasSuccess = this.fullArray.some((row: { status: string }) => row.status === 'Success');
+this.fullArray = hasSuccess ? this.fullArray : [];
     // ✅ If empty, reset remaining & paymentAmount to totalPrice
     if (this.fullArray.length === 0) {
       this.remaining = this.totalPrice;
       this.paymentAmount = this.totalPrice;
     }
+     if (this.splitRows.length>0){
+this.isSplitPayment = true;
+    } 
   }
     if(this.activeTab =='full' ||   this.activeTab =='items'){
     this.isSplitPayment = false;
 
-   const splitfulRows = this.splitRows.filter((row: { status: string; }) => row.status === 'Success');
-    this.splitRows = splitfulRows.length > 0 ? splitfulRows : [];
+  //  const splitfulRows = this.splitRows.filter((row: { status: string; }) => row.status === 'Success');
+  //   this.splitRows = splitfulRows.length > 0 ? splitfulRows : [];
+  const splitfulRows = this.splitRows.some((row: { status: string }) => row.status === 'Success');
+this.splitRows = splitfulRows ? this.splitRows : [];
+console.log(this.splitRows);
+    if (this.splitRows.length>0){
+       this.isSplitPayment = true;
+    } 
     }
      if(this.activeTab =='full' ||   this.activeTab =='people'){
-    this.isSplitPayment = false;
-   const splitfulRows = this.paidItems.filter((row: { status: string; }) => row.status === 'Success');
+ this.isSplitPayment = false;
+   const splitfulRows = this.paidItems.some((row: { status: string; }) => row.status === 'Success');
     this.paidItems = splitfulRows.length > 0 ? splitfulRows : [] ;
     if (!splitfulRows.length) this.unpaidItems = this.data;
-    }
+       }
+        if (this.splitRows.length>0){
+this.isSplitPayment = true;
+    } 
 }
 incSplit() { 
   this.splitBy++;
@@ -308,11 +324,15 @@ openCashModal(type:any) {
   if(this.activeTab=='items'){
       this.cashpaymentAmount = this.selectedRowData.item_total_price; 
     }
-  if(type =='Cash'){
+  if(type == 'Cash'){
   this.showNewModelPopup=true
   }
-  if(type='EFTPOS'){
+  else if(type=='EFTPOS'){
        this.showEftModal=true
+       this.isLoading = true;
+         setTimeout(() => {
+    this.isLoading = false;
+  }, 2000);
   }
   else{
     this.confirmCashPayment()

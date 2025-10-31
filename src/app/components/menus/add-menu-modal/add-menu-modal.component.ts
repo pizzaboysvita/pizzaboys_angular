@@ -10,11 +10,12 @@ import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-mod
 import { ColDef, ITooltipParams, ModuleRegistry } from "@ag-grid-community/core";
 import { ToastrService } from 'ngx-toastr';
 import { SessionStorageService } from '../../../shared/services/session-storage.service';
+import { CommonModule } from '@angular/common';
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 @Component({
   selector: 'app-add-menu-modal',
   standalone: true,
-  imports: [NgbNavModule, NgSelectModule, FormsModule, ReactiveFormsModule,AgGridAngular],
+  imports: [NgbNavModule, NgSelectModule, FormsModule, ReactiveFormsModule,AgGridAngular,CommonModule],
   templateUrl: './add-menu-modal.component.html',
   styleUrls: ['./add-menu-modal.component.scss']
 })
@@ -177,8 +178,10 @@ isHide=false
       posDispalyname: [''],
       hideMenu: ['']
     })
+       
     this.buildForm()
     this.getStoreList()
+  
   }
   getStoreList() {
     this.apis.getApi(AppConstants.api_end_points.store_list).subscribe((data: any) => {
@@ -202,6 +205,12 @@ isHide=false
   }
   ngOnInit() {
     this.patchValue()
+    if (this.type === 'View') {
+    this.menuForm.disable();
+     this.posForm.disable();
+     this.conditionForm.disable();
+      this.surchargeForm.disable();
+  }
     console.log('Received data:', this.myData);
   }
   patchValue() {
@@ -273,7 +282,7 @@ isHide=false
       "description": this.menuForm.value.description,
       "disable_dish_notes": this.menuForm.value.disableDishNotes == true ? 1 : 0,
       "re_stock_menu_daily": this.menuForm.value.restockMenuDaily == true ? 1 : 0,
-      "hide_menu": this.menuForm.value.hideMenu == true ? 0 : 1,
+      "hide_menu": this.menuForm.value.hideMenu == true ? 1 : 0,
       "order_times": this.conditionForm.value.orderTimes == null ? '' : this.conditionForm.value.orderTimes.toString(),
       "services": this.conditionForm.value.services.toString(),
       "applicable_hours": "[{\"day\":\"Mon\",\"from\":\"12:00\",\"to\":\"15:00\"}]",
@@ -285,7 +294,7 @@ isHide=false
       "hide_restriction_warning": this.conditionForm.value.hideRestrictionWarning == true ? 1 : 0,
       "hide_if_unavailable": this.conditionForm.value.hideIfUnavailable == true ? 1 : 0,
       "POS_display_name": this.posForm.value.posDispalyname,
-      "hide_menu_in_POS": this.posForm.value.hideMenu == true ? 0 : 1,
+      "hide_menu_in_POS": this.posForm.value.hideMenu == true ? 1 : 0,
       "pickup_surcharge": this.surchargeForm.value.pickupSurcharge,
       "delivery_surcharge": this.surchargeForm.value.deliverySurcharge,
       "managed_delivery_surcharge": this.surchargeForm.value.managedDeliverySurcharge,
@@ -303,7 +312,7 @@ isHide=false
       "description": this.menuForm.value.description ==''?'':this.menuForm.value.description,
       "disable_dish_notes": this.menuForm.value.disableDishNotes == true ? 1 : 0,
       "re_stock_menu_daily": this.menuForm.value.restockMenuDaily == true ? 1 : 0,
-      "hide_menu": this.menuForm.value.hideMenu == true ? 0 : 1,
+      "hide_menu": this.menuForm.value.hideMenu == true ? 1 : 0,
       "order_times": (this.conditionForm.value.orderTimes =='' ||this.conditionForm.value.orderTimes ==null) ?null:this.conditionForm.value.orderTimes.toString(),
       "services": this.conditionForm.value.services==''?null: this.conditionForm.value.services.toString(),
       "applicable_hours":this.rowData.length ==0?'':JSON.stringify(this.rowData),
@@ -315,7 +324,7 @@ isHide=false
       "hide_restriction_warning": this.conditionForm.value.hideRestrictionWarning == true ? 1 : 0,
       "hide_if_unavailable": this.conditionForm.value.hideIfUnavailable == true ? 1 : 0,
       "POS_display_name": this.posForm.value.posDispalyname ==''?'':this.posForm.value.posDispalyname,
-      "hide_menu_in_POS": this.posForm.value.hideMenu == true ? 0 : 1,
+      "hide_menu_in_POS": this.posForm.value.hideMenu == true ? 1 : 0,
       "pickup_surcharge": this.surchargeForm.value.pickupSurcharge ==''?0.0:this.surchargeForm.value.pickupSurcharge,
       "delivery_surcharge": this.surchargeForm.value.deliverySurcharge ==''?0.0:this.surchargeForm.value.deliverySurcharge,
       "managed_delivery_surcharge": this.surchargeForm.value.managedDeliverySurcharge ==''?0.0: this.surchargeForm.value.managedDeliverySurcharge,

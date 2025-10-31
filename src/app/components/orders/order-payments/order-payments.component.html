@@ -317,7 +317,7 @@
           <div class="text-end">
       <div class="fw-bold mb-1">${{ rowData.item_total_price }}</div>
       <a 
-   class="text-primary small fw-bold text-decoration-underline"
+   class="text-primary small fw-bold text-decoration-underline a-pointer"
    (click)="moveToPay(rowData, ind)">
   Move to Pay
 </a>
@@ -358,7 +358,7 @@
         <div class="text-end">
       <div class="fw-bold mb-1">${{ rowData.item_total_price }}</div> 
        <a 
-   class="text-primary small fw-bold text-decoration-underline"
+   class="text-primary small fw-bold text-decoration-underline a-pointer"
    (click)="removeToPay(rowData, ind)">
   Removed to Pay
 </a>
@@ -411,30 +411,7 @@
       </div>
 
   <div class="text-muted text-center py-5">
-    @if(isSplitPayment){
-         <table class="table table-sm align-middle"  >
-                  <thead style="background-color: #f9f9fa !important;">
-                    <tr>
-                      <th>Status</th>
-                      <th>Type</th>
-                      <th>Amount</th>
-                      <th>Tender</th>
-                      <th>Change</th>
-                    </tr>
-                  </thead>
-                  <tbody style="background-color: #eeeeef;">
-                       @for (rowData of splitRows; track rowData;let ind = $index) {
-                    <tr>
-                      <td><span class="badge bg-warning  text-dark fs-16">{{rowData.status}}</span></td>
-                      <td>{{rowData.type}}</td>
-                      <td>${{rowData.amount}}</td>
-                      <td>-</td>
-                      <td>-</td>
-                    </tr>
-                }
-                  </tbody>
-                </table>
-            }
+ 
                 @if(paidItems.length > 0) {
     <div class="text-muted">
       <table class="table table-sm align-middle">
@@ -469,7 +446,7 @@
       </table>
     </div>
   } 
-  @if(isSplitPayment || paidItems.length > 0){
+  @if(paidItems.length > 0){
 
   
               <div class="d-flex flex-wrap gap-2 my-3">
@@ -539,7 +516,7 @@
     
 <!-- Cash Payment Modal -->
   <div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{ 'show d-block': showNewModelPopup }" style="background: rgba(0,0,0,0.5); z-index: 1040;">
-  <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+  <div class="modal-dialog modal-sm modal-dialog-centered" role="document" style="max-width: 350px;" >
     <div class="modal-content p-3">
 
       <!-- Header -->
@@ -547,15 +524,31 @@
         <h5 class="mb-0">Cash Tender</h5>
         <button type="button" class="btn-close" (click)="closeNewModelPopup()"></button>
       </div>
-
-      <!-- Quick Cash Buttons -->
-      <div class="btn-group w-100 mb-3">
+ <!-- <div class="btn-group w-100 mb-3">
         <button class="btn btn-outline-secondary border" (click)="setCashQuick(5)">$5</button>
         <button class="btn btn-outline-secondary border" (click)="setCashQuick(10)">$10</button>
         <button class="btn btn-outline-secondary border" (click)="setCashQuick(20)">$20</button>
         <button class="btn btn-outline-secondary border" (click)="setCashQuick(50)">$50</button>
         <button class="btn btn-outline-secondary border" (click)="setCashQuick(100)">$100</button>
-      </div>
+      </div> -->
+    <!-- [ngClass]="{
+          'btn-outline-secondary': selectedQuickAmount !== value,
+          'btn-secondary': selectedQuickAmount === value
+        }" -->
+ <div class="border ml-2 rounded text-center mb-3">
+  <div class="row g-2">
+    <div class="col-2" *ngFor="let value of [5, 10, 20, 50, 100]">
+      <button
+        class="btn w-100 btn btn-outline-secondary" 
+        [disabled]="cashpaymentAmount > value"
+        (click)="setCashQuick(value)">
+        ${{ value }}
+      </button>
+    </div>
+  </div>
+</div>
+
+
 
       <!-- Keypad -->
       <div class="border rounded p-3 text-center">
@@ -683,37 +676,25 @@
     </div>
   </div>
 </div>
-<div class="modal fade" tabindex="-1" role="dialog"
-     [ngClass]="{ 'show d-block': showEftModal }"
-     style="background: rgba(0,0,0,0.5); z-index: 1050;">
-  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-    <div class="modal-content p-3">
 
-      <!-- Modal Header -->
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <!-- <h5 class="mb-0">Payment Screen</h5> -->
-        <button type="button" class="btn-close" (click)="showEftModal=false"></button>
-      </div>
 
-      <!-- ✅ Image Display Section -->
-      <!-- <div class="text-center border rounded p-3 mb-3 bg-light">
-        <img
-          src="assets/images/payment-screen.png"
-          alt="Payment Screen"
-          class="img-fluid rounded shadow"
-          style="max-height: 500px; object-fit: contain;"
-        >
-      </div> -->
+ <div class="fullscreen-popup" *ngIf="showEftModal">
+          <button class="close-popup" (click)="showEftModal=false">&times;</button>
+<!-- <div class="p-3 border rounded mb-3 bg-white"> -->
 
-      <!-- ✅ Summary Details -->
-      <div class="p-3 border rounded mb-3 bg-white">
-        <div class="d-flex justify-content-center mb-2">
-          <strong>Bill Amount</strong><br>
-          <!-- <span>${{ cashpaymentAmount }}</span> -->
+<div class="p-3  rounded mb-3 ">
+<div  class="loader-overlay" *ngIf="isLoading">
+  <div class="loader-circle"></div>
+</div>
+  <div class="d-flex justify-content-center mb-2">
+          <strong>Present Card</strong><br>
         </div>
+        <!-- <div class="d-flex justify-content-center mb-2">
+          <strong>Bill Amount</strong><br>
+        </div> -->
  <div class="d-flex justify-content-center mb-2">
           <!-- <strong>Bill Amount</strong><br> -->
-          <span>${{ cashpaymentAmount }}</span>
+          <span class=" border rounded p-2" style="color: #eeeeef;">${{ cashpaymentAmount }}</span>
         </div>
         
 
@@ -726,7 +707,6 @@
 
     </div>
   </div>
-</div>
-
-
+          
+     
 
