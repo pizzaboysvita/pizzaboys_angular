@@ -31,7 +31,7 @@ jobs:
         run: npm install --legacy-peer-deps
 
       - name: Build project
-        run: npm run start:pre_live
+        run: npm run build:stg
 
       - name: List dist output
         run: ls -R dist/
