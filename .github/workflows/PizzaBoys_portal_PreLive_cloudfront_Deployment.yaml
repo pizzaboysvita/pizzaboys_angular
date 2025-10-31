@@ -9,9 +9,6 @@ env:
   AWS_REGION: ap-southeast-2
   S3_BUCKET: pizzaboyz-portal
   DISTRIBUTION_ID: E19L2BZ4WZSAO9
-  AWS_ACCESS_KEY_ID: AKIAUC4R6W6I5FURGNEF
-  AWS_SECRET_ACCESS_KEY: 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
-  
   
 
 jobs:
@@ -39,8 +36,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Clear existing files in S3
