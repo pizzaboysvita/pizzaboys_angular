@@ -1,0 +1,65 @@
+name: Deploy to S3 and CloudFront (pre_live)
+
+on:
+  push:
+    branches:
+      - pizzaboys_stg
+
+env:
+  AWS_REGION: ap-southeast-2
+  S3_BUCKET: pizzaboyz-portal
+  DISTRIBUTION_ID: E19L2BZ4WZSAO9
+  AWS_ACCESS_KEY_ID: AKIAUC4R6W6I5FURGNEF
+  AWS_SECRET_ACCESS_KEY: 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
+  
+  
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build project
+        run: npm run start:pre_live
+
+      - name: List dist output
+        run: ls -R dist/
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Clear existing files in S3
+        run: aws s3 rm s3://${{ env.S3_BUCKET }}/pre_live --recursive
+
+      - name: Sync new build to S3
+        run: aws s3 sync dist/zomo-admin/browser s3://${{ env.S3_BUCKET }}/pre_live --delete
+
+      - name: Set correct JS Content-Type
+        run: |
+          aws s3 cp ./dist/zomo-admin/browser s3://${{ env.S3_BUCKET }}/pre_live \
+            --recursive \
+            --content-type application/javascript \
+            --exclude "*" \
+            --include "*.js" \
+            --metadata-directive REPLACE
+
+      - name: Create CloudFront invalidation
+        run: aws cloudfront create-invalidation --distribution-id ${{ env.DISTRIBUTION_ID }} --paths '/*'
+
+      - name: Deployment complete
+        run: echo "✅ Deployment Done!"
