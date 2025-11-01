@@ -15,6 +15,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -33,7 +37,7 @@ jobs:
       - name: List dist output
         run: ls -R dist/
 
-      # Step 1: Configure temporary AWS creds to access Secrets Manager
+      # Step 1: Configure AWS credentials (to access Secrets Manager)
       - name: Configure AWS credentials (for secret retrieval)
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -41,15 +45,22 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # Step 2: Retrieve your deployment credentials from AWS Secrets Manager
+      # Step 2: Retrieve deployment credentials (from AWS Secrets Manager)
       - name: Retrieve credentials from AWS Secrets Manager
         id: get_secret
         run: |
-          secret=$(aws secretsmanager get-secret-value --secret-id $SECRET_NAME --query SecretString --output text)
-          echo "AWS_ACCESS_KEY_ID=$(echo $secret | jq -r .AWS_ACCESS_KEY_ID)" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=$(echo $secret | jq -r .AWS_SECRET_ACCESS_KEY)" >> $GITHUB_ENV
+          echo "🔐 Fetching deployment credentials from Secrets Manager..."
+          secret_json=$(aws secretsmanager get-secret-value --secret-id $SECRET_NAME --query SecretString --output text)
+          
+          # Use jq to extract keys from JSON
+          DEPLOY_ACCESS_KEY=$(echo "$secret_json" | jq -r .AWS_ACCESS_KEY_ID)
+          DEPLOY_SECRET_KEY=$(echo "$secret_json" | jq -r .AWS_SECRET_ACCESS_KEY)
+          
+          # Export them to environment for next steps
+          echo "AWS_ACCESS_KEY_ID=$DEPLOY_ACCESS_KEY" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=$DEPLOY_SECRET_KEY" >> $GITHUB_ENV
 
-      # Step 3: Reconfigure AWS using credentials fetched from Secrets Manager
+      # Step 3: Configure AWS again with the fetched credentials
       - name: Configure AWS credentials (deployment)
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -57,7 +68,7 @@ jobs:
           aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # Step 4: Upload files to S3
+      # Step 4: Clear and upload files to S3
       - name: Clear existing files in S3
         run: aws s3 rm s3://${{ env.S3_BUCKET }}/pre_live --recursive
 
@@ -75,7 +86,9 @@ jobs:
 
       # Step 5: CloudFront cache invalidation
       - name: Create CloudFront invalidation
-        run: aws cloudfront create-invalidation --distribution-id ${{ env.DISTRIBUTION_ID }} --paths '/*'
+        run: aws cloudfront create-invalidation \
+          --distribution-id ${{ env.DISTRIBUTION_ID }} \
+          --paths '/*'
 
       - name: Deployment complete
         run: echo "✅ Deployment Done!"
