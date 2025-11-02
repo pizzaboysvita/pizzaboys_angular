@@ -18,24 +18,29 @@ jobs:
       contents: read
 
     steps:
+      # Step 1: Checkout the repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Step 2: Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
+      # Step 3: Install dependencies
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
+      # Step 4: Build your project
       - name: Build project
         run: npm run build:stg
 
+      # Step 5: List build output (for debugging)
       - name: List dist output
         run: ls -R dist/
 
-      # Step 1: Configure AWS credentials directly from GitHub Secrets
+      # Step 6: Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -43,30 +48,37 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # Step 2: Clear existing files in S3
+      # Step 7: Remove old S3 files
       - name: Clear existing files in S3
-        run: aws s3 rm s3://${{ env.S3_BUCKET }}/pre_live --recursive
-
-      # Step 3: Sync new build to S3
-      - name: Sync new build to S3
-        run: aws s3 sync dist/zomo-admin/browser s3://${{ env.S3_BUCKET }}/pre_live --delete
-
-      # Step 4: Set correct JS Content-Type
-      - name: Set correct JS Content-Type
         run: |
+          echo "🧹 Clearing existing files from S3..."
+          aws s3 rm s3://${{ env.S3_BUCKET }}/pre_live --recursive
+
+      # Step 8: Upload new build to S3
+      - name: Upload new build to S3
+        run: |
+          echo "🚀 Uploading new build to S3..."
+          aws s3 sync dist/zomo-admin/browser s3://${{ env.S3_BUCKET }}/pre_live --delete
+
+      # Step 9: Fix JS content type (important for caching)
+      - name: Set JS Content-Type
+        run: |
+          echo "🧾 Updating JS content types..."
           aws s3 cp ./dist/zomo-admin/browser s3://${{ env.S3_BUCKET }}/pre_live \
             --recursive \
-            --content-type application/javascript \
             --exclude "*" \
             --include "*.js" \
+            --content-type "application/javascript" \
             --metadata-directive REPLACE
 
-      # Step 5: CloudFront cache invalidation
-      - name: Create CloudFront invalidation
-        run: aws cloudfront create-invalidation \
-          --distribution-id ${{ env.DISTRIBUTION_ID }} \
-          --paths '/*'
+      # Step 10: Invalidate CloudFront cache (fixed)
+      - name: Invalidate CloudFront cache
+        run: |
+          echo "🔄 Invalidating CloudFront cache..."
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ env.DISTRIBUTION_ID }} \
+            --paths "/*"
 
-      # Step 6: Done
+      # Step 11: Done
       - name: Deployment complete
-        run: echo "✅ Deployment Done!"
+        run: echo "✅ Deployment Completed Successfully!"
