@@ -9,14 +9,12 @@ env:
   AWS_REGION: ap-southeast-2
   S3_BUCKET: pizzaboyz-portal
   DISTRIBUTION_ID: E19L2BZ4WZSAO9
-  SECRET_NAME: github-actions
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     permissions:
-      id-token: write
       contents: read
 
     steps:
@@ -37,44 +35,23 @@ jobs:
       - name: List dist output
         run: ls -R dist/
 
-      # Step 1: Configure AWS credentials (to access Secrets Manager)
-      - name: Configure AWS credentials (for secret retrieval)
+      # Step 1: Configure AWS credentials directly from GitHub Secrets
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # Step 2: Retrieve deployment credentials (from AWS Secrets Manager)
-      - name: Retrieve credentials from AWS Secrets Manager
-        id: get_secret
-        run: |
-          echo "🔐 Fetching deployment credentials from Secrets Manager..."
-          secret_json=$(aws secretsmanager get-secret-value --secret-id $SECRET_NAME --query SecretString --output text)
-          
-          # Use jq to extract keys from JSON
-          DEPLOY_ACCESS_KEY=$(echo "$secret_json" | jq -r .AWS_ACCESS_KEY_ID)
-          DEPLOY_SECRET_KEY=$(echo "$secret_json" | jq -r .AWS_SECRET_ACCESS_KEY)
-          
-          # Export them to environment for next steps
-          echo "AWS_ACCESS_KEY_ID=$DEPLOY_ACCESS_KEY" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=$DEPLOY_SECRET_KEY" >> $GITHUB_ENV
-
-      # Step 3: Configure AWS again with the fetched credentials
-      - name: Configure AWS credentials (deployment)
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      # Step 4: Clear and upload files to S3
+      # Step 2: Clear existing files in S3
       - name: Clear existing files in S3
         run: aws s3 rm s3://${{ env.S3_BUCKET }}/pre_live --recursive
 
+      # Step 3: Sync new build to S3
       - name: Sync new build to S3
         run: aws s3 sync dist/zomo-admin/browser s3://${{ env.S3_BUCKET }}/pre_live --delete
 
+      # Step 4: Set correct JS Content-Type
       - name: Set correct JS Content-Type
         run: |
           aws s3 cp ./dist/zomo-admin/browser s3://${{ env.S3_BUCKET }}/pre_live \
@@ -90,5 +67,6 @@ jobs:
           --distribution-id ${{ env.DISTRIBUTION_ID }} \
           --paths '/*'
 
+      # Step 6: Done
       - name: Deployment complete
         run: echo "✅ Deployment Done!"
