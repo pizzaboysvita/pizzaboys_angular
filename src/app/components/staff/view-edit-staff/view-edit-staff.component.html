@@ -59,7 +59,14 @@
                                     </h6>
                                     <input [type]="field.name.includes('pin') ? 'password' : 'text'"
                                       [formControlName]="field.name" [readonly]="isViewMode"
-                                      [placeholder]="'Enter ' + field.label" />
+                                      [placeholder]="'Enter ' + field.label"  (keypress)="
+        (field.name === 'firstName' || field.name === 'lastName') &&
+        allowOnlyAlphabets($event)"   (input)="
+    field.name === 'firstName'
+      ? capitalizeWords_firstName($event)
+      : field.name === 'lastName'
+      ? capitalizeWords_lastName($event)
+      : null"/>
                                   </div>
                                 </div>
 

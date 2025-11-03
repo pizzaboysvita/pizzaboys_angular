@@ -407,4 +407,30 @@ console.log(reqBody)
   goBack() {
    this.router.navigate(["/staff/staff-list"]);
   }
+   allowOnlyAlphabets(event: KeyboardEvent) {
+    const char = event.key;
+    const regex = /^[A-Za-z\s]+$/;
+
+    if (!regex.test(char)) {
+      event.preventDefault();
+    }
+  }
+   capitalizeWords_firstName(event: any) {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value
+      .toLowerCase()
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+    this.staffForm.patchValue({
+      firstName: input.value,
+    });
+  }
+  capitalizeWords_lastName(event: any) {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value
+      .toLowerCase()
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+    this.staffForm.patchValue({
+      lastName: input.value,
+    });
+  }
 }
