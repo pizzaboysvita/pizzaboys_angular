@@ -172,6 +172,7 @@ console.log(staff)
           this.permissionForm.patchValue({
             store: staff.store_id ,
           });
+        this.rolesId=staff.role_id || "",
 this.selectedPreset =staff.role_id 
           const parsedPermissions =
             typeof staff.permissions === "string" ? JSON.parse(staff.permissions) : staff.permissions;
@@ -355,7 +356,7 @@ console.log(formValues,permissionValues)
     const reqBody: any = {
       type: "update",
       user_id: this.staffId,
-      role_id: formValues.role,
+      role_id: this.rolesId,
       first_name: formValues.firstName,
       last_name: formValues.lastName,
       email: formValues.email,

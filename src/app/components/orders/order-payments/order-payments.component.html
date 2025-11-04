@@ -82,7 +82,7 @@
   <span>Remaining:</span>
   <span>${{ remaining }}</span>
 </div>
-      <button class="btn btn-outline-warning w-100 mt-2" (click)="fullAddPayment()">ADD PAYMENT</button>
+      <button class="btn btn-outline-warning w-100 mt-2" [disabled]="hasSplitSuccess()" (click)="fullAddPayment()">ADD PAYMENT</button>
     </div>
   </div>
               <div [ngClass]="splitCash && !isFullyPaid ? 'col-6' : 'col-12'" >
@@ -187,7 +187,7 @@
 </div>
 
 
-      <button class="btn btn-outline-warning fw-bold text-uppercase"  (click)="generateSplitPayments()">
+      <button class="btn btn-outline-warning fw-bold text-uppercase" [disabled]="hasItemsSuccess()" (click)="generateSplitPayments()">
         Generate Split Payments
       </button>
     }
@@ -318,7 +318,9 @@
       <div class="fw-bold mb-1">${{ rowData.item_total_price }}</div>
       <a 
    class="text-primary small fw-bold text-decoration-underline a-pointer"
-   (click)="moveToPay(rowData, ind)">
+   (click)="moveToPay(rowData, ind)"  [class.disabled]="hasAnySuccess()"
+  [style.pointer-events]="hasAnySuccess() ? 'none' : 'auto'"
+  [style.opacity]="hasAnySuccess() ? 0.5 : 1">
   Move to Pay
 </a>
       <!-- <button class="btn btn-xs btn-primary" (click)="moveToPay(rowData, ind)">
