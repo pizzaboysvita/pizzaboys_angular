@@ -27,7 +27,7 @@
         <div class="col-xl-6">
           <div class="input-box">
             <h6 class="f-w-600 p-1">Store Name</h6>
-            <input type="text" formControlName="storeName" placeholder="Enter Store Name" />
+            <input type="text" formControlName="storeName" placeholder="Enter Store Name"  (input)="capitalizeWords_firstName($event)" (keypress)="allowOnlyAlphabets($event)"/>
             @if (storeForm.get('storeName')?.touched && storeForm.get('storeName')?.invalid) {
               <div class="text-danger">Store Name is required</div>
             }

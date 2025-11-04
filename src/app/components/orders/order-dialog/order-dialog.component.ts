@@ -51,22 +51,22 @@ export class OrderDialogComponent {
     { id: 4, name: "Download PDF receipt" },
     { id: 5, name: "Archive Order" },
   ];
-
-  modiftime = [
-    { id: 1, name: "Add 5min" },
-    { id: 2, name: "Add 10 min" },
-    { id: 3, name: "Add 15 min" },
-    { id: 4, name: "Add 20 min" },
-    { id: 5, name: "Add 25 min" },
-  ];
-
-  constructor(
-    private modal: NgbModal,
-    private toastr: ToastrService,
-    private session: SessionStorageService,
-    private apis: ApisService,
-    private fb: FormBuilder
-  ) {}
+  modiftime=[
+    {id:1,name:'Add 5min'},
+    {id:2,name:'Add 10 min'},
+    {id:3,name:'Add 15 min'},
+    {id:4,name:'Add 20 min'},
+    {id:5,name:'Add 25 min'},
+  ]
+  orderDetails:any
+  order_items: any;
+  orderlogs: any =[];
+  order_toppings: any;
+  order_ingredients: any;
+  totalOrdermerged:any
+  orderForm:FormGroup
+  orderDishDetails:any=[]
+  constructor(public modal: NgbModal,public activeModal: NgbActiveModal,private toastr: ToastrService,private session:SessionStorageService,private apis: ApisService,private fb:FormBuilder) {}
 
   ngOnInit(): void {
     this.currentStatus = this.data.order_status || "Confirmed";
@@ -226,7 +226,9 @@ export class OrderDialogComponent {
   selectTab(tabName: string): void {
     this.activeTab = tabName;
   }
-
+closeOrdersModal(){
+  this.activeModal.close();
+}
   transform(value: string | Date): string {
     if (!value) return "";
     const created = new Date(value).getTime();

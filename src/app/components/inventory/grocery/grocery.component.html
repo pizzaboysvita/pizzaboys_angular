@@ -68,7 +68,7 @@
                             </span>
                         </li>
                         <li>
-                            <a class="export-btn" (click)="openNew()">
+                            <a class="export-btn" (click)="openNew('Add')">
                                 <i class="ri-add-box-fill"></i> Add New
                             </a>
                         </li>
@@ -94,35 +94,33 @@
     </div>
 </div>
 
-<!-- View Modal -->
-<ng-template #viewModal let-modal>
+<ng-template #deleteModal let-modal>
     <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title">Grocery Details</h5>
-            <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+        <div class="modal-header d-block text-center">
+            <h5 class="modal-title w-100" style="font-size: 20px; font-weight: 600">
+                Confirm Inventory Item  Deletion
+            </h5>
+            <button type="button" class="btn-close" (click)="modal.dismiss()">
+                <!-- <i class="fa fa-times"></i> -->
+            </button>
         </div>
         <div class="modal-body">
-            <p><strong>Item Name:</strong> {{ selectedItem?.item_name }}</p>
-            <p><strong>Quantity:</strong> {{ selectedItem?.quantity }}</p>
-            <p><strong>Status:</strong> {{ selectedItem?.status }}</p>
+            <div class="text-center">
+                <span style="font-size: 16px">
+                    Are you sure you want to delete this Inventory Item?
+                </span>
+                <span class="text-danger fw-bold">This action cannot be undone.</span>
+            </div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-sm btn-primary" (click)="modal.close()">Close</button>
+            <button type="button" class="btn btn-sm fw-bold btn-animation" (click)="modal.dismiss()">
+                No
+            </button>
+            <button type="button" class="btn btn-sm fw-bold btn-animation" (click)="confirmDelete(modal)">
+                Yes
+            </button>
         </div>
     </div>
 </ng-template>
-<ng-template #deleteModal let-modal>
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title">Confirm Deletion</h5>
-      <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
-    </div>
-    <div class="modal-body">
-      Are you sure you want to delete <strong>{{ selectedItem?.itemname }}</strong>?
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary btn-sm" (click)="modal.dismiss()">No</button>
-      <button type="button" class="btn btn-danger btn-sm" (click)="confirmDelete(modal)">Yes</button>
-    </div>
-  </div>
-</ng-template>
+
+

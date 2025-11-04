@@ -204,4 +204,12 @@ export class AddRestaurantsComponent {
     console.log('Going back to restaurant list');
     this.router.navigate(['/restaurants/restaurants-list']);
   }
+   allowOnlyAlphabets(event: KeyboardEvent) {
+    const char = event.key;
+    const regex = /^[A-Za-z\s-]+$/;
+
+    if (!regex.test(char)) {
+      event.preventDefault();
+    }
+  }
 }

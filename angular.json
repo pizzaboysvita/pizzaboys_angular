@@ -50,7 +50,23 @@
             ]
           },
           "configurations": {
-          
+          "dev": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.dev.ts"
+                }
+              ],
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "15mb",
+                  "maximumError": "20mb"
+                }
+              ],
+              "optimization": true,
+              "sourceMap": true
+            },
             "stg": {
               "fileReplacements": [
                 {
@@ -91,7 +107,7 @@
               "sourceMap": true
             }
           },
-          "defaultConfiguration": "stg"
+          "defaultConfiguration": "dev"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -102,11 +118,11 @@
              "stg": {
               "buildTarget": "zomo-admin:build:stg"
             },
-            "development": {
-              "buildTarget": "zomo-admin:build:development"
+            "dev": {
+              "buildTarget": "zomo-admin:build:dev"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "dev"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n"
