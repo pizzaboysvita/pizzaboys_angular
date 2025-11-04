@@ -168,4 +168,21 @@ console.log(reqbody);
   removeImage(){
         this.uploadImagUrl_data = null;
   }
+   allowOnlyAlphabets(event: KeyboardEvent) {
+    const char = event.key;
+    const regex = /^[A-Za-z\s-]+$/;
+
+    if (!regex.test(char)) {
+      event.preventDefault();
+    }
+  }
+    capitalizeWords_firstName(event: any) {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value
+      .toLowerCase()
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+    this.storeForm.patchValue({
+      storeName: input.value,
+    });
+  }
 }

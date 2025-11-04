@@ -57,7 +57,7 @@ currentStatus:any // <-- backend API or dynamic status
   totalOrdermerged:any
   orderForm:FormGroup
   orderDishDetails:any=[]
-  constructor(public modal: NgbModal,private toastr: ToastrService,private session:SessionStorageService,private apis: ApisService,private fb:FormBuilder) {}
+  constructor(public modal: NgbModal,public activeModal: NgbActiveModal,private toastr: ToastrService,private session:SessionStorageService,private apis: ApisService,private fb:FormBuilder) {}
 
   ngOnInit(): void {
     this.orderDishDetails=JSON.parse(this.data.combo_details_json)
@@ -101,7 +101,9 @@ currentStatus:any // <-- backend API or dynamic status
   selectTab(tabName: string): void {
     this.activeTab = tabName;
   }
-
+closeOrdersModal(){
+  this.activeModal.close();
+}
   toggleStatus(): void {
     this.statusExpanded = !this.statusExpanded;
   }

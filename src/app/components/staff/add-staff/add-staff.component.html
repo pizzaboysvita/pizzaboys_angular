@@ -46,7 +46,7 @@
                                   <div class="input-box">
                                     <h6 class="f-w-600 p-1">First Name<span class="text-danger">*</span></h6>
                                     <input type="text" formControlName="firstName" placeholder="Enter First Name"
-                                      (input)="capitalizeWords_firstName($event)" />
+                                      (input)="capitalizeWords_firstName($event)" (keypress)="allowOnlyAlphabets($event)" />
                                     @if (staffForm.get('firstName')?.touched && staffForm.get('firstName')?.invalid) {
                                     <div class="text-danger">First name is required.</div>
                                     }
@@ -62,7 +62,7 @@
                                   <div class="input-box">
                                     <h6 class="f-w-600 p-1">Last Name<span class="text-danger">*</span></h6>
                                     <input type="text" formControlName="lastName" placeholder="Enter Last Name"
-                                      (input)="capitalizeWords_lastName($event)" />
+                                      (input)="capitalizeWords_lastName($event)" (keypress)="allowOnlyAlphabets($event)"/>
                                     @if ((staffForm.get('lastName')?.touched || staffForm.get('lastName')?.dirty) &&
                                     staffForm.get('lastName')?.hasError('pattern')) {
                                     <div class="text-danger">Only alphabets are allowed.</div>
@@ -104,11 +104,31 @@
                                 <!-- Password -->
                                 <div class="col-xl-6">
                                   <div class="input-box">
-                                    <h6 class="f-w-600 p-1">Password<span class="text-danger">*</span></h6>
+                                    <!-- <h6 class="f-w-600 p-1">Password<span class="text-danger">*</span></h6>
                                     <input type="password" formControlName="password" placeholder="Enter Password" />
                                     @if (staffForm.get('password')?.touched && staffForm.get('password')?.invalid) {
                                     <div class="text-danger">Min 6 characters required</div>
-                                    }
+                                    } -->
+                                    <h6 class="f-w-600 p-1">Password<span class="text-danger">*</span></h6>
+                                     <input 
+    type="password" 
+    formControlName="password" 
+    placeholder="Enter Password" 
+    (focus)="showRules = true" 
+    (blur)="hideRulesIfEmpty()" 
+    (input)="validatePassword()" 
+  />
+  @if (staffForm.get('password')?.touched && staffForm.get('password')?.errors?.['required']) {
+              <div class="text-danger">Password is required</div>
+            }
+  <!-- Show rules only if password field is touched and not empty -->
+  <ul class="password-rules mt-2" *ngIf="showRules && staffForm.get('password')?.value">
+    <li *ngIf="!rules.minLength">&#10060; At least 8 characters</li>
+    <li *ngIf="!rules.uppercase">&#10060; At least 1 uppercase letter</li>
+    <li *ngIf="!rules.lowercase">&#10060; At least 1 lowercase letter</li>
+    <li *ngIf="!rules.number">&#10060; At least 1 number</li>
+    <li *ngIf="!rules.special">&#10060; At least 1 special symbol</li>
+  </ul>
                                   </div>
                                 </div>
 
