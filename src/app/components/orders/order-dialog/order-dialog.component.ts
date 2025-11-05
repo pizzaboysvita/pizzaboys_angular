@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { Component, Input } from "@angular/core";
-import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
+import { NgbActiveModal, NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { ApisService } from "../../../shared/services/apis.service";
 import { AppConstants } from "../../../app.constants";
 import {
@@ -58,14 +58,7 @@ export class OrderDialogComponent {
     {id:4,name:'Add 20 min'},
     {id:5,name:'Add 25 min'},
   ]
-  orderDetails:any
-  order_items: any;
-  orderlogs: any =[];
-  order_toppings: any;
-  order_ingredients: any;
-  totalOrdermerged:any
-  orderForm:FormGroup
-  orderDishDetails:any=[]
+
   constructor(public modal: NgbModal,public activeModal: NgbActiveModal,private toastr: ToastrService,private session:SessionStorageService,private apis: ApisService,private fb:FormBuilder) {}
 
   ngOnInit(): void {
