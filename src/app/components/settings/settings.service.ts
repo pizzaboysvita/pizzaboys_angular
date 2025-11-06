@@ -96,7 +96,7 @@ getWorkingHours(storeId: number): Observable<any> {
   const formData = new FormData();
   formData.append("body", JSON.stringify(payload));
 
-  return this.http.post<any>(`${environment.apiUrl}/api/store`, formData, {
+  return this.http.post<any>(`${this.baseUrl}/store`, formData, {
     headers: this.getAuthHeaders(),
   });
 }
@@ -114,10 +114,10 @@ updateWorkingHours(storeId: number, workingHours: any[]): Observable<any> {
   const formData = new FormData();
   formData.append("body", JSON.stringify(payload));
 
-  return this.http.post(`${environment.apiUrl}/api/store`, formData, {
+  return this.http.post(`${this.baseUrl}/store`, formData, {
     headers: this.getAuthHeaders(),
   });
-}
+
 
 
 }

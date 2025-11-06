@@ -75,7 +75,7 @@ export class AddRestaurantsComponent {
       ],
       phoneNumber: [
         "",
-        [Validators.required]
+        [Validators.required, Validators.pattern(/^[0-9]{10}$/)],
       ],
       password: ["", [Validators.required, Validators.minLength(6)]],
       address: ["", Validators.required],
@@ -209,6 +209,10 @@ export class AddRestaurantsComponent {
     const regex = /^[A-Za-z\s-]+$/;
 
     if (!regex.test(char)) {
+
+  allowOnlyNumbers(event: KeyboardEvent) {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (charCode < 48 || charCode > 57) {
       event.preventDefault();
     }
   }
