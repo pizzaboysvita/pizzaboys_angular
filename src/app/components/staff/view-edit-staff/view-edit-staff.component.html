@@ -4,7 +4,17 @@
       <div class="row">
         <div class="col-12">
           <app-card [header]="true" [body]="true">
-            <h5 header class="font-family">{{ isViewMode ? "View Staff" : "Edit Staff" }}</h5>
+            <!-- <h5 header class="font-family">{{ isViewMode ? "View Staff" : "Edit Staff" }}</h5> -->
+             <div header class="title-header option-title justify-content-start right-options-height">
+                <h5 header class="font-family">{{ isViewMode ? "View Staff" : "Edit Staff" }}</h5>
+             <div class="right-options ms-auto">
+                    <ul>                
+                        <li>
+                              <i class="ri-arrow-left-circle-line" style="font-size: 27px; cursor: pointer;" (click)="goBack()"></i>
+                        </li>
+                    </ul>
+                </div>
+                </div>
             <div class="input-items font-family" body>
               <div class="row">
                 <div class="col-12">
@@ -49,7 +59,14 @@
                                     </h6>
                                     <input [type]="field.name.includes('pin') ? 'password' : 'text'"
                                       [formControlName]="field.name" [readonly]="isViewMode"
-                                      [placeholder]="'Enter ' + field.label" />
+                                      [placeholder]="'Enter ' + field.label"  (keypress)="
+        (field.name === 'firstName' || field.name === 'lastName') &&
+        allowOnlyAlphabets($event)"   (input)="
+    field.name === 'firstName'
+      ? capitalizeWords_firstName($event)
+      : field.name === 'lastName'
+      ? capitalizeWords_lastName($event)
+      : null"/>
                                   </div>
                                 </div>
 

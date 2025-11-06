@@ -12,7 +12,11 @@ import { ApisService } from "../../../shared/services/apis.service";
 import { SessionStorageService } from "../../../shared/services/session-storage.service";
 import { AppConstants } from "../../../app.constants";
 import Swal from "sweetalert2";
-import { ColDef, ITooltipParams, ModuleRegistry } from "@ag-grid-community/core";
+import {
+  ColDef,
+  ITooltipParams,
+  ModuleRegistry,
+} from "@ag-grid-community/core";
 import { AgGridAngular } from "@ag-grid-community/angular";
 import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
 import { ToastrService } from "ngx-toastr";
@@ -21,58 +25,74 @@ ModuleRegistry.registerModules([ClientSideRowModelModule]);
 @Component({
   selector: "app-add-category",
   standalone: true,
-  imports: [NgbNavModule, NgSelectModule, FormsModule, ReactiveFormsModule,AgGridAngular],
+  imports: [
+    NgbNavModule,
+    NgSelectModule,
+    FormsModule,
+    ReactiveFormsModule,
+    AgGridAngular,
+  ],
   templateUrl: "./add-category.component.html",
   styleUrls: ["./add-category.component.scss"],
 })
 export class AddCategoryComponent implements OnInit {
-    modules = [ClientSideRowModelModule];
-  @Input() type:any
-  @Input() myData:any
+  modules = [ClientSideRowModelModule];
+  @Input() type: any;
+  @Input() myData: any;
+
+  @Input() storeList: any;
+
   active = 1;
   menuForm!: FormGroup;
   menuList: any[] = [];
   orderTimesOptions = [
-    { id: 'now', name: 'Now' },
-    { id: 'Later', name: 'Later' },
-
+    { id: "now", name: "Now" },
+    { id: "Later", name: "Later" },
   ];
 
   servicesOptions = [
-    { id: 'delivery', name: 'Delivery' },
-    { id: 'pickup', name: 'Pickup' },
-    { id: 'dine-in', name: 'Dine-in' }
+    { id: "delivery", name: "Delivery" },
+    { id: "pickup", name: "Pickup" },
+    { id: "dine-in", name: "Dine-in" },
   ];
-    rowData :any= [];
-isHide=false
-  days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  rowData: any = [];
+  isHide = false;
+  days = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
 
-  columnDefs :any= [
+  columnDefs: any = [
     {
-      headerName: 'Day',
-      field: 'day',
+      headerName: "Day",
+      field: "day",
       editable: true,
-      cellEditor: 'agSelectCellEditor',
+      cellEditor: "agSelectCellEditor",
       cellEditorParams: {
-        values: this.days
-      }
+        values: this.days,
+      },
     },
     {
-    headerName: 'Open',
-    field: 'open',
-    editable: (params: any) => !params.data.is24Hour
-  },
-  {
-    headerName: 'Close',
-    field: 'close',
-    editable: (params: any) => !params.data.is24Hour
-  },
+      headerName: "Open",
+      field: "open",
+      editable: (params: any) => !params.data.is24Hour,
+    },
     {
-  headerName: '24 Hours',
-  field: 'is24Hour',
-  cellRenderer: (params: any) => {
-    const checked = params.value ? 'checked' : '';
-    return `
+      headerName: "Close",
+      field: "close",
+      editable: (params: any) => !params.data.is24Hour,
+    },
+    {
+      headerName: "24 Hours",
+      field: "is24Hour",
+      cellRenderer: (params: any) => {
+        const checked = params.value ? "checked" : "";
+        return `
       <div class="d-flex align-items-center justify-content-center gap-2">
         <input type="checkbox" class="checkbox-24hr" ${checked} data-row="${params.rowIndex}" />
         <button class="btn btn-sm btn-outline-danger delete-btn" data-row="${params.rowIndex}">🗑</button>
@@ -80,65 +100,61 @@ isHide=false
         <button class="btn btn-sm btn-outline-secondary copy-btn" data-row="${params.rowIndex}">📄</button>
       </div>
     `;
-  },
-  onCellClicked: (params: any) => {
-    const target = params.event.target as HTMLElement;
-    const rowIndex = params.node.rowIndex;
+      },
+      onCellClicked: (params: any) => {
+        const target = params.event.target as HTMLElement;
+        const rowIndex = params.node.rowIndex;
 
-    if (target.classList.contains('delete-btn')) {
-      params.api.applyTransaction({ remove: [params.node.data] });
-    }
+        if (target.classList.contains("delete-btn")) {
+          params.api.applyTransaction({ remove: [params.node.data] });
+        }
 
-    if (target.classList.contains('copy-btn')) {
-      const copy = { ...params.node.data };
-      params.api.applyTransaction({ add: [copy], addIndex: rowIndex + 1 });
-    }
+        if (target.classList.contains("copy-btn")) {
+          const copy = { ...params.node.data };
+          params.api.applyTransaction({ add: [copy], addIndex: rowIndex + 1 });
+        }
 
-    if (target.classList.contains('checkbox-24hr')) {
-      const checked = (target as HTMLInputElement).checked;
-      params.node.setDataValue('is24Hour', checked);
+        if (target.classList.contains("checkbox-24hr")) {
+          const checked = (target as HTMLInputElement).checked;
+          params.node.setDataValue("is24Hour", checked);
 
-      // Force Open/Close cells to update editable status
-      params.api.refreshCells({
-        rowNodes: [params.node],
-        force: true,
-        columns: ['open', 'close']
-      });
-    }
-  },
-  minWidth: 150,
-  flex: 1
-}
-
-    
+          // Force Open/Close cells to update editable status
+          params.api.refreshCells({
+            rowNodes: [params.node],
+            force: true,
+            columns: ["open", "close"],
+          });
+        }
+      },
+      minWidth: 150,
+      flex: 1,
+    },
   ];
 
-  storeList: any;
   uploadImagUrl: string | ArrayBuffer | null;
   file: File;
-  reqbody: any
+  reqbody: any;
   previewUrlNew: string | ArrayBuffer | null;
 
   constructor(
     private fb: FormBuilder,
     public modal: NgbModal,
-    private apis: ApisService,private toastr: ToastrService, 
+    private apis: ApisService,
+    private toastr: ToastrService,
     private session: SessionStorageService
   ) {}
 
   ngOnInit(): void {
-    
     this.initForm();
-  
-    this.getStoreList()
-  
+
+    this.getStoreList();
   }
 
   initForm(): void {
     this.menuForm = this.fb.group({
       dish_menu_id: [null, Validators.required],
       name: ["", Validators.required],
-       image: [null, Validators.required],
+      image: [null, Validators.required],
       display_name: [""],
       description: [""],
       hide_category: [false],
@@ -160,206 +176,405 @@ isHide=false
       managed_delivery_surcharge: [""],
       dine_in_surcharge: [""],
       status: [1],
-      store:['']
+      store: [],
     });
-      this.getMenuList();
-    if(this.type =='View'|| this.type =='Edit'){
+    this.getMenuList();
+    if (this.type == "View" || this.type == "Edit") {
       //  this.getMenuList();
-    this.PatchValuesForm()
+      this.PatchValuesForm();
     }
+      if (this.type === 'View') {
+    this.menuForm.disable();
   }
-  PatchValuesForm()
-{
-  //  this.getMenuList();
-  console.log(this.myData.dish_menu_id,this.menuList,'viewwwwwwwwwwwwww 2222222222')
-  this.menuForm.get('image')?.clearValidators();
-  this.menuForm.get('image')?.updateValueAndValidity();
-  this.menuForm.get('store')?.disable();
-   this.menuForm.get('dish_menu_id')?.disable();
-  this.menuForm.patchValue({
-     dish_menu_id: this.myData.dish_menu_id,
-      name: this.myData.name,
-      display_name: this.myData.display_name,
-      description:this.myData.description,
-      hide_category: this.myData.hide_category==1?true:false,
-      order_times: this.myData.order_times,
-      services: [this.myData.servicesOptions],
-      // applicable_hours: this.myData.pre_order_cutoff_time,
-      mark_as_age_restricted: this.myData.mark_as_age_restricted ==0?false:true,
-      enable_pre_orders_only:this.myData.enable_pre_orders_only ==0?false:true,
-      pre_order_days_in_advance: this.myData.pre_order_days_in_advance,
+  }
+  // PatchValuesForm() {
+  //   //  this.getMenuList();
+  //   console.log(
+  //     this.myData.dish_menu_id,
+  //     this.menuList,
+  //     "viewwwwwwwwwwwwww 2222222222"
+  //   );
+  //   this.menuForm.get("image")?.clearValidators();
+  //   this.menuForm.get("image")?.updateValueAndValidity();
+  //   this.menuForm.get("store")?.disable();
+  //   this.menuForm.get("dish_menu_id")?.disable();
+  //   this.menuForm.patchValue({
+  //     dish_menu_id: this.myData.dish_menu_id,
+  //     name: this.myData.name,
+  //     display_name: this.myData.display_name,
+  //     description: this.myData.description,
+  //     hide_category: this.myData.hide_category == 1 ? true : false,
+  //     order_times: this.myData.order_times,
+  //     services: [this.myData.servicesOptions],
+  //     // applicable_hours: this.myData.pre_order_cutoff_time,
+  //     mark_as_age_restricted:
+  //       this.myData.mark_as_age_restricted == 0 ? false : true,
+  //     enable_pre_orders_only:
+  //       this.myData.enable_pre_orders_only == 0 ? false : true,
+  //     pre_order_days_in_advance: this.myData.pre_order_days_in_advance,
 
-      pre_order_cutoff_time: this.myData.pre_order_cutoff_time,
-      pre_order_applicable_service: this.myData.pre_order_applicable_service,
-      hide_restriction_warning: this.myData.hide_restriction_warning==0?false:true,
-      hide_if_unavailable: this.myData.hide_if_unavailable ==0?false:true,
-      POS_display_name: this.myData.POS_display_name,
-      pos_color_code: this.myData.pos_color_code,
-      hide_category_in_POS:this.myData.hide_category_in_POS ==0?false:true,
-      pickup_surcharge:this.myData.pickup_surcharge,
-      delivery_surcharge:this.myData.delivery_surcharge,
-      managed_delivery_surcharge: this.myData.managed_delivery_surcharge,
-      dine_in_surcharge: this.myData.dine_in_surcharge,
-      status: [1],
-      store:this.myData.store_id
-  })
+  //     pre_order_cutoff_time: this.myData.pre_order_cutoff_time,
+  //     pre_order_applicable_service: this.myData.pre_order_applicable_service,
+  //     hide_restriction_warning:
+  //       this.myData.hide_restriction_warning == 0 ? false : true,
+  //     hide_if_unavailable: this.myData.hide_if_unavailable == 0 ? false : true,
+  //     POS_display_name: this.myData.POS_display_name,
+  //     pos_color_code: this.myData.pos_color_code,
+  //     hide_category_in_POS:
+  //       this.myData.hide_category_in_POS == 0 ? false : true,
+  //     pickup_surcharge: this.myData.pickup_surcharge,
+  //     delivery_surcharge: this.myData.delivery_surcharge,
+  //     managed_delivery_surcharge: this.myData.managed_delivery_surcharge,
+  //     dine_in_surcharge: this.myData.dine_in_surcharge,
+  //     status: [1],
+  //     // store: this.myData.store_id,
+  //     store: Array.isArray(this.myData.store_id)
+  //       ? this.myData.store_id
+  //       : [this.myData.store_id],
+  //   });
+  //   this.previewUrl = this.myData.category_image;
+  // }
+  // getMenuList(): void {
+  //   console.log(this.menuForm.value.store, "selected store idddddddddddddd");
+  //   this.apis
+  //     .getApi(
+  //       `/api/menu?store_id=${
+  //         this.menuForm.value.store == "" ? -1 : this.menuForm.value.store
+  //       }`
+  //     )
+  //     .subscribe((res: any) => {
+  //       console.log(res, "menu listttttttttttttttt");
+  //       if (res.code == "1") {
+  //         this.menuList = res.data;
+  //       } else {
+  //         console.error("Failed to fetch menus:", res.message);
+  //       }
+  //     });
+  // }
+  PatchValuesForm() {
+  console.log("Editing data:", this.myData);
+
+  this.menuForm.get("image")?.clearValidators();
+  this.menuForm.get("image")?.updateValueAndValidity();
+  this.menuForm.get("store")
+  this.menuForm.get("dish_menu_id")?.disable();
+
+  this.menuForm.patchValue({
+    dish_menu_id: this.myData.dish_menu_id,
+    name: this.myData.name,
+    display_name: this.myData.display_name,
+    description: this.myData.description,
+    hide_category: this.myData.hide_category == 1,
+    order_times: this.myData.order_times,
+    services: Array.isArray(this.myData.services)
+      ? this.myData.services
+      : this.myData.services
+      ? this.myData.services.split(",")
+      : [],
+    mark_as_age_restricted: this.myData.mark_as_age_restricted == 1,
+    enable_pre_orders_only: this.myData.enable_pre_orders_only == 1,
+    pre_order_days_in_advance: this.myData.pre_order_days_in_advance,
+    pre_order_cutoff_time: this.myData.pre_order_cutoff_time,
+    pre_order_applicable_service: this.myData.pre_order_applicable_service,
+    hide_restriction_warning: this.myData.hide_restriction_warning == 1,
+    hide_if_unavailable: this.myData.hide_if_unavailable == 1,
+    POS_display_name: this.myData.POS_display_name,
+    pos_color_code: this.myData.pos_color_code,
+    hide_category_in_POS: this.myData.hide_category_in_POS == 1,
+    pickup_surcharge: this.myData.pickup_surcharge,
+    delivery_surcharge: this.myData.delivery_surcharge,
+    managed_delivery_surcharge: this.myData.managed_delivery_surcharge,
+    dine_in_surcharge: this.myData.dine_in_surcharge,
+    status: 1,
+    store: Array.isArray(this.myData.store_id)
+      ? this.myData.store_id
+      : this.myData.store_id
+      ? [this.myData.store_id]
+      : [],
+  });
+
   this.previewUrl = this.myData.category_image;
 }
+
   getMenuList(): void {
-  
-console.log(this.menuForm.value.store,'selected store idddddddddddddd')
-    this.apis.getApi(`/api/menu?store_id=${this.menuForm.value.store ==''?-1:this.menuForm.value.store}`).subscribe((res: any) => {
-      if (res.code == "1") {
-        this.menuList = res.data;
-        
-      } else {
-        console.error("Failed to fetch menus:", res.message);
-      }
-    });
-  }
-    getStoreList() {
-      this.apis.getApi(AppConstants.api_end_points.store_list).subscribe((data: any) => {
-        console.log(data)
-        data.unshift({ store_id: '', store_name: 'All Stores' })
-        data.forEach((element: any) => {
-          element.status = element.status == 1 ? 'Active' : element.status == 0 ? 'Inactive' : element.status
-        })
-        this.storeList = data
-      })
+    const selectedStores = this.menuForm.value.store;
+    console.log(selectedStores, "selected store id(s)");
+
+    if (!selectedStores || selectedStores.length === 0) {
+      this.menuList = [];
+      return;
     }
 
-  addCategory(): void {
-        console.log(this.storeList.map((item:any)=>item.store_id),'form valueeeeeeeeeeeeee')
-    console.log(this.menuForm.value.store,'form valueeeeeeeeeeeeee')
-  if (this.menuForm.invalid) {
-      console.log('validation required fields');
-      const controls = this.menuForm.controls;
-      Object.keys(controls).forEach(key => {
-        controls[key].markAsTouched();
+    const storeParam = Array.isArray(selectedStores)
+      ? selectedStores.join(",")
+      : selectedStores;
+
+    this.apis
+      .getApi(`/api/menu?store_id=${storeParam}`)
+      .subscribe((res: any) => {
+        console.log(res, "menu list response");
+        if (res.code === "1") {
+          this.menuList = res.data;
+        } else {
+          console.error("Failed to fetch menus:", res.message);
+        }
       });
-       this.toastr.error('All required fields must be filled.', 'Error');
+  }
 
-        // this.menuForm.markAllAsTouched(); 
+  getStoreList() {
+    this.apis
+      .getApi(AppConstants.api_end_points.store_list)
+      .subscribe((data: any) => {
+        console.log(data);
+        data.unshift({ store_id: "", store_name: "All Stores" });
+        data.forEach((element: any) => {
+          element.status =
+            element.status == 1
+              ? "Active"
+              : element.status == 0
+              ? "Inactive"
+              : element.status;
+        });
+        this.storeList = data;
+      });
+  }
+
+  // addCategory(): void {
+  //   console.log(
+  //     this.storeList.map((item: any) => item.store_id),
+  //     "form valueeeeeeeeeeeeee"
+  //   );
+  //   console.log(this.menuForm.value.store, "form valueeeeeeeeeeeeee");
+  //   if (this.menuForm.invalid) {
+  //     console.log("validation required fields");
+  //     const controls = this.menuForm.controls;
+  //     Object.keys(controls).forEach((key) => {
+  //       controls[key].markAsTouched();
+  //     });
+  //     this.toastr.error("All required fields must be filled.", "Error");
+
+  //     // this.menuForm.markAllAsTouched();
+  //   } else {
+  //     if (this.type == "Edit") {
+  //       this.reqbody = {
+  //         type: "update",
+  //         id: this.myData.id,
+  //         name: this.menuForm.value.name,
+  //         dish_menu_id: this.menuForm.getRawValue().dish_menu_id,
+  //         display_name: this.menuForm.value.display_name,
+  //         description: this.menuForm.value.description,
+  //         hide_category: this.menuForm.value.hide_category == true ? 0 : 1,
+  //         order_times: this.menuForm.value.order_times.toString(),
+  //         services: this.menuForm.value.services.toString(),
+  //         applicable_hours:
+  //           this.rowData.length == 0 ? "" : JSON.stringify(this.rowData),
+  //         mark_as_age_restricted:
+  //           this.menuForm.value.mark_as_age_restricted == true ? 1 : 0,
+  //         enable_pre_orders_only:
+  //           this.menuForm.value.enable_pre_orders_only == true ? 1 : 0,
+  //         pre_order_days_in_advance:
+  //           this.menuForm.value.pre_order_days_in_advance,
+  //         pre_order_cutoff_time: this.menuForm.value.pre_order_cutoff_time,
+  //         pre_order_applicable_service:
+  //           this.menuForm.value.pre_order_applicable_service.toString(),
+  //         hide_restriction_warning:
+  //           this.menuForm.value.hide_restriction_warning == true ? 1 : 0,
+  //         hide_if_unavailable:
+  //           this.menuForm.value.hide_if_unavailable == true ? 1 : 0,
+  //         POS_display_name: this.menuForm.value.POS_display_name,
+  //         pos_color_code: "#00AA00",
+  //         hide_category_in_POS:
+  //           this.menuForm.value.hide_category_in_POS == true ? 0 : 1,
+  //         pickup_surcharge: this.menuForm.value.pickup_surcharge,
+  //         delivery_surcharge: this.menuForm.value.delivery_surcharge,
+  //         managed_delivery_surcharge:
+  //           this.menuForm.value.managed_delivery_surcharge,
+  //         dine_in_surcharge: this.menuForm.value.dine_in_surcharge,
+  //         store_id: this.menuForm.getRawValue().store,
+  //         status: 1,
+  //         category_image: this.previewUrl,
+  //         created_by: JSON.parse(
+  //           this.session.getsessionStorage("loginDetails") as any
+  //         ).user.user_id,
+  //         updated_by: JSON.parse(
+  //           this.session.getsessionStorage("loginDetails") as any
+  //         ).user.user_id,
+  //       };
+  //     } else {
+  //       this.reqbody = {
+  //         type: "insert",
+  //         name: this.menuForm.value.name,
+  //         dish_menu_id: this.menuForm.value.dish_menu_id,
+  //         display_name: this.menuForm.value.display_name,
+  //         description: this.menuForm.value.description,
+  //         hide_category: this.menuForm.value.hide_category == true ? 1 : 0,
+  //         order_times: this.menuForm.value.order_times.toString(),
+  //         services: this.menuForm.value.services.toString(),
+  //         applicable_hours:
+  //           this.rowData.length == 0 ? "" : JSON.stringify(this.rowData),
+  //         mark_as_age_restricted:
+  //           this.menuForm.value.mark_as_age_restricted == true ? 1 : 0,
+  //         enable_pre_orders_only:
+  //           this.menuForm.value.enable_pre_orders_only == true ? 1 : 0,
+  //         pre_order_days_in_advance:
+  //           this.menuForm.value.pre_order_days_in_advance,
+  //         pre_order_cutoff_time: this.menuForm.value.pre_order_cutoff_time,
+  //         pre_order_applicable_service:
+  //           this.menuForm.value.pre_order_applicable_service.toString(),
+  //         hide_restriction_warning:
+  //           this.menuForm.value.hide_restriction_warning == true ? 1 : 0,
+  //         hide_if_unavailable:
+  //           this.menuForm.value.hide_if_unavailable == true ? 1 : 0,
+  //         POS_display_name: this.menuForm.value.POS_display_name,
+  //         pos_color_code: "#00AA00",
+  //         hide_category_in_POS:
+  //           this.menuForm.value.hide_category_in_POS == true ? 0 : 1,
+  //         pickup_surcharge: this.menuForm.value.pickup_surcharge,
+  //         delivery_surcharge: this.menuForm.value.delivery_surcharge,
+  //         managed_delivery_surcharge:
+  //           this.menuForm.value.managed_delivery_surcharge,
+  //         dine_in_surcharge: this.menuForm.value.dine_in_surcharge,
+  //         store_id:
+  //           this.menuForm.value.store.length == 0
+  //             ? this.storeList
+  //                 .filter((item: any) => item.store_id)
+  //                 .map((item: any) => item.store_id)
+  //             : [this.menuForm.value.store],
+  //         status: 1,
+  //         created_by: JSON.parse(
+  //           this.session.getsessionStorage("loginDetails") as any
+  //         ).user.user_id,
+  //         updated_by: JSON.parse(
+  //           this.session.getsessionStorage("loginDetails") as any
+  //         ).user.user_id,
+  //       };
+  //     }
+  //     console.log(this.reqbody);
+  //     const formData = new FormData();
+  //     formData.append("image", this.file); // Attach Blob with a filename
+  //     formData.append("body", JSON.stringify(this.reqbody));
+  //     this.apis.postApi("/api/categoryV2", formData).subscribe((res: any) => {
+  //       if (res.code === "1") {
+  //         Swal.fire("Success!", res.message, "success").then((result) => {
+  //           if (result) {
+  //             console.log("User clicked OK");
+  //             // this.router.navigate(['/restaurants/restaurants-list'])
+  //             this.modal.dismissAll();
+  //           }
+  //         });
+  //       } else {
+  //         alert(res.message || "Failed to add category");
+  //       }
+  //     });
+  //   }
+  // }
+addCategory(): void {
+  if (this.menuForm.invalid) {
+    const controls = this.menuForm.controls;
+    Object.keys(controls).forEach((key) => controls[key].markAsTouched());
+    this.toastr.error("All required fields must be filled.", "Error");
+    return;
+  }
+
+  // Flatten store_id properly
+  let selectedStores = this.menuForm.value.store;
+  if (!selectedStores || selectedStores.length === 0) {
+    selectedStores = this.storeList
+      .filter((item: any) => item.store_id)
+      .map((item: any) => item.store_id);
+  } else {
+    // In case nested arrays exist, flatten them
+    selectedStores = selectedStores.flat();
+  }
+
+  const reqBodyCommon = {
+    name: this.menuForm.value.name,
+    dish_menu_id: this.menuForm.getRawValue().dish_menu_id,
+    display_name: this.menuForm.value.display_name,
+    description: this.menuForm.value.description,
+    hide_category: this.menuForm.value.hide_category ? 1 : 0,
+    order_times: this.menuForm.value.order_times.toString(),
+    services: this.menuForm.value.services.toString(),
+    applicable_hours:
+      this.rowData.length === 0 ? "" : JSON.stringify(this.rowData),
+    mark_as_age_restricted: this.menuForm.value.mark_as_age_restricted ? 1 : 0,
+    enable_pre_orders_only: this.menuForm.value.enable_pre_orders_only ? 1 : 0,
+    pre_order_days_in_advance: this.menuForm.value.pre_order_days_in_advance,
+    pre_order_cutoff_time: this.menuForm.value.pre_order_cutoff_time,
+    pre_order_applicable_service: this.menuForm.value.pre_order_applicable_service.toString(),
+    hide_restriction_warning: this.menuForm.value.hide_restriction_warning ? 1 : 0,
+    hide_if_unavailable: this.menuForm.value.hide_if_unavailable ? 1 : 0,
+    POS_display_name: this.menuForm.value.POS_display_name,
+    pos_color_code: "#00AA00",
+    hide_category_in_POS: this.menuForm.value.hide_category_in_POS ? 1 : 0,
+    pickup_surcharge: this.menuForm.value.pickup_surcharge,
+    delivery_surcharge: this.menuForm.value.delivery_surcharge,
+    managed_delivery_surcharge: this.menuForm.value.managed_delivery_surcharge,
+    dine_in_surcharge: this.menuForm.value.dine_in_surcharge,
+    store_id: selectedStores,
+    status: 1,
+    created_by: JSON.parse(this.session.getsessionStorage("loginDetails") as any).user.user_id,
+    updated_by: JSON.parse(this.session.getsessionStorage("loginDetails") as any).user.user_id,
+    category_image: this.previewUrl || null, // Keep existing image if editing without new file
+  };
+
+  this.reqbody = this.type === "Edit"
+    ? { ...reqBodyCommon, type: "update", id: this.myData.id }
+    : { ...reqBodyCommon, type: "insert" };
+
+  // Prepare FormData
+  const formData = new FormData();
+  if (this.file) {
+    formData.append("image", this.file); // only if a new file is selected
+  }
+  formData.append("body", JSON.stringify(this.reqbody));
+
+  // API Call
+  this.apis.postApi("/api/categoryV2", formData).subscribe((res: any) => {
+    if (res.code === "1") {
+      Swal.fire("Success!", res.message, "success").then(() => {
+        this.modal.dismissAll();
+      });
     } else {
-  if( this.type == 'Edit') {
- this.reqbody={
-    "type": "update",
-    "id": this.myData.id,
-    "name": this.menuForm.value.name,
-    "dish_menu_id": this.menuForm.getRawValue().dish_menu_id,
-    "display_name":this.menuForm.value.display_name,
-    "description":this.menuForm.value.description,
-    "hide_category":this.menuForm.value.hide_category ==true?0:1,
-    "order_times": this.menuForm.value.order_times.toString(),
-    "services": this.menuForm.value.services.toString(),
-    "applicable_hours":this.rowData.length ==0?"":JSON.stringify(this.rowData),
-    "mark_as_age_restricted":this.menuForm.value.mark_as_age_restricted ==true?1:0,
-    "enable_pre_orders_only":this.menuForm.value.enable_pre_orders_only ==true?1:0,
-    "pre_order_days_in_advance": this.menuForm.value.pre_order_days_in_advance,
-    "pre_order_cutoff_time": this.menuForm.value.pre_order_cutoff_time,
-    "pre_order_applicable_service": this.menuForm.value.pre_order_applicable_service.toString(),
-    "hide_restriction_warning": this.menuForm.value.hide_restriction_warning ==true?1:0,
-    "hide_if_unavailable": this.menuForm.value.hide_if_unavailable ==true?1:0,
-    "POS_display_name": this.menuForm.value.POS_display_name,
-    "pos_color_code": "#00AA00",
-    "hide_category_in_POS": this.menuForm.value.hide_category_in_POS ==true?0:1,
-    "pickup_surcharge": this.menuForm.value.pickup_surcharge,
-    "delivery_surcharge": this.menuForm.value.delivery_surcharge,
-    "managed_delivery_surcharge": this.menuForm.value.managed_delivery_surcharge,
-    "dine_in_surcharge":this.menuForm.value.dine_in_surcharge,
-    "store_id": this.menuForm.getRawValue().store,
-    "status": 1,
-    "category_image": this.previewUrl,
-    "created_by": JSON.parse(this.session.getsessionStorage('loginDetails') as any).user.user_id,
-    "updated_by": JSON.parse(this.session.getsessionStorage('loginDetails') as any).user.user_id
+      this.toastr.error(res.message || "Failed to add category", "Error");
+    }
+  });
 }
-  }else{
-    this.reqbody={
-    "type": "insert",
-    "name": this.menuForm.value.name,
-    "dish_menu_id": this.menuForm.value.dish_menu_id,
-    "display_name":this.menuForm.value.display_name,
-    "description":this.menuForm.value.description,
-    "hide_category":this.menuForm.value.hide_category ==true?1:0,
-    "order_times": this.menuForm.value.order_times.toString(),
-    "services": this.menuForm.value.services.toString(),
-    "applicable_hours":this.rowData.length ==0?"":JSON.stringify(this.rowData),
-    "mark_as_age_restricted":this.menuForm.value.mark_as_age_restricted ==true?1:0,
-    "enable_pre_orders_only":this.menuForm.value.enable_pre_orders_only ==true?1:0,
-    "pre_order_days_in_advance": this.menuForm.value.pre_order_days_in_advance,
-    "pre_order_cutoff_time": this.menuForm.value.pre_order_cutoff_time,
-    "pre_order_applicable_service": this.menuForm.value.pre_order_applicable_service.toString(),
-    "hide_restriction_warning": this.menuForm.value.hide_restriction_warning ==true?1:0,
-    "hide_if_unavailable": this.menuForm.value.hide_if_unavailable ==true?1:0,
-    "POS_display_name": this.menuForm.value.POS_display_name,
-    "pos_color_code": "#00AA00",
-    "hide_category_in_POS": this.menuForm.value.hide_category_in_POS ==true?0:1,
-    "pickup_surcharge": this.menuForm.value.pickup_surcharge,
-    "delivery_surcharge": this.menuForm.value.delivery_surcharge,
-    "managed_delivery_surcharge": this.menuForm.value.managed_delivery_surcharge,
-    "dine_in_surcharge":this.menuForm.value.dine_in_surcharge,
-    "store_id":this.menuForm.value.store.length ==0?this.storeList.filter((item: any) => item.store_id).map((item:any)=>item.store_id):[this.menuForm.value.store],
-    "status": 1,
-    "created_by":  JSON.parse(this.session.getsessionStorage('loginDetails') as any).user.user_id,
-    "updated_by": JSON.parse(this.session.getsessionStorage('loginDetails') as any).user.user_id
-}
-  }
-console.log(this.reqbody)
-    const formData = new FormData();
-    formData.append("image", this.file); // Attach Blob with a filename
-    formData.append("body", JSON.stringify(this.reqbody));
-    this.apis.postApi("/api/categoryV2", formData).subscribe((res: any) => {
-      if (res.code === "1") {
-    
-    Swal.fire('Success!', res.message, 'success').then(
-            (result) => {
-              if (result) {
-                console.log('User clicked OK');
-                // this.router.navigate(['/restaurants/restaurants-list'])
-                this.modal.dismissAll();
-  
-              }
-            })
-      } else {
-        alert(res.message || "Failed to add category");
-      }
-    });
-  }
-  }
-selectedFile: File | null = null;
-previewUrl: string | ArrayBuffer | null = null;
-onSelectFile(event: Event): void {
-  const input = event.target as HTMLInputElement;
-  if (input.files && input.files.length > 0) {
-    const file = input.files[0];
-    this.selectedFile = file;
-  this.file = file;
-    // Manually update form value (not bound to input)
-    this.menuForm.get('image')?.setValue(file);
-    this.menuForm.get('image')?.markAsTouched();
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.previewUrlNew = reader.result;
-    };
-    reader.readAsDataURL(file);
-  }
-}
- 
 
-removeImage(): void {
-  this.previewUrl = null;
-  this.previewUrlNew = null;
+  selectedFile: File | null = null;
+  previewUrl: string | ArrayBuffer | null = null;
+  onSelectFile(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      this.selectedFile = file;
+      this.file = file;
+      // Manually update form value (not bound to input)
+      this.menuForm.get("image")?.setValue(file);
+      this.menuForm.get("image")?.markAsTouched();
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.previewUrlNew = reader.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removeImage(): void {
+    this.previewUrl = null;
+    this.previewUrlNew = null;
     this.selectedFile = null;
-  this.menuForm.get('image')?.reset();  // Reset form control
-}
+    this.menuForm.get("image")?.reset(); // Reset form control
+  }
 
-onCellClicked(params: any) {
+  onCellClicked(params: any) {
     const rowIndex = params.rowIndex;
     const actionTarget = params.event.target as HTMLElement;
 
-    if (actionTarget.classList.contains('delete-btn')) {
-      console.log(rowIndex)
+    if (actionTarget.classList.contains("delete-btn")) {
+      console.log(rowIndex);
       this.rowData.splice(rowIndex, 1);
       // this.rowData = [...this.rowData];
     }
@@ -371,10 +586,15 @@ onCellClicked(params: any) {
     // }
   }
 
-addNewRow() {
-  console.log(this.rowData, ' this.rowData');
-  this.isHide =true
-  this.rowData.push({ day: 'Monday', open: '09:00', close: '21:00', is24Hour: false });
-  this.rowData = [...this.rowData]; // forces change detection
-}
+  addNewRow() {
+    console.log(this.rowData, " this.rowData");
+    this.isHide = true;
+    this.rowData.push({
+      day: "Monday",
+      open: "09:00",
+      close: "21:00",
+      is24Hour: false,
+    });
+    this.rowData = [...this.rowData]; // forces change detection
+  }
 }

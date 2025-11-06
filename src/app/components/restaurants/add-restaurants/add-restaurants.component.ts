@@ -60,7 +60,7 @@ export class AddRestaurantsComponent {
       });
   }
 
-    ngOnInit() {
+  ngOnInit() {
     sessionStorage.removeItem('workingHours');
     this.storeForm = this.fb.group({
       storeName: ["", Validators.required],
@@ -193,6 +193,22 @@ export class AddRestaurantsComponent {
       this.showRules = false;
     }
   }
+
+  allowOnlyNumbers(event: KeyboardEvent) {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (charCode < 48 || charCode > 57) {
+      event.preventDefault();
+    }
+  }
+   goBack() {
+    console.log('Going back to restaurant list');
+    this.router.navigate(['/restaurants/restaurants-list']);
+  }
+   allowOnlyAlphabets(event: KeyboardEvent) {
+    const char = event.key;
+    const regex = /^[A-Za-z\s-]+$/;
+
+    if (!regex.test(char)) {
 
   allowOnlyNumbers(event: KeyboardEvent) {
     const charCode = event.which ? event.which : event.keyCode;

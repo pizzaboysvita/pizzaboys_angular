@@ -7,6 +7,25 @@
 
 <div class="modal-body">
   <form [formGroup]="inventoryForm">
+     <div class="col-12">
+                    <div class="input-box">
+                      <!-- <h6>Store Type</h6> -->
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Store Type</h6>
+                        <span class="optional-tag">Required</span>
+                      </div>
+                      <ng-select [items]="storesList" [searchable]="true" [multiple]="false" bindLabel="store_name"
+                        bindValue="store_id" placeholder="Select from the dropdown or type to search"
+                        formControlName="store_id" >
+                      </ng-select>
+                      @if((inventoryForm.get('store_id')?.touched ||inventoryForm.get('store_id')?.dirty) &&
+                      inventoryForm.get('store_id')?.hasError('required')){
+                      <div class="text-danger">
+                        Store Type is required
+                      </div>
+                      }
+                    </div>
+                  </div>
     <!-- Item Name -->
     <div class="input-box mb-3">
       <h6 class="fw-bold p-1">Item Name <span class="text-danger">*</span></h6>
@@ -42,12 +61,24 @@
         Item State is required
       </div>
     </div>
+       <div class="col-xl-6">
+                                  <div class="input-box">
+                                    <h6 class="f-w-600 p-1">Status</h6>
+                                    <label class="switch">
+                                      <input type="checkbox" formControlName="status" />
+
+                                      <span class="slider round"></span>
+                                    </label>
+                                  </div>
+                                </div>
   </form>
 </div>
 
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
-  <button type="button" class="btn btn-animation save-button font-family" [disabled]="isSubmitting" (click)="save()">
-    {{ isSubmitting ? (editData ? 'Updating...' : 'Saving...') : (editData ? 'Update' : 'Save') }}
+  @if(this.type !='View'){
+<button type="button" class="btn btn-animation save-button font-family" [disabled]="isSubmitting" (click)="save()">
+    {{ isSubmitting ? (type =='Edit' ? 'Updating...' : 'Saving...') : (type =='Edit' ? 'Update' : 'Save') }}
   </button>
+  }
 </div>

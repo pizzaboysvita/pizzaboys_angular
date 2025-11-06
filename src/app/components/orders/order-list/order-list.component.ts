@@ -25,6 +25,8 @@ interface RowData {
   status: string;
   address: string;
   store_name: string;
+  // order_type: string;
+  is_pos_order:any
   order_type: string;
   order_master_id: string;
   email: string;
@@ -93,6 +95,7 @@ export class OrderListComponent {
 
   tableConfig: ColDef<RowData>[] = [
     {
+      field: "is_pos_order",
       field: "order_type",
       headerName: "Type",
       sortable: true,
@@ -104,12 +107,26 @@ export class OrderListComponent {
         const backgroundColor = "rgb(81, 163, 81)";
 
         // If order_type = 1 → POS circle with badge
+      //   if (orderType == 1) {
+      //     return `
+      //    <div class="d-flex align-items-center gap-2 position-relative">
+      //      <div class="rounded-circle d-flex align-items-center justify-content-center"
+      //           style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
+      //         <i class="ri-shopping-bag-2-line"></i>
+      //      </div>
+           
+      //      <span class="badge bg-primary position-absolute"
+      //            style="    width: 30px; height: 20px; top: 25px; left: 25px; font-size: 0.65rem;">POS</span>
+      //    </div>
+      //  `;
+      //   }
+       if (orderType == 1) {
         if (orderType == 1) {
           return `
          <div class="d-flex align-items-center gap-2 position-relative">
            <div class="rounded-circle d-flex align-items-center justify-content-center"
                 style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
-              <i class="ri-shopping-bag-2-line"></i>
+              <i class="ri-shopping-bag-line"  style=" font-size: 18px;"></i>
            </div>
            
            <span class="badge bg-primary position-absolute"
@@ -117,6 +134,136 @@ export class OrderListComponent {
          </div>
        `;
         }
+        else if(orderType == 0){
+           return `
+         <div class="d-flex align-items-center gap-2 position-relative">
+           <div class="rounded-circle d-flex align-items-center justify-content-center"
+                style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
+              <i class="ri-shopping-bag-line"></i>
+           </div>
+            <span class="badge bg-primary position-absolute"
+                 style="    width: 30px; height: 20px; top: 25px; left: 25px; font-size: 0.65rem;">Web</span>
+         </div>
+           
+          
+       `;
+        }
+          else {
+           return `
+         <div class="d-flex align-items-center gap-2 position-relative">
+           <div class="rounded-circle d-flex align-items-center justify-content-center"
+                style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
+              <i class="ri-shopping-bag-line"></i>
+           </div>
+            <span class="badge bg-primary position-absolute"
+                 style="    width: 30px; height: 20px; top: 25px; left: 25px; font-size: 0.65rem;">App</span>
+         </div>
+           
+          
+       `;
+        }
+      },
+    },
+    {
+      field: "order_master_id",
+      headerName: "#/Name",
+      suppressHeaderMenuButton: true, // updated from deprecated `suppressMenu`
+      unSortIcon: true,
+      tooltipValueGetter: (p: ITooltipParams) => p.value,
+      // cellRenderer: (params: any) => {
+      //   const firstName = params.value;
+      //   const image = params.data?.profiles;
+      //   const initials = firstName ? firstName.charAt(0).toUpperCase() : '?';
+      //   const backgroundColor = getColorForName(firstName);
+
+      //   if (image) {
+      //     return `
+      //   <div class="d-flex align-items-center gap-2">
+      //     <img src="${image}" class="img-fluid rounded-circle"
+      //       style="width: 40px; height: 40px;" alt="${firstName}" />
+      //     <span>${firstName}</span>
+      //   </div>
+      // `;
+      //   } else {
+      //     return `
+      //   <div class="d-flex align-items-center gap-2">
+      //     <div class="avatar-placeholder rounded-circle text-white d-flex align-items-center justify-content-center"
+      //       style="width: 40px; height: 40px; font-weight: bold; font-size: 1rem; background-color: ${backgroundColor}">
+      //       ${initials}
+      //     </div>
+      //     <span>${firstName}</span>
+      //   </div>
+      // `;
+      //   }
+      //   // Helper function for fallback color
+      //   function getColorForName(name: string): string {
+      //     const colors = ['#6c5ce7', '#00b894', '#fd79a8', '#e17055', '#0984e3'];
+      //     let index = 0;
+      //     if (name) {
+      //       index = name.charCodeAt(0) % colors.length;
+      //     }
+      //     return colors[index];
+      //   }
+      // }
+    },
+    {
+      field: "phone_number",
+      headerName: "Phone",
+      suppressMenu: true,
+      unSortIcon: true,
+      tooltipValueGetter: (p: ITooltipParams) => p.value,
+    },
+    {
+      field: "email",
+      headerName: "Email-Id",
+      suppressMenu: true,
+      unSortIcon: true,
+      tooltipValueGetter: (p: ITooltipParams) => p.value,
+    },
+    {
+      field: "order_due_datetime",
+      headerName: "Due",
+      suppressMenu: true,
+      unSortIcon: true,
+      tooltipValueGetter: (p: ITooltipParams) => p.value,
+    },
+    {
+      field: "due",
+      headerName: "Placed",
+      suppressMenu: true,
+      unSortIcon: true,
+      tooltipValueGetter: (p: ITooltipParams) => p.value,
+    },
+    {
+      field: "total_price",
+      headerName: "Total",
+      suppressMenu: true,
+      unSortIcon: true,
+      tooltipValueGetter: (p: ITooltipParams) => p.value,
+    },
+
+    {
+      field: "total_quantity",
+      headerName: "#Items",
+      suppressMenu: true,
+      unSortIcon: true,
+      tooltipValueGetter: (p: ITooltipParams) => p.value,
+    },
+    {
+      field: "payment_method",
+      headerName: "Payment",
+      suppressMenu: true,
+      unSortIcon: true,
+      tooltipValueGetter: (p: ITooltipParams) => p.value,
+    },
+
+    {
+      headerName: "Status",
+      field: "order_status",
+      cellRenderer: (params: any) => {
+        const select = document.createElement("select");
+        select.className = "custom-select";
+
       },
     },
     {
@@ -244,6 +391,7 @@ export class OrderListComponent {
         return select;
       },
     },
+   
     {
       headerName: "View",
     },
@@ -344,6 +492,107 @@ export class OrderListComponent {
 
   ngOnInit() {
     this.getOrderList();
+  }
+  getOrderList() {
+    const store_id = JSON.parse(
+      this.sessionStorage.getsessionStorage("loginDetails") as any
+    ).user.store_id;
+    this.apiService
+      .getApi(
+        AppConstants.api_end_points.orderList +
+          "?store_id=" +
+          store_id +
+          "&type=web"
+      )
+      .subscribe((data: any) => {
+        if (data) {
+          data.categories.forEach((element: any) => {
+            element.due = this.transform(element.order_created_datetime);
+            // element.order_master_id = "P-" + element.order_master_id;
+               if (element.is_pos_order === 1) {
+            element.order_master_id = "P-" + element.order_master_id;
+          } else {
+            element.order_master_id = element.order_master_id; // keep as is
+          }
+          });
+          this.orderList = data.categories;
+          console.log(data, "order list data");
+        }
+      });
+  }
+  onPrintClicked(rowData: any) {
+    console.log("Print clicked for:", rowData);
+
+    this.modalRef = this.modalService.open(OrderDialogComponent, {
+      size: "md",
+      centered: true,
+    });
+
+    this.modalRef.componentInstance.data = rowData;
+  }
+
+  onCellClicked(event: any): void {
+    console.log("PPPPPPPPPPPPPPpppnnnnnnnnnnnnnnnn", event.data);
+    // if (event.node.data) {
+    this.apiService
+      .getApi(
+        AppConstants.api_end_points.orderList + "?order_id=" + 24 + "&type=web"
+      )
+      .subscribe((response: any) => {
+        console.log(response, "order details");
+        if (response.code == 1) {
+          this.orderDetails = response.categories[0];
+          this.modalRef = this.modalService.open(OrderDialogComponent, {
+            size: "md",
+            centered: true,
+          });
+          this.modalRef.componentInstance.data = this.orderDetails;
+        }
+      });
+
+    // }
+  }
+  getStaffList() {
+    this.apiService
+      .getApi(AppConstants.api_end_points.staff + "?user_id=-1")
+      .subscribe((data: any) => {
+        if (data) {
+          data.data.forEach((element: any) => {
+            // element.option=''
+
+            (element.user_image = null),
+              (element.fullname = element.first_name + " " + element.last_name);
+            element.status =
+              element.status == 1
+                ? "Active"
+                : element.status == 0
+                ? "Inactive"
+                : "";
+          });
+          this.staff_list = data.data;
+          this.staffListSorting = data.data;
+        }
+      });
+  }
+  transform(value: string | Date): string {
+    if (!value) return "";
+
+    const created = new Date(value).getTime();
+    const now = Date.now();
+    const diffMs = now - created;
+
+    const diffMin = Math.floor(diffMs / 60000); // ms → minutes
+    const diffHr = Math.floor(diffMin / 60);
+    const diffDay = Math.floor(diffHr / 24);
+
+    if (diffMin < 60) {
+      return `${diffMin} min${diffMin !== 1 ? "s" : ""} ago`;
+    } else if (diffHr < 24) {
+      return `${diffHr} hour${diffHr !== 1 ? "s" : ""} ago`;
+    } else {
+      return `${diffDay} day${diffDay !== 1 ? "s" : ""} ago`;
+    }
+  }
   }
   getOrderList() {
     const store_id = JSON.parse(

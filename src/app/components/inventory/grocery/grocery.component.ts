@@ -11,7 +11,6 @@ import * as ExcelJS from 'exceljs';
 import * as FileSaver from 'file-saver';
 import { CardComponent } from '../../../shared/components/card/card.component';
 import { AddComponent } from './../add/add.component';
-import { InventoryService } from "../services/service.service";
 import { ApisService } from "../../../shared/services/apis.service";
 import { AppConstants } from "../../../app.constants";
 
@@ -51,7 +50,41 @@ export class GroceryComponent implements OnInit {
       headerName: 'Updated Date',
       valueFormatter: params => this.datePipe.transform(params.value, 'dd-MM-yyyy') ?? ''
     },
-    { field: 'status', headerName: 'Status' },
+   {
+  headerName: 'Status',
+  field: 'status',
+  cellRenderer: (params: any) => {
+    let label = '';
+    let statusClass = '';
+
+    // Convert numeric or string value to label + class
+    if (params.value == 1 || params.value === 'Active') {
+      label = 'Active';
+      statusClass = 'status-active';
+    } else {
+      label = 'Inactive';
+      statusClass = 'status-inactive';
+    }
+
+    return `<div class="status-badge ${statusClass}">${label}</div>`;
+  },
+  editable: false,
+  cellEditor: 'agSelectCellEditor',
+  cellEditorParams: {
+    values: ['Active', 'Inactive'],
+  },
+  valueFormatter: (params: any) => {
+    // Convert numeric to readable string
+    return params.value == 1 ? 'Active' : 'Inactive';
+  },
+  valueParser: (params: any) => {
+    // Convert string back to numeric value when edited
+    return params.newValue === 'Active' ? 1 : 0;
+  },
+  suppressMenu: true,
+  unSortIcon: true,
+},
+
     {
       headerName: 'Actions',
       cellRenderer: () => `
@@ -75,7 +108,7 @@ export class GroceryComponent implements OnInit {
     private fb: FormBuilder,
     private modalService: NgbModal,
     private router: Router,
-    private InventoryService: ApisService,
+    private apiService: ApisService,
     private datePipe: DatePipe
   ) { }
 
@@ -91,8 +124,7 @@ export class GroceryComponent implements OnInit {
 
   // 🔹 Fetch inventory list
   loadInventory(): void {
-    
-    this.InventoryService.getApi(AppConstants.api_end_points.inventory).subscribe({
+    this.apiService.getApi(AppConstants.api_end_points.inventory).subscribe({
       next: (res:any) => {
         this.rowData = res.data || res;
         console.log("Inventory loaded:", this.rowData);
@@ -107,21 +139,27 @@ export class GroceryComponent implements OnInit {
   }
 
   // 🔹 Open Add Modal
-  openNew() {
+  openNew(type:any) {
     const modalRef = this.modalService.open(AddComponent, { centered: true, backdrop: 'static', size: 'md' });
-    modalRef.result.then((result) => {
-      if (result === 'refresh') {
-        this.loadInventory();
-      }
-    }).catch(() => { });
+    modalRef.componentInstance.type = type;
     modalRef.componentInstance.editData = this.selectedItem; // Ensure it's in 'add' mode
+     modalRef.result.then(
+      (result) => {
+        console.log('Modal closed with:', result);
+        this.loadInventory()
+      },
+      () => {
+        console.log('Modal dismissed');
+        this.loadInventory()
+      }
+    );
   }
 
   // 🔹 Delete confirmation
   confirmDelete(modal: any) {
     // if (!this.selectedItem) return;
 
-    // this.InventoryService.deleteApi(AppConstants.api_end_points.inventory,{}).subscribe({
+    // this.apiService.deleteApi(AppConstants.api_end_points.inventory,{}).subscribe({
     //   next: () => {
     //     modal.close();
     //     Swal.fire('Deleted!', `${this.selectedItem.item_name} has been removed.`, 'success');
@@ -130,6 +168,33 @@ export class GroceryComponent implements OnInit {
     //   },
     //   error: () => Swal.fire('Error', 'Failed to delete item', 'error')
     // });
+
+  const payload = {
+  "type": "delete",
+  'item_id':this.selectedItem.item_id,
+  "store_id":this.selectedItem.store_id,
+  "item_name": this.selectedItem.item_name,
+  "quantity": this.selectedItem.quantity,
+  "unit": this.selectedItem.unit,
+  "item_state": this.selectedItem.item_state,
+  "imported_from": this.selectedItem.imported_from,
+}
+        this.apiService.postApi(AppConstants.api_end_points.inventory, payload).subscribe((data: any) => {
+          if (data.code == 1) {
+            modal.dismiss();
+            Swal.fire({
+              title: 'Success!',
+              text: data.message,
+              icon: 'success',
+              width: '350px',  // customize width (default ~ 600px)
+            }).then((result) => {
+              if (result.isConfirmed) {
+                console.log('User clicked OK');
+                this.loadInventory();
+              }
+            });
+          }
+        })
   }
 
   // 🔹 Grid action handler
@@ -139,11 +204,12 @@ export class GroceryComponent implements OnInit {
 
     if (action === 'view') {
       this.selectedItem = event.data;
-      this.modalService.open(this.viewModalRef, { centered: true, backdrop: 'static' });
+       this.openNew('View')
+      // this.modalService.open(this.viewModalRef, { centered: true, backdrop: 'static' });
     }
     if (action === 'edit') {
          this.selectedItem = event.data;
-         this.openNew()
+         this.openNew('Edit')
       // TODO: Hook edit modal like AddComponent (update API)
     }
     if (action === 'delete') {

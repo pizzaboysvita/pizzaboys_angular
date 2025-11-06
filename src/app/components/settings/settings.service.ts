@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable, map } from "rxjs";
+import { environment } from "../../../environments/environment";
 
 @Injectable({
   providedIn: "root",
@@ -26,14 +27,14 @@ export class SettingsService {
   // ---------- Existing methods ----------
   createPromoCode(promoCodeData: any): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.post(`${this.baseUrl}/promocode`, promoCodeData, {
+    return this.http.post(`${environment.apiUrl}/api/promocode`, promoCodeData, {
       headers,
     });
   }
 
   createFee(feeData: any): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.post(`${this.baseUrl}/settings/conditionalfee`, feeData, {
+    return this.http.post(`${environment.apiUrl}/api/settings/conditionalfee`, feeData, {
       headers,
     });
   }
@@ -41,7 +42,7 @@ export class SettingsService {
   savePickupService(pickupData: any): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.post(
-      `${this.baseUrl}/settings/pickupservice`,
+      `${environment.apiUrl}/api/settings/pickupservice`,
       pickupData,
       { headers }
     );
@@ -50,7 +51,7 @@ export class SettingsService {
   saveDeliveryService(deliveryData: any): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.post(
-      `${this.baseUrl}/settings/deliveryservice`,
+      `${environment.apiUrl}/api/settings/deliveryservice`,
       deliveryData,
       { headers }
     );
@@ -116,7 +117,7 @@ updateWorkingHours(storeId: number, workingHours: any[]): Observable<any> {
   return this.http.post(`${this.baseUrl}/store`, formData, {
     headers: this.getAuthHeaders(),
   });
-}
+
 
 
 }

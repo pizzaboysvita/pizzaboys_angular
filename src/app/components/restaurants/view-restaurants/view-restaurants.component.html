@@ -27,7 +27,7 @@
         <div class="col-xl-6">
           <div class="input-box">
             <h6 class="f-w-600 p-1">Store Name</h6>
-            <input type="text" formControlName="storeName" placeholder="Enter Store Name" />
+            <input type="text" formControlName="storeName" placeholder="Enter Store Name"  (input)="capitalizeWords_firstName($event)" (keypress)="allowOnlyAlphabets($event)"/>
             @if (storeForm.get('storeName')?.touched && storeForm.get('storeName')?.invalid) {
               <div class="text-danger">Store Name is required</div>
             }
@@ -49,7 +49,7 @@
         <div class="col-xl-6">
           <div class="input-box">
             <h6 class="f-w-600 p-1">Phone Number</h6>
-            <input type="text" formControlName="phoneNumber" placeholder="Enter Phone Number"  mask="(000)-000 0000" />
+            <input type="text" formControlName="phoneNumber" placeholder="Enter Phone Number"  mask="(00)-000 0000" />
             @if (storeForm.get('phoneNumber')?.touched && storeForm.get('phoneNumber')?.invalid) {
               <div class="text-danger">Valid 10-digit phone number is required</div>
             }
@@ -57,7 +57,7 @@
         </div>
 
         <!-- Password -->
-        <div class="col-md-6">
+        <!-- <div class="col-md-6">
           <div class="input-box">
             <h6 class="f-w-600 p-1">Password</h6>
             <input type="password" formControlName="password" placeholder="Enter Password" />
@@ -65,7 +65,7 @@
               <div class="text-danger">Minimum 6 characters required</div>
             }
           </div>
-        </div>
+        </div> -->
 
         <!-- Address Fields -->
         <div class="col-xl-6">

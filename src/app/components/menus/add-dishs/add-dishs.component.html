@@ -182,7 +182,7 @@
                         <!-- Delete Icon -->
                         <!-- <button class="icon-button delete" (click)="removeImage()" title="Delete">❌</button> -->
                         <!-- <button class="icon-button" >×</button> -->
-                        <button class="icon-button" (click)="removeImage()">✕</button>
+                        <button class="icon-button" *ngIf="type != 'View'" (click)="removeImage()">✕</button>
                         <!-- File name -->
                         <!-- <div class="file-name text-center mt-1">
       {{ getCleanFileName() }}
@@ -193,7 +193,7 @@
 
                       <!-- File input (shown when no preview) -->
                       <ng-template #uploadInput>
-                        <input type="file" accept="image/*" (change)="onSelectFile($event)" />
+                        <input type="file" accept="image/*" (change)="type != 'View' && onSelectFile($event)" />
                       </ng-template>
                     </div>
 
@@ -217,7 +217,8 @@
                     <h6>Option Sets</h6>
                     <ng-select [items]="optSetDetails" [searchable]="true" [multiple]="true" bindLabel="option_set_name"
                       placeholder="Select from the dropdown or type to search"
-                      [(ngModel)]="selectedSubcategories"></ng-select>
+                      [disabled]="isViewMode"
+                      [(ngModel)]="selectedSubcategories" ></ng-select>
                   </div>
                   <span class="lableSubtext">Select option sets to be applied to the dish. Option sets
                     are ordered according to how they are listed on the option set page, not by the
@@ -227,7 +228,7 @@
                   <div class="input-box">
                     <h6>Primary Option Set</h6>
                     <ng-select [items]="optSetDetails" [searchable]="true" [multiple]="true" bindLabel="option_set_name"
-                      bindValue="option_set_id" placeholder="Select from the dropdown or type to search"></ng-select>
+                      bindValue="option_set_id"  placeholder="Select from the dropdown or type to search"></ng-select>
                   </div>
                   <span class="lableSubtext">Designate a primary option set which is 'required' and
                     has 'multi-select' disabled. This will result in multiple prices showing on your
@@ -239,7 +240,7 @@
                   <div class="input-box">
                     <!-- <h6>Primary Option Set</h6> -->
                     <div class="mb-2 mt-2">
-                      <button class="btn addChoice-button" type="button" (click)="addIngredients()">Add
+                      <button class="btn addChoice-button" type="button" (click)="type !='View' && addIngredients()">Add
                         Ingredient</button>
                     </div>
                     @for (choice of Ingredients; track choice; let i = $index) {
@@ -262,7 +263,7 @@
                         </div>
 
                         <div class="col-1 d-flex justify-content-center align-items-center">
-                          <i class="ri-delete-bin-line" (click)="removeIngredients(i)" style="
+                          <i class="ri-delete-bin-line" (click)="type !='View' && removeIngredients(i)" style="
     cursor: pointer;
     font-size: 1rem;"></i>
 
@@ -294,7 +295,7 @@
                         </div> -->
             <!-- Add Choice Button -->
             <div class="mb-3">
-              <button class="btn addChoice-button" type="button" (click)="addChoice()">Add Choice</button>
+              <button class="btn addChoice-button" type="button" (click)=" type !='View' && addChoice()">Add Choice</button>
             </div>
             @for (choice of choices; track choice; let i = $index) {
             <div class="choice-container border border-top-0 rounded-0">
@@ -391,8 +392,70 @@
           </ng-template>
         </li>
         }
-      </ul>
+   <li [ngbNavItem]="3" class="nav-item m-0">
+          <button ngbNavLink class="nav-link" type="button">Inventory Items </button>
+        <ng-template ngbNavContent>
+  <div class="inventory-section p-3 border rounded">
+    <div class="row align-items-center g-2 mb-3">
+      <!-- Dropdown -->
+      <div class="col-md-5 col-sm-12">
+        <select class="form-select" [(ngModel)]="selectedInventoryItem">
+        <option value="" disabled selected>Select Item</option>
+        <option *ngFor="let inventory of inventoryList" [ngValue]="inventory">
+          {{ inventory.item_name }}
+        </option>
+       </select>
+      </div>
+      <!-- Input Field -->
+      <div class="col-md-5 col-sm-12">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Enter Quantity"
+          [(ngModel)]="quantity"
+        />
+      </div>
+      <!-- Add Button -->
+      <div class="col-md-2 col-sm-12 text-md-start text-center">
+           <button class="btn addChoice-button" type="button" (click)="type !='View' && addDishInventory()">Add
+                        Item</button>
+        <!-- <button body class="btn btn-animation  save-button" (click)="addDishInventory()" style="margin-top: 1px;"
+      type="button"><i class="ri-add-circle-line"></i>&nbsp; Add Item</button>&nbsp; -->
+      </div>
+    </div>
 
+  <div *ngIf="dishInventory.length > 0" class="mt-3 inventory-list">
+  <!-- Header Row -->
+  <div class="row fw-semibold text-black bg-light py-2 rounded-top">
+    <div class="col-md-6 col-sm-12">Item Name</div>
+    <div class="col-md-4 col-sm-12">Quantity</div>
+    <div class="col-md-2 col-sm-12 ">Action</div>
+  </div>
+  <!-- Data Rows -->
+  <div
+    *ngFor="let item of dishInventory; let i = index"
+    class="row align-items-center border-start border-end border-bottom p-1 "
+  >
+    <div class="col-md-6 col-sm-12 fw-semibold">{{ item.inventory_item_name }}</div>
+    <div class="col-md-4 col-sm-12 fw-semibold">{{ item.quantity }}</div>
+    <div class="col-md-2 col-sm-12 text-md-end text-center">
+      <button
+        class="btn btn-outline-danger btn-lg"
+        (click)="type !='View' && removeDishInventory(i)"
+      >
+        <i class="ri-delete-bin-line"></i>
+      </button>
+    </div>
+  </div>
+</div>
+<!-- Empty State -->
+<div *ngIf="dishInventory.length === 0" class="text-muted small text-center mt-3">
+  No Items added yet.
+</div>
+  </div>
+</ng-template>
+</li>
+      </ul>
     </div>
     <div class="col-12" [ngbNavOutlet]="nav"></div>
   </div>

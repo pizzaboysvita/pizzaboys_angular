@@ -189,6 +189,7 @@ export class MediaComponent implements OnInit {
   comboDishDetails: any = [];
   totalDishList: any[];
   selectedChildPerCombo: { [comboIndex: number]: any } = {};
+  isEditing: boolean;
   constructor(
     public modal: NgbModal,
     private apiService: ApisService,
@@ -223,7 +224,7 @@ export class MediaComponent implements OnInit {
           dishRes.data
         );
         console.log("Processed Menu:", processedMenu);
-        this.categoriesList = processedMenu;
+        this.categoriesList = processedMenu.filter(x=>(x.hide_category_in_POS == 0));
         this.totalDishList = dishRes.data;
         if (this.categoriesList && this.categoriesList.length > 0) {
           this.selectedCategory = this.categoriesList[0];
@@ -281,42 +282,250 @@ export class MediaComponent implements OnInit {
       this.itemDecreased.emit(simplifiedCartItem);
     }
   }
+// openEditPopup(item: any) {
+//   this.isEditing = true; // flag to switch popup mode
+//   this.isOptionSelected = false;
+//   this.selectedChildPerCombo = {};
+//   item.dishnote = item.dishnote || ''; // keep existing notes or empty
 
-  openIngredientsPopup(item: any) {
-     this.isOptionSelected = false;
-    item.dishnote = ''
-    this.selectedChildPerCombo = {};
-    if (item.dish_type === 'combo') {
+//   if (item.dish_type === 'combo') {
+//     this.comboDishDetails = [];
 
-      this.comboDishDetails = []
+//     // Parse existing dish_choices_json if needed
+//     if (typeof item.dish_choices_json === 'string') {
+//       item.dish_choices_json_array = this.filterIndeterminateCategories(JSON.parse(item.dish_choices_json));
+//     } else {
+//       item.dish_choices_json_array = item.dish_choices_json;
+//     }
 
-      item.dish_choices_json_array = this.filterIndeterminateCategories(JSON.parse(item.dish_choices_json));
-      this.selectedDishFromList = item;
-      item['dish_quantity'] = 1; // Ensure quantity is set
-      this.selectedDishFromList = item;
-      this.selectedDishFromList.duplicate_dish_price = item.dish_price
-      this.cartItems = [item]
-      this.showPopup = true;
+//     // Keep existing quantity
+//     item['dish_quantity'] = item['dish_quantity'] || 1;
+//     this.selectedDishFromList = item;
+//     this.selectedDishFromList.duplicate_dish_price = item.dish_price;
 
-      console.log("Opening combo ingredients popup for item:", item);
-      console.log(this.selectedDishFromList, 'selectedDishFromList 123 456')
+//     this.cartItems = [item];
+//     this.showPopup = true;
+
+//     console.log("Editing combo item:", item);
+//   } else {
+//     this.cartItems = [];
+
+//     // Keep original options but ensure types are defined
+//     item['dish_option_set_array'].forEach((optionSet: any) => {
+//       optionSet.option_type =
+//         optionSet.dispaly_name == 'Base'
+//           ? 'radio'
+//           : optionSet.dispaly_name == 'Extra Meat Toppings'
+//           ? 'counter'
+//           : 'counter';
+//     });
+
+//     // Keep ingredients (mark previously selected ones)
+//     item['dish_ingredient_array']?.forEach((ingredient: any) => {
+//       if (ingredient.selected === undefined) {
+//         ingredient.selected = true;
+//       }
+//     });
+
+//     item['dish_quantity'] = item['dish_quantity'] || 1;
+//     this.selectedDishFromList = item;
+//     this.selectedDishFromList.duplicate_dish_price = item.dish_price;
+
+//     this.cartItems = [item];
+//     this.showPopup = true;
+//     this.cdr.detectChanges();
+
+//     console.log("Editing standard dish:", item);
+//   }
+// }
+openEditPopup(item: any) {
+  this.isEditing = true;
+  this.isOptionSelected = false;
+  this.selectedChildPerCombo = {};
+  item.dishnote = item.dishnote || '';
+
+  if (item.dish_type === 'combo') {
+    this.comboDishDetails = [];
+
+    // Parse existing dish_choices_json if needed
+    if (typeof item.dish_choices_json === 'string') {
+      item.dish_choices_json_array = this.filterIndeterminateCategories(
+        JSON.parse(item.dish_choices_json)
+      );
     } else {
-      this.cartItems = []
-      item['dish_option_set_array'].forEach((optionSet: any) => {
-        optionSet.option_type = optionSet.dispaly_name == "Base" ? "radio" : optionSet.dispaly_name == "Extra Meat Toppings" ? "counter" : "counter";
-      })
-      console.log(item['dish_ingredient_array'], 'item.dish_option_set_array')
-      item['dish_quantity'] = 1; // Ensure quantity is set
-      this.selectedDishFromList = item;
-      this.selectedDishFromList.duplicate_dish_price = item.dish_price
-      item['dish_ingredient_array'].forEach((ingredient: any) => {
-        ingredient.selected = true; // Default all ingredients to selected
-      });
-      this.cartItems = [item]
-      this.showPopup = true;
-      this.cdr.detectChanges();
+      item.dish_choices_json_array = item.dish_choices_json;
     }
+
+    item['dish_quantity'] = item['dish_quantity'] || 1;
+    this.selectedDishFromList = item;
+    this.selectedDishFromList.duplicate_dish_price = item.dish_price;
+
+    this.cartItems = [item];
+    this.showPopup = true;
+
+    console.log('Editing combo item:', item);
+  } else {
+    this.cartItems = [];
+
+    // ✅ Ensure option types are correct
+    item['dish_option_set_array'].forEach((optionSet: any) => {
+      optionSet.option_type =
+        optionSet.dispaly_name == 'Base'
+          ? 'radio'
+          : optionSet.dispaly_name == 'Extra Meat Toppings'
+          ? 'counter'
+          : 'counter';
+    });
+
+  
+    item['dish_ingredient_array']?.forEach((ingredient: any) => {
+      if (ingredient.selected === undefined) {
+        ingredient.selected = true;
+    this.cartItems = [item];
+
+      }
+    });
+
+    item['dish_quantity'] = item['dish_quantity'] || 1;
+    this.selectedDishFromList = item;
+    this.selectedDishFromList.duplicate_dish_price = item.dish_price;
+ 
+  // ✅ Restore selected radio options here
+  
+    // ✅ Restore ingredient selections
+     item['dish_option_set_array'].forEach((optionSet: any) => {
+         console.log( optionSet,"ajssadasdasd");
+      if (optionSet.option_type === 'radio') {
+        const selectedOpt = optionSet.option_set_array.find((opt: any) => opt.selected === true);
+         console.log( selectedOpt,"ajssadasdasd");
+
+        if (selectedOpt) {
+          console.log( selectedOpt,"ajssadasdasd");
+         selectedOpt.selected = true; // 🔹 store reference for [checked]
+          
+          // optionSet.selectedOption = selectedOpt; // 🔹 store reference for [checked]
+          // selectedOpt.selected = selectedOpt; // 🔹 store reference for [checked]
+           this.cartItems = [item];
+        this.selectRadio(optionSet, selectedOpt);
+            
+          
+       
+        }
+      }
+    });
+     this.cartItems = [item];
+    this.showPopup = true;
+    this.cdr.detectChanges();
+    console.log('Editing standard dish:', item);
+  
+  
   }
+}
+
+  // openIngredientsPopup(item: any) {
+  //    this.isOptionSelected = false;
+  //   item.dishnote = ''
+  //   this.selectedChildPerCombo = {};
+  //   if (item.dish_type === 'combo') {
+
+  //     this.comboDishDetails = []
+
+  //     item.dish_choices_json_array = this.filterIndeterminateCategories(JSON.parse(item.dish_choices_json));
+  //     this.selectedDishFromList = item;
+  //     item['dish_quantity'] = 1; // Ensure quantity is set
+  //     this.selectedDishFromList = item;
+  //     this.selectedDishFromList.duplicate_dish_price = item.dish_price
+  //     this.cartItems = [item]
+  //     this.showPopup = true;
+
+  //     console.log("Opening combo ingredients popup for item:", item);
+  //     console.log(this.selectedDishFromList, 'selectedDishFromList 123 456')
+  //   } else {
+  //     this.cartItems = []
+  //     item['dish_option_set_array'].forEach((optionSet: any) => {
+  //       optionSet.option_type = optionSet.dispaly_name == "Base" ? "radio" : optionSet.dispaly_name == "Extra Meat Toppings" ? "counter" : "counter";
+  //     })
+  //     console.log(item['dish_ingredient_array'], 'item.dish_option_set_array')
+  //     item['dish_quantity'] = 1; // Ensure quantity is set
+  //     this.selectedDishFromList = item;
+  //     this.selectedDishFromList.duplicate_dish_price = item.dish_price
+  //     item['dish_ingredient_array'].forEach((ingredient: any) => {
+  //       ingredient.selected = true; // Default all ingredients to selected
+  //     });
+  //     this.cartItems = [item]
+  //     this.showPopup = true;
+  //     this.cdr.detectChanges();
+  //   }
+  // }
+  openIngredientsPopup(item: any) {
+      this.isEditing = false;
+  this.isOptionSelected = false;
+  this.selectedChildPerCombo = {};
+  item.dishnote = '';
+
+  if (item.dish_type === 'combo') {
+    this.comboDishDetails = [];
+
+    // ✅ Parse combo items freshly (no old selections)
+    const parsedChoices = JSON.parse(item.dish_choices_json || '[]');
+    item.dish_choices_json_array = this.filterIndeterminateCategories(parsedChoices);
+
+    // Reset selection state
+    item.dish_choices_json_array.forEach((choice: any) => {
+      choice.menuItems?.forEach((menu: any) => {
+        menu.categories?.forEach((cat: any) => {
+          cat.dishes?.forEach((dish: any) => {
+            dish.selected = false;
+            dish.option_set_array?.forEach((opt: any) => {
+              opt.selected = false;
+              opt.quantity = 0;
+            });
+          });
+        });
+      });
+    });
+
+    item.dish_quantity = 1;
+    item.duplicate_dish_price = item.dish_price;
+    this.selectedDishFromList = item;
+    this.cartItems = [item];
+    this.showPopup = true;
+
+    console.log('Opening combo ingredients popup for item:', item);
+  } else {
+    this.cartItems = [];
+
+    // ✅ Reset radio/counter options
+    item.dish_option_set_array.forEach((optionSet: any) => {
+      optionSet.option_type =
+        optionSet.dispaly_name === 'Base'
+          ? 'radio'
+          : optionSet.dispaly_name === 'Extra Meat Toppings'
+          ? 'counter'
+          : 'counter';
+
+      optionSet.option_set_array.forEach((opt: any) => {
+        opt.selected = false;
+        opt.quantity = 0;
+      });
+    });
+
+    // ✅ Reset ingredients
+    item.dish_ingredient_array?.forEach((ingredient: any) => {
+      ingredient.selected = true; // default checked
+    });
+
+    item.dish_quantity = 1;
+    item.duplicate_dish_price = item.dish_price;
+    this.selectedDishFromList = item;
+    this.cartItems = [item];
+    this.showPopup = true;
+    this.cdr.detectChanges();
+
+    console.log('Opening standard dish popup for item:', item);
+  }
+}
+
   filterIndeterminateCategories(menuData: any[]) {
     return menuData.map(menuGroup => ({
       ...menuGroup,
@@ -339,17 +548,31 @@ export class MediaComponent implements OnInit {
     }));
   }
 
-  closePopup() {
-    this.showPopup = false;
-    this.selectedDishFromList = null;
-    this.selectedItemForModal = null;
-    this.modalNotes = "";
-    this.modalQuantity = 1;
-    this.expandedIndex = null;
-    this.cdr.detectChanges();
-  }
+  // closePopup() {
+  //   this.showPopup = false;
+  //   this.isEditing = false;
+  //   this.selectedDishFromList = null;
+  //   this.selectedItemForModal = null;
+  //   this.modalNotes = "";
+  //   this.modalQuantity = 1;
+  //   this.expandedIndex = null;
+  //   this.cdr.detectChanges();
+  // }
 
+@Output() popupClosed = new EventEmitter<void>();
 
+closePopup() {
+  this.showPopup = false;
+  this.isEditing = false;
+  this.selectedDishFromList = null;
+  this.selectedItemForModal = null;
+  this.modalNotes = "";
+  this.modalQuantity = 1;
+  this.expandedIndex = null;
+  // Emit event to notify parent
+  this.popupClosed.emit();
+  this.cdr.detectChanges();
+}
 
   increaseModalQuantity(item: any) {
     item['dish_quantity']++;
@@ -389,21 +612,36 @@ export class MediaComponent implements OnInit {
   }
   selectRadio(group: any, option: any) {
     this.isOptionSelected=true
-    console.log("Selected option:", option, group);
-    group.option_set_array.forEach((opt: any) => {
-
+    if(
+     this.isEditing !=true
+   ){
+     group.option_set_array.forEach((opt: any) => {
       opt.selected = (opt === option);; // Deselect all options in the group
 
     })
+  }
+  else{
+   group.option_set_array.forEach((opt: any) => {
+  // ✅ If this option is the one user clicked, set selected = true
+  // ❌ Otherwise, set selected = false
+  opt.selected = (opt === option);
+});
+
+
+  }
     // option.selected =  !option.selected;
-
     option.quantity = 1; // Reset quantity when selecting a new option
-
+ 
     this.calculateTotal();
     this.cdr.detectChanges();
   }
+
   toggleCheckbox(option: any) {
+    console.log(option);
+
     option.selected = !option.selected;
+     this.cartItems = [...this.cartItems];
+    console.log(option);
     this.calculateTotal();
   }
   calculateTotal() {
