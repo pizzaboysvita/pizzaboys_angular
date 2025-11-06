@@ -1,9 +1,14 @@
 import { CommonModule } from "@angular/common";
-import { Component, input, Input } from "@angular/core";
-import { NgbActiveModal, NgbModal } from "@ng-bootstrap/ng-bootstrap"; 
+import { Component, Input } from "@angular/core";
+import { NgbActiveModal, NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { ApisService } from "../../../shared/services/apis.service";
 import { AppConstants } from "../../../app.constants";
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+} from "@angular/forms";
 import { SessionStorageService } from "../../../shared/services/session-storage.service";
 import { ToastrService } from "ngx-toastr";
 import Swal from "sweetalert2";
@@ -11,36 +16,40 @@ import Swal from "sweetalert2";
 @Component({
   selector: "app-order-dialog",
   standalone: true,
-  imports: [CommonModule,FormsModule,ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: "./order-dialog.component.html",
   styleUrl: "./order-dialog.component.scss",
 })
 export class OrderDialogComponent {
   @Input() data: any;
- // component.ts
-statuses = ["Confirmed", "Ready", "Completed", "Delivered"];  
 
-currentStatus:any // <-- backend API or dynamic status
-
+  statuses = ["Confirmed", "Ready", "Completed", "Delivered"];
+  currentStatus: any;
   activeTab = "details";
-  statusExpanded = false;
-  readyTimeExpanded = false;
-  actionsExpanded = false;
-  statusList: any[] = [
-    { id: 'Change Status', name: "Change Status" },
-    { id: 'Cancelled', name: "Cancelled" },
-    { id: 'Un-Confirmed', name: "Un-Confirmed" },
-    { id: 'Confirmed', name: "Confirmed" },
-    { id: 'Ready', name: "Ready" },
-    { id: 'Completed', name: "Completed" },
+
+  orderForm!: FormGroup;
+  orderDishDetails: any[] = [];
+  order_items: any[] = [];
+  order_toppings: any[] = [];
+  order_ingredients: any[] = [];
+  totalOrdermerged: any[] = [];
+  orderlogs: any[] = [];
+
+  statusList = [
+    { id: "Change Status", name: "Change Status" },
+    { id: "Cancelled", name: "Cancelled" },
+    { id: "Un-Confirmed", name: "Un-Confirmed" },
+    { id: "Confirmed", name: "Confirmed" },
+    { id: "Ready", name: "Ready" },
+    { id: "Completed", name: "Completed" },
   ];
-   action: any[] = [
+
+  action = [
     { id: 1, name: "Print Online-Customer" },
     { id: 2, name: "Print POS-Customer" },
     { id: 3, name: "Print POS Kitchen" },
     { id: 4, name: "Download PDF receipt" },
-    { id: 5, name: "Archive Order " },
-   
+    { id: 5, name: "Archive Order" },
   ];
   modiftime=[
     {id:1,name:'Add 5min'},
@@ -49,53 +58,162 @@ currentStatus:any // <-- backend API or dynamic status
     {id:4,name:'Add 20 min'},
     {id:5,name:'Add 25 min'},
   ]
-  orderDetails:any
-  order_items: any;
-  orderlogs: any =[];
-  order_toppings: any;
-  order_ingredients: any;
-  totalOrdermerged:any
-  orderForm:FormGroup
-  orderDishDetails:any=[]
+
   constructor(public modal: NgbModal,public activeModal: NgbActiveModal,private toastr: ToastrService,private session:SessionStorageService,private apis: ApisService,private fb:FormBuilder) {}
 
   ngOnInit(): void {
-    this.orderDishDetails=JSON.parse(this.data.combo_details_json)
-    console.log(this.orderDishDetails,'oppppppppp')
-    this.currentStatus=this.data.order_status
-    this.orderForm =this.fb.group({
-      status:[this.data.order_status],
-      modifyEstTime:[''],
-      action:['']
-    })
-       this.apis.getApi(AppConstants.api_end_points.orderList + '?order_id=' + this.data.order_master_id + '&orderStatus=true&type=web').subscribe((response:any) => {
-      console.log(response, 'order details');
-      if(response.code ==1){
-        this.orderlogs = response.categories;
-          //  this.modalRef.componentInstance.datalogs = this.orderDetails;
-      }
+    this.currentStatus = this.data.order_status || "Confirmed";
+
+    this.orderForm = this.fb.group({
+      status: [this.currentStatus],
+      modifyEstTime: [""],
+      action: [""],
     });
-    // Initialization logic here
-    console.log(this.data,'this.datathis.datathis.datathis.datathis.datathis.datathis.datathis.data')
 
- this.order_items = JSON.parse(this.data.order_items);
-       this.order_toppings = JSON.parse(this.data.order_toppings);
-          this.order_ingredients = JSON.parse(this.data.order_ingredients);
-    this.totalOrdermerged = this.order_items.map((dish:any) => {
-  const selected =  this.order_toppings
-    .filter((opt:any) => opt.dish_id === dish.dish_id)
-    .map(({ name, price,quantity }:any ) => ({ name, price,quantity }));
+    this.buildOrderLogs(this.data);
 
-     const ingredients =  this.order_ingredients
-    .filter((opt:any) => opt.dish_id === dish.dish_id)
-    .map(({ name, price,quantity }:any ) => ({ name, price,quantity }));
+    // parse safely (some fields may be null or stringified JSON)
+    this.orderDishDetails = safeParse(this.data.combo_details_json);
+    this.order_items = safeParse(this.data.order_items);
+    this.order_toppings = safeParse(this.data.order_toppings);
+    this.order_ingredients = safeParse(this.data.order_ingredients);
 
-  return { ...dish, selected_options: [...selected,...ingredients] };
-});
-   
-    console.log(this.totalOrdermerged ,this.order_toppings,'order dialog data');
-    // let result1 = this.data.order_master_id.replace("P-", "")
-    
+    // merge toppings + ingredients into items for display
+    this.totalOrdermerged = this.order_items.map((dish: any) => {
+      const toppings = this.order_toppings
+        .filter((opt: any) => opt.dish_id === dish.dish_id)
+        .map(({ name, price, quantity }: any) => ({ name, price, quantity }));
+
+      const ingredients = this.order_ingredients
+        .filter((opt: any) => opt.dish_id === dish.dish_id)
+        .map(({ name, price, quantity }: any) => ({ name, price, quantity }));
+
+      // If your API provides item_total_price, use it; otherwise compute price * qty
+      const item_total_price =
+        dish.item_total_price ??
+        (dish.price ? Number(dish.price || 0) * Number(dish.quantity || 1) : 0);
+
+      return {
+        ...dish,
+        item_total_price,
+        selected_options: [...toppings, ...ingredients],
+      };
+    });
+
+    // fetch logs
+    this.loadOrderLogs();
+  }
+
+  buildOrderLogs(orderData: any) {
+    const logs = [];
+
+    // 1️⃣ Print Request
+    logs.push({
+      id: 1,
+      title: "PRINT REQUEST",
+      description: 'Print request sent to printer "POS - Kitchen"',
+      time: "30/10/2025 08:54 pm",
+      type: "print",
+    });
+
+    // 2️⃣ Status changes (simulate timeline)
+    const statusChanges = [
+      { id: 2, from: "Confirmed", to: "Ready", time: "30/10/2025 09:15 pm" },
+      { id: 6, from: "Ready", to: "Complete", time: "30/10/2025 09:25 pm" },
+    ];
+
+    statusChanges.forEach((s) => {
+      logs.push({
+        id: s.id,
+        title: "UPDATE STATUS",
+        description: `Updated from "${s.from}" to "${s.to}"`,
+        time: s.time,
+        type: "status",
+      });
+    });
+
+    // 3️⃣ Edits (simulate multiple edits)
+    logs.push(
+      {
+        id: 3,
+        title: "EDITED",
+        description: "",
+        time: "30/10/2025 09:17 pm",
+        type: "edit",
+      },
+      {
+        id: 4,
+        title: "EDITED",
+        description: "",
+        time: "30/10/2025 09:17 pm",
+        type: "edit",
+      },
+      {
+        id: 5,
+        title: "EDITED",
+        description: "",
+        time: "30/10/2025 09:17 pm",
+        type: "edit",
+      }
+    );
+
+    // Sort logs (newest first)
+    this.orderlogs = logs.sort((a, b) => b.id - a.id);
+  }
+  loadOrderLogs() {
+    this.apis
+      .getApi(
+        `${AppConstants.api_end_points.orderList}?order_id=${this.data.order_master_id}&orderStatus=true&type=web`
+      )
+      .subscribe({
+        next: (response: any) => {
+          if (response && response.code === 1) {
+            // API returns categories array (you used that earlier)
+            this.orderlogs = response.categories || [];
+          } else {
+            this.orderlogs = [];
+          }
+        },
+        error: (err) => {
+          console.error("Error loading logs:", err);
+          this.orderlogs = [];
+        },
+      });
+  }
+
+  // helper to format currency safely
+  formatPrice(value: any): string {
+    const n = Number(value ?? 0);
+    return n.toFixed(2);
+  }
+
+  // returns logs newest -> oldest
+  get logsSorted(): any[] {
+    return [...(this.orderlogs || [])].reverse();
+  }
+
+  // returns a user-friendly type (uppercase)
+  getLogType(l: any): string {
+    // prefer existing type fields or infer
+    if (l.log_type) return String(l.log_type).toUpperCase();
+    if (l.new_status || l.old_status) return "UPDATE STATUS";
+    if (l.action && String(l.action).toLowerCase().includes("edit"))
+      return "EDITED";
+    if (l.message) return "INFO";
+    return "LOG";
+  }
+
+  // build message text shown below the title
+  getLogMessage(l: any): string {
+    // many of your log entries contain old_status/new_status or message fields
+    if (l.old_status || l.new_status) {
+      return `Updated from "${l.old_status || "--"}" to "${
+        l.new_status || "--"
+      }"`;
+    }
+    if (l.message) return l.message;
+    // fallback to raw JSON
+    return JSON.stringify(l).slice(0, 200);
   }
 
   selectTab(tabName: string): void {
@@ -104,79 +222,81 @@ currentStatus:any // <-- backend API or dynamic status
 closeOrdersModal(){
   this.activeModal.close();
 }
-  toggleStatus(): void {
-    this.statusExpanded = !this.statusExpanded;
-  }
-
-  toggleReadyTime(): void {
-    this.readyTimeExpanded = !this.readyTimeExpanded;
-  }
-
-  toggleActions(): void {
-    this.actionsExpanded = !this.actionsExpanded;
-  }
-   transform(value: string | Date): string {
-    if (!value) return '';
-    
+  transform(value: string | Date): string {
+    if (!value) return "";
     const created = new Date(value).getTime();
-    const now = Date.now();
-    const diffMs = now - created;
-
-    const diffMin = Math.floor(diffMs / 60000); // ms → minutes
-    const diffHr  = Math.floor(diffMin / 60);
+    const diffMs = Date.now() - created;
+    const diffMin = Math.floor(diffMs / 60000);
+    const diffHr = Math.floor(diffMin / 60);
     const diffDay = Math.floor(diffHr / 24);
 
-    if (diffMin < 60) {
-      return `${diffMin} min${diffMin !== 1 ? 's' : ''} ago`;
-    } else if (diffHr < 24) {
-      return `${diffHr} hour${diffHr !== 1 ? 's' : ''} ago`;
-    } else {
-      return `${diffDay} day${diffDay !== 1 ? 's' : ''} ago`;
+    if (diffMin < 60) return `${diffMin} min${diffMin !== 1 ? "s" : ""} ago`;
+    if (diffHr < 24) return `${diffHr} hour${diffHr !== 1 ? "s" : ""} ago`;
+    return `${diffDay} day${diffDay !== 1 ? "s" : ""} ago`;
+  }
+  updatedOrder() {
+    const reqbody = {
+      order_id: this.data.order_master_id,
+      order_status: this.orderForm.value.status,
+      updated_by: JSON.parse(
+        this.session.getsessionStorage("loginDetails") as any
+      ).user.user_id,
+    };
+
+    this.apis.putApi(AppConstants.api_end_points.orderList, reqbody).subscribe({
+      next: (data: any) => {
+        if ((data && data.code === "1") || 1) {
+          Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: data.message || "Order details updated successfully.",
+            confirmButtonColor: "#3085d6",
+          }).then(() => {
+            this.modal.dismissAll();
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: data?.message || "Something went wrong. Please try again.",
+          });
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "Failed to update order. Please check the network or try again later.",
+        });
+      },
+    });
+  }
+
+  getStepClass(step: string) {
+    const currentIndex = this.statuses.indexOf(this.currentStatus);
+    const stepIndex = this.statuses.indexOf(step);
+    return stepIndex <= currentIndex ? "progtrckr-done" : "progtrckr-todo";
+  }
+}
+
+/** small utility outside the class to safely parse possible JSON strings */
+function safeParse(value: any): any[] {
+  if (!value) return [];
+  try {
+    if (typeof value === "string") {
+      const trimmed = value.trim();
+      if (
+        (trimmed.startsWith("[") && trimmed.endsWith("]")) ||
+        (trimmed.startsWith("{") && trimmed.endsWith("}"))
+      ) {
+        return JSON.parse(trimmed);
+      }
+      return [];
     }
+    if (Array.isArray(value)) return value;
+    return [];
+  } catch {
+    return [];
   }
-  updatedOrder(){
-    const reqbody={
-  "order_id": this.data.order_master_id,
-  "order_status": this.orderForm.value.status,
-  "updated_by":  JSON.parse(this.session.getsessionStorage('loginDetails') as any).user.user_id
-}
-this.apis.putApi(AppConstants.api_end_points.orderList,reqbody).subscribe((data:any)=>{
-      if (data && data.code == 1) {
-         Swal.fire('Success!',data.message, 'success').then(
-              (result) => {
-          if (result) {
-                    this.modal.dismissAll();
-          }}
-             );
-
-      }
-      else{
-             Swal.fire('Success!',data.message, 'success').then(
-              (result) => {
-          if (result) {
-                    this.modal.dismissAll();
-
-          
-          }}
-             );
-      }
-    })
-        
-     
-    
- 
-
-  }
-  // component.ts
-getStepClass(step: string) {
-  const currentIndex = this.statuses.indexOf(this.currentStatus);
-  const stepIndex = this.statuses.indexOf(step);
-
-  if (stepIndex <= currentIndex) {
-    return "progtrckr-done";   // completed step
-  } else {
-    return "progtrckr-todo";   // pending step
-  }
-}
-
 }
