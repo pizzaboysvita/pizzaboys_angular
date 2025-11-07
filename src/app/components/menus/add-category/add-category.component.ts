@@ -180,8 +180,9 @@ export class AddCategoryComponent implements OnInit {
     });
     this.getMenuList();
     if (this.type == "View" || this.type == "Edit") {
-      //  this.getMenuList();
       this.PatchValuesForm();
+        this.getMenuList();
+
     }
       if (this.type === 'View') {
     this.menuForm.disable();
@@ -256,8 +257,8 @@ export class AddCategoryComponent implements OnInit {
 
   this.menuForm.get("image")?.clearValidators();
   this.menuForm.get("image")?.updateValueAndValidity();
-  this.menuForm.get("store")
-  this.menuForm.get("dish_menu_id")?.disable();
+  this.menuForm.get("store")?.disable()
+ this.menuForm.get("dish_menu_id")?.disable();
 
   this.menuForm.patchValue({
     dish_menu_id: this.myData.dish_menu_id,
@@ -297,7 +298,7 @@ export class AddCategoryComponent implements OnInit {
 }
 
   getMenuList(): void {
-    const selectedStores = this.menuForm.value.store;
+    const selectedStores = this.menuForm.getRawValue().store;
     console.log(selectedStores, "selected store id(s)");
 
     if (!selectedStores || selectedStores.length === 0) {
@@ -315,6 +316,8 @@ export class AddCategoryComponent implements OnInit {
         console.log(res, "menu list response");
         if (res.code === "1") {
           this.menuList = res.data;
+           
+          
         } else {
           console.error("Failed to fetch menus:", res.message);
         }
