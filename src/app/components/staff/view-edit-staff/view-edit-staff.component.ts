@@ -26,10 +26,12 @@ import { NgxMaskDirective, NgxMaskPipe } from "ngx-mask";
     ReactiveFormsModule,
     NgbNavModule,
     CardComponent,
-    NgSelectModule
+    NgSelectModule,NgxMaskDirective
   ],
   templateUrl: "./view-edit-staff.component.html",
   styleUrls: ["./view-edit-staff.component.scss"], 
+   providers:[NgxMaskPipe]
+
 })
 export class ViewEditStaffComponent implements OnInit {
   staffForm!: FormGroup;
@@ -114,7 +116,7 @@ export class ViewEditStaffComponent implements OnInit {
       firstName: [{ value: "", disabled: this.isViewMode }, Validators.required],
       lastName: [{ value: "", disabled: this.isViewMode }],
       email: [{ value: "", disabled: this.isViewMode }, [Validators.required, Validators.email]],
-      phone: [{ value: "", disabled: this.isViewMode }],
+      phone: [{ value: "", disabled: this.isViewMode },[Validators.required, Validators.pattern(/^\+?\d[\d\s]{7,13}$/)]],
       address: [{ value: "", disabled: this.isViewMode }],
       country: [{ value: "", disabled: this.isViewMode }],
       state: [{ value: "", disabled: this.isViewMode }],

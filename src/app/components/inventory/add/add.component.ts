@@ -38,7 +38,7 @@ export class AddComponent implements OnInit {
       unit: ['kg', Validators.required],
       item_state: ['D', Validators.required], // Draft / Final
       imported_from: ['Local Supplier', Validators.required],
-      created_by: [101, Validators.required],
+      // created_by: [101, Validators.required],
       status:[true]
     });
 

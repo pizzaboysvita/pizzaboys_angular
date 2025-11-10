@@ -57,16 +57,26 @@
                                     <h6 class="f-w-600 p-1">
                                       {{ field.label }}<span *ngIf="field.required" class="text-danger">*</span>
                                     </h6>
-                                    <input [type]="field.name.includes('pin') ? 'password' : 'text'"
-                                      [formControlName]="field.name" [readonly]="isViewMode"
-                                      [placeholder]="'Enter ' + field.label"  (keypress)="
-        (field.name === 'firstName' || field.name === 'lastName') &&
-        allowOnlyAlphabets($event)"   (input)="
+                                    <input
+  [type]="field.name.includes('pin') ? 'password' : 'text'"
+  [formControlName]="field.name"
+  [readonly]="isViewMode"
+  [placeholder]="'Enter ' + field.label"
+  [mask]="field.name === 'phone' ? '(000)-000 0000' : null"
+  (keypress)="
+    (field.name === 'firstName' || field.name === 'lastName')
+      ? allowOnlyAlphabets($event)
+      : null
+  "
+  (input)="
     field.name === 'firstName'
       ? capitalizeWords_firstName($event)
       : field.name === 'lastName'
       ? capitalizeWords_lastName($event)
-      : null"/>
+      : null
+  "
+/>
+
                                   </div>
                                 </div>
 
