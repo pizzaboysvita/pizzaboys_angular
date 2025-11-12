@@ -8,6 +8,7 @@ import {
   ViewChild,
   HostListener,
   OnInit,
+  Input,
 } from "@angular/core";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { CardComponent } from "../../shared/components/card/card.component";
@@ -16,9 +17,10 @@ import { CommonModule, NgIf, DecimalPipe } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { ApisService } from "../../shared/services/apis.service";
 import { AppConstants } from "../../app.constants";
-import { forkJoin } from "rxjs";
+import { forkJoin, Subscription } from "rxjs";
 import { filter } from "rxjs/operators";
 import { NgbDropdownModule } from "@ng-bootstrap/ng-bootstrap";
+import { CommonService } from "../../shared/services/common.service";
 
 // import { IgxNavbarComponent, IgxNavbarTitleDirective, IgxButtonDirective, IgxToggleActionDirective, IgxIconComponent, IgxDropDownComponent, IgxDropDownItemComponent, IgxSuffixDirective, IgxNavbarModule, IgxButtonModule, IgxDropDownModule, IgxIconModule, IgxToggleModule, IgxToggleDirective, ISelectionEventArgs, ConnectedPositioningStrategy, OverlaySettings, HorizontalAlignment, VerticalAlignment } from "igniteui-angular";
 
@@ -190,17 +192,26 @@ export class MediaComponent implements OnInit {
   totalDishList: any[];
   selectedChildPerCombo: { [comboIndex: number]: any } = {};
   isEditing: boolean;
+    private subscription!: Subscription;
   constructor(
     public modal: NgbModal,
     private apiService: ApisService,
     private sessionStorageService: SessionStorageService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,private CommonService:CommonService
   ) { }
-
   ngOnInit() {
-    this.getDishslist();
+    // this.getDishslist();
+     this.subscription = this.CommonService.dishes$.subscribe((data) => {
+      this.dishList = data;
+      
+    });
+      this.subscription = this.CommonService.totalDishList$.subscribe((data) => {
+      this.totalDishList = data;
+    });
   }
-
+ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
   getDishslist() {
     const storeId = JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).user.store_id;
 
