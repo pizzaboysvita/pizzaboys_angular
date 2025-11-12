@@ -1,12 +1,11 @@
-<div class="row">
-  <div class="col-xl-8">
+<div class="row g-0 unified-card">
+  <div class="col-xl-8  left-section p-3">
     <app-media (itemAdded)="addToCart($event)" (popupClosed)="onPopupClosed()"></app-media>
   </div>
-  <div class="col-xl-4">
-
-
-    <div class="card p-3 shadow-sm d-flex flex-column"
-      style="border-radius: 8px; height: 90vh; overflow: hidden !important;">
+ <div class="col-xl-4 right-section p-0 shadow-sm d-flex flex-column"
+      style=" height: 90vh; overflow: hidden !important;">
+    <!-- <div class="card p-3 shadow-sm d-flex flex-column"
+      style="border-radius: 8px; height: 90vh; overflow: hidden !important;"> -->
       <!-- Header -->
       <!-- <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
@@ -19,6 +18,9 @@
       </div> -->
 
       <!-- Dine In / Take Away / Delivery Buttons -->
+        <div class="order-icon-row d-flex mb-2">
+    <i class="ri-shopping-bag-2-line f-16" (click)="orderList()"></i>
+  </div>
       <div class="btn-group w-100 mb-3 order-type-toggle">
         <button type="button" class="toggle-btn" [class.active]="selected === 'dinein'"
           (click)="selected = 'dinein' ;openNewModelPopup()">
@@ -29,16 +31,35 @@
           {{orderDueDetails}}
         </button>
       </div>
-<div class="icon-row d-flex mb-3">
+<!-- <div class="icon-row">
   <div class="icon-box"><i class="ri-file-line"></i></div>
-  <div class="icon-box" (click)="openCustomerModal()"><i class="ri-user-line" ></i></div>
+  <div class="icon-box" (click)="openCustomerModal()"><i class="ri-user-line"></i></div>
   <div class="icon-box"><i class="ri-price-tag-line"></i></div>
   <div class="icon-box"><i class="ri-hand"></i></div>
-  <div class="icon-box"><i class="ri-shopping-cart-line"></i></div>
+  <div class="icon-box"><i class="ri-shopping-cart-line" (click)="clearOrderDetails()"></i></div>
+</div> -->
+<div class="container-fluid p-0">
+  <div class="row g-0 icon-row text-center">
+    <div class="col-4 col-sm-3 col-md icon-box">
+      <i class="ri-file-line"></i>
+    </div>
+    <div class="col-4 col-sm-3 col-md icon-box" (click)="openCustomerModal()">
+      <i class="ri-user-line"></i>
+    </div>
+    <div class="col-4 col-sm-3 col-md icon-box">
+      <i class="ri-price-tag-line"></i>
+    </div>
+    <div class="col-4 col-sm-3 col-md icon-box">
+      <i class="ri-hand"></i>
+    </div>
+    <div class="col-4 col-sm-3 col-md icon-box">
+      <i class="ri-shopping-cart-line"></i>
+    </div>
+  </div>
 </div>
 
       <!-- Order Items List -->
-      <div style="height: 400px; overflow-y: auto;overflow-x: hidden">
+      <div class="p-3" style="height: 400px; overflow-y: auto;overflow-x: hidden">
         <!-- <div class="checkout-detail p-0"> -->
         <ul>
           @for (item of totalCartDetails; track item) {
@@ -163,7 +184,7 @@
       </div>
 
       <!-- Summary -->
-      <div class="pt-3">
+      <div class="p-3">
         <div class="d-flex justify-content-between mb-1">
           <span class="text-muted">Subtotal</span>
           <span class="fw-semibold">${{ subtotal.toFixed(2) }}</span>
@@ -188,7 +209,7 @@
           Pay ${{ total.toFixed(2) }}
         </button>
       </div>
-    </div>
+    
 
   </div>
 </div>

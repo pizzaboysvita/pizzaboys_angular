@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-sm-12">
-    <app-card [body]="true">
+    <!-- <app-card [body]="true"> -->
       <div body
         class="row row-cols-xl-12 row-cols-md-5 row-cols-sm-3 row-cols-2 g-sm-3 g-2 media-library-sec ratio_landscape">
         <!-- <div class="input-box search-icon w-100">
@@ -21,7 +21,7 @@
 </div>
 
         <div class="w-100">
-          <div class="mb-4 position-relative">
+          <!-- <div class="mb-4 position-relative">
             <h5 class="mb-3 fw-bold">Categories</h5>
             <button class="scroll-btn start" (click)="scrollLeft()">‹</button>
             <button class="scroll-btn end" (click)="scrollRight()">›</button>
@@ -44,11 +44,11 @@
               </div>
               }
             </div>
-          </div>
+          </div> -->
 
           <div class="row gx-2 gy-0">
             @for (item of dishList; track item.dish_id) {
-            <div class="col-md-3" style="margin-top: -15px !important">
+            <div class="col-md-3" >
               <div class="card flex-row align-items-center p-2 shadow-sm h-100"
                 style="height: 110px !important; cursor: pointer" (click)="openIngredientsPopup(item)">
                 <img [src]="item.dish_image" alt="{{ item.dish_name }}" class="img-thumbnail me-3" style="
@@ -87,7 +87,7 @@
       </div>
 
 
-    </app-card>
+    <!-- </app-card> -->
   </div>
 </div>
 
@@ -187,7 +187,7 @@
               </div>
             </h2>
 
-            <div [id]="'collapse' + comboIndex" class="accordion-collapse collapse"
+            <!-- <div [id]="'collapse' + comboIndex" class="accordion-collapse collapse"
               [class.show]="openComboIndex === comboIndex" [attr.aria-labelledby]="'heading' + comboIndex"
               data-bs-parent="#accordionExample">
 
@@ -201,22 +201,18 @@
                       {{ dishOption.dispaly_name }}
                     </div>
 
-                    <!-- Radio group -->
                     <ng-container *ngIf="dishOption.type === 'radio'">
                       <div *ngFor="let option of dishOption.option_set_array" class="option-row">
                         <span>{{ option.name }}{{option.selected}} ( <b>${{ option.price | number:'1.2-2' }}</b>)</span>
-                        <!-- <span *ngIf="option.price">- R{{ option.price | number:'1.2-2' }}</span> -->
                         <input type="radio" class="custom-radio" [name]="dishOption.title + '_' + comboIndex"
                           (change)="combo_selectRadio(option, dishOption, comboIndex, selectedDishFromList)"
                           [checked]="option.selected">
                       </div>
                     </ng-container>
 
-                    <!-- Counter group -->
                     <ng-container *ngIf="dishOption.type === 'counter'">
                       <div *ngFor="let option of dishOption.option_set_array" class="option-row">
                         <span>{{ option.name }} ( <b>${{ option.price | number:'1.2-2' }}</b>)</span>
-                        <!-- <span *ngIf="option.price">+R{{ option.price | number:'1.2-2' }}</span> -->
                         <div class="counter-group" *ngIf="option.quantity > 0">
                           <button class="counter-btn"
                             (click)="combo_decrement(option,dishOption,selectedChildPerCombo[comboIndex],selectedDishFromList)">-</button>
@@ -229,11 +225,9 @@
                       </div>
                     </ng-container>
 
-                    <!-- Checkbox group -->
                     <ng-container *ngIf="dishOption.type === 'checkbox'">
                       <div *ngFor="let option of dishOption.option_set_array" class="option-row">
                         <span>{{ option.name }} ( <b>${{ option.price | number:'1.2-2' }}</b>)</span>
-                        <!-- <span *ngIf="option.price">R{{ option.price | number:'1.2-2' }}</span> -->
                         <label class="custom-checkbox">
                           <input type="checkbox" [checked]="option.selected" (change)="toggleCheckbox(option)">
                           <span class="checkmark"></span>
@@ -242,9 +236,10 @@
                     </ng-container>
                   </div>
                   }
-                  <div class="option-section">
+                  @if(selectedChildPerCombo[comboIndex].dish_ingredient_array.length>0){
+ <div class="option-section">
 
-                    <div class="section-title driver-badge">
+                    <div class="section-title driver-badge" >
                       Ingredients
 
                     </div>
@@ -253,7 +248,7 @@
                     <ng-container>
                       <div class="option-row">
                         <span>{{ comboIngredients.name }} </span>
-                        <!-- <span *ngIf="option.price">R{{ Ingredients.price | number:'1.2-2' }}</span> -->
+                        
                         <label class="custom-checkbox">
                           <input type="checkbox" [checked]="comboIngredients.selected"
                             (change)="toggleCheckbox(comboIngredients)">
@@ -263,6 +258,8 @@
                     </ng-container>
                     }
                   </div>
+                  }
+                 
                   } @else {
                   <div class="menu-popup-wrapper" style="position: relative; min-width: 340px;">
                     <div class="menu-card border rounded-4 shadow-sm d-flex align-items-center justify-content-center"
@@ -273,7 +270,176 @@
                   }
                 </ng-container>
               </div>
+            </div> -->
+
+            <div
+  [id]="'collapse' + comboIndex"
+  class="accordion-collapse collapse"
+  [class.show]="openComboIndex === comboIndex"
+  [attr.aria-labelledby]="'heading' + comboIndex"
+  data-bs-parent="#accordionExample"
+>
+  <div class="accordion-body">
+    <ng-container>
+      @if (selectedDishFromList.comboDishList && selectedDishFromList.comboDishList[comboIndex]) {
+        <!-- Inner accordion for dish options -->
+        <div class="accordion" [id]="'comboInnerAccordion-' + comboIndex">
+          @for (dishOption of selectedDishFromList.comboDishList[comboIndex].dish_option_set_array; track dishOption; let i = $index) {
+            <div class="accordion-item">
+              <h2 class="accordion-header" [id]="'heading-' + comboIndex + '-' + i">
+                <button
+                  class="accordion-button collapsed custom-accordion-header"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  [attr.data-bs-target]="'#collapse-' + comboIndex + '-' + i"
+                  aria-expanded="false"
+                  [attr.aria-controls]="'collapse-' + comboIndex + '-' + i"
+                >
+                  <div class="w-100 d-flex flex-column align-items-start">
+                    <span
+                      style="font-size: 14px; font-weight: 500; color: #000;"
+                    >
+                      {{ dishOption.display_name || dishOption.dispaly_name || dishOption.name }}
+                    </span>
+                  </div>
+                </button>
+              </h2>
+
+              <div
+                class="accordion-collapse collapse"
+                [id]="'collapse-' + comboIndex + '-' + i"
+                [attr.aria-labelledby]="'heading-' + comboIndex + '-' + i"
+                [attr.data-bs-parent]="'#comboInnerAccordion-' + comboIndex"
+              >
+                <div class="accordion-body">
+                  <!-- Radio group -->
+                  <ng-container *ngIf="dishOption.type === 'radio'">
+                    <div *ngFor="let option of dishOption.option_set_array" class="option-row">
+                      <span>
+                        {{ option.name }} (<b>${{ option.price | number: '1.2-2' }}</b>)
+                      </span>
+                      <input
+                        type="radio"
+                        class="custom-radio"
+                        [name]="dishOption.title + '_' + comboIndex"
+                        (change)="combo_selectRadio(option, dishOption, comboIndex, selectedDishFromList)"
+                        [checked]="option.selected"
+                      />
+                    </div>
+                  </ng-container>
+
+                  <!-- Counter group -->
+                  <ng-container *ngIf="dishOption.type === 'counter'">
+                    <div *ngFor="let option of dishOption.option_set_array" class="option-row">
+                      <span>
+                        {{ option.name }} (<b>${{ option.price | number: '1.2-2' }}</b>)
+                      </span>
+
+                      <div class="counter-group" *ngIf="option.quantity > 0">
+                        <button
+                          class="counter-btn"
+                          (click)="combo_decrement(option, dishOption, selectedChildPerCombo[comboIndex], selectedDishFromList)"
+                        >
+                          -
+                        </button>
+                        <span class="counter-value">{{ option.quantity }}</span>
+                        <button
+                          class="counter-btn"
+                          (click)="combo_increment(option, dishOption, selectedChildPerCombo[comboIndex], selectedDishFromList)"
+                          [disabled]="getSelectedCount(dishOption) >= 5"
+                        >
+                          +
+                        </button>
+                      </div>
+
+                      <button
+                        *ngIf="!option.quantity"
+                        class="plus-btn"
+                        (click)="combo_increment(option, dishOption, selectedChildPerCombo[comboIndex], selectedDishFromList)"
+                        [disabled]="getSelectedCount(dishOption) >= 5"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </ng-container>
+
+                  <!-- Checkbox group -->
+                  <ng-container *ngIf="dishOption.type === 'checkbox'">
+                    <div *ngFor="let option of dishOption.option_set_array" class="option-row">
+                      <span>
+                        {{ option.name }} (<b>${{ option.price | number: '1.2-2' }}</b>)
+                      </span>
+                      <label class="custom-checkbox">
+                        <input type="checkbox" [checked]="option.selected" (change)="toggleCheckbox(option)" />
+                        <span class="checkmark"></span>
+                      </label>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
             </div>
+          }
+
+          <!-- Ingredients Accordion -->
+          @if (selectedChildPerCombo[comboIndex].dish_ingredient_array.length > 0) {
+            <div class="accordion-item">
+              <h2 class="accordion-header" [id]="'heading-ingredients-' + comboIndex">
+                <button
+                  class="accordion-button collapsed custom-accordion-header"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  [attr.data-bs-target]="'#collapse-ingredients-' + comboIndex"
+                  aria-expanded="false"
+                  [attr.aria-controls]="'collapse-ingredients-' + comboIndex"
+                >
+                  <div class="w-100 d-flex flex-column align-items-start">
+                    <span style="font-size: 14px; font-weight: 500; color: #000;">Ingredients</span>
+                  </div>
+                </button>
+              </h2>
+
+              <div
+                class="accordion-collapse collapse"
+                [id]="'collapse-ingredients-' + comboIndex"
+                [attr.aria-labelledby]="'heading-ingredients-' + comboIndex"
+                [attr.data-bs-parent]="'#comboInnerAccordion-' + comboIndex"
+              >
+                <div class="accordion-body">
+                  @for (comboIngredients of selectedChildPerCombo[comboIndex].dish_ingredient_array; track $index) {
+                    <div class="option-row d-flex justify-content-between align-items-center">
+                      <span>{{ comboIngredients.name }}</span>
+                      <label class="custom-checkbox mb-0">
+                        <input
+                          type="checkbox"
+                          [checked]="comboIngredients.selected"
+                          (change)="toggleCheckbox(comboIngredients)"
+                        />
+                        <span class="checkmark"></span>
+                      </label>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div
+          class="menu-popup-wrapper"
+          style="position: relative; min-width: 340px;"
+        >
+          <div
+            class="menu-card border rounded-4 shadow-sm d-flex align-items-center justify-content-center"
+            style="background: #fff; border: 2px solid #e0c6ff; padding: 40px 0; min-height: 80px;"
+          >
+            <span class="text-muted">Please select a dish to see options.</span>
+          </div>
+        </div>
+      }
+    </ng-container>
+  </div>
+</div>
+
           </div>
         </div><br>
         }
@@ -283,29 +449,27 @@
 
         <ng-container>
           <ng-container>
-            @for(dish_option of selectedDishFromList.dish_option_set_array; track dish_option) {
-            <!-- Show base/options cards if dish is selected -->
+            <!-- @for(dish_option of selectedDishFromList.dish_option_set_array; track dish_option) {
+            
             <div class="option-section">
               <div class="section-title driver-badge">
                 {{ dish_option.dispaly_name }}
-                <!-- <span *ngIf="group.required" class="badge badge-required ms-2"><i
-                            class="ri-information-line"></i> Required</span> -->
-                <!-- <span *ngIf="group.subtitle" class="section-subtitle ms-2">{{ group.subtitle }}</span> -->
+              
               </div>
-              <!-- Radio group -->
+             
               <ng-container *ngIf="dish_option.option_type === 'radio'">
                 <div *ngFor="let option of dish_option.option_set_array" class="option-row">
                   <span>{{ option.name }} <b>(${{ option.price }})</b></span>
-                  <!-- <span *ngIf="option.price">- R{{ option.price | number:'1.2-2' }}</span> -->
+                 
                   <input type="radio" class="custom-radio" [name]="dish_option.title"
                     [checked]="option.selected === option" (change)="selectRadio(dish_option, option)">
                 </div>
               </ng-container>
-              <!-- Counter group -->
+             
               <ng-container *ngIf="dish_option.option_type === 'counter'">
                 <div *ngFor="let option of dish_option.option_set_array" class="option-row">
                   <span>{{ option.name }} <b>(${{ option.price }})</b></span>
-                  <!-- <span *ngIf="option.price">+R{{ option.price | number:'1.2-2' }}</span> -->
+                  
                   <div class="counter-group" *ngIf="option.quantity > 0">
                     <button class="counter-btn" (click)="decrement(option); $event.stopPropagation()">-</button>
                     <span class="counter-value">{{ option.quantity }}</span>
@@ -315,21 +479,79 @@
                     (click)="increment(option); $event.stopPropagation()" [disabled]="getSelectedCount(dish_option) >= 5">+</button>
                 </div>
               </ng-container>
-              <!-- Checkbox group -->
-              <!-- <ng-container>
-                        <div *ngFor="let option of dish_option.option_set_array" class="option-row">
-                          <span>{{ option.name }} <b>(${{ option.price | number:'1.2-2' }})</b></span> -->
-              <!-- <span *ngIf="option.price">R{{ option.price | number:'1.2-2' }}</span> -->
-              <!-- <label class="custom-checkbox">
-                            <input type="checkbox" [checked]="option.selected" (change)="toggleCheckbox(option)">
-                            <span class="checkmark"></span>
-                          </label>
-                        </div>
-                      </ng-container> -->
+           
             </div>
-            }
+            } -->
+<div class="accordion" id="dishOptionsAccordion">
+  @for (dish_option of selectedDishFromList.dish_option_set_array; track $index) {
+    <div class="accordion-item">
+      <!-- Accordion Header -->
+     <h2 class="accordion-header" [id]="'heading-' + $index">
+  <button
+    class="accordion-button collapsed custom-accordion-header"
+    type="button"
+    data-bs-toggle="collapse"
+    [attr.data-bs-target]="'#collapse-' + $index"
+    aria-expanded="false"
+    [attr.aria-controls]="'collapse-' + $index"
+  >
+    <div class="w-100 d-flex flex-column align-items-start">
+     <span style="font-size: 14px !important;font-weight: 500 !important;color: #000000 !important;">{{ dish_option.dispaly_name || dish_option.display_name || dish_option.name }}</span>
+      <!-- <small class="text-muted">Select one (Optional)</small> -->
+    </div>
+  </button>
+</h2>
 
-            <div class="option-section">
+      <!-- Accordion Body -->
+      <div
+        class="accordion-collapse collapse"
+        [id]="'collapse-' + $index"
+        [attr.aria-labelledby]="'heading-' + $index"
+        data-bs-parent="#dishOptionsAccordion"
+      >
+        <div class="accordion-body">
+          <!-- Radio Options -->
+          <ng-container *ngIf="dish_option.option_type === 'radio'">
+            <div *ngFor="let option of dish_option.option_set_array" class="option-row">
+              <span>{{ option.name }} <b>(${{ option.price }})</b></span>
+              <input
+                type="radio"
+                class="custom-radio"
+                [name]="dish_option.title"
+                [checked]="option.selected === option"
+                (change)="selectRadio(dish_option, option)"
+              />
+            </div>
+          </ng-container>
+
+          <!-- Counter Options -->
+          <ng-container *ngIf="dish_option.option_type === 'counter'">
+            <div *ngFor="let option of dish_option.option_set_array" class="option-row">
+              <span>{{ option.name }} <b>(${{ option.price }})</b></span>
+              <div class="counter-group" *ngIf="option.quantity > 0">
+                <button class="counter-btn" (click)="decrement(option); $event.stopPropagation()">-</button>
+                <span class="counter-value">{{ option.quantity }}</span>
+                <button class="counter-btn" (click)="increment(option); $event.stopPropagation()">+</button>
+              </div>
+              <button
+                *ngIf="!option.quantity"
+                class="plus-btn"
+                (click)="increment(option); $event.stopPropagation()"
+                [disabled]="getSelectedCount(dish_option) >= 5"
+              >
+                +
+              </button>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+
+<!-- @if(selectedDishFromList.dish_ingredient_array.length>0){
+<div class="option-section">
 
               <div class="section-title driver-badge">
                 Ingredients
@@ -339,7 +561,6 @@
               <ng-container>
                 <div class="option-row">
                   <span>{{ Ingredients.name }} </span>
-                  <!-- <span *ngIf="option.price">R{{ Ingredients.price | number:'1.2-2' }}</span> -->
                   <label class="custom-checkbox">
                     <input type="checkbox" [checked]="Ingredients.selected" (change)="toggleCheckbox(Ingredients)">
                     <span class="checkmark"></span>
@@ -348,6 +569,52 @@
               </ng-container>
               }
             </div>
+} -->
+            
+@if (selectedDishFromList.dish_ingredient_array.length > 0) {
+  <div class="accordion mb-2" id="ingredientsAccordion">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="heading-ingredients">
+        <button
+          class="accordion-button collapsed custom-accordion-header"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapse-ingredients"
+          aria-expanded="false"
+          aria-controls="collapse-ingredients"
+        >
+          <div class="w-100 d-flex flex-column align-items-start">
+            <span class="fw-bold" style="color: #000;">Ingredients</span>
+          </div>
+        </button>
+      </h2>
+
+      <div
+        id="collapse-ingredients"
+        class="accordion-collapse collapse"
+        aria-labelledby="heading-ingredients"
+        data-bs-parent="#ingredientsAccordion"
+      >
+        <div class="accordion-body">
+          @for (Ingredients of selectedDishFromList.dish_ingredient_array; track $index) {
+            <div class="option-row d-flex justify-content-between align-items-center mb-2">
+              <span style="font-size: 14px; color: #000;">{{ Ingredients.name }}</span>
+
+              <label class="custom-checkbox mb-0">
+                <input
+                  type="checkbox"
+                  [checked]="Ingredients.selected"
+                  (change)="toggleCheckbox(Ingredients)"
+                />
+                <span class="checkmark"></span>
+              </label>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}
 
           </ng-container>
           <ng-template #emptyAccordion>

@@ -475,6 +475,11 @@ this.cartItems.forEach((dish: any) => {
         this.toastr.success(res.message, 'Success');
         this.cartItems = [];
         this.totalCartDetails=[]
+              this.customer = {
+        name: '',
+        email: '',
+        phone: ''
+      };
       }
     })
         
@@ -557,11 +562,7 @@ this.cartItems.forEach((dish: any) => {
   this.showCustomerModal=false
 }
   openCustomerModal(){
-   this.customer = {
-    name: '',
-    email: '',
-    phone: ''
-  };
+ 
   this.showCustomerModal=true
 }
 clear(){
@@ -578,6 +579,17 @@ clear(){
     if (this.mediaComponent) {
       this.mediaComponent.openEditPopup(item); // ✅ call popup method from media
     }
+  }
+  clearOrderDetails(){
+      this.cartItems = [];
+        this.totalCartDetails=[]
+  }
+   orderList() {
+    const modalRef = this.modal.open(PosOrdersComponent, {
+      windowClass: 'theme-modal',
+      centered: true,
+      size: 'xl'
+    });
   }
 
 }

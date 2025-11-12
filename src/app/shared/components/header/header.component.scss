@@ -104,3 +104,50 @@
   .img-fluid1{
     height: 48px;
   }
+  /* Hide mobile header by default (desktop view) */
+.mobile-header-wrapper {
+  display: none;
+}
+
+/* Show only on tablets & mobiles */
+@media (max-width: 992px) {
+  .mobile-header-wrapper {
+    display: flex;
+    background-color: #000;
+    height: 56px;
+    width: 100%;
+    z-index: 1000;
+    position: fixed; /* optional: fixed top bar */
+    top: 0;
+    left: 0;
+  }
+
+  .toggle-sidebar {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+
+    app-feather-icons {
+      color: #fff;
+      font-size: 24px;
+    }
+  }
+
+  .logo-link img {
+    height: 35px;
+    transition: all 0.3s ease;
+  }
+}
+
+/* Optional smaller mobile tweaks */
+@media (max-width: 576px) {
+  .logo-link img {
+    height: 30px;
+  }
+
+  .toggle-sidebar app-feather-icons {
+    font-size: 26px;
+  }
+}
