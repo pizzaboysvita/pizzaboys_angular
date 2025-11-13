@@ -2,223 +2,215 @@
   <div class="col-xl-8  left-section p-3">
     <app-media (itemAdded)="addToCart($event)" (popupClosed)="onPopupClosed()"></app-media>
   </div>
- <div class="col-xl-4 right-section p-0 shadow-sm d-flex flex-column"
-      style=" height: 90vh; overflow: hidden !important;">
+  <div class="col-xl-4 right-section p-0 shadow-sm d-flex flex-column"
+    style=" height: 90vh; overflow: hidden !important;">
     <!-- <div class="card p-3 shadow-sm d-flex flex-column"
       style="border-radius: 8px; height: 90vh; overflow: hidden !important;"> -->
-      <!-- Header -->
-      <!-- <div class="d-flex justify-content-between align-items-center mb-3">
+    <!-- Header -->
+    <!-- <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
           <h6 class="fw-bold  mb-1">Order Details</h6> -->
-      <!-- <div class="text-muted" style="font-size: 12px;">#ORD-3291</div> -->
-      <!-- </div>
+    <!-- <div class="text-muted" style="font-size: 12px;">#ORD-3291</div> -->
+    <!-- </div>
         <div class="maerail-btn-icons" (click)="orderList()">
           <span class="material-symbols-outlined" style="font-size: 18px;">more_vert</span>
         </div>
       </div> -->
 
-      <!-- Dine In / Take Away / Delivery Buttons -->
-        <div class="order-icon-row d-flex mb-2">
-    <i class="ri-shopping-bag-2-line f-16" (click)="orderList()"></i>
-  </div>
-      <div class="btn-group w-100 mb-3 order-type-toggle">
-        <button type="button" class="toggle-btn" [class.active]="selected === 'dinein'"
-          (click)="selected = 'dinein' ;openNewModelPopup()">
-          {{orderForm.value.orderType}}
-        </button>
-        <button type="button" class="toggle-btn" [class.active]="selected === 'delivery'"
-          (click)="selected = 'delivery'; openDeliveryPopup()">
-          {{orderDueDetails}}
-        </button>
-      </div>
-<!-- <div class="icon-row">
+    <!-- Dine In / Take Away / Delivery Buttons -->
+    <div class="order-icon-row d-flex mb-2">
+      <i class="ri-shopping-bag-2-line f-16" (click)="orderList()"></i>
+    </div>
+    <div class="btn-group w-100 mb-3 order-type-toggle">
+      <button type="button" class="toggle-btn" [class.active]="selected === 'dinein'"
+        (click)="selected = 'dinein' ;openNewModelPopup()">
+        {{orderForm.value.orderType}}
+      </button>
+      <button type="button" class="toggle-btn" [class.active]="selected === 'delivery'"
+        (click)="selected = 'delivery'; openDeliveryPopup()">
+        {{orderDueDetails}}
+      </button>
+    </div>
+    <!-- <div class="icon-row">
   <div class="icon-box"><i class="ri-file-line"></i></div>
   <div class="icon-box" (click)="openCustomerModal()"><i class="ri-user-line"></i></div>
   <div class="icon-box"><i class="ri-price-tag-line"></i></div>
   <div class="icon-box"><i class="ri-hand"></i></div>
   <div class="icon-box"><i class="ri-shopping-cart-line" (click)="clearOrderDetails()"></i></div>
 </div> -->
-<div class="container-fluid p-0">
-  <div class="row g-0 icon-row text-center">
-    <div class="col-4 col-sm-3 col-md icon-box">
-      <i class="ri-file-line"></i>
+    <div class="container-fluid p-0">
+      <div class="row g-0 icon-row text-center">
+        <div class="col-4 col-sm-3 col-md icon-box">
+          <i class="ri-file-line"></i>
+        </div>
+        <div class="col-4 col-sm-3 col-md icon-box" (click)="openCustomerModal()">
+          <i class="ri-user-line"></i>
+        </div>
+        <div class="col-4 col-sm-3 col-md icon-box">
+          <i class="ri-price-tag-line"></i>
+        </div>
+        <div class="col-4 col-sm-3 col-md icon-box">
+          <i class="ri-hand"></i>
+        </div>
+        <div class="col-4 col-sm-3 col-md icon-box">
+          <i class="ri-shopping-cart-line"></i>
+        </div>
+      </div>
     </div>
-    <div class="col-4 col-sm-3 col-md icon-box" (click)="openCustomerModal()">
-      <i class="ri-user-line"></i>
-    </div>
-    <div class="col-4 col-sm-3 col-md icon-box">
-      <i class="ri-price-tag-line"></i>
-    </div>
-    <div class="col-4 col-sm-3 col-md icon-box">
-      <i class="ri-hand"></i>
-    </div>
-    <div class="col-4 col-sm-3 col-md icon-box">
-      <i class="ri-shopping-cart-line"></i>
-    </div>
-  </div>
-</div>
 
-      <!-- Order Items List -->
-      <div class="p-3" style="height: 400px; overflow-y: auto;overflow-x: hidden">
-        <!-- <div class="checkout-detail p-0"> -->
-        <ul>
-          @for (item of totalCartDetails; track item) {
-          @if(item.dish_type =='combo'){
-          <li class="mb-3">
-            <div class="horizontal-product-box">
-              <div class="row align-items-start">
-                <!-- Left: Image + Quantity -->
-                <div class="col-3 text-center">
-                  <img [src]="item.dish_image" alt="{{ item.dish_name }}" width="70" height="60" class="rounded"
-                    style="object-fit: cover;">
-                  <div class="like-box d-flex justify-content-center mt-2" style="width: 70px;">
-                    <i class="ri-subtract-line" style="cursor: pointer;" (click)="decreaseModalQuantity(item)"></i>
-                    <span>{{item.dish_quantity}}</span>
-                    <i class="ri-add-line" style="cursor: pointer;" (click)="increaseModalQuantity(item)"></i>
-                    <i class="ri-delete-bin-line text-danger" style="cursor: pointer;" (click)="removeItem(item)"></i>
-                  </div>
+    <!-- Order Items List -->
+    <div class="p-3" style="height: 400px; overflow-y: auto;overflow-x: hidden">
+      <!-- <div class="checkout-detail p-0"> -->
+      <ul>
+        @for (item of totalCartDetails; track item) {
+        @if(item.dish_type =='combo'){
+        <li class="mb-3">
+          <div class="horizontal-product-box">
+            <div class="row align-items-start">
+              <!-- Left: Image + Quantity -->
+              <div class="col-3 text-center">
+                <img [src]="item.dish_image" alt="{{ item.dish_name }}" width="70" height="60" class="rounded"
+                  style="object-fit: cover;">
+                <div class="like-box d-flex justify-content-center mt-2" style="width: 70px;">
+                  <i class="ri-subtract-line" style="cursor: pointer;" (click)="decreaseModalQuantity(item)"></i>
+                  <span>{{item.dish_quantity}}</span>
+                  <i class="ri-add-line" style="cursor: pointer;" (click)="increaseModalQuantity(item)"></i>
+                  <i class="ri-delete-bin-line text-danger" style="cursor: pointer;" (click)="removeItem(item)"></i>
                 </div>
-
-                <!-- Right: Dish Info -->
-                <!-- Right: Dish Info -->
-                <div class="col-9">
-                  <!-- Dish Name and Price -->
-                  <div class="d-flex justify-content-between">
-                    <h6 class="mb-0" style="font-size: 14px;"><b>{{ item.dish_name }}</b></h6>
-                    <h6 class="mb-0 fw-bold" style="font-size: 14px;">${{ item.item_total_price }}</h6>
-                  </div>
-
-                  <!-- Ingredients and their prices -->
-                  <div *ngFor="let comboOpt of item.combo_selected_dishes" class="mt-1">
-                    <!-- Combo option + dish name -->
-                    <div style="font-size: 14px;">
-                      <span style="text-decoration: underline; font-weight: 600;">
-                        {{ comboOpt.combo_option_name }}
-                      </span> ({{ comboOpt.combo_option_dish_name }})
-                    </div>
-
-                    <!-- Each option set -->
-                    <div *ngFor="let option of comboOpt.combo_option_selected_array" class="ms-3">
-                      <div style="font-size: 14px; font-weight: 500;">
-                        {{ option.dish_opt_type }}
-                      </div>
-
-                      <!-- Selected options inside -->
-                      <ul class="ms-4 mb-1" style="font-size: 14px; list-style-type: disc;">
-                        <li *ngFor="let opt of option.choose_option">
-                          {{ opt.name }} - ${{ opt.price }}
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                    <div class="d-flex align-items-center gap-3">
-  <i class="ri-edit-2-line text-primary fs-5" style="cursor: pointer;" (click)="editItem(item)"></i>
-  <i class="ri-delete-bin-line text-danger fs-5" style="cursor: pointer;" (click)="removeItems(item)"></i>
-</div>
-                </div>
-
-
               </div>
-            </div>
-          </li>
-          }@else if (item.dish_type =='standard'){
-          <li class="mb-3">
-            <div class="horizontal-product-box">
-              <div class="row align-items-start">
-                <!-- Left: Image + Quantity -->
-                <div class="col-3 text-center">
-                  <img [src]="item.dish_image" alt="{{ item.dish_name }}" width="70" height="60" class="rounded"
-                    style="object-fit: cover;">
-                  <div class="like-box d-flex justify-content-center mt-2" style="width: 70px;">
-                    <i class="ri-subtract-line" style="cursor: pointer;" (click)="decreaseModalQuantity(item)"></i>
-                    <span>{{item.dish_quantity}}</span>
-                    <i class="ri-add-line" style="cursor: pointer;" (click)="increaseModalQuantity(item)"></i>
-                    <i class="ri-delete-bin-line text-danger" style="cursor: pointer;" (click)="removeItem(item)"></i>
-                  </div>
+
+              <!-- Right: Dish Info -->
+              <!-- Right: Dish Info -->
+              <div class="col-9">
+                <!-- Dish Name and Price -->
+                <div class="d-flex justify-content-between">
+                  <h6 class="mb-0" style="font-size: 14px;"><b>{{ item.dish_name }}</b></h6>
+                  <h6 class="mb-0 fw-bold" style="font-size: 14px;">${{ item.item_total_price }}</h6>
                 </div>
 
-                <!-- Right: Dish Info -->
-                <!-- Right: Dish Info -->
-                <div class="col-9">
-                  <!-- Dish Name and Price -->
-                  <div class="d-flex justify-content-between">
-                    <h6 class="mb-0" style="font-size: 14px;"><b>{{ item.dish_name }}</b></h6>
-                    <h6 class="mb-0 fw-bold" style="font-size: 14px;">${{ item.item_total_price }}</h6>
+                <!-- Ingredients and their prices -->
+                <div *ngFor="let comboOpt of item.combo_selected_dishes" class="mt-1">
+                  <!-- Combo option + dish name -->
+                  <div style="font-size: 14px;">
+                    <span style="text-decoration: underline; font-weight: 600;">
+                      {{ comboOpt.combo_option_name }}
+                    </span> ({{ comboOpt.combo_option_dish_name }})
                   </div>
 
-                  <!-- Ingredients and their prices -->
-                  <div *ngFor="let standedOpt of item.standed_option_selected_array" class="mt-1">
-                    <!-- Combo option + dish name -->
-
-
-                    <!-- Each option set -->
-                    <!-- <div *ngFor="let option of standedOpt.combo_option_selected_array" class="ms-3"> -->
+                  <!-- Each option set -->
+                  <div *ngFor="let option of comboOpt.combo_option_selected_array" class="ms-3">
                     <div style="font-size: 14px; font-weight: 500;">
-                      {{ standedOpt.dish_opt_type }}
+                      {{ option.dish_opt_type }}
                     </div>
 
                     <!-- Selected options inside -->
                     <ul class="ms-4 mb-1" style="font-size: 14px; list-style-type: disc;">
-                      <li *ngFor="let opt of standedOpt.choose_option">
-                        {{ opt.name }} <span *ngIf="opt.price"> - ${{ opt.price }}</span>
+                      <li *ngFor="let opt of option.choose_option">
+                        {{ opt.name }} - ${{ opt.price }}
                       </li>
                     </ul>
-                    <!-- </div> -->
                   </div>
-                    <div class="d-flex align-items-center gap-3">
-  <i class="ri-edit-2-line text-primary fs-5" style="cursor: pointer;" (click)="editItem(item)"></i>
-  <i class="ri-delete-bin-line text-danger fs-5" style="cursor: pointer;" (click)="removeItems(item)"></i>
-</div>
                 </div>
-      <!-- Selected options inside -->
-      <ul class="ms-4 mb-1" style="font-size: 14px; list-style-type: disc;">
-        <li *ngFor="let opt of standedOpt.choose_option">
-          {{ opt.name }} <span *ngIf="opt.price"> - ${{ opt.price }}</span>
-        </li>
-      </ul>
-    <!-- </div> -->
-  </div>
-</div>
-
+                <div class="d-flex align-items-center gap-3">
+                  <i class="ri-edit-2-line text-primary fs-5" style="cursor: pointer;" (click)="editItem(item)"></i>
+                  <i class="ri-delete-bin-line text-danger fs-5" style="cursor: pointer;"
+                    (click)="removeItems(item)"></i>
+                </div>
               </div>
+
+
             </div>
-              
-          </li>
-          }
-          }
-        </ul>
-        <!-- </div> -->
+          </div>
+        </li>
+        }@else if (item.dish_type =='standard'){
+        <li class="mb-3">
+          <div class="horizontal-product-box">
+            <div class="row align-items-start">
+              <!-- Left: Image + Quantity -->
+              <div class="col-3 text-center">
+                <img [src]="item.dish_image" alt="{{ item.dish_name }}" width="70" height="60" class="rounded"
+                  style="object-fit: cover;">
+                <div class="like-box d-flex justify-content-center mt-2" style="width: 70px;">
+                  <i class="ri-subtract-line" style="cursor: pointer;" (click)="decreaseModalQuantity(item)"></i>
+                  <span>{{item.dish_quantity}}</span>
+                  <i class="ri-add-line" style="cursor: pointer;" (click)="increaseModalQuantity(item)"></i>
+                  <i class="ri-delete-bin-line text-danger" style="cursor: pointer;" (click)="removeItem(item)"></i>
+                </div>
+              </div>
+
+              <!-- Right: Dish Info -->
+              <!-- Right: Dish Info -->
+              <div class="col-9">
+                <!-- Dish Name and Price -->
+                <div class="d-flex justify-content-between">
+                  <h6 class="mb-0" style="font-size: 14px;"><b>{{ item.dish_name }}</b></h6>
+                  <h6 class="mb-0 fw-bold" style="font-size: 14px;">${{ item.item_total_price }}</h6>
+                </div>
+
+                <!-- Ingredients and their prices -->
+                <div *ngFor="let standedOpt of item.standed_option_selected_array" class="mt-1">
+                  <!-- Combo option + dish name -->
 
 
-      </div>
+                  <!-- Each option set -->
+                  <!-- <div *ngFor="let option of standedOpt.combo_option_selected_array" class="ms-3"> -->
+                  <div style="font-size: 14px; font-weight: 500;">
+                    {{ standedOpt.dish_opt_type }}
+                  </div>
 
-      <!-- Summary -->
-      <div class="p-3">
-        <div class="d-flex justify-content-between mb-1">
-          <span class="text-muted">Subtotal</span>
-          <span class="fw-semibold">${{ subtotal.toFixed(2) }}</span>
-        </div>
-        <div class="d-flex justify-content-between mb-2">
-          <span class="text-muted">GST 10%</span>
-          <span class="fw-semibold">${{ tax }}</span>
-        </div>
-        @if(orderForm.value.orderType =='delivery'){
-        <div class="d-flex justify-content-between mb-2">
-          <span class="text-muted">Delivery Fee</span>
-          <span class="fw-semibold">${{ deliveryfee }}</span>
-        </div>
+                  <!-- Selected options inside -->
+                  <ul class="ms-4 mb-1" style="font-size: 14px; list-style-type: disc;">
+                    <li *ngFor="let opt of standedOpt.choose_option">
+                      {{ opt.name }} <span *ngIf="opt.price"> - ${{ opt.price }}</span>
+                    </li>
+                  </ul>
+                  <!-- </div> -->
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                  <i class="ri-edit-2-line text-primary fs-5" style="cursor: pointer;" (click)="editItem(item)"></i>
+                  <i class="ri-delete-bin-line text-danger fs-5" style="cursor: pointer;"
+                    (click)="removeItems(item)"></i>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </li>
         }
-        <div class="d-flex justify-content-between fw-bold mb-3">
-          <span>Total</span>
-          <span>${{ total.toFixed(2) }}</span>
-        </div>
+        }
+      </ul>
+      <!-- </div> -->
 
-        <button class="btn btn-primary w-100 fw-bold" style="border-radius: 10px; padding: 12px;"
-          (click)="submitOrder()">
-          Pay ${{ total.toFixed(2) }}
-        </button>
+
+    </div>
+
+    <!-- Summary -->
+    <div class="p-3">
+      <div class="d-flex justify-content-between mb-1">
+        <span class="text-muted">Subtotal</span>
+        <span class="fw-semibold">${{ subtotal.toFixed(2) }}</span>
       </div>
-    
+      <div class="d-flex justify-content-between mb-2">
+        <span class="text-muted">GST 10%</span>
+        <span class="fw-semibold">${{ tax }}</span>
+      </div>
+      @if(orderForm.value.orderType =='delivery'){
+      <div class="d-flex justify-content-between mb-2">
+        <span class="text-muted">Delivery Fee</span>
+        <span class="fw-semibold">${{ deliveryfee }}</span>
+      </div>
+      }
+      <div class="d-flex justify-content-between fw-bold mb-3">
+        <span>Total</span>
+        <span>${{ total.toFixed(2) }}</span>
+      </div>
+
+      <button class="btn btn-primary w-100 fw-bold" style="border-radius: 10px; padding: 12px;" (click)="submitOrder()">
+        Pay ${{ total.toFixed(2) }}
+      </button>
+    </div>
+
 
   </div>
 </div>
@@ -322,9 +314,8 @@
     </div>
   </div>
 </div>
-<div class="modal fade" tabindex="-1" role="dialog"
-     [ngClass]="{ 'show d-block': showCustomerModal }"
-     style="background: rgba(0,0,0,0.5); z-index: 1050;">
+<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{ 'show d-block': showCustomerModal }"
+  style="background: rgba(0,0,0,0.5); z-index: 1050;">
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
     <div class="modal-content p-3">
 
@@ -352,7 +343,7 @@
         </div>
       </div>
 
-      
+
       <!-- OK Button -->
       <!-- <div class="text-center">
           <button class="btn btn-primary w-100" (click)="clear()">
@@ -363,10 +354,21 @@
         </button>
       </div> -->
       <div class="d-flex justify-content-end gap-2 mt-3">
-  <button class="btn btn-secondary" (click)="clear()">Clear Customer</button>
-  <button class="btn btn-primary" (click)="closeCustomerModal()">OK</button>
-</div>
+        <button class="btn btn-secondary" (click)="clear()">Clear Customer</button>
+        <button class="btn btn-primary" (click)="closeCustomerModal()">OK</button>
+      </div>
 
     </div>
   </div>
 </div>
+<app-combo-selection *ngIf="showComboSelection" [show]="showComboSelection" [combos]="comboDishDetails"
+  (selected)="onComboSelected($event)" (closed)="showComboSelection = false">
+</app-combo-selection>
+
+
+
+
+<!-- Combo Suggestion Alert -->
+<app-combo-alert *ngIf="showComboAlert" [message]="comboMessage" (yes)="onComboYes()" (no)="onComboNo()"
+  (closed)="onComboNo()">
+</app-combo-alert>

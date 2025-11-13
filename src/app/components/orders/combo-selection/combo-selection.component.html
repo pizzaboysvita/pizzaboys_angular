@@ -1,0 +1,24 @@
+<div *ngIf="show" class="combo-select-overlay">
+  <div class="combo-select-box">
+
+    <div class="header">
+      <h5>Select Combo</h5>
+      <button class="btn-close" (click)="close()"></button>
+    </div>
+
+    <div class="combo-list">
+      <div 
+        *ngFor="let c of combos" 
+        class="combo-item" 
+        (click)="choose(c)"
+      >
+        <div>
+          <b>{{ c.dish_name }}</b>
+          <p class="small text-muted mb-0">${{ c.dish_price }}</p>
+        </div>
+        <i class="ri-arrow-right-s-line"></i>
+      </div>
+    </div>
+
+  </div>
+</div>
