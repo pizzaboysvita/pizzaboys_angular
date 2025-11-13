@@ -329,7 +329,7 @@ console.log(this.file)
       });
      
     } else {
-
+      
 
 
     const req_body: any = {
@@ -384,7 +384,7 @@ console.log(this.file)
     formData.append("image", this.file); // Attach Blob with a filename
     formData.append("body", JSON.stringify(req_body));
     this.apis
-      .postApi(AppConstants.api_end_points.staff, formData)
+      .postApi(AppConstants.api_end_points.staffV2, formData)
       .subscribe((data: any) => {
         if (data.code == 1) {
           console.log(data);
@@ -420,5 +420,42 @@ console.log(this.file)
     event.preventDefault();
   }
 }
+  allowOnlyAlphabets(event: KeyboardEvent) {
+    const char = event.key;
+    const regex = /^[A-Za-z\s]+$/;
+
+    if (!regex.test(char)) {
+      event.preventDefault();
+    }
+  }
+   goBack() {
+   this.router.navigate(["/staff/staff-list"]);
+  }
+showRules: boolean = false;
+
+  rules = {
+    minLength: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    special: false,
+  };
+
+  validatePassword() {
+    const password = this.staffForm.get("password")?.value || "";
+
+    this.rules.minLength = password.length >= 8;
+    this.rules.uppercase = /[A-Z]/.test(password);
+    this.rules.lowercase = /[a-z]/.test(password);
+    this.rules.number = /[0-9]/.test(password);
+    this.rules.special = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  }
+
+  hideRulesIfEmpty() {
+    const password = this.staffForm.get("password")?.value || "";
+    if (!password) {
+      this.showRules = false;
+    }
+  }
 
 }

@@ -154,3 +154,74 @@
     </div>
   </div>
 </ng-template>
+<div class="modal fade" tabindex="-1" role="dialog"
+     [ngClass]="{ 'show d-block': showCopyMenuModal }"
+     style="background: rgba(0,0,0,0.5); z-index: 1050;">
+  <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+    <div class="modal-content p-3">
+
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Copy Menu</h5>
+        <button type="button" class="btn-close" (click)="closeCopyMenuModal()"></button>
+      </div>
+
+      <!-- ✅ Store Selection -->
+       <form action="" [formGroup]="copyMenuForm">
+      <div class="input-box position-relative">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <h6>Store</h6>
+          <span class="optional-tag optional-label">Required</span>
+        </div>
+        <ng-select
+          [items]="storeList"
+          [searchable]="true"
+          [multiple]="true"
+          bindLabel="store_name"
+          bindValue="store_id"
+          formControlName="store"
+          placeholder="Select from the dropdown or type to search..."
+         >
+        </ng-select>
+
+        @if((copyMenuForm.get('store')?.touched || copyMenuForm.get('store')?.dirty) && copyMenuForm.get('store')?.hasError('required')){
+          <div class="text-danger mt-1">Store is required</div>
+        }
+
+        <!-- <span class="lableSubtext d-block mt-2">
+          Select which Store this menu will be copied to.  
+          Leave empty to apply for all stores.
+        </span> -->
+      </div>
+       <div class="col-12">
+                    <div class="input-box">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Upload Images</h6>
+                        <span class="optional-tag optional-label">Required</span>
+                      </div>
+                     @if(uploadImagUrl ){
+                      <div class="image-preview-container">
+                        <img #previewImage [src]="uploadImagUrl" alt="Preview" class="preview-img" />
+                        <button class="icon-button" (click)="removeImage()" >✕</button>
+                      </div>
+                      }@else{
+                      <input type="file" accept="image/*" (change)="onSelectFile($event)" />
+                      }
+                    </div>
+                    @if((copyMenuForm.get('image')?.touched ||copyMenuForm.get('image')?.dirty) &&
+                    copyMenuForm.get('image')?.hasError('required')){
+                    <div class="text-danger">
+                      Image is required
+                    </div>
+                    }
+                  </div>
+</form>
+      <!-- ✅ Action Buttons -->
+      <div class="text-center mt-4 d-flex gap-2">
+        <button class="btn btn-secondary flex-fill" (click)="closeCopyMenuModal()">Cancel</button>
+        <button class="btn btn-primary flex-fill" (click)="copyMenu()">Copy Menu</button>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -51,6 +51,10 @@ export class OrderDetailsComponent {
   paymentdetails: any;
   comboOrderDetails: any[] = [];
   showCustomerModal: boolean;
+  selectedItemForEdit: any;
+  selectedDishFromList: any;
+  showPopup: boolean;
+  isEditing: boolean;
   constructor(private apiService: ApisService, private fb: FormBuilder, private el: ElementRef, private modal: NgbModal, private toastr: ToastrService, private cdr: ChangeDetectorRef, private sessionStorageService: SessionStorageService,private modalService: NgbModal) {
     this.markers = [];
     this.zoom = 3;
@@ -79,7 +83,7 @@ export class OrderDetailsComponent {
     });
     this.orderdueForm = this.fb.group({
       orderDue: ['ASAP', Validators.required],
-      orderDateTime: ['', Validators.required]
+      orderDateTime: [new Date(), Validators.required]
     });
     this.orderDueDetails = this.orderdueForm.value.orderDue;
     const userId = JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).user.store_id;
@@ -110,40 +114,162 @@ export class OrderDetailsComponent {
 
   @ViewChild(GoogleMap) map!: GoogleMap;
 
-  addToCart(item: any) {
-    console.log(item,'>>>>>>>>>>>>>>> Add To cart')
+//   addToCart(item: any) {
+//     console.log(item,'>>>>>>>>>>>>>>> Add To cart')
 
+//     const existingItem = this.cartItems.find((cartItem: any) => cartItem.dish_id === item.dish_id);
+//     console.log(existingItem, 'existingItem')
+//     if (existingItem) {
+//       // If item already exists in the cart, just update the quantity
+//       existingItem.dish_quantity++;
+//     } else {
+//       // console.log(  this.moveSelectedOptionsToMainObject(item), 'moveSelectedOptionsToMainObject')
+//       this.cartItems.push({ ...item });
+//       // if(item.dish_type =='combo'){
+//   this.totalCartDetails=this.apiService.transformData(this.cartItems)
+// // }
+//       console.log(this.totalCartDetails, 'this.totalCartDetails')
+//       if (this.cartItems.length > 1) {
+//         this.cartItems.forEach((cartItem: any) => {
+//           if (cartItem.dish_type == 'standard') {
+//             this.comboDishDetails.forEach((comboItem: any) => {
+//               if (comboItem.combo_item_dish_id == cartItem.dish_id) {
+//                 console.log(comboItem, 'comboItem')
+//                 this.toastr.success(comboItem.dish_name + ' ' + comboItem.dish_price, 'Check Combo Options');
+//                 // 
+//                 // cartItem.dish_quantity = 1; // Initialize quantity for each item
+//               }
+//             });
+//           }
+//         })
+//       }
+//       // this.moveSelectedOptionsToMainObject(item);
+//     }
+//     console.log(this.cartItems, '  this.cartItems')
+//   }
+// addToCart(item: any) {
+//   console.log(item, '>>>>>>>>>>>>>>> Add To cart');
 
-    const existingItem = this.cartItems.find((cartItem: any) => cartItem.dish_id === item.dish_id);
-    console.log(existingItem, 'existingItem')
-    if (existingItem) {
-      // If item already exists in the cart, just update the quantity
-      existingItem.dish_quantity++;
-    } else {
-      // console.log(  this.moveSelectedOptionsToMainObject(item), 'moveSelectedOptionsToMainObject')
-      this.cartItems.push({ ...item });
-      // if(item.dish_type =='combo'){
-  this.totalCartDetails=this.apiService.transformData(this.cartItems)
+//   const existingIndex = this.cartItems.findIndex(
+//     (cartItem: any) => cartItem.dish_id === item.dish_id
+//   );
+
+//   if (existingIndex > -1) {
+//     // ✅ Item already exists in cart
+
+//     // ✅ If editing, reflect changes (no duplicate)
+//     if (this.isEditing) {
+//     const existingItem = this.cartItems[existingIndex];
+
+//       console.log('🟢 Updating existing item with edited details...');
+//       this.cartItems[existingIndex] = {
+//         ...existingItem,
+//         ...item, // merge all latest edits
+//         dish_option_set_array: [...(item.dish_option_set_array || [])],
+//         dish_ingredient_array: [...(item.dish_ingredient_array || [])],
+//       };
+//     } else {
+//           const existingItem = this.cartItems[existingIndex];
+//       // ✅ If not editing, just increase quantity
+//       existingItem.dish_quantity++;
+//     }
+//   } else {
+//     // ✅ If it’s a new item, push to cart
+//     this.cartItems.push({ ...item });
+//   }
+
+//   // ✅ Always recalc total and refresh references
+//   this.totalCartDetails = this.apiService.transformData(this.cartItems);
+
+//   // ✅ Combo check logic (unchanged)
+//   if (this.cartItems.length > 1) {
+//     this.cartItems.forEach((cartItem: any) => {
+//       if (cartItem.dish_type === 'standard') {
+//         this.comboDishDetails.forEach((comboItem: any) => {
+//           if (comboItem.combo_item_dish_id === cartItem.dish_id) {
+//             console.log(comboItem, 'comboItem');
+//             this.toastr.success(
+//               `${comboItem.dish_name} ${comboItem.dish_price}`,
+//               'Check Combo Options'
+//             );
+//           }
+//         });
+//       }
+//     });
+//   }
+
+//   // ✅ Trigger change detection
+//   this.cartItems = [...this.cartItems];
+   
+//   this.cdr.detectChanges();
+
+//   console.log(this.cartItems, 'Updated cartItems after add/edit');
 // }
-      console.log(this.totalCartDetails, 'this.totalCartDetails')
-      if (this.cartItems.length > 1) {
-        this.cartItems.forEach((cartItem: any) => {
-          if (cartItem.dish_type == 'standard') {
-            this.comboDishDetails.forEach((comboItem: any) => {
-              if (comboItem.combo_item_dish_id == cartItem.dish_id) {
-                console.log(comboItem, 'comboItem')
-                this.toastr.success(comboItem.dish_name + ' ' + comboItem.dish_price, 'Check Combo Options');
-                // 
-                // cartItem.dish_quantity = 1; // Initialize quantity for each item
-              }
-            });
-          }
-        })
-      }
-      // this.moveSelectedOptionsToMainObject(item);
-    }
-    console.log(this.cartItems, '  this.cartItems')
+addToCart(item: any) {
+  console.log(item, '>>>>>>>>>>>>>>> Add To cart');
+
+  const existingIndex = this.cartItems.findIndex(
+    (cartItem: any) => cartItem.dish_id === item.dish_id
+  );
+
+  const existingItem = existingIndex > -1 ? this.cartItems[existingIndex] : null;
+
+  // ✏️ CASE 1: If editing and item exists → Update it
+  if (this.isEditing && existingItem) {
+    console.log("🟢 Editing mode — updating existing item...");
+    this.cartItems[existingIndex] = {
+      ...existingItem,
+      ...item, // Merge all updated fields
+      dish_option_set_array: [...(item.dish_option_set_array || [])],
+      dish_ingredient_array: [...(item.dish_ingredient_array || [])],
+    };
+    this.isEditing=false
   }
+
+  // 🆕 CASE 2: If NOT editing and item does NOT exist → Add new
+  else if (!this.isEditing && !existingItem) {
+    console.log("🆕 Adding new item to cart...");
+    this.cartItems.push({ ...item });
+  }
+
+  // 🚫 CASE 3: If NOT editing and item already exists → Skip (do nothing)
+  else if (!this.isEditing && existingItem) {
+    console.log("🚫 Item already exists in cart — skipping add.");
+    // No changes
+    return;
+  }
+
+  // ✅ Recalculate totals
+  this.totalCartDetails = this.apiService.transformData(this.cartItems);
+
+  // ✅ Combo check logic (unchanged)
+  if (this.cartItems.length > 1) {
+    this.cartItems.forEach((cartItem: any) => {
+      if (cartItem.dish_type === 'standard') {
+        this.comboDishDetails.forEach((comboItem: any) => {
+          if (comboItem.combo_item_dish_id === cartItem.dish_id) {
+            console.log(comboItem, 'comboItem');
+            this.toastr.success(
+              `${comboItem.dish_name} ${comboItem.dish_price}`,
+              'Check Combo Options'
+            );
+          }
+        });
+      }
+    });
+  }
+
+  // ✅ Trigger change detection
+  this.cartItems = [...this.cartItems];
+  this.cdr.detectChanges();
+
+  console.log(this.cartItems, '🧾 Updated cartItems after add/edit');
+}
+onPopupClosed() {
+  console.log('Popup closed — resetting edit mode');
+  this.isEditing = false;  // 🔹 This resets in the parent
+}
+
   increaseModalQuantity(item: any) {
     console.log(item, 'increaseModalQuantity')
     item['dish_quantity']++;
@@ -186,6 +312,35 @@ export class OrderDetailsComponent {
     console.log(this.cartItems)
   }
 
+removeItems(item: any) {
+  console.log(this.totalCartDetails);
+  console.log( this.cartItems);
+  
+  // Remove the item from cartItems
+  this.totalCartDetails = this.totalCartDetails.filter((cartItem: { dish_id: any; }) => cartItem.dish_id !== item.dish_id);
+  console.log( this.totalCartDetails,"after");
+
+  // // Recalculate each item's duplicate_dish_price
+  this.totalCartDetails.forEach((cartItem: { duplicate_dish_price: number; }) => {
+    cartItem.duplicate_dish_price = this.apiService.getItemSubtotal(cartItem);
+  });
+
+  // Update total price
+  this.totalPrice = this.totalCartDetails.reduce(
+    (sum: any, cartItem: { duplicate_dish_price: any; }) => sum + cartItem.duplicate_dish_price,
+    0
+  );
+  console.log();
+  
+
+  // Update cart reference if needed
+   this.cartItems = [...this.totalCartDetails];
+
+  // Trigger Angular change detection
+  this.cdr.detectChanges();
+
+  console.log(this.cartItems, 'Updated cartItems after removal');
+}
 
  
   showNewModelPopup = false;
@@ -319,6 +474,12 @@ this.cartItems.forEach((dish: any) => {
       if (res && res.code == 1) {
         this.toastr.success(res.message, 'Success');
         this.cartItems = [];
+        this.totalCartDetails=[]
+              this.customer = {
+        name: '',
+        email: '',
+        phone: ''
+      };
       }
     })
         
@@ -401,11 +562,7 @@ this.cartItems.forEach((dish: any) => {
   this.showCustomerModal=false
 }
   openCustomerModal(){
-   this.customer = {
-    name: '',
-    email: '',
-    phone: ''
-  };
+ 
   this.showCustomerModal=true
 }
 clear(){
@@ -415,6 +572,26 @@ clear(){
     phone: ''
   };
 }
+ @ViewChild(MediaComponent) mediaComponent!: MediaComponent;
+
+  editItem(item: any) {
+    this.isEditing=true
+    if (this.mediaComponent) {
+      this.mediaComponent.openEditPopup(item); // ✅ call popup method from media
+    }
+  }
+  clearOrderDetails(){
+      this.cartItems = [];
+        this.totalCartDetails=[]
+  }
+   orderList() {
+    const modalRef = this.modal.open(PosOrdersComponent, {
+      windowClass: 'theme-modal',
+      centered: true,
+      size: 'xl'
+    });
+  }
+
 }
 
 export interface CartItem {

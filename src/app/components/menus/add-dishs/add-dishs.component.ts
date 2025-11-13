@@ -9,9 +9,11 @@ import { AppConstants } from '../../../app.constants';
 import { forkJoin } from 'rxjs';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-add-dishs',
+  standalone: true,
   imports: [NgbNavModule, NgSelectModule, FormsModule, ReactiveFormsModule, CommonModule],
   templateUrl: './add-dishs.component.html',
   styleUrl: './add-dishs.component.scss'
@@ -39,7 +41,15 @@ export class AddDishsComponent {
   previewUrl: string | ArrayBuffer | null = null;
   selectedFile: File | null = null;
   checkedDishString: string;
-  constructor(private fb: FormBuilder, public modal: NgbModal, private router: Router, private apiService: ApisService, private sessionStorage: SessionStorageService) { }
+  isView=true;
+  isViewMode: boolean;
+  inventoryList: any = [];
+  dish_inventory_json: any=[] ;
+  selectedInventoryItem: any = '';
+  quantity: string = '';
+  // dishInventory: any= [];
+  dishInventory: any[] = [];
+  constructor(private fb: FormBuilder, public modal: NgbModal, private router: Router,private toastr: ToastrService,private apiService: ApisService, private sessionStorage: SessionStorageService) { }
 
   ngOnInit() {
     console.log(this.myData)
@@ -60,10 +70,16 @@ export class AddDishsComponent {
       storeName: [this.myData?this.myData.store_id : '']
 
     });
-    this.storeList()
-    this.getOptionSets()
-    this.getMenuCategoryDishData()
-    this.patchValue()
+    this.storeList();
+    this.getOptionSets();
+    this.getMenuCategoryDishData();
+    this.patchValue();
+    this.loadInventory();
+
+      if (this.type === 'View') {
+       this.isViewMode=true
+    this.menuForm.disable();
+  }
   }
   storeList() {
     this.apiService
@@ -108,16 +124,41 @@ export class AddDishsComponent {
       this.choices = JSON.parse(this.myData.dish_choices_json)
       this.previewUrl = this.myData.dish_image;
       // dish_choices_json
+      let parsed;
+      console.log(this.dishInventory);
+if (this.myData?.dish_inventory_json) {
+  try {
+    let parsed = JSON.parse(this.myData.dish_inventory_json);
+
+    // If it's a stringified string (double JSON), parse again
+    if (typeof parsed === 'string') parsed = JSON.parse(parsed);
+
+    // ✅ Only assign if parsed is a valid array
+    this.dishInventory = Array.isArray(parsed) && parsed.length > 0 ? parsed : [];
+  } catch (e) {
+    console.error('Error parsing dish_inventory_json', e);
+    this.dishInventory = [];
+  }
+} else {
+  // ✅ When no data present at all
+  this.dishInventory = [];
+}
+
+    // this.dishInventory= JSON.parse(this.myData.dish_inventory_json)
+    console.log(  this.dishInventory,'  this.dishInventory');
+    
     }
     this.getMenuCategoryDishData()
 
   }
 
   getMenuCategoryDishData() {
+    console.log(this.menuForm.value.storeName,this.menuForm.getRawValue().storeName);
+    
     const userId = JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id;
-    const menuApi = this.apiService.getApi(AppConstants.api_end_points.menu + '?store_id=' + (this.menuForm.value.storeName==''?-1:this.menuForm.value.storeName));
-    const categoryApi = this.apiService.getApi(`/api/category?store_id=` + (this.menuForm.value.storeName==''?-1:this.menuForm.value.storeName));
-    const dishApi = this.apiService.getApi(AppConstants.api_end_points.dish + '?store_id=' + (this.menuForm.value.storeName==''?-1:this.menuForm.value.storeName));
+    const menuApi = this.apiService.getApi(AppConstants.api_end_points.menu + '?store_id=' + (this.menuForm.getRawValue().storeName==''?-1:this.menuForm.getRawValue().storeName));
+    const categoryApi = this.apiService.getApi(`/api/category?store_id=` + (this.menuForm.getRawValue().storeName==''?-1:this.menuForm.getRawValue().storeName));
+    const dishApi = this.apiService.getApi(AppConstants.api_end_points.dish + '?store_id=' + (this.menuForm.getRawValue().storeName==''?-1:this.menuForm.getRawValue().storeName));
 
     forkJoin([menuApi, categoryApi, dishApi]).subscribe(
       ([menuRes, categoryRes, dishRes]: any) => {
@@ -144,7 +185,7 @@ export class AddDishsComponent {
   }
 
   getMenu(){
-    this.apiService.getApi(AppConstants.api_end_points.menu + '?store_id=' +this.menuForm.value.storeName).subscribe((data: any) => {
+    this.apiService.getApi(AppConstants.api_end_points.menu + '?store_id=' +this.menuForm.getRawValue().storeName).subscribe((data: any) => {
       if (data.code == 1) {
         this.menuItemsList = data.data;
       }
@@ -164,7 +205,7 @@ export class AddDishsComponent {
     }
 
     this.apiService
-      .getApi(`/api/category?store_id=${this.menuForm.value.storeName}`)
+      .getApi(`/api/category?store_id=${this.menuForm.getRawValue().storeName}`)
       .subscribe((res: any) => {
 
         console.log(res, 'categories response');
@@ -243,6 +284,21 @@ export class AddDishsComponent {
 .map(id => `${id},1`)
 .join('|');
     }
+    if( this.dishInventory.length>0){
+        this.dish_inventory_json = JSON.stringify(
+    this.dishInventory.map((item: { inventory_item_id: any; quantity: any; unit: any;inventory_item_name:any }) => ({
+      inventory_item_name:item?.inventory_item_name,
+      inventory_item_id: item?.inventory_item_id,
+      quantity: Number(item?.quantity),
+      unit: item?.unit
+    }))
+  ) 
+    }else{
+      this.dish_inventory_json=[]
+       this.toastr.info("Dish Inventory items is required.", "Info");
+       return
+    }
+   
     if (this.type == 'Edit') {
       this.reqbody = {
         "type": "update",
@@ -268,13 +324,14 @@ export class AddDishsComponent {
         "dish_option_set_json": JSON.stringify(this.selectedSubcategories),
         "dish_ingredients_json": JSON.stringify(this.Ingredients),
         "dish_choices_json": JSON.stringify(this.choices),
+        "dish_inventory_json":this.dish_inventory_json
       }
     } else {
       this.reqbody = {
         "type": "insert",
         combo_dish_id_csv: this.checkedDishString,
-        "dish_menu_id": this.menuForm.value.menuType,
-        "dish_category_id": this.menuForm.value.categoryType,
+        "dish_menu_id": this.menuForm.getRawValue().menuType,
+        "dish_category_id": this.menuForm.getRawValue().categoryType,
         "dish_type": this.menuForm.value.dishType,
         "dish_name": this.menuForm.value.firstName,
         "dish_price": this.menuForm.value.price,
@@ -288,12 +345,14 @@ export class AddDishsComponent {
         "description": this.menuForm.value.description,
         "subtitle": this.menuForm.value.subtitle,
         // "store_id": this.menuForm.value.storeName.length ==0?this.storesList.map((item:any)=>item.store_id).toString():this.menuForm.value.storeName,
-         "store_id":this.menuForm.value.storeName.length ==0?this.storesList.filter((item: any) => item.store_id).map((item:any)=>item.store_id):[this.menuForm.value.storeName],
+         "store_id":this.menuForm.getRawValue().storeName.length ==0?this.storesList.filter((item: any) => item.store_id).map((item:any)=>item.store_id):[this.menuForm.getRawValue().storeName],
 
         "created_by":  JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,
         "dish_option_set_json": JSON.stringify(this.selectedSubcategories),
         "dish_ingredients_json": JSON.stringify(this.Ingredients as any),
         "dish_choices_json": JSON.stringify(this.choices),
+        "dish_inventory_json":this.dish_inventory_json
+
       }
     }
     if (this.menuForm.invalid) {
@@ -417,5 +476,42 @@ export class AddDishsComponent {
 
   updateParentState(menuList: any) {
     // If you have a parent above menu, update its state here
+  }
+
+
+addDishInventory() {
+  if (!this.selectedInventoryItem || !this.quantity.trim()) {
+    return;
+  }
+
+  this.dishInventory.push({
+    inventory_item_name: this.selectedInventoryItem.item_name,
+    inventory_item_id:this.selectedInventoryItem.item_id,
+    quantity: this.quantity.trim(),
+    unit:this.selectedInventoryItem.unit
+  });
+
+  // Reset fields
+  this.selectedInventoryItem = '';
+  this.quantity = '';
+}
+
+removeDishInventory(index: number) {
+  this.dishInventory.splice(index, 1);
+}
+  loadInventory(): void {
+    
+    this.apiService.getApi(AppConstants.api_end_points.inventory).subscribe({
+      next: (res:any) => {
+        this.inventoryList = res.data || res;
+        console.log("Inventory loaded:", this.inventoryList);
+
+      },
+      error: (err) => {
+        console.error('Error loading inventory:', err);
+        Swal.fire('Error', 'Failed to load inventory', 'error');
+      }
+
+    });
   }
 }

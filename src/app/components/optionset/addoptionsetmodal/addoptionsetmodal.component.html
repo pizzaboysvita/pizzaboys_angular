@@ -108,7 +108,7 @@
             <div class="col-12">
               <!-- <h3 class="p-1">Restriction Presets</h3> -->
               <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                <button class="btn btn-outline-primary btn-sm border rounded" (click)="addNewRow()">
+                <button class="btn btn-outline-primary btn-sm border rounded" (click)="type != 'View' && addNewRow()">
                   ADD &nbsp; <i class="ri-add-circle-line"></i>
                 </button>
 
@@ -254,7 +254,7 @@
                       </div>
                       <ng-select [items]="storesList" [searchable]="true" [multiple]="false" bindLabel="store_name"
                    [(ngModel)]="selectedStore" bindValue="store_id" placeholder="Select from the dropdown or type to search"
-                        (change)="getMenuCategoryDishData()">
+                        (change)="getMenuCategoryDishData()"   [disabled]="isViewMode">
                       </ng-select>
                     
                     </div>
@@ -273,6 +273,7 @@
         [checked]="menu.checked"
         [indeterminate]="menu.indeterminate"
         (change)="onMenuToggle(menu, choices)"
+        [disabled]="isViewMode"
       />
       <label for="checkbox-{{ j }}" class="form-check-label mb-0" style="font-size: 0.92rem;">
         {{menu.name}}

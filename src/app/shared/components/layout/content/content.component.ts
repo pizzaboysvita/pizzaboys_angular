@@ -7,13 +7,14 @@ import { NavService } from '../../../services/nav.service';
 import { CustomizerComponent } from '../../customizer/customizer.component';
 import { SessionStorageService } from '../../../services/session-storage.service';
 import { ApisService } from '../../../services/apis.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-content',
     templateUrl: './content.component.html',
     styleUrl: './content.component.scss',
     imports: [HeaderComponent, SidebarComponent, FooterComponent,
-        RouterModule, CustomizerComponent]
+        RouterModule, CustomizerComponent,CommonModule]
 })
 
 export class ContentComponent {

@@ -50,20 +50,56 @@
             ]
           },
           "configurations": {
-            "production": {
+          "dev": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.dev.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",
                   "maximumWarning": "15mb",
                   "maximumError": "20mb"
-                },
+                }
+              ],
+              "optimization": true,
+              "sourceMap": true
+            },
+            "stg": {
+              "fileReplacements": [
                 {
-                  "type": "anyComponentStyle",
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.stg.ts"
+                }
+              ],
+              "budgets": [
+                {
+                  "type": "initial",
                   "maximumWarning": "15mb",
                   "maximumError": "20mb"
                 }
               ],
-              "outputHashing": "all"
+              "optimization": true,
+              "sourceMap": true
+            },
+              "prod": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "15mb",
+                  "maximumError": "20mb"
+                }
+              ],
+              "optimization": true,
+              "sourceMap": true
             },
             "development": {
               "optimization": false,
@@ -71,19 +107,22 @@
               "sourceMap": true
             }
           },
-          "defaultConfiguration": "production"
+          "defaultConfiguration": "dev"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
-            "production": {
-              "buildTarget": "zomo-admin:build:production"
+            "prod": {
+              "buildTarget": "zomo-admin:build:prod"
             },
-            "development": {
-              "buildTarget": "zomo-admin:build:development"
+             "stg": {
+              "buildTarget": "zomo-admin:build:stg"
+            },
+            "dev": {
+              "buildTarget": "zomo-admin:build:dev"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "dev"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n"

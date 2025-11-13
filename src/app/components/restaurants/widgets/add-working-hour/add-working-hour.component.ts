@@ -19,6 +19,7 @@ import { CommonModule } from '@angular/common';
 export class AddWorkingHourComponent {
   addWorkingForm: FormGroup
   storeData: any;
+  storeType: string | null;
   constructor(public modal: NgbActiveModal, private fb: FormBuilder, private session: SessionStorageService) { }
   public day = [
     { "day": "Sunday", "id": "1" },
@@ -51,6 +52,7 @@ export class AddWorkingHourComponent {
   };
 
   ngOnInit() {
+   this.storeType= this.session.getsessionStorage('storeType')
     const storeType = this.session.getsessionStorage('storeType')
     if (storeType == 'view' || storeType == 'edit') {
 

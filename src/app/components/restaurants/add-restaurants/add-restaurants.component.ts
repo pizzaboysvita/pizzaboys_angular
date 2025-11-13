@@ -75,7 +75,7 @@ export class AddRestaurantsComponent {
       ],
       phoneNumber: [
         "",
-        [Validators.required, Validators.pattern(/^[0-9]{10}$/)],
+        [Validators.required]
       ],
       password: ["", [Validators.required, Validators.minLength(6)]],
       address: ["", Validators.required],
@@ -197,6 +197,18 @@ export class AddRestaurantsComponent {
   allowOnlyNumbers(event: KeyboardEvent) {
     const charCode = event.which ? event.which : event.keyCode;
     if (charCode < 48 || charCode > 57) {
+      event.preventDefault();
+    }
+  }
+   goBack() {
+    console.log('Going back to restaurant list');
+    this.router.navigate(['/restaurants/restaurants-list']);
+  }
+   allowOnlyAlphabets(event: KeyboardEvent) {
+    const char = event.key;
+    const regex = /^[A-Za-z\s-]+$/;
+
+    if (!regex.test(char)) {
       event.preventDefault();
     }
   }

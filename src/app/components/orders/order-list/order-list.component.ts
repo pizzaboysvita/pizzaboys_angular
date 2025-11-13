@@ -25,7 +25,8 @@ interface RowData {
   status: string;
   address: string;
   store_name: string;
-  order_type: string;
+  // order_type: string;
+  is_pos_order:any
   order_master_id: string;
   email: string;
   order_due_datetime: string;
@@ -93,7 +94,7 @@ export class OrderListComponent {
 
   tableConfig: ColDef<RowData>[] = [
     {
-      field: "order_type",
+      field: "is_pos_order",
       headerName: "Type",
       sortable: true,
       suppressMenu: true,
@@ -104,17 +105,58 @@ export class OrderListComponent {
         const backgroundColor = "rgb(81, 163, 81)";
 
         // If order_type = 1 → POS circle with badge
-        if (orderType == 1) {
+      //   if (orderType == 1) {
+      //     return `
+      //    <div class="d-flex align-items-center gap-2 position-relative">
+      //      <div class="rounded-circle d-flex align-items-center justify-content-center"
+      //           style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
+      //         <i class="ri-shopping-bag-2-line"></i>
+      //      </div>
+           
+      //      <span class="badge bg-primary position-absolute"
+      //            style="    width: 30px; height: 20px; top: 25px; left: 25px; font-size: 0.65rem;">POS</span>
+      //    </div>
+      //  `;
+      //   }
+       if (orderType == 1) {
           return `
          <div class="d-flex align-items-center gap-2 position-relative">
            <div class="rounded-circle d-flex align-items-center justify-content-center"
                 style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
-              <i class="ri-shopping-bag-2-line"></i>
+              <i class="ri-shopping-bag-line"  style=" font-size: 18px;"></i>
            </div>
            
            <span class="badge bg-primary position-absolute"
                  style="    width: 30px; height: 20px; top: 25px; left: 25px; font-size: 0.65rem;">POS</span>
          </div>
+       `;
+        }
+        else if(orderType == 0){
+           return `
+         <div class="d-flex align-items-center gap-2 position-relative">
+           <div class="rounded-circle d-flex align-items-center justify-content-center"
+                style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
+              <i class="ri-shopping-bag-line"></i>
+           </div>
+            <span class="badge bg-primary position-absolute"
+                 style="    width: 30px; height: 20px; top: 25px; left: 25px; font-size: 0.65rem;">Web</span>
+         </div>
+           
+          
+       `;
+        }
+          else {
+           return `
+         <div class="d-flex align-items-center gap-2 position-relative">
+           <div class="rounded-circle d-flex align-items-center justify-content-center"
+                style="width: 40px; height: 40px; background-color: ${backgroundColor}; color: white; font-weight: bold;">
+              <i class="ri-shopping-bag-line"></i>
+           </div>
+            <span class="badge bg-primary position-absolute"
+                 style="    width: 30px; height: 20px; top: 25px; left: 25px; font-size: 0.65rem;">App</span>
+         </div>
+           
+          
        `;
         }
       },
@@ -244,9 +286,7 @@ export class OrderListComponent {
         return select;
       },
     },
-    {
-      headerName: "View",
-    },
+   
     {
       headerName: "Actions",
       minWidth: 140,
@@ -360,7 +400,12 @@ export class OrderListComponent {
         if (data) {
           data.categories.forEach((element: any) => {
             element.due = this.transform(element.order_created_datetime);
+            // element.order_master_id = "P-" + element.order_master_id;
+               if (element.is_pos_order === 1) {
             element.order_master_id = "P-" + element.order_master_id;
+          } else {
+            element.order_master_id = element.order_master_id; // keep as is
+          }
           });
           this.orderList = data.categories;
           console.log(data, "order list data");

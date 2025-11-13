@@ -37,3 +37,174 @@
     }
   }
   
+
+
+
+  // 10-112025
+  /* POS header *//* /* ----- GLOBAL CONTAINER ----- */
+.pos-sidebar-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+   background: #f9f9fa;
+  border-right: 1px solid #e5e5e5;
+}
+
+/* ----- HEADER ----- */
+.pos-header {
+   background-color: #3c404e !important;
+   color: white;
+  height: 56px;
+  font-size: 1rem;
+  flex-shrink: 0;
+  padding: 10px;
+}
+
+.pos-logo {
+  width: 32px;
+  height: 32px;
+}
+
+.pos-title {
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+}
+
+.menu-toggle-btn {
+  cursor: pointer;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+}
+
+.pos-time {
+  font-size: 0.5rem;
+  color: #fff;
+}
+
+/* ----- SIDEBAR MENU ----- */
+.sidebar-main {
+  flex-grow: 1;
+  overflow-y: auto;
+  // background: #fff;
+  padding: 0.5rem 0;
+}
+
+.sidebar-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.pos-header span {
+  font-weight: 600;
+}
+
+.sidebar-main {
+  padding: 0.3rem 0;       /* less vertical padding */
+}
+
+.pos-time {
+  font-size: 0.55rem;      /* smaller time display */
+}
+
+.function-item {
+  padding: 5px 10px !important;      /* ⬅️ More padding around each item */
+  cursor: pointer;
+  color: #333;
+  font-size: 15px;
+  border-bottom: 1px solid #f1f1f1;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  line-height: 1.6;         /* ⬅️ Increases text-to-text spacing */
+}
+
+.function-item .function-title {
+  display: block;
+  margin-bottom: 4px;       /* ⬅️ Adds small space between title and subtext */
+  font-weight: 600;
+}
+
+.function-sub {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.function-item:hover {
+  background: #f7f7f7;
+}
+
+
+/* Compact layout adjustments */
+.function-item, .category-item {
+  padding: 14px 20px;   /* ⬅️ Increased padding (was 10px 15px) */
+color: black;
+  font-size: 13px;         /* ↓ slightly smaller text */
+  line-height: 1.8;        /* tighter spacing */
+}
+.category-item {
+  padding: 5px 18px !important;   /* ⬅️ Increased padding (was 10px 15px) */
+  color: black;
+  font-size: 13px;         /* ↓ slightly smaller text */
+  line-height: 1.8;        /* tighter spacing */
+}
+
+  .category-item {
+    padding: 12px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    &:hover {
+      background: rgba(255, 255, 255, 0.1) !important;
+    }
+  }
+.category-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.category-item:hover {
+  background-color: #e5e5e6 !important; /* light gray */
+}
+
+/* Active (selected) state */
+.category-item.active {
+  background-color: #e5e5e6 !important; /* red tone */
+}
+/* container */
+.category-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* name at left */
+  padding: 10px 14px;
+  border-bottom: 1px solid #e6e6e6;
+  gap: 8px;                      /* small gap between name and dot if needed */
+  cursor: pointer;
+  transition: background-color .2s;
+}
+
+/* ensure name stays on left and can take remaining space */
+.category-name {
+  display: inline-block; /* important: prevents it taking full width unexpectedly */
+  flex: 1 1 auto;        /* allow it to grow and push icon to the right */
+  text-align: left;
+  white-space: nowrap;   /* optional: prevent wrapping, remove if you want wrap */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* indicator pinned to the far right */
+.category-indicator {
+  flex: 0 0 auto;        /* do not grow or shrink */
+  margin-left: 12px;     /* space from name */
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #d32f2f;
+}
+
+/* hover/active visuals */
+.category-item:hover { background-color: #e5e5e6; }
+.category-item.active { background-color: #e5e5e6; }
+// .category-item.active .category-indicator { background-color: #fff; }
+

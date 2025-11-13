@@ -1,10 +1,12 @@
 
-          @if (pos !='true') {
+          <!-- @if (pos !='true') { -->
 <div class="page-wrapper compact-wrapper" style="overflow: hidden;">
     <!-- Page Header Start-->
-    <div class="page-header" [class.close_icon]="navService.collapseSidebar" >
+     <!-- @if (pos !='true'){ -->
+    <div class="page-header" [class.close_icon]="navService.collapseSidebar"  style="background-color: black !important;">
         <app-header></app-header>
     </div>
+<!-- } -->
 
     <!-- Page Header Ends-->
     <!-- Page Body Start Wrapper-->
@@ -16,7 +18,7 @@
         <!-- Page Sidebar Ends-->
         <!-- Page body start -->
          <!-- before bg color  #f9f9f6 -->
-        <div class="page-body" > 
+        <div class="page-body"  [ngStyle]="{ 'margin-top': pos === 'true' ? '0' : '' }"> 
             <div class="container-fluid" style="padding: 0px;">
                 <router-outlet></router-outlet>
             </div>
@@ -31,26 +33,28 @@
     </div>
     <!-- Page Body End -->
 </div>
-          }
+          <!-- }
           @if (pos =='true') {
 <div class="page-wrapper compact-wrapper" style="overflow: hidden;">
-    <!-- Page Header Start-->
-    <div class="page-header" [class.close_icon]="navService.collapseSidebar" style="width: 100% !important;margin-left: 0px;">
+  
+    <div class="page-header" [class.close_icon]="navService.collapseSidebar" style="width: 100% !important;margin-left: 0px;background-color: black !important;">
         <app-header></app-header>
     </div>
     <div class="page-body-wrapper">
+          <div class="sidebar-wrapper" [class.close_icon]="navService.collapseSidebar">
+            <app-sidebar></app-sidebar>
+        </div>
      <div class="page-body" style="min-height: fit-content;background-color: #fcf5ea; width: 100% !important;margin-left: 0px !important;margin-top: 5%;" >
-            <div class="container-fluid" style="padding: 0px;">
+        <div class="container-fluid" style="padding: 0px;">
                 <router-outlet></router-outlet>
             </div>
-            <!-- Container-fluid End-->
-            <!-- footer start-->
+           
             <div class="container-fluid" style="width: 100% !important;">
                 <app-footer></app-footer>
             </div>
-            <!-- footer End-->
+            
         </div>
         </div>
 </div>
-          }
+          } -->
 <app-customizer></app-customizer>
