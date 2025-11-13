@@ -175,7 +175,8 @@ color: black;
 .category-item {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* name at left */
+   justify-content: space-between;
+  // justify-content: flex-start; /* name at left */
   padding: 10px 14px;
   border-bottom: 1px solid #e6e6e6;
   gap: 8px;                      /* small gap between name and dot if needed */
@@ -196,11 +197,10 @@ color: black;
 /* indicator pinned to the far right */
 .category-indicator {
   flex: 0 0 auto;        /* do not grow or shrink */
-  margin-left: 12px;     /* space from name */
   width: 10px;
   height: 10px;
-  border-radius: 50%;
-  background-color: #d32f2f;
+  border-radius: 0.25rem;
+   background-color: rgb(198, 40, 40);
 }
 
 /* hover/active visuals */

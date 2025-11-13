@@ -752,3 +752,25 @@ $transition-speed: 0.2s ease-in-out;
 .dropdown-item:hover {
   background-color: #f8f9fa; /* light gray */
 }
+
+.search-box {
+  height: 45px;
+  background-color: #f5f6f8; /* light gray look */
+  // border: 1px solid #dcdfe3; /* subtle border */
+  // border-radius: 6px;
+}
+
+.search-box input::placeholder {
+  color: #6c757d; /* muted placeholder text */
+  font-size: 14px;
+}
+
+.search-box input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.search-box i {
+  font-size: 16px;
+  cursor: pointer;
+}
