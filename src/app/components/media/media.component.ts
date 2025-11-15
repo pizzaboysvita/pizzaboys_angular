@@ -24,7 +24,6 @@ import { CommonService } from "../../shared/services/common.service";
 
 // import { IgxNavbarComponent, IgxNavbarTitleDirective, IgxButtonDirective, IgxToggleActionDirective, IgxIconComponent, IgxDropDownComponent, IgxDropDownItemComponent, IgxSuffixDirective, IgxNavbarModule, IgxButtonModule, IgxDropDownModule, IgxIconModule, IgxToggleModule, IgxToggleDirective, ISelectionEventArgs, ConnectedPositioningStrategy, OverlaySettings, HorizontalAlignment, VerticalAlignment } from "igniteui-angular";
 
-
 export interface Option {
   name: string;
   price?: number;
@@ -102,16 +101,7 @@ export interface CartItem {
   templateUrl: "./media.component.html",
   styleUrls: ["./media.component.scss"],
 
-  imports: [
-    CommonModule,
-    // IgxNavbarModule,
-    // IgxButtonModule,
-    // IgxToggleModule,
-    // IgxDropDownModule,
-    CardComponent,
-    FormsModule,
-    NgbDropdownModule,
-  ],
+  imports: [CommonModule, FormsModule, NgbDropdownModule],
   standalone: true,
 })
 export class MediaComponent implements OnInit {
@@ -143,78 +133,85 @@ export class MediaComponent implements OnInit {
   openComboIndex: number | null = null;
   hoveredComboIndex: number | null = null;
   mainItems = [
-    { label: 'Web', children: ['Angular', 'React'] },
-    { label: 'Desktop', children: ['WPF', 'WinForms'] },
+    { label: "Web", children: ["Angular", "React"] },
+    { label: "Desktop", children: ["WPF", "WinForms"] },
     {
-      label: 'Cross Platform',
-      children: ['Ultimate UI for Uno', 'Ultimate UI for UWP', 'Ultimate UI for WinUI', 'Ultimate UI for Xamarin']
+      label: "Cross Platform",
+      children: [
+        "Ultimate UI for Uno",
+        "Ultimate UI for UWP",
+        "Ultimate UI for WinUI",
+        "Ultimate UI for Xamarin",
+      ],
     },
-    { label: 'Design to Code' },
-    { label: 'Testing Tools' }
+    { label: "Design to Code" },
+    { label: "Testing Tools" },
   ];
 
   optionGroups: any = [
     {
-      title: 'Base',
+      title: "Base",
       required: true,
-      type: 'radio',
+      type: "radio",
       options: [
-        { name: 'Gluten Free ( Gluten Free Base )', price: 18 },
-        { name: 'Traditional ( Thin Base )' },
-        { name: 'Pan ( Thick Base )' }
+        { name: "Gluten Free ( Gluten Free Base )", price: 18 },
+        { name: "Traditional ( Thin Base )" },
+        { name: "Pan ( Thick Base )" },
       ],
-      selected: null
+      selected: null,
     },
     {
-      title: 'Extra Meat Toppings',
-      type: 'counter',
+      title: "Extra Meat Toppings",
+      type: "counter",
       options: [
-        { name: 'Bacon', price: 22.9, count: 0 },
-        { name: 'Chicken', price: 22.9, count: 0 },
+        { name: "Bacon", price: 22.9, count: 0 },
+        { name: "Chicken", price: 22.9, count: 0 },
         // ...
-      ]
+      ],
     },
     {
-      title: 'Swap Base Sauce',
-      subtitle: 'Optional - Choose one item',
-      type: 'checkbox',
+      title: "Swap Base Sauce",
+      subtitle: "Optional - Choose one item",
+      type: "checkbox",
       options: [
-        { name: 'BBQ Base', selected: false },
-        { name: 'Chutney Base', selected: false },
-        { name: 'Chilli Base', selected: false },
-        { name: 'Mayo Base', price: 6, selected: false },
+        { name: "BBQ Base", selected: false },
+        { name: "Chutney Base", selected: false },
+        { name: "Chilli Base", selected: false },
+        { name: "Mayo Base", price: 6, selected: false },
         // ...
-      ]
-    }
+      ],
+    },
   ];
-  dishnote = ''
+  dishnote = "";
   comboDishDetails: any = [];
   totalDishList: any[];
   selectedChildPerCombo: { [comboIndex: number]: any } = {};
   isEditing: boolean;
-    private subscription!: Subscription;
+  private subscription!: Subscription;
+  selectedDish: any;
   constructor(
     public modal: NgbModal,
     private apiService: ApisService,
     private sessionStorageService: SessionStorageService,
-    private cdr: ChangeDetectorRef,private CommonService:CommonService
-  ) { }
+    private cdr: ChangeDetectorRef,
+    private CommonService: CommonService
+  ) {}
   ngOnInit() {
     // this.getDishslist();
-     this.subscription = this.CommonService.dishes$.subscribe((data) => {
+    this.subscription = this.CommonService.dishes$.subscribe((data) => {
       this.dishList = data;
-      
     });
-      this.subscription = this.CommonService.totalDishList$.subscribe((data) => {
+    this.subscription = this.CommonService.totalDishList$.subscribe((data) => {
       this.totalDishList = data;
     });
   }
-ngOnDestroy(): void {
+  ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
   getDishslist() {
-    const storeId = JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).user.store_id;
-
+    const storeId = JSON.parse(
+      this.sessionStorageService.getsessionStorage("loginDetails") as any
+    ).user.store_id;
 
     const categoryApi = this.apiService.getApi(
       `/api/category?store_id=` + storeId
@@ -222,7 +219,6 @@ ngOnDestroy(): void {
     const dishApi = this.apiService.getApi(
       AppConstants.api_end_points.dish + "?store_id=" + storeId
     );
-
 
     forkJoin([categoryApi, dishApi]).subscribe(
       ([categoryRes, dishRes]: any) => {
@@ -235,7 +231,9 @@ ngOnDestroy(): void {
           dishRes.data
         );
         console.log("Processed Menu:", processedMenu);
-        this.categoriesList = processedMenu.filter(x=>(x.hide_category_in_POS == 0));
+        this.categoriesList = processedMenu.filter(
+          (x) => x.hide_category_in_POS == 0
+        );
         this.totalDishList = dishRes.data;
         if (this.categoriesList && this.categoriesList.length > 0) {
           this.selectedCategory = this.categoriesList[0];
@@ -293,145 +291,140 @@ ngOnDestroy(): void {
       this.itemDecreased.emit(simplifiedCartItem);
     }
   }
-// openEditPopup(item: any) {
-//   this.isEditing = true; // flag to switch popup mode
-//   this.isOptionSelected = false;
-//   this.selectedChildPerCombo = {};
-//   item.dishnote = item.dishnote || ''; // keep existing notes or empty
+  // openEditPopup(item: any) {
+  //   this.isEditing = true; // flag to switch popup mode
+  //   this.isOptionSelected = false;
+  //   this.selectedChildPerCombo = {};
+  //   item.dishnote = item.dishnote || ''; // keep existing notes or empty
 
-//   if (item.dish_type === 'combo') {
-//     this.comboDishDetails = [];
+  //   if (item.dish_type === 'combo') {
+  //     this.comboDishDetails = [];
 
-//     // Parse existing dish_choices_json if needed
-//     if (typeof item.dish_choices_json === 'string') {
-//       item.dish_choices_json_array = this.filterIndeterminateCategories(JSON.parse(item.dish_choices_json));
-//     } else {
-//       item.dish_choices_json_array = item.dish_choices_json;
-//     }
+  //     // Parse existing dish_choices_json if needed
+  //     if (typeof item.dish_choices_json === 'string') {
+  //       item.dish_choices_json_array = this.filterIndeterminateCategories(JSON.parse(item.dish_choices_json));
+  //     } else {
+  //       item.dish_choices_json_array = item.dish_choices_json;
+  //     }
 
-//     // Keep existing quantity
-//     item['dish_quantity'] = item['dish_quantity'] || 1;
-//     this.selectedDishFromList = item;
-//     this.selectedDishFromList.duplicate_dish_price = item.dish_price;
+  //     // Keep existing quantity
+  //     item['dish_quantity'] = item['dish_quantity'] || 1;
+  //     this.selectedDishFromList = item;
+  //     this.selectedDishFromList.duplicate_dish_price = item.dish_price;
 
-//     this.cartItems = [item];
-//     this.showPopup = true;
+  //     this.cartItems = [item];
+  //     this.showPopup = true;
 
-//     console.log("Editing combo item:", item);
-//   } else {
-//     this.cartItems = [];
+  //     console.log("Editing combo item:", item);
+  //   } else {
+  //     this.cartItems = [];
 
-//     // Keep original options but ensure types are defined
-//     item['dish_option_set_array'].forEach((optionSet: any) => {
-//       optionSet.option_type =
-//         optionSet.dispaly_name == 'Base'
-//           ? 'radio'
-//           : optionSet.dispaly_name == 'Extra Meat Toppings'
-//           ? 'counter'
-//           : 'counter';
-//     });
+  //     // Keep original options but ensure types are defined
+  //     item['dish_option_set_array'].forEach((optionSet: any) => {
+  //       optionSet.option_type =
+  //         optionSet.dispaly_name == 'Base'
+  //           ? 'radio'
+  //           : optionSet.dispaly_name == 'Extra Meat Toppings'
+  //           ? 'counter'
+  //           : 'counter';
+  //     });
 
-//     // Keep ingredients (mark previously selected ones)
-//     item['dish_ingredient_array']?.forEach((ingredient: any) => {
-//       if (ingredient.selected === undefined) {
-//         ingredient.selected = true;
-//       }
-//     });
+  //     // Keep ingredients (mark previously selected ones)
+  //     item['dish_ingredient_array']?.forEach((ingredient: any) => {
+  //       if (ingredient.selected === undefined) {
+  //         ingredient.selected = true;
+  //       }
+  //     });
 
-//     item['dish_quantity'] = item['dish_quantity'] || 1;
-//     this.selectedDishFromList = item;
-//     this.selectedDishFromList.duplicate_dish_price = item.dish_price;
+  //     item['dish_quantity'] = item['dish_quantity'] || 1;
+  //     this.selectedDishFromList = item;
+  //     this.selectedDishFromList.duplicate_dish_price = item.dish_price;
 
-//     this.cartItems = [item];
-//     this.showPopup = true;
-//     this.cdr.detectChanges();
+  //     this.cartItems = [item];
+  //     this.showPopup = true;
+  //     this.cdr.detectChanges();
 
-//     console.log("Editing standard dish:", item);
-//   }
-// }
-openEditPopup(item: any) {
-  this.isEditing = true;
-  this.isOptionSelected = false;
-  this.selectedChildPerCombo = {};
-  item.dishnote = item.dishnote || '';
+  //     console.log("Editing standard dish:", item);
+  //   }
+  // }
+  openEditPopup(item: any) {
+    this.isEditing = true;
+    this.isOptionSelected = false;
+    this.selectedChildPerCombo = {};
+    item.dishnote = item.dishnote || "";
 
-  if (item.dish_type === 'combo') {
-    this.comboDishDetails = [];
+    if (item.dish_type === "combo") {
+      this.comboDishDetails = [];
 
-    // Parse existing dish_choices_json if needed
-    if (typeof item.dish_choices_json === 'string') {
-      item.dish_choices_json_array = this.filterIndeterminateCategories(
-        JSON.parse(item.dish_choices_json)
-      );
+      // Parse existing dish_choices_json if needed
+      if (typeof item.dish_choices_json === "string") {
+        item.dish_choices_json_array = this.filterIndeterminateCategories(
+          JSON.parse(item.dish_choices_json)
+        );
+      } else {
+        item.dish_choices_json_array = item.dish_choices_json;
+      }
+
+      item["dish_quantity"] = item["dish_quantity"] || 1;
+      this.selectedDishFromList = item;
+      this.selectedDishFromList.duplicate_dish_price = item.dish_price;
+
+      this.cartItems = [item];
+      this.showPopup = true;
+
+      console.log("Editing combo item:", item);
     } else {
-      item.dish_choices_json_array = item.dish_choices_json;
-    }
+      this.cartItems = [];
 
-    item['dish_quantity'] = item['dish_quantity'] || 1;
-    this.selectedDishFromList = item;
-    this.selectedDishFromList.duplicate_dish_price = item.dish_price;
+      // ✅ Ensure option types are correct
+      item["dish_option_set_array"].forEach((optionSet: any) => {
+        optionSet.option_type =
+          optionSet.dispaly_name == "Base"
+            ? "radio"
+            : optionSet.dispaly_name == "Extra Meat Toppings"
+            ? "counter"
+            : "counter";
+      });
 
-    this.cartItems = [item];
-    this.showPopup = true;
-
-    console.log('Editing combo item:', item);
-  } else {
-    this.cartItems = [];
-
-    // ✅ Ensure option types are correct
-    item['dish_option_set_array'].forEach((optionSet: any) => {
-      optionSet.option_type =
-        optionSet.dispaly_name == 'Base'
-          ? 'radio'
-          : optionSet.dispaly_name == 'Extra Meat Toppings'
-          ? 'counter'
-          : 'counter';
-    });
-
-  
-    item['dish_ingredient_array']?.forEach((ingredient: any) => {
-      if (ingredient.selected === undefined) {
-        ingredient.selected = true;
-    this.cartItems = [item];
-
-      }
-    });
-
-    item['dish_quantity'] = item['dish_quantity'] || 1;
-    this.selectedDishFromList = item;
-    this.selectedDishFromList.duplicate_dish_price = item.dish_price;
- 
-  // ✅ Restore selected radio options here
-  
-    // ✅ Restore ingredient selections
-     item['dish_option_set_array'].forEach((optionSet: any) => {
-         console.log( optionSet,"ajssadasdasd");
-      if (optionSet.option_type === 'radio') {
-        const selectedOpt = optionSet.option_set_array.find((opt: any) => opt.selected === true);
-         console.log( selectedOpt,"ajssadasdasd");
-
-        if (selectedOpt) {
-          console.log( selectedOpt,"ajssadasdasd");
-         selectedOpt.selected = true; // 🔹 store reference for [checked]
-          
-          // optionSet.selectedOption = selectedOpt; // 🔹 store reference for [checked]
-          // selectedOpt.selected = selectedOpt; // 🔹 store reference for [checked]
-           this.cartItems = [item];
-        this.selectRadio(optionSet, selectedOpt);
-            
-          
-       
+      item["dish_ingredient_array"]?.forEach((ingredient: any) => {
+        if (ingredient.selected === undefined) {
+          ingredient.selected = true;
+          this.cartItems = [item];
         }
-      }
-    });
-     this.cartItems = [item];
-    this.showPopup = true;
-    this.cdr.detectChanges();
-    console.log('Editing standard dish:', item);
-  
-  
+      });
+
+      item["dish_quantity"] = item["dish_quantity"] || 1;
+      this.selectedDishFromList = item;
+      this.selectedDishFromList.duplicate_dish_price = item.dish_price;
+
+      // ✅ Restore selected radio options here
+
+      // ✅ Restore ingredient selections
+      item["dish_option_set_array"].forEach((optionSet: any) => {
+        console.log(optionSet, "ajssadasdasd");
+        if (optionSet.option_type === "radio") {
+          const selectedOpt = optionSet.option_set_array.find(
+            (opt: any) => opt.selected === true
+          );
+          console.log(selectedOpt, "ajssadasdasd");
+
+          if (selectedOpt) {
+            console.log(selectedOpt, "ajssadasdasd");
+            selectedOpt.selected = true; // 🔹 store reference for [checked]
+
+            // optionSet.selectedOption = selectedOpt; // 🔹 store reference for [checked]
+            // selectedOpt.selected = selectedOpt; // 🔹 store reference for [checked]
+            this.cartItems = [item];
+            this.selectRadio(optionSet, selectedOpt);
+          }
+        }
+      });
+      this.cartItems = [item];
+      this.showPopup = true;
+      this.cdr.detectChanges();
+      console.log("Editing standard dish:", item);
+    }
   }
-}
 
   // openIngredientsPopup(item: any) {
   //    this.isOptionSelected = false;
@@ -469,93 +462,100 @@ openEditPopup(item: any) {
   //   }
   // }
   openIngredientsPopup(item: any) {
-      this.isEditing = false;
-  this.isOptionSelected = false;
-  this.selectedChildPerCombo = {};
-  item.dishnote = '';
+    this.isEditing = false;
+    this.isOptionSelected = false;
+    this.selectedChildPerCombo = {};
+    item.dishnote = "";
 
-  if (item.dish_type === 'combo') {
-    this.comboDishDetails = [];
+    if (item.dish_type === "combo") {
+      this.comboDishDetails = [];
 
-    // ✅ Parse combo items freshly (no old selections)
-    const parsedChoices = JSON.parse(item.dish_choices_json || '[]');
-    item.dish_choices_json_array = this.filterIndeterminateCategories(parsedChoices);
+      // ✅ Parse combo items freshly (no old selections)
+      const parsedChoices = JSON.parse(item.dish_choices_json || "[]");
+      item.dish_choices_json_array =
+        this.filterIndeterminateCategories(parsedChoices);
 
-    // Reset selection state
-    item.dish_choices_json_array.forEach((choice: any) => {
-      choice.menuItems?.forEach((menu: any) => {
-        menu.categories?.forEach((cat: any) => {
-          cat.dishes?.forEach((dish: any) => {
-            dish.selected = false;
-            dish.option_set_array?.forEach((opt: any) => {
-              opt.selected = false;
-              opt.quantity = 0;
+      // Reset selection state
+      item.dish_choices_json_array.forEach((choice: any) => {
+        choice.menuItems?.forEach((menu: any) => {
+          menu.categories?.forEach((cat: any) => {
+            cat.dishes?.forEach((dish: any) => {
+              dish.selected = false;
+              dish.option_set_array?.forEach((opt: any) => {
+                opt.selected = false;
+                opt.quantity = 0;
+              });
             });
           });
         });
       });
-    });
 
-    item.dish_quantity = 1;
-    item.duplicate_dish_price = item.dish_price;
-    this.selectedDishFromList = item;
-    this.cartItems = [item];
-    this.showPopup = true;
+      item.dish_quantity = 1;
+      item.duplicate_dish_price = item.dish_price;
+      this.selectedDishFromList = item;
+      this.cartItems = [item];
+      this.showPopup = true;
 
-    console.log('Opening combo ingredients popup for item:', item);
-  } else {
-    this.cartItems = [];
+      console.log("Opening combo ingredients popup for item:", item);
+    } else {
+      this.cartItems = [];
 
-    // ✅ Reset radio/counter options
-    item.dish_option_set_array.forEach((optionSet: any) => {
-      optionSet.option_type =
-        optionSet.dispaly_name === 'Base'
-          ? 'radio'
-          : optionSet.dispaly_name === 'Extra Meat Toppings'
-          ? 'counter'
-          : 'counter';
+      // ✅ Reset radio/counter options
+      item.dish_option_set_array.forEach((optionSet: any) => {
+        optionSet.option_type =
+          optionSet.dispaly_name === "Base"
+            ? "radio"
+            : optionSet.dispaly_name === "Extra Meat Toppings"
+            ? "counter"
+            : "counter";
 
-      optionSet.option_set_array.forEach((opt: any) => {
-        opt.selected = false;
-        opt.quantity = 0;
+        optionSet.option_set_array.forEach((opt: any) => {
+          opt.selected = false;
+          opt.quantity = 0;
+        });
       });
-    });
 
-    // ✅ Reset ingredients
-    item.dish_ingredient_array?.forEach((ingredient: any) => {
-      ingredient.selected = true; // default checked
-    });
+      // ✅ Reset ingredients
+      item.dish_ingredient_array?.forEach((ingredient: any) => {
+        ingredient.selected = true; // default checked
+      });
 
-    item.dish_quantity = 1;
-    item.duplicate_dish_price = item.dish_price;
-    this.selectedDishFromList = item;
-    this.cartItems = [item];
-    this.showPopup = true;
-    this.cdr.detectChanges();
+      item.dish_quantity = 1;
+      item.duplicate_dish_price = item.dish_price;
+      this.selectedDishFromList = item;
+      this.cartItems = [item];
+      this.showPopup = true;
+      this.cdr.detectChanges();
 
-    console.log('Opening standard dish popup for item:', item);
+      console.log("Opening standard dish popup for item:", item);
+    }
   }
-}
 
   filterIndeterminateCategories(menuData: any[]) {
-    return menuData.map(menuGroup => ({
+    return menuData.map((menuGroup) => ({
       ...menuGroup,
       menuItems: menuGroup.menuItems.map((menu: any) => ({
         ...menu,
         categories: menu.categories
           .map((cat: any) => {
-            const checkedDishes = cat.dishes.filter((dish: any) => dish.checked);
-            const isIndeterminate = checkedDishes.length > 0 && checkedDishes.length < cat.dishes.length;
-            const isChecked = checkedDishes.length === cat.dishes.length && checkedDishes.length > 0;
+            const checkedDishes = cat.dishes.filter(
+              (dish: any) => dish.checked
+            );
+            const isIndeterminate =
+              checkedDishes.length > 0 &&
+              checkedDishes.length < cat.dishes.length;
+            const isChecked =
+              checkedDishes.length === cat.dishes.length &&
+              checkedDishes.length > 0;
             return {
               ...cat,
               dishes: checkedDishes,
               indeterminate: isIndeterminate,
-              checked: isChecked
+              checked: isChecked,
             };
           })
-          .filter((cat: any) => cat.indeterminate || cat.checked)
-      }))
+          .filter((cat: any) => cat.indeterminate || cat.checked),
+      })),
     }));
   }
 
@@ -570,28 +570,28 @@ openEditPopup(item: any) {
   //   this.cdr.detectChanges();
   // }
 
-@Output() popupClosed = new EventEmitter<void>();
+  @Output() popupClosed = new EventEmitter<void>();
 
-closePopup() {
-  this.showPopup = false;
-  this.isEditing = false;
-  this.selectedDishFromList = null;
-  this.selectedItemForModal = null;
-  this.modalNotes = "";
-  this.modalQuantity = 1;
-  this.expandedIndex = null;
-  // Emit event to notify parent
-  this.popupClosed.emit();
-  this.cdr.detectChanges();
-}
+  closePopup() {
+    this.showPopup = false;
+    this.isEditing = false;
+    this.selectedDishFromList = null;
+    this.selectedItemForModal = null;
+    this.modalNotes = "";
+    this.modalQuantity = 1;
+    this.expandedIndex = null;
+    // Emit event to notify parent
+    this.popupClosed.emit();
+    this.cdr.detectChanges();
+  }
 
   increaseModalQuantity(item: any) {
-    item['dish_quantity']++;
+    item["dish_quantity"]++;
     this.calculateTotal();
   }
   decreaseModalQuantity(item: any) {
-    if (item['dish_quantity'] > 1) {
-      item['dish_quantity']--;
+    if (item["dish_quantity"] > 1) {
+      item["dish_quantity"]--;
       this.calculateTotal();
     }
   }
@@ -603,46 +603,36 @@ closePopup() {
     option.quantity = (option.quantity || 0) + 1;
     if (option.quantity > 0) {
       option.selected = true; // Ensure option is selected when incrementing
-
     }
     this.calculateTotal();
   }
   decrement(option: any) {
-
     console.log("Decrementing option:", option);
     if (option.quantity > 0) {
       option.quantity--;
-
     }
     if (option.quantity == 0) {
       option.selected = false; // Ensure option is selected when incrementing
-
     }
     this.calculateTotal();
     this.cdr.detectChanges();
   }
   selectRadio(group: any, option: any) {
-    this.isOptionSelected=true
-    if(
-     this.isEditing !=true
-   ){
-     group.option_set_array.forEach((opt: any) => {
-      opt.selected = (opt === option);; // Deselect all options in the group
-
-    })
-  }
-  else{
-   group.option_set_array.forEach((opt: any) => {
-  // ✅ If this option is the one user clicked, set selected = true
-  // ❌ Otherwise, set selected = false
-  opt.selected = (opt === option);
-});
-
-
-  }
+    this.isOptionSelected = true;
+    if (this.isEditing != true) {
+      group.option_set_array.forEach((opt: any) => {
+        opt.selected = opt === option; // Deselect all options in the group
+      });
+    } else {
+      group.option_set_array.forEach((opt: any) => {
+        // ✅ If this option is the one user clicked, set selected = true
+        // ❌ Otherwise, set selected = false
+        opt.selected = opt === option;
+      });
+    }
     // option.selected =  !option.selected;
     option.quantity = 1; // Reset quantity when selecting a new option
- 
+
     this.calculateTotal();
     this.cdr.detectChanges();
   }
@@ -651,132 +641,178 @@ closePopup() {
     console.log(option);
 
     option.selected = !option.selected;
-     this.cartItems = [...this.cartItems];
+    this.cartItems = [...this.cartItems];
     console.log(option);
     this.calculateTotal();
   }
   calculateTotal() {
-    console.log(this.cartItems, '<-------------------------this.cartItems 01--------')
-    this.totalPrice = this.cartItems
-      .reduce((sum: any, item: any) => sum + this.apiService.getItemSubtotal(item), 0);
+    console.log(
+      this.cartItems,
+      "<-------------------------this.cartItems 01--------"
+    );
+    this.totalPrice = this.cartItems.reduce(
+      (sum: any, item: any) => sum + this.apiService.getItemSubtotal(item),
+      0
+    );
 
     this.cartItems.forEach((item: any) => {
-      item.subtotal = this.totalPrice
-      item.duplicate_dish_price = this.totalPrice
-    })
-    console.log(this.totalPrice, '<-------------------------this.getItemSubtotal(item)--------')
+      item.subtotal = this.totalPrice;
+      item.duplicate_dish_price = this.totalPrice;
+    });
+    console.log(
+      this.totalPrice,
+      "<-------------------------this.getItemSubtotal(item)--------"
+    );
   }
   // showMenuPopup = false;
   addItemToCart(item: any) {
-    console.log(item)
+    console.log(item);
     const cartItem = this.moveSelectedOptionsToMainObject(item);
-    console.log(cartItem, 'cartItem')
+    console.log(cartItem, "cartItem");
     this.itemAdded.emit(cartItem);
   }
 
   moveSelectedOptionsToMainObject(dish: any): CartItem {
-    console.log(dish, 'moveSelectedOptionsToMainObject');
+    console.log(dish, "moveSelectedOptionsToMainObject");
     // Collect all options with selected === true from all option sets
-    const selectedOptions: any[] = dish.dish_option_set_array
-      .flatMap((optionSet: any) =>
-        (optionSet.option_set_array).filter((opt: any) => opt.selected === true)
-      );
-    console.log(selectedOptions
+    const selectedOptions: any[] = dish.dish_option_set_array.flatMap(
+      (optionSet: any) =>
+        optionSet.option_set_array.filter((opt: any) => opt.selected === true)
+    );
+    console.log(
+      selectedOptions,
 
-      , 'selectedOptions')
+      "selectedOptions"
+    );
     dish.selectedOptions = selectedOptions;
     return dish;
   }
 
-  selectChild(parentIndex: number, dish: any, comboIndex: number,combo_option_details:any) {
-console.log(">>>>>>>>>>>>???????????????",)
+  selectChild(
+    parentIndex: number,
+    dish: any,
+    comboIndex: number,
+    combo_option_details: any
+  ) {
+    console.log(">>>>>>>>>>>>???????????????");
     if (!this.selectedChildPerCombo[comboIndex]) {
       this.selectedChildPerCombo[comboIndex] = {};
     }
 
-    this.comboDishDetails = []
-    console.log("Selected child:", parentIndex, dish, comboIndex,combo_option_details);
-    this.comboDishDetails = this.totalDishList.filter((d: any) => d.dish_id == dish.dishId)
+    this.comboDishDetails = [];
+    console.log(
+      "Selected child:",
+      parentIndex,
+      dish,
+      comboIndex,
+      combo_option_details
+    );
+    this.comboDishDetails = this.totalDishList.filter(
+      (d: any) => d.dish_id == dish.dishId
+    );
     // this.openComboIndex = comboIndex;
     this.comboDishDetails.forEach((comboDish: any, idx: number) => {
-       
-      this.selectedChildPerCombo[comboIndex] = this.apiService.convertDishObject(comboDish);
+      this.selectedChildPerCombo[comboIndex] =
+        this.apiService.convertDishObject(comboDish);
     });
     // this.selectedDishFromList.comboDishList=this.selectedChildPerCombo
 
     this.selectedDishFromList = {
       ...this.selectedDishFromList,
-      comboDishList: this.selectedChildPerCombo
+      comboDishList: this.selectedChildPerCombo,
     };
-  this.selectedChildPerCombo[comboIndex].combo_option_name=combo_option_details.name
+    this.selectedChildPerCombo[comboIndex].combo_option_name =
+      combo_option_details.name;
     this.selectedChildPerCombo[comboIndex].selectedChildIndex = parentIndex;
     this.selectedChildPerCombo[comboIndex].selectedChildLabel = dish;
     console.log("Selected child New:", this.selectedDishFromList);
-    const subtotal = this.apiService.combotItemSubtotal(this.selectedDishFromList);
-    console.log(this.selectedChildPerCombo, 'subtotal for combo')
+    const subtotal = this.apiService.combotItemSubtotal(
+      this.selectedDishFromList
+    );
+    console.log(this.selectedChildPerCombo, "subtotal for combo");
     this.selectedDishFromList = {
       ...this.selectedDishFromList,
-      duplicate_dish_price: subtotal
+      duplicate_dish_price: subtotal,
     };
     this.cdr.detectChanges();
   }
-  combo_selectRadio(option: any, dishOptionSet: any, comboIndex: any, fullcomboDetails: any) {
+  combo_selectRadio(
+    option: any,
+    dishOptionSet: any,
+    comboIndex: any,
+    fullcomboDetails: any
+  ) {
     console.log("Selected option in combo:", comboIndex);
     console.log("Selected option in combo:", this.selectedDishFromList);
     this.isOptionSelected = true;
-    const comboDishDetails = this.selectedDishFromList.comboDishList[comboIndex].dish_option_set_array.filter((optSet: any) => optSet.option_set_id === dishOptionSet.option_set_id)[0].option_set_array;
+    const comboDishDetails = this.selectedDishFromList.comboDishList[
+      comboIndex
+    ].dish_option_set_array.filter(
+      (optSet: any) => optSet.option_set_id === dishOptionSet.option_set_id
+    )[0].option_set_array;
     comboDishDetails.forEach((opt: any) => {
       opt.quantity = 1;
       opt.value = option.name; // Ensure the value is set correctly
-      opt.selected = (opt === option);; // Deselect all options in the group
-
+      opt.selected = opt === option; // Deselect all options in the group
     });
-    const subtotal = this.apiService.combotItemSubtotal(this.selectedDishFromList);
-    console.log(subtotal, 'subtotal for combo')
+    const subtotal = this.apiService.combotItemSubtotal(
+      this.selectedDishFromList
+    );
+    console.log(subtotal, "subtotal for combo");
     this.selectedDishFromList = {
       ...this.selectedDishFromList,
-      duplicate_dish_price: subtotal
+      duplicate_dish_price: subtotal,
     };
     this.cdr.detectChanges();
   }
   getSelectedCount(dishOptionSet: any): number {
-  return dishOptionSet.option_set_array.filter((opt: any) => opt.quantity && opt.quantity > 0).length;
-}
-  combo_increment(option: any, dishOptionSet: any, comboDishDetails: any, fullcomboDetails: any) {
-      if (!option.quantity && this.getSelectedCount(dishOptionSet) >= 5) {
-    return; // ignore click
+    return dishOptionSet.option_set_array.filter(
+      (opt: any) => opt.quantity && opt.quantity > 0
+    ).length;
   }
-    console.log(fullcomboDetails,'fullcomboDetails')
+  combo_increment(
+    option: any,
+    dishOptionSet: any,
+    comboDishDetails: any,
+    fullcomboDetails: any
+  ) {
+    if (!option.quantity && this.getSelectedCount(dishOptionSet) >= 5) {
+      return; // ignore click
+    }
+    console.log(fullcomboDetails, "fullcomboDetails");
     option.quantity = (option.quantity || 0) + 1;
     if (option.quantity > 0) {
       option.selected = true;
     }
     const subtotal = this.apiService.combotItemSubtotal(fullcomboDetails);
-    console.log(subtotal, 'subtotal for combo')
+    console.log(subtotal, "subtotal for combo");
     this.selectedDishFromList = {
       ...this.selectedDishFromList,
-      duplicate_dish_price: subtotal
+      duplicate_dish_price: subtotal,
     };
 
     this.cdr.detectChanges();
     // this.calculateTotal();
   }
-  combo_decrement(option: any, dishOptionSet: any, comboDishDetails: any, fullcomboDetails: any) {
+  combo_decrement(
+    option: any,
+    dishOptionSet: any,
+    comboDishDetails: any,
+    fullcomboDetails: any
+  ) {
     console.log("Decrementing option in combo:", option);
     if (option.quantity > 0) {
       option.quantity--;
     }
     if (option.quantity == 0) {
       option.selected = false; // Ensure option is selected when incrementing
-
     }
     const subtotal = this.apiService.combotItemSubtotal(fullcomboDetails);
-    console.log(subtotal, 'subtotal for combo')
+    console.log(subtotal, "subtotal for combo");
     this.selectedDishFromList = {
       ...this.selectedDishFromList,
-      duplicate_dish_price: subtotal
+      duplicate_dish_price: subtotal,
     };
-
   }
   combo_Increment_Quantity(option: any) {
     console.log("Incrementing combo quantity:", option);
@@ -785,10 +821,10 @@ console.log(">>>>>>>>>>>>???????????????",)
     //   option.selected = true;
     // }
     const subtotal = this.apiService.combotItemSubtotal(option);
-    console.log(subtotal, 'subtotal for combo')
+    console.log(subtotal, "subtotal for combo");
     this.selectedDishFromList = {
       ...this.selectedDishFromList,
-      duplicate_dish_price: subtotal
+      duplicate_dish_price: subtotal,
     };
     this.cdr.detectChanges();
   }
@@ -799,30 +835,66 @@ console.log(">>>>>>>>>>>>???????????????",)
     }
 
     const subtotal = this.apiService.combotItemSubtotal(option);
-    console.log(subtotal, 'subtotal for combo')
+    console.log(subtotal, "subtotal for combo");
     this.selectedDishFromList = {
       ...this.selectedDishFromList,
-      duplicate_dish_price: subtotal
+      duplicate_dish_price: subtotal,
     };
     this.cdr.detectChanges();
   }
   comboAddItemToCart(item: any) {
-    console.log(item)
+    console.log(item);
     const cartItem = this.comboSelectedOptions(item);
-    console.log(cartItem, 'cartItem')
+    console.log(cartItem, "cartItem");
     this.itemAdded.emit(cartItem);
   }
   comboSelectedOptions(fullcomboDetails: any) {
-    let selectedOptions: any
-    console.log(fullcomboDetails, 'fullcomboDetails')
-    if (fullcomboDetails && typeof fullcomboDetails.comboDishList === 'object') {
+    let selectedOptions: any;
+    console.log(fullcomboDetails, "fullcomboDetails");
+    if (
+      fullcomboDetails &&
+      typeof fullcomboDetails.comboDishList === "object"
+    ) {
       selectedOptions = Object.values(fullcomboDetails.comboDishList)
         .flatMap((dish: any) => dish.dish_option_set_array)
         .flatMap((optSet: any) => optSet.option_set_array)
-        .filter((option: any) => option.selected === true)
+        .filter((option: any) => option.selected === true);
     }
-    console.log(selectedOptions, 'selectedOptions')
+    console.log(selectedOptions, "selectedOptions");
     fullcomboDetails.selectedOptions = selectedOptions;
     return fullcomboDetails;
   }
+
+ openComboSelectionPopup(comboItem: any) {
+  console.log("🔥 Opening Combo Builder for selected combo:", comboItem);
+
+  // STEP 1: Find full combo dish details from totalDishList
+  const fullComboDish = this.totalDishList.find(
+    (d: any) => d.dish_id == comboItem.dish_id
+  );
+
+  if (!fullComboDish) {
+    console.error("❌ Combo dish not found in totalDishList:", comboItem);
+    return;
+  }
+
+  // STEP 2: Convert into full popup structure
+  const converted = this.apiService.convertDishObject(fullComboDish);
+
+  // STEP 3: Build required fields to open popup smoothly
+  converted.dish_type = "combo";
+  converted.dish_quantity = 1;
+  converted.duplicate_dish_price = converted.dish_price;
+  converted.comboDishList = {}; // required for combo children
+
+  // STEP 4: Assign to popup
+  this.selectedDishFromList = converted;
+
+  // STEP 5: Open popup
+  this.showPopup = true;
+  this.cdr.detectChanges();
+
+  console.log("✅ Combo Builder Loaded:", this.selectedDishFromList);
+}
+
 }
