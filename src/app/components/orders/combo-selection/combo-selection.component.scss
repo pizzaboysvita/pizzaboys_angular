@@ -1,39 +1,107 @@
-.combo-select-overlay {
+/* BACKDROP */
+.combo-selection-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
-  z-index: 2000;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 15000;
+  animation: fadeBackdrop 0.25s ease;
 }
 
-.combo-select-box {
-  width: 380px;
+/* CENTERED MODAL */
+.combo-selection-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 450px;
+  max-width: 95%;
+  max-height: 90vh;
+
+  transform: translate(-50%, -50%);
   background: #fff;
   border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 5px 25px rgba(0,0,0,0.25);
+  z-index: 16000;
+
+  display: flex;
+  flex-direction: column;
+
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  animation: scaleIn 0.25s ease-out;
+  overflow: hidden;
 }
 
-.header {
+/* HEADER */
+.modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #ececec;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+
+  h5 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+  }
 }
 
-.combo-item {
-  padding: 12px;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  margin-bottom: 10px;
+/* BODY */
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* COMBO BOXES */
+.combo-box {
+  margin-bottom: 12px;
+}
+
+.combo-content {
+  background: #fafafa;
+  border-radius: 10px;
+  border: 1px solid #e2e2e2;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
   cursor: pointer;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+  transition: 0.2s;
 }
 
-.combo-item:hover {
-  background: #f6f6f6;
+.combo-content:hover {
+  background: #fff8e6;
+  border-color: #ffc063;
+  box-shadow: 0 4px 12px rgba(255, 165, 0, 0.22);
+  transform: translateY(-2px);
+}
+
+/* FOOTER */
+.modal-footer {
+  padding: 12px 20px;
+  border-top: 1px solid #ececec;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ANIMATIONS */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes fadeBackdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* MOBILE */
+@media (max-width: 480px) {
+  .combo-selection-modal {
+    width: 95% !important;
+    max-height: 90vh;
+  }
 }
