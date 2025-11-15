@@ -60,7 +60,7 @@ export class AddRestaurantsComponent {
       });
   }
 
-  ngOnInit() {
+    ngOnInit() {
     sessionStorage.removeItem('workingHours');
     this.storeForm = this.fb.group({
       storeName: ["", Validators.required],
