@@ -172,12 +172,26 @@
    }
 
   <!-- Menu Categories (Shown when Functions menu is hidden) -->
-    <li class="pos-header p-3" >Menus</li>
+    <!-- <li class="pos-header p-3" >Menus</li>
+    <li class="category-item">Limited Time Deal</li>
    <li class="category-item" *ngFor="let cat of categoriesList" (click)="selectCategory(cat)"
     [class.active]="selectedCategory?.name === cat.name">
   <span class="category-name">{{ cat.name }}</span>
-  <!-- <span class="category-indicator"></span> -->
-</li>
+</li> -->
+<!-- <div class="category-item">
+   <span class="category-name">Limited Time Deal</span>
+   <span class="category-indicator"></span>
+</div> -->
+<li class="pos-header p-3" >Menus</li>
+<div 
+  class="category-item" 
+  *ngFor="let cat of categoriesList" 
+  (click)="selectCategory(cat)"
+  [class.active]="selectedCategory?.name === cat.name"
+>
+  <span class="category-name">{{ cat.name }}</span>
+  <span class="category-indicator"></span>
+</div>
 
   
 

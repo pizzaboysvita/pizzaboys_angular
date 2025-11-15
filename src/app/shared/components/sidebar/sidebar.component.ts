@@ -97,15 +97,7 @@ console.log( this.menuItemsList )
     });
    
 }
-  selectCategory(category: any) {
-    this.dishList = category.dishes;
-    this.selectedCategory = category;
-    //  this.dishesSelected.emit(this.dishList)
-     this.CommonService.setDishes(this.dishList);
-     this.CommonService.setTotalDishList( this.totalDishList)
-    
-    this.cdr.detectChanges();
-  }
+ 
 
   setNavActive(item: menuItem) {
     this.menuItemsList.filter((menuItem:any) => {
@@ -210,6 +202,7 @@ this.router.navigate(["/orders/order-detail"]);
         );
         console.log("Processed Menu:", processedMenu);
         this.categoriesList = processedMenu.filter(x=>(x.hide_category_in_POS == 0));
+        this.categoriesList.unshift({ name: 'Limited Time Deal' });
         this.totalDishList = dishRes.data;
         if (this.categoriesList && this.categoriesList.length > 0) {
           this.selectedCategory = this.categoriesList[0];
@@ -226,7 +219,23 @@ this.router.navigate(["/orders/order-detail"]);
     );
   }
  
-  
+   selectCategory(category: any) {
+   
+     this.CommonService.setTotalDishList( this.totalDishList)
+      
+     if(category.name=='Limited Time Deal'){
+ this.CommonService.setDishes(this.totalDishList.filter(x=>(x.dish_type== "combo")));
+    }
+    else{
+       this.dishList = category.dishes;
+    this.selectedCategory = category;
+    //  this.dishesSelected.emit(this.dishList)
+     this.CommonService.setDishes(this.dishList);
+    
+    }
+    this.cdr.detectChanges();
+
+  }
 
   updateTime() {
     const now = new Date();

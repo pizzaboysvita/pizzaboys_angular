@@ -18,13 +18,13 @@
         <!-- Page Sidebar Ends-->
         <!-- Page body start -->
          <!-- before bg color  #f9f9f6 -->
-        <div class="page-body"  [ngStyle]="{ 'margin-top': pos === 'true' ? '0' : '' }"> 
-            <div class="container-fluid" style="padding: 0px;">
+        <div class="page-body"  [ngStyle]="{ 'margin-top': pos === 'true' ? '0' : '' ,'padding': pos === 'true' ? '0':''}"> 
+            <div class="container-fluid" style="padding: 0px !important;">
                 <router-outlet></router-outlet>
             </div>
             <!-- Container-fluid End-->
             <!-- footer start-->
-            <div class="container-fluid" >
+            <div class="container-fluid"  [ngStyle]="{'padding': pos === 'true' ? '0':''}">
                 <app-footer></app-footer>
             </div>
             <!-- footer End-->
