@@ -89,18 +89,19 @@
       <a [routerLink]="['/dashboard']">
             <img class="img-fluid for-white" src="assets/pizzaImg/pizza-black-2.JPG" alt="logo" style="height: 55px !important;">
         </a>
-        <span class="pos-time me-3">{{ currentTime }}</span>
+        <!-- me-3 -->
+        <span class="pos-time" style="margin-right: 0.5rem;">{{ currentTime }}</span>
       <!-- 3-dot menu button -->
       <div class="menu-toggle-btn" (click)="toggleFunctionsMenu()">
         <i class="ri-more-2-fill"></i>
       </div>
-         <div class="back-btn" (click)="navService.collapseSidebar = !navService.collapseSidebar">
+         <!-- <div class="back-btn" (click)="navService.collapseSidebar = !navService.collapseSidebar">
             <i class="fa fa-angle-left"></i>
-        </div>
+        </div> -->
         <div class="toggle-sidebar" (click)="navService.collapseSidebar = !navService.collapseSidebar">
             <i class="ri-apps-2-line status_toggle middle sidebar-toggle"></i>
         </div>
-    </div>
+        </div>
 
     <!-- <div class="d-flex align-items-center">
       <span class="pos-time me-3">{{ currentTime }}</span>
@@ -114,6 +115,7 @@
     </div> -->
   </div>
  <div class="logo-icon-wrapper">
+    
         <a [routerLink]="['/dashboard']">
             <img class="img-fluid main-logo" src="assets/images/logo/logo.png" alt="logo">
         </a>

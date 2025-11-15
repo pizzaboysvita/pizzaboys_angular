@@ -220,11 +220,10 @@ this.router.navigate(["/orders/order-detail"]);
   }
  
    selectCategory(category: any) {
-   
+
      this.CommonService.setTotalDishList( this.totalDishList)
-      
      if(category.name=='Limited Time Deal'){
- this.CommonService.setDishes(this.totalDishList.filter(x=>(x.dish_type== "combo")));
+       this.CommonService.setDishes(this.totalDishList.filter(x=>(x.dish_type== "combo")));
     }
     else{
        this.dishList = category.dishes;
