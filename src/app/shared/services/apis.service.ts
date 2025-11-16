@@ -139,8 +139,8 @@ export class ApisService {
             e
           );
         }
-
-        const type = optSet.dispaly_name === "Base" ? "radio" : "counter";
+console.log(optSet, "optSet.option_type");
+        const type = optSet.option_type === "Checkbox" ?"Counter": optSet.option_type;
         return {
           ...optSet,
           option_set_array,
