@@ -89,18 +89,19 @@
       <a [routerLink]="['/dashboard']">
             <img class="img-fluid for-white" src="assets/pizzaImg/pizza-black-2.JPG" alt="logo" style="height: 55px !important;">
         </a>
-        <span class="pos-time me-3">{{ currentTime }}</span>
+        <!-- me-3 -->
+        <span class="pos-time" style="margin-right: 0.5rem;">{{ currentTime }}</span>
       <!-- 3-dot menu button -->
       <div class="menu-toggle-btn" (click)="toggleFunctionsMenu()">
         <i class="ri-more-2-fill"></i>
       </div>
-         <div class="back-btn" (click)="navService.collapseSidebar = !navService.collapseSidebar">
+         <!-- <div class="back-btn" (click)="navService.collapseSidebar = !navService.collapseSidebar">
             <i class="fa fa-angle-left"></i>
-        </div>
+        </div> -->
         <div class="toggle-sidebar" (click)="navService.collapseSidebar = !navService.collapseSidebar">
             <i class="ri-apps-2-line status_toggle middle sidebar-toggle"></i>
         </div>
-    </div>
+        </div>
 
     <!-- <div class="d-flex align-items-center">
       <span class="pos-time me-3">{{ currentTime }}</span>
@@ -114,6 +115,7 @@
     </div> -->
   </div>
  <div class="logo-icon-wrapper">
+    
         <a [routerLink]="['/dashboard']">
             <img class="img-fluid main-logo" src="assets/images/logo/logo.png" alt="logo">
         </a>
@@ -130,13 +132,17 @@
    @if(showFunctionsMenu){
     <li class="pos-header p-3">Functions</li>
 
-   <li class="function-item d-flex align-items-center gap-2">
+   <li class="function-item d-flex align-items-center gap-2"  (click)="changeStaff()">
   <i class="ri-user-3-fill fs-5"></i>
-  <span class="function-title">POS Staff</span>
+     <div>
+  <span class="function-title">Change Staff</span>
+   <div class="function-sub small text-muted">POS Staff</div>
+   </div>
+  <!-- <span class="function-title">POS Staff</span> -->
 </li>
 
 
-     <li class="function-item d-flex align-items-center gap-2">
+     <li class="function-item d-flex align-items-center gap-2" (click)="openFloat()">
             <i class="ri-money-dollar-circle-line fs-5"></i>
             <div>
               <span class="function-title">Float Adjustment</span>
@@ -144,7 +150,7 @@
             </div>
           </li>
 
-          <li class="function-item d-flex align-items-center gap-2">
+          <li class="function-item d-flex align-items-center gap-2" (click)="openPosSettings()">
             <i class="ri-file-list-3-line fs-5"></i>
             <span class="function-title">Takings / Cash up</span>
           </li>
@@ -154,7 +160,7 @@
             <span class="function-title">Open Cash Draw</span>
           </li>
 
-          <li class="function-item d-flex align-items-center gap-2">
+          <li class="function-item d-flex align-items-center gap-2" (click)="openPosSettings()">
             <i class="ri-settings-3-line fs-5"></i>
             <span class="function-title">Settings</span>
           </li>
