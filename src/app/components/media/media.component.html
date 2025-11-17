@@ -322,8 +322,9 @@
                 [attr.data-bs-parent]="'#comboInnerAccordion-' + comboIndex"
               >
                 <div class="accordion-body">
+                  {{dishOption.type}}
                   <!-- Radio group -->
-                  <ng-container *ngIf="dishOption.type === 'radio'">
+                  <ng-container *ngIf="dishOption.type === 'Radio'">
                     <div *ngFor="let option of dishOption.option_set_array" class="option-row">
                       <span>
                         {{ option.name }} (<b>${{ option.price | number: '1.2-2' }}</b>)
@@ -339,7 +340,7 @@
                   </ng-container>
 
                   <!-- Counter group -->
-                  <ng-container *ngIf="dishOption.type === 'counter'">
+                  <ng-container *ngIf="dishOption.type === 'Counter'">
                     <div *ngFor="let option of dishOption.option_set_array" class="option-row">
                       <span>
                         {{ option.name }} (<b>${{ option.price | number: '1.2-2' }}</b>)
@@ -520,8 +521,9 @@
         data-bs-parent="#dishOptionsAccordion"
       >
         <div class="accordion-body">
+          
           <!-- Radio Options -->
-          <ng-container *ngIf="dish_option.option_type === 'radio'">
+          <ng-container *ngIf="dish_option.option_type === 'Radio'">
             <div *ngFor="let option of dish_option.option_set_array" class="option-row">
               <span>{{ option.name }} <b>(${{ option.price }})</b></span>
               <input
@@ -535,7 +537,7 @@
           </ng-container>
 
           <!-- Counter Options -->
-          <ng-container *ngIf="dish_option.option_type === 'counter'">
+          <ng-container *ngIf="dish_option.option_type === 'Counter' || dish_option.option_type === 'Checkbox'">
             <div *ngFor="let option of dish_option.option_set_array" class="option-row">
               <span>{{ option.name }} <b>(${{ option.price }})</b></span>
               <div class="counter-group" *ngIf="option.quantity > 0">

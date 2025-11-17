@@ -376,15 +376,15 @@ export class MediaComponent implements OnInit {
     } else {
       this.cartItems = [];
 
-      // ✅ Ensure option types are correct
-      item["dish_option_set_array"].forEach((optionSet: any) => {
-        optionSet.option_type =
-          optionSet.dispaly_name == "Base"
-            ? "radio"
-            : optionSet.dispaly_name == "Extra Meat Toppings"
-            ? "counter"
-            : "counter";
-      });
+      // // ✅ Ensure option types are correct
+      // item["dish_option_set_array"].forEach((optionSet: any) => {
+      //   optionSet.option_type =
+      //     optionSet.dispaly_name == "Base"
+      //       ? "radio"
+      //       : optionSet.dispaly_name == "Extra Meat Toppings"
+      //       ? "counter"
+      //       : "counter";
+      // });
 
       item["dish_ingredient_array"]?.forEach((ingredient: any) => {
         if (ingredient.selected === undefined) {
@@ -462,6 +462,7 @@ export class MediaComponent implements OnInit {
   //   }
   // }
   openIngredientsPopup(item: any) {
+    console.log(item, "openIngredientsPopup item");
     this.isEditing = false;
     this.isOptionSelected = false;
     this.selectedChildPerCombo = {};
@@ -502,12 +503,13 @@ export class MediaComponent implements OnInit {
 
       // ✅ Reset radio/counter options
       item.dish_option_set_array.forEach((optionSet: any) => {
-        optionSet.option_type =
-          optionSet.dispaly_name === "Base"
-            ? "radio"
-            : optionSet.dispaly_name === "Extra Meat Toppings"
-            ? "counter"
-            : "counter";
+        console.log(optionSet, "ajssadasdasd");
+        // optionSet.option_type =
+          // optionSet.dispaly_name === "Base"
+            // ? "radio"
+            // : optionSet.dispaly_name === "Extra Meat Toppings"
+            // ? "counter"
+            // : "counter";
 
         optionSet.option_set_array.forEach((opt: any) => {
           opt.selected = false;
