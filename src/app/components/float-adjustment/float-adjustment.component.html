@@ -1,0 +1,74 @@
+<div class="modal-content">
+
+  <!-- Header -->
+  <div class="modal-header border-bottom pb-2 flex-column align-items-start">
+    <h5 class="modal-title fw-bold">Float Adjustments</h5>
+
+    <div class="small text-muted">
+      Float: $160.00 &nbsp;&nbsp; Cash in till: $160.00
+    </div>
+  <button type="button" class="btn-close" (click)="modal.dismissAll()">
+     <i class="ri-close-line"></i>
+  </button>
+      </div>
+    <!-- <button type="button" class="btn-close position-absolute end-0 top-0 m-3"
+            (click)="modal.dismissAll()"></button>
+  </div> -->
+
+  <!-- Tabs -->
+  <div class="modal-tabs">
+    <button class="tab" [class.active]="activeTab === 'create'" (click)="activeTab = 'create'">
+      Create
+    </button>
+    <button class="tab" [class.active]="activeTab === 'history'" (click)="activeTab = 'history'">
+      History
+    </button>
+  </div>
+
+  <!-- Body -->
+  <div class="modal-body">
+
+    <!-- CREATE TAB -->
+    <div *ngIf="activeTab === 'create'">
+      <form [formGroup]="paymentForm">
+
+        <div class="form-group mb-3">
+          <input type="number" class="form-control" placeholder="Amount ($)" formControlName="amount">
+        </div>
+
+        <div class="form-group mb-3">
+          <select class="form-select" formControlName="source"
+                  (change)="updateDestinationOptions()">
+            <option value="" disabled>Select Source Cash Account</option>
+            <option *ngFor="let s of sourceOptions" [value]="s">{{ s }}</option>
+          </select>
+        </div>
+
+        <div class="form-group mb-3">
+          <select class="form-select" formControlName="destination">
+            <option value="" disabled>Select Destination Cash Account</option>
+            <option *ngFor="let d of destinationOptions" [value]="d">{{ d }}</option>
+          </select>
+        </div>
+
+        <div class="form-group mb-3">
+          <input type="text" class="form-control" formControlName="notes" placeholder="Notes">
+        </div>
+
+      </form>
+    </div>
+
+    <!-- HISTORY TAB -->
+    <div *ngIf="activeTab === 'history'" class="text-center py-4 text-muted">
+      No adjustment made this session
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="modal-footer border-0">
+    <button class="btn btn-light px-4">Cancel</button>
+    <button class="btn btn-dark px-4">Create</button>
+  </div>
+
+</div>

@@ -10,6 +10,9 @@ import { AppConstants } from '../../../app.constants';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { LoggingOutComponent } from '../widgets/logging-out/logging-out.component';
 import { CommonService } from '../../services/common.service';
+import { FloatAdjustmentComponent } from '../../../components/float-adjustment/float-adjustment.component';
+import { TakingsCashComponent } from '../../../components/takings-cash/takings-cash.component';
+import { PosSettingsComponent } from '../../../components/pos-settings/pos-settings.component';
 
 @Component({
     selector: 'app-sidebar',
@@ -249,7 +252,26 @@ this.router.navigate(["/orders/order-detail"]);
              windowClass:'theme-modal',centered:true
          })
      }
-
+openFloat(){
+   this.modal.open(FloatAdjustmentComponent,{
+             windowClass:'theme-modal',centered:true
+         })
+}
+openTakingsCash(){
+   this.modal.open(TakingsCashComponent,{
+             windowClass:'theme-modal',centered:true
+         })
+}
+openPosSettings(){
+   this.modal.open(PosSettingsComponent,{
+             windowClass:'theme-modal',centered:true
+         })
+}
+changeStaff(){
+   sessionStorage.clear()
+    localStorage.clear();
+    this.router.navigateByUrl("/login");
+}
 }
 export interface DishFromAPI {
   dish_id: number;

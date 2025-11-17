@@ -132,13 +132,17 @@
    @if(showFunctionsMenu){
     <li class="pos-header p-3">Functions</li>
 
-   <li class="function-item d-flex align-items-center gap-2">
+   <li class="function-item d-flex align-items-center gap-2"  (click)="changeStaff()">
   <i class="ri-user-3-fill fs-5"></i>
-  <span class="function-title">POS Staff</span>
+     <div>
+  <span class="function-title">Change Staff</span>
+   <div class="function-sub small text-muted">POS Staff</div>
+   </div>
+  <!-- <span class="function-title">POS Staff</span> -->
 </li>
 
 
-     <li class="function-item d-flex align-items-center gap-2">
+     <li class="function-item d-flex align-items-center gap-2" (click)="openFloat()">
             <i class="ri-money-dollar-circle-line fs-5"></i>
             <div>
               <span class="function-title">Float Adjustment</span>
@@ -146,7 +150,7 @@
             </div>
           </li>
 
-          <li class="function-item d-flex align-items-center gap-2">
+          <li class="function-item d-flex align-items-center gap-2" (click)="openPosSettings()">
             <i class="ri-file-list-3-line fs-5"></i>
             <span class="function-title">Takings / Cash up</span>
           </li>
@@ -156,7 +160,7 @@
             <span class="function-title">Open Cash Draw</span>
           </li>
 
-          <li class="function-item d-flex align-items-center gap-2">
+          <li class="function-item d-flex align-items-center gap-2" (click)="openPosSettings()">
             <i class="ri-settings-3-line fs-5"></i>
             <span class="function-title">Settings</span>
           </li>

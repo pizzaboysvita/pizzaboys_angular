@@ -1,0 +1,230 @@
+<div class="modal-content">
+
+  <!-- Header -->
+  <div class="modal-header border-bottom pb-2 flex-column align-items-start">
+    <h5 class="modal-title fw-bold">Settings</h5>
+
+    <button type="button" class="btn-close" (click)="modal.dismissAll()">
+      <i class="ri-close-line"></i>
+    </button>
+  </div>
+
+  <!-- Body -->
+  <div class="modal-body">
+
+    <!-- User Interface Section -->
+    <div class="settings-section">
+      <div class="section-title">
+        <i class="ri-fire-line"></i> User Interface
+      </div>
+
+      <div class="settings-item collapsible">
+        <span>Toggle fullscreen</span>
+        <i class="ri-arrow-down-s-line"></i>
+      </div>
+
+      <div class="settings-item collapsible">
+        <span>Layout Size</span>
+        <i class="ri-arrow-down-s-line"></i>
+      </div>
+
+      <!-- Toggles -->
+      <div class="settings-toggle">
+        <span>Sort menu alphabetical</span>
+         <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+
+      <div class="settings-toggle">
+        <span>Sidebar category color</span>
+       <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+
+      <div class="settings-toggle">
+        <span>Use confirm buttons on payments interface</span>
+         <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+
+      <div class="settings-toggle">
+        <span>Checkout button show existing order number</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+
+      <!-- Dropdowns -->
+      <div class="form-group dropdown-setting">
+        <label>Profile</label>
+        <select class="form-select">
+          <option>Standard</option>
+          <option>Compact</option>
+        </select>
+      </div>
+
+      <div class="form-group dropdown-setting">
+        <label>Menu</label>
+        <select class="form-select">
+          <option>Standard</option>
+          <option>Minimal</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Orders Section -->
+    <div class="settings-section mt-3">
+      <div class="section-title">
+        <i class="ri-tools-line"></i> Orders
+      </div>
+
+      <div class="settings-toggle">
+        <span>Sort dishes by menu order</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+      <div class="settings-toggle">
+        <span>Disable item merging</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+      <div class="settings-toggle">
+        <span>Disable combo matching</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+      <div class="settings-toggle">
+        <span>Disable dish tagging</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+         <div class="settings-toggle">
+        <span>Prompt customer info on pickup & delivery</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+         <div class="settings-toggle">
+        <span>Show dish popup for ingredients</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+    </div>
+   <!-- Dine-In Orders Section -->
+    <div class="settings-section mt-3">
+      <div class="section-title">
+        <i class="ri-tools-line"></i> Orders
+      </div>
+
+      <div class="settings-toggle">
+        <span>Table required</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+      <div class="settings-toggle">
+        <span>Prompt close table only after payment</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+      <div class="settings-toggle">
+        <span>Disable combo matching</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+      <div class="settings-toggle">
+        <span>Auto close table after full payment</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+         <div class="settings-toggle">
+        <span>Always show dish popup</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+         <div class="settings-toggle">
+        <span>Disable table map</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+      <div class="settings-toggle">
+        <span>Disable individual table seats</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+      <div class="settings-toggle">
+        <span>Disable seat at table</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+    </div>
+     <!-- Print Section -->
+    <div class="settings-section mt-3">
+      <div class="section-title">
+        <i class="ri-tools-line"></i> Printing
+      </div>
+
+      <div class="settings-toggle">
+        <span>Automatic receipt printing</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+      
+       
+    </div>
+  </div>
+</div>
