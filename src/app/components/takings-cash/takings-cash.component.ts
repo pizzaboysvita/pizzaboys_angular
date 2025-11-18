@@ -17,6 +17,7 @@ export class TakingsCashComponent {
   
 sessionStart = "17/11, 10:04 pm";
 activeTab = "end";
+CashactiveTab = "exactAmt";
 
 // Table rows
 // takingsRows = [
@@ -52,6 +53,29 @@ historyRows = [
       unSortIcon: true,
          tooltipValueGetter: (p: ITooltipParams) =>p.value,
     }]
+    cashCountRows: any[] = [
+      {
+      unit:"$0.00",
+      quantity:'1',
+      total:'$000'
+      },
+        {
+      unit:"$0.00",
+      quantity:'2',
+      total:'$000'
+      },
+        {
+      unit:"$0.00",
+      quantity:'3',
+      total:'$000'
+      },
+        {
+      unit:"$0.00",
+      quantity:'4',
+      total:'$000'
+      },
+
+    ]
 takingsRows: any[] = [
   {
     type: "Cash",
@@ -97,16 +121,35 @@ updateVariance(row: any) {
 
   // row.variance = counted - expected;
 }
-// History rows
+amount: number = 0;
+// countType = 'exact';
+cashCount=false
+keys = ['7','8','9','4','5','6','1','2','3','0','00'];
+countType: 'exact' | 'denoms' = 'exact';
+cashpaymentAmount = 0;
 
+handleKeyPress(key: string) {
+  if (key === '←') {
+    this.cashpaymentAmount = Math.floor(this.cashpaymentAmount / 10);
+    return;
+  }
 
-rowsPerPage = 5;
-pageStart = 1;
-pageEnd = 5;
-
+  this.cashpaymentAmount = Number(String(this.cashpaymentAmount) + key);
 }
-interface RowData {
-  user_email: string;
-  profiles: string;
- 
+
+setCashQuick(value: number) {
+  this.cashpaymentAmount = value;
+}
+
+closeCashCount() {
+  this.cashCount = false;
+}
+
+submitCash() {
+  console.log('Cash counted:', this.cashpaymentAmount);
+  this.cashCount = false;
+}
+enableEdit(row:any){
+this.cashCount=true;
+}
 }
