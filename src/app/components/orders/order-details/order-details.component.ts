@@ -1,3 +1,4 @@
+// order-details.component.ts
 import {
   ChangeDetectorRef,
   Component,
@@ -28,9 +29,7 @@ import { PosOrdersComponent } from "../pos-orders/pos-orders.component";
 import { OrderPaymentsComponent } from "../order-payments/order-payments.component";
 import { ComboAlertComponent } from "../combo-alert/combo-alert.component";
 import { ComboSelectionComponent } from "../combo-selection/combo-selection.component";
-// import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
-// import { TimepickerModule } from 'ngx-bootstrap/timepicker';
-// import { DpDatePickerModule } from 'ng2-date-picker';
+
 @Component({
   selector: "app-order-details",
   templateUrl: "./order-details.component.html",
@@ -41,46 +40,66 @@ import { ComboSelectionComponent } from "../combo-selection/combo-selection.comp
     FormsModule,
     ReactiveFormsModule,
     ComboAlertComponent,
-    ComboSelectionComponent,
     GoogleMapsModule,
     CommonModule,
+    ComboSelectionComponent,
   ],
 })
 export class OrderDetailsComponent {
   @ViewChild("addressInput", { static: false }) addressInput!: ElementRef;
-  // @ViewChild('modalBody', { static: false }) modalBody!: ElementRef;
-  selectedDate!: Date;
-  selectedTime!: Date;
+  @ViewChild(MediaComponent) mediaComponent!: MediaComponent;
+  @ViewChild(GoogleMap) map!: GoogleMap;
+
+  // UI state
   selected: string = "dinein";
   public active = 1;
-  public markers: any[];
-  public zoom: number;
-  totalPrice: any = 0;
+  public markers: any[] = [];
+  public zoom: number = 3;
+  showOrderDuePopup = false;
+  showCustomerModal = false;
+  showNewModelPopup = false;
+
+  // Cart / combos
+  cartItems: any[] = [];
+  totalCartDetails: any[] = [];
+  totalPrice: number = 0;
   comboDishDetails: any;
-  orderDeatils: any;
-  orderItemsDeatils: any;
-  orderItemsDetails: any;
-  orderForm: FormGroup;
-  orderdueForm: FormGroup;
-  showOrderDuePopup: boolean = false;
+  matchingCombos: any[] = [];
+  comboMessage: string = "";
+  showComboAlert: boolean = false;
+  showComboSelection: boolean = false;
+  selectedComboItem: any = null;
+
+  // combo modal meta (populated from API)
+  comboGroups: any[] = [];
+  comboName: string = "";
+  comboPrice: number = 0;
+  comboId: number | null = null;
+
+  // forms + misc
+  orderForm!: FormGroup;
+  orderdueForm!: FormGroup;
   orderDueDetails: any;
+  orderItemsDetails: any[] = [];
   toppingDetails: any;
   ingredients_details: any;
   deliveryfee: any = 5.9;
-  totalCartDetails: any = [];
   modalRef: any;
   paymentdetails: any;
   comboOrderDetails: any[] = [];
-  showCustomerModal: boolean;
-  selectedItemForEdit: any;
-  selectedDishFromList: any;
-  showPopup: boolean;
-  isEditing: boolean;
 
-  showComboAlert: boolean = false;
-  comboMessage: string = "";
-  selectedComboItem: any = null;
-  showComboSelection = false;
+  // edit state
+  isEditing: boolean = false;
+
+  // customer
+  customer = {
+    name: "",
+    email: "",
+    phone: "",
+  };
+
+  filterOptions = ["Cash", "Card", "E-Wallet"];
+  selectedOption = "Cash";
 
   constructor(
     private apiService: ApisService,
@@ -91,21 +110,7 @@ export class OrderDetailsComponent {
     private cdr: ChangeDetectorRef,
     private sessionStorageService: SessionStorageService,
     private modalService: NgbModal
-  ) {
-    this.markers = [];
-    this.zoom = 3;
-  }
-  customer = {
-    name: "",
-    email: "",
-    phone: "",
-  };
-  filterOptions = ["Cash", "Card", "E-Wallet"];
-  selectedOption = "Cash";
-
-  selectOption(option: string) {
-    this.selectedOption = option;
-  }
+  ) {}
 
   ngOnInit() {
     this.orderForm = this.fb.group({
@@ -121,265 +126,115 @@ export class OrderDetailsComponent {
       orderDateTime: [new Date(), Validators.required],
     });
     this.orderDueDetails = this.orderdueForm.value.orderDue;
+
     const userId = JSON.parse(
       this.sessionStorageService.getsessionStorage("loginDetails") as any
     ).user.store_id;
 
     this.markers.push({
-      position: {
-        lat: 20.5937,
-        lng: 78.9629,
-      },
-      label: {
-        color: "black",
-        text: "India",
-      },
-      Option: {
-        draggable: true,
-        animation: google.maps.Animation.DROP,
-      },
+      position: { lat: 20.5937, lng: 78.9629 },
+      label: { color: "black", text: "India" },
+      Option: { draggable: true, animation: google.maps.Animation.DROP },
     });
+
+    // initial fetch of combo definitions (optional) - you used it previously
     this.apiService
       .getApi("/api/dish?store_id=" + userId + "&typeOfDish=combo")
       .subscribe((res: any) => {
         this.comboDishDetails = res.data;
-        console.log(this.comboDishDetails, "comboDishDetails");
+        console.log("comboDishDetails", this.comboDishDetails);
       });
   }
-  cartItems: any = [];
 
-  @ViewChild(GoogleMap) map!: GoogleMap;
-
-  //   addToCart(item: any) {
-  //     console.log(item,'>>>>>>>>>>>>>>> Add To cart')
-
-  //     const existingItem = this.cartItems.find((cartItem: any) => cartItem.dish_id === item.dish_id);
-  //     console.log(existingItem, 'existingItem')
-  //     if (existingItem) {
-  //       // If item already exists in the cart, just update the quantity
-  //       existingItem.dish_quantity++;
-  //     } else {
-  //       // console.log(  this.moveSelectedOptionsToMainObject(item), 'moveSelectedOptionsToMainObject')
-  //       this.cartItems.push({ ...item });
-  //       // if(item.dish_type =='combo'){
-  //   this.totalCartDetails=this.apiService.transformData(this.cartItems)
-  // // }
-  //       console.log(this.totalCartDetails, 'this.totalCartDetails')
-  //       if (this.cartItems.length > 1) {
-  //         this.cartItems.forEach((cartItem: any) => {
-  //           if (cartItem.dish_type == 'standard') {
-  //             this.comboDishDetails.forEach((comboItem: any) => {
-  //               if (comboItem.combo_item_dish_id == cartItem.dish_id) {
-  //                 console.log(comboItem, 'comboItem')
-  //                 this.toastr.success(comboItem.dish_name + ' ' + comboItem.dish_price, 'Check Combo Options');
-  //                 //
-  //                 // cartItem.dish_quantity = 1; // Initialize quantity for each item
-  //               }
-  //             });
-  //           }
-  //         })
-  //       }
-  //       // this.moveSelectedOptionsToMainObject(item);
-  //     }
-  //     console.log(this.cartItems, '  this.cartItems')
-  //   }
-  // addToCart(item: any) {
-  //   console.log(item, '>>>>>>>>>>>>>>> Add To cart');
-
-  //   const existingIndex = this.cartItems.findIndex(
-  //     (cartItem: any) => cartItem.dish_id === item.dish_id
-  //   );
-
-  //   if (existingIndex > -1) {
-  //     // ✅ Item already exists in cart
-
-  //     // ✅ If editing, reflect changes (no duplicate)
-  //     if (this.isEditing) {
-  //     const existingItem = this.cartItems[existingIndex];
-
-  //       console.log('🟢 Updating existing item with edited details...');
-  //       this.cartItems[existingIndex] = {
-  //         ...existingItem,
-  //         ...item, // merge all latest edits
-  //         dish_option_set_array: [...(item.dish_option_set_array || [])],
-  //         dish_ingredient_array: [...(item.dish_ingredient_array || [])],
-  //       };
-  //     } else {
-  //           const existingItem = this.cartItems[existingIndex];
-  //       // ✅ If not editing, just increase quantity
-  //       existingItem.dish_quantity++;
-  //     }
-  //   } else {
-  //     // ✅ If it’s a new item, push to cart
-  //     this.cartItems.push({ ...item });
-  //   }
-
-  //   // ✅ Always recalc total and refresh references
-  //   this.totalCartDetails = this.apiService.transformData(this.cartItems);
-
-  //   // ✅ Combo check logic (unchanged)
-  //   if (this.cartItems.length > 1) {
-  //     this.cartItems.forEach((cartItem: any) => {
-  //       if (cartItem.dish_type === 'standard') {
-  //         this.comboDishDetails.forEach((comboItem: any) => {
-  //           if (comboItem.combo_item_dish_id === cartItem.dish_id) {
-  //             console.log(comboItem, 'comboItem');
-  //             this.toastr.success(
-  //               `${comboItem.dish_name} ${comboItem.dish_price}`,
-  //               'Check Combo Options'
-  //             );
-  //           }
-  //         });
-  //       }
-  //     });
-  //   }
-
-  //   // ✅ Trigger change detection
-  //   this.cartItems = [...this.cartItems];
-
-  //   this.cdr.detectChanges();
-
-  //   console.log(this.cartItems, 'Updated cartItems after add/edit');
-  // }
-  // addToCart(item: any) {
-  //   console.log(item, ">>>>>>>>>>>>>>> Add To cart");
-
-  //   const existingIndex = this.cartItems.findIndex(
-  //     (cartItem: any) => cartItem.dish_id === item.dish_id
-  //   );
-
-  //   const existingItem =
-  //     existingIndex > -1 ? this.cartItems[existingIndex] : null;
-
-  //   // ✏️ CASE 1: If editing and item exists → Update it
-  //   if (this.isEditing && existingItem) {
-  //     console.log("🟢 Editing mode — updating existing item...");
-  //     this.cartItems[existingIndex] = {
-  //       ...existingItem,
-  //       ...item, // Merge all updated fields
-  //       dish_option_set_array: [...(item.dish_option_set_array || [])],
-  //       dish_ingredient_array: [...(item.dish_ingredient_array || [])],
-  //     };
-  //     this.isEditing = false;
-  //   }
-
-  //   // 🆕 CASE 2: If NOT editing and item does NOT exist → Add new
-  //   else if (!this.isEditing && !existingItem) {
-  //     console.log("🆕 Adding new item to cart...");
-  //     this.cartItems.push({ ...item });
-  //   }
-
-  //   // 🚫 CASE 3: If NOT editing and item already exists → Skip (do nothing)
-  //   else if (!this.isEditing && existingItem) {
-  //     console.log("🚫 Item already exists in cart — skipping add.");
-  //     // No changes
-  //     return;
-  //   }
-
-  //   // ✅ Recalculate totals
-  //   this.totalCartDetails = this.apiService.transformData(this.cartItems);
-
-  //   // ✅ Combo check logic (unchanged)
-  //   if (this.cartItems.length > 1) {
-  //     this.cartItems.forEach((cartItem: any) => {
-  //       if (cartItem.dish_type === "standard") {
-  //         this.comboDishDetails.forEach((comboItem: any) => {
-  //           if (comboItem.combo_item_dish_id === cartItem.dish_id) {
-  //             console.log(comboItem, "comboItem");
-  //             this.toastr.success(
-  //               `${comboItem.dish_name} ${comboItem.dish_price}`,
-  //               "Check Combo Options"
-  //             );
-  //           }
-  //         });
-  //       }
-  //     });
-  //   }
-
-  //   // ✅ Trigger change detection
-  //   this.cartItems = [...this.cartItems];
-  //   this.cdr.detectChanges();
-
-  //   console.log(this.cartItems, "🧾 Updated cartItems after add/edit");
-  // }
+  /* ----------------------
+     CART: add / update / remove
+     ---------------------- */
 
   addToCart(item: any) {
-    console.log(item, ">>>>>>>>>>>>>>> Add To cart");
+    console.log("Add To Cart", item);
 
     const existingIndex = this.cartItems.findIndex(
-      (cartItem: any) => cartItem.dish_id === item.dish_id
+      (x: any) => x.dish_id === item.dish_id
     );
 
-    const existingItem =
-      existingIndex > -1 ? this.cartItems[existingIndex] : null;
-
-    // ✏️ CASE 1: If editing and item exists → Update it
-    if (this.isEditing && existingItem) {
-      console.log("🟢 Editing mode — updating existing item...");
+    // Editing: replace
+    if (this.isEditing && existingIndex > -1) {
       this.cartItems[existingIndex] = {
-        ...existingItem,
+        ...this.cartItems[existingIndex],
         ...item,
         dish_option_set_array: [...(item.dish_option_set_array || [])],
         dish_ingredient_array: [...(item.dish_ingredient_array || [])],
       };
       this.isEditing = false;
     }
-
-    // 🆕 CASE 2: If NOT editing and item does NOT exist → Add new
-    else if (!this.isEditing && !existingItem) {
-      console.log("🆕 Adding new item to cart...");
+    // New: push
+    else if (existingIndex === -1) {
       this.cartItems.push({ ...item });
-    }
-
-    // 🚫 CASE 3: If NOT editing and item already exists → Skip (do nothing)
-    else if (!this.isEditing && existingItem) {
-      console.log("🚫 Item already exists in cart — skipping add.");
+    } else {
+      // item exists and not editing -> increment quantity
+      // (you previously returned early; to preserve that behaviour, keep returning)
       return;
     }
 
-    // ✅ Recalculate totals
+    // Recalculate view items
     this.totalCartDetails = this.apiService.transformData(this.cartItems);
 
-    // ✅ Combo detection — show alert instead of toastr
-    const standardDishes = this.cartItems.filter(
-      (x: any) => x.dish_type === "standard"
-    );
-    for (const cartItem of standardDishes) {
-      const combo = this.comboDishDetails?.find(
-        (comboItem: any) => comboItem.combo_item_dish_id === cartItem.dish_id
-      );
-      if (combo) {
-        this.comboMessage = `${cartItem.dish_name} is available in '${combo.dish_name}' combo. Do you want to add it to combo?`;
-        this.selectedComboItem = combo;
-        this.showComboAlert = true;
-        break; // show one alert at a time
-      }
+    // --------- COMBO CHECK ----------
+    const selectedStandardIds = this.cartItems
+      .filter((x: any) => x.dish_type === "standard")
+      .map((x: any) => x.dish_id);
+
+    if (selectedStandardIds.length > 0) {
+      this.checkComboOffer(selectedStandardIds);
     }
 
-    // ✅ Trigger change detection
     this.cartItems = [...this.cartItems];
     this.cdr.detectChanges();
-    console.log(this.cartItems, "🧾 Updated cartItems after add/edit");
   }
 
-  onPopupClosed() {
-    console.log("Popup closed — resetting edit mode");
-    this.isEditing = false; // 🔹 This resets in the parent
+  removeItem(item: any) {
+    this.cartItems = this.cartItems.filter((i: any) => i !== item);
+    this.totalPrice = this.cartItems.reduce(
+      (sum: any, it: any) => sum + this.apiService.getItemSubtotal(it),
+      0
+    );
+  }
+
+  removeItems(item: any) {
+    // remove by dish_id from totalCartDetails and cartItems
+    this.totalCartDetails = this.totalCartDetails.filter(
+      (cartItem: any) => cartItem.dish_id !== item.dish_id
+    );
+
+    // recalc duplicates
+    this.totalCartDetails.forEach((cartItem: any) => {
+      cartItem.duplicate_dish_price = this.apiService.getItemSubtotal(cartItem);
+    });
+
+    this.totalPrice = this.totalCartDetails.reduce(
+      (sum: any, cartItem: any) => sum + (cartItem.duplicate_dish_price || 0),
+      0
+    );
+
+    this.cartItems = [...this.totalCartDetails];
+    this.cdr.detectChanges();
   }
 
   increaseModalQuantity(item: any) {
-    console.log(item, "increaseModalQuantity");
     item["dish_quantity"]++;
   }
   decreaseModalQuantity(item: any) {
-    if (item["dish_quantity"] > 1) {
-      item["dish_quantity"]--;
-    }
+    if (item["dish_quantity"] > 1) item["dish_quantity"]--;
+  }
+  openNewModelPopup() {
+    this.showNewModelPopup = true;
+  }
+
+  closeNewModelPopup() {
+    this.showNewModelPopup = false;
   }
 
   get subtotal(): number {
-    // console.log(this.totalCartDetails,'<<<<<<<<<<<------------------this.cartItems.')
-
     return this.totalCartDetails.reduce(
       (sum: any, item: any) => sum + this.apiService.getItemSubtotal(item),
       0
@@ -387,13 +242,12 @@ export class OrderDetailsComponent {
   }
 
   get tax(): number {
-    return +(this.subtotal * 0.1).toFixed(2); // 10% Tax
+    return +(this.subtotal * 0.1).toFixed(2);
   }
 
   get total() {
     const fee =
       this.orderForm.value.orderType == "delivery" ? this.deliveryfee : 0;
-    // console.log(this.cartItems,this.totalCartDetails ,'<<<<<<<<<<<------------------this.cartItems. 345')
     return (
       this.totalCartDetails.reduce(
         (sum: any, item: any) => sum + this.apiService.getItemSubtotal(item),
@@ -402,62 +256,213 @@ export class OrderDetailsComponent {
       this.tax +
       fee
     );
-    // return this.subtotal + this.tax - this.discount;
   }
 
-  removeItem(item: CartItem) {
-    this.cartItems = this.cartItems.filter((i: any) => i !== item);
-    this.totalPrice = this.cartItems.reduce(
-      (sum: any, item: any) => sum + this.apiService.getItemSubtotal(item),
-      0
-    );
-    console.log(this.cartItems);
+  checkComboOffer(selectedDishIds: number[]) {
+    if (this.isEditing) return;
+    this.fetchComboDetails(selectedDishIds);
   }
 
-  removeItems(item: any) {
-    console.log(this.totalCartDetails);
-    console.log(this.cartItems);
+  fetchComboDetails(dishIds: number[]) {
+    const user = JSON.parse(
+      this.sessionStorageService.getsessionStorage("loginDetails") as any
+    ).user;
+    const storeId = user.store_id;
+    const q = dishIds.join(",");
+    const url = `/api/dish/combo-details?dish_ids=${encodeURIComponent(
+      q
+    )}&store_id=${storeId}&type=web`;
 
-    // Remove the item from cartItems
-    this.totalCartDetails = this.totalCartDetails.filter(
-      (cartItem: { dish_id: any }) => cartItem.dish_id !== item.dish_id
-    );
-    console.log(this.totalCartDetails, "after");
+    this.apiService.getApi(url).subscribe(
+      (res: any) => {
+        // expected structure: res.code === "1", res.data is array of rows
+        if (
+          res &&
+          (res.code === "1" || res.code === 1) &&
+          Array.isArray(res.data) &&
+          res.data.length
+        ) {
+          // transform into grouped combos
+          const map = new Map<number, any>();
 
-    // // Recalculate each item's duplicate_dish_price
-    this.totalCartDetails.forEach(
-      (cartItem: { duplicate_dish_price: number }) => {
-        cartItem.duplicate_dish_price =
-          this.apiService.getItemSubtotal(cartItem);
+          res.data.forEach((row: any) => {
+            // prefer combo_id; fallback to dish_id
+            const comboId =
+              row.combo_id || row.combo_dish_id || row.dish_id || 0;
+            if (!map.has(comboId)) {
+              map.set(comboId, {
+                combo_id: comboId,
+                combo_name: row.combo_name || row.dish_name || "Combo",
+                combo_price: row.combo_price || row.dish_price || 0,
+                items: [],
+              });
+            }
+
+            // Determine item dish id & name & image from possible fields in response
+            const itemDishId =
+              row.combo_item_dish_id ||
+              row.dish_id ||
+              row.combo_dish_item_id ||
+              row.item_dish_id;
+            const itemDishName =
+              row.combo_item_dish_name ||
+              row.combo_dish_item_name ||
+              row.dish_name ||
+              (row.items &&
+                row.items[0] &&
+                (row.items[0].dishName || row.items[0].dish_name)) ||
+              "";
+
+            const itemImage = row.dish_image || row.image_url || "";
+
+            // push if not already present
+            const comboObj = map.get(comboId);
+            const exists = comboObj.items.some(
+              (i: any) => i.dish_id === itemDishId
+            );
+            if (!exists) {
+              comboObj.items.push({
+                dish_id: itemDishId,
+                dish_name: itemDishName || `ID:${itemDishId}`,
+                dish_image: itemImage,
+                // we may use more fields later if available
+              });
+            }
+          });
+
+          this.matchingCombos = Array.from(map.values());
+
+          // If at least one combo is valid — prompt user
+          if (this.matchingCombos.length > 0) {
+            this.comboMessage =
+              "Combo offer available. Do you want to choose a combo?";
+            this.showComboAlert = true;
+            // keep matchingCombos ready for modal
+            console.log("matchingCombos", this.matchingCombos);
+          } else {
+            this.showComboAlert = false;
+          }
+        } else {
+          // no combos
+          this.matchingCombos = [];
+          this.showComboAlert = false;
+        }
+      },
+      (err: any) => {
+        console.error("Failed to fetch combo details", err);
+        this.matchingCombos = [];
+        this.showComboAlert = false;
       }
     );
+  }
 
-    // Update total price
-    this.totalPrice = this.totalCartDetails.reduce(
-      (sum: any, cartItem: { duplicate_dish_price: any }) =>
-        sum + cartItem.duplicate_dish_price,
-      0
-    );
-    console.log();
+  // user tapped YES on alert -> open selection modal
+  onComboYes() {
+    this.showComboAlert = false;
+    // open combo selection (we use your existing combo-selection component which lists combos)
+    this.showComboSelection = true;
+  }
 
-    // Update cart reference if needed
-    this.cartItems = [...this.totalCartDetails];
+  // user tapped NO -> close alert
+  onComboNo() {
+    this.showComboAlert = false;
+  }
 
-    // Trigger Angular change detection
+  // combo-selection emitted a selected combo object
+  onComboSelected(combo: any) {
+    this.showComboSelection = false;
+    if (!combo) return;
+
+    // find dish ids used by this combo
+    const comboDishIds: number[] = (combo.items || [])
+      .map((i: any) => i.dish_id)
+      .filter(Boolean);
+
+    // Remove standard dishes used in this combo (so they don't appear duplicated)
+    this.cartItems = this.cartItems.filter((item: any) => {
+      // keep non-standard or standard dishes that are not part of comboDishIds
+      if (item.dish_type !== "standard") return true;
+      return !comboDishIds.includes(item.dish_id);
+    });
+
+    // Add one combo cart item
+    const comboCartItem = {
+      dish_id:
+        combo.combo_id || combo.combo_id || combo.comboId || combo.dish_id,
+      dish_name: combo.combo_name || combo.comboName || "Combo",
+      dish_price: combo.combo_price || combo.comboPrice || 0,
+      dish_quantity: 1,
+      dish_type: "combo",
+      combo_selected_dishes: [
+        {
+          combo_option_name: combo.combo_name || combo.comboName || "Combo",
+          combo_option_dish_name: "", // optional, leave blank or set a group label
+          combo_option_selected_array: combo.items.map((it: any) => ({
+            dish_opt_type: it.dish_name || it.dish_name || `ID:${it.dish_id}`,
+            choose_option: [
+              {
+                name: it.dish_name || `ID:${it.dish_id}`,
+                price: 0,
+                quantity: 1,
+                dish_id: it.dish_id,
+                image_url: it.dish_image || "",
+              },
+            ],
+          })),
+        },
+      ],
+      // preserve raw items for easier server payload
+      combo_items: combo.items,
+    };
+
+    this.cartItems.push(comboCartItem);
+
+    // refresh view data & detect changes
+    this.totalCartDetails = this.apiService.transformData(this.cartItems);
+    this.cartItems = [...this.cartItems];
     this.cdr.detectChanges();
-
-    console.log(this.cartItems, "Updated cartItems after removal");
   }
 
-  showNewModelPopup = false;
-  openNewModelPopup() {
-    this.showNewModelPopup = true;
+  /* ----------------------
+     Misc UI handlers
+     ---------------------- */
+
+  onPopupClosed() {
+    console.log("Popup closed — resetting edit mode");
+    this.isEditing = false;
   }
-  closeNewModelPopup() {
-    this.showNewModelPopup = false;
+
+  openComboSelectionModal() {
+    this.showComboSelection = true;
   }
+
+  editItem(item: any) {
+    this.isEditing = true;
+    if (this.mediaComponent) {
+      this.mediaComponent.openEditPopup(item);
+    }
+  }
+
+  clearOrderDetails() {
+    this.cartItems = [];
+    this.totalCartDetails = [];
+  }
+
+  orderList() {
+    const modalRef = this.modal.open(PosOrdersComponent, {
+      windowClass: "theme-modal",
+      centered: true,
+      size: "xl",
+    });
+  }
+
+  /* ----------------------
+     SUBMIT ORDER (build final reqbody)
+     ---------------------- */
+
   submitOrder() {
     this.comboOrderDetails = [];
+
     this.modalRef = this.modalService.open(OrderPaymentsComponent, {
       size: "xl",
       centered: true,
@@ -466,154 +471,118 @@ export class OrderDetailsComponent {
     this.modalRef.componentInstance.customer = this.customer;
 
     this.modalRef.result.then(
-      (result: { updatedCart: any }) => {
-        if (result) {
-          console.log("Modal closed with data:", result);
-          // Do something with the returned data
-          this.paymentdetails = result;
-          console.log(this.paymentdetails);
-          console.log(this.cartItems, "this.cartItems opennnnnnnnnnnn ");
+      (result: any) => {
+        if (!result) return;
+        this.paymentdetails = result;
 
-          this.orderItemsDetails = this.cartItems.map((item: any) => ({
-            dish_id: item.dish_id,
-            dish_note: item.dishnote,
-            quantity: item.dish_quantity,
-            price: item.duplicate_dish_price,
-            // base:item.selectedOptions.name,
-            // base_price:item.selectedOptions.price
+        // Build orderItemsDetails (flatten)
+        this.orderItemsDetails = this.cartItems.map((item: any) => ({
+          dish_id: item.dish_id,
+          dish_note: item.dishnote,
+          quantity: item.dish_quantity,
+          price:
+            item.duplicate_dish_price || this.apiService.getItemSubtotal(item),
+        }));
+
+        // Build combo_order_details explicitly from cart
+        const combosForOrder = this.cartItems
+          .filter((x: any) => x.dish_type === "combo")
+          .map((combo: any) => ({
+            combo_id: combo.dish_id,
+            combo_name: combo.dish_name,
+            combo_price: combo.dish_price,
+            selected_groups:
+              combo.combo_items || combo.combo_selected_dishes || [],
           }));
 
-          this.cartItems.forEach((dish: any) => {
-            // Parse if JSON string
-            let choices = [];
-            if (typeof dish.dish_choices_json === "string") {
-              try {
-                choices = JSON.parse(dish.dish_choices_json);
-              } catch (e) {
-                console.error(
-                  "Invalid JSON in dish_choices_json:",
-                  dish.dish_choices_json
-                );
-                choices = [];
-              }
-            } else if (Array.isArray(dish.dish_choices_json)) {
-              choices = dish.dish_choices_json;
+        this.comboOrderDetails = combosForOrder;
+
+        // build toppings & ingredients (if exist)
+        this.toppingDetails = this.cartItems.flatMap((dish: any) =>
+          (dish.selectedOptions || [])
+            .filter((opt: any) => opt.selected)
+            .map((opt: any) => ({
+              dish_id: dish.dish_id,
+              name: opt.name,
+              price: opt.price,
+              quantity: opt.quantity,
+            }))
+        );
+
+        this.ingredients_details = this.cartItems.flatMap((dish: any) =>
+          (dish.dish_ingredient_array || [])
+            .filter((opt: any) => opt.selected)
+            .map((opt: any) => ({
+              dish_id: dish.dish_id,
+              name: opt.name,
+              price: opt.price,
+              quantity: opt.quantity,
+            }))
+        );
+
+        let user = JSON.parse(
+          this.sessionStorageService.getsessionStorage("loginDetails") as any
+        ).user;
+
+        const reqbody: any = {
+          total_price: this.subtotal,
+          total_quantity: this.cartItems.length,
+          store_id: user.store_id,
+          order_type:
+            this.orderForm.get("orderType")?.value === "pickup" ? 1 : 2,
+          pickup_datetime: new Date(),
+          delivery_address: this.orderForm.get("deliveryAddress")?.value,
+          delivery_fees: this.deliveryfee,
+          is_pos_order: 1,
+          delivery_datetime: new Date(),
+          order_notes: this.orderForm.get("deliveryNote")?.value,
+          order_status: "Confirmed",
+          order_created_by: user.store_id,
+          order_details_json: this.orderItemsDetails,
+          order_due: this.orderdueForm.get("orderDue")?.value,
+          order_due_datetime: this.orderdueForm.get("orderDateTime")?.value,
+          topping_details: this.toppingDetails,
+          ingredients_details: this.ingredients_details,
+          unitnumber: this.orderForm.value.unitNumber,
+          delivery_notes: this.orderForm.value.deliveryNote,
+          gst_price: this.tax,
+          combo_order_details: this.comboOrderDetails,
+          order_payments_json: this.paymentdetails.order_payments_json,
+          payment_split_percentage_json:
+            this.paymentdetails.payment_split_percentage_json,
+          payment_split_users_json:
+            this.paymentdetails.payment_split_users_json,
+          payment_split_items_json:
+            this.paymentdetails.payment_split_items_json,
+        };
+
+        console.log("order reqbody ->", reqbody);
+
+        // Final submit to backend
+        this.apiService
+          .postApi("/api/order/v2 ", reqbody)
+          .subscribe((res: any) => {
+            if (res && res.code == 1) {
+              this.toastr.success(res.message, "Success");
+              this.cartItems = [];
+              this.totalCartDetails = [];
+              this.customer = { name: "", email: "", phone: "" };
+              this.cdr.detectChanges();
+            } else {
+              this.toastr.error(res?.message || "Order failed", "Error");
             }
-
-            // Now push combo details
-            choices.forEach((opt: any) => {
-              if (
-                this.comboOrderDetails.filter(
-                  (x) =>
-                    x.combo_id != dish.dish_id &&
-                    x.combo_name != dish.dish_name &&
-                    x.price != dish.duplicate_dish_price
-                )
-              ) {
-                this.comboOrderDetails.push({
-                  combo_id: dish.dish_id,
-                  combo_name: dish.dish_name,
-                  price: dish.duplicate_dish_price,
-                });
-              }
-            });
           });
-
-          console.log(this.comboOrderDetails);
-          this.toppingDetails = this.cartItems.flatMap((dish: any) =>
-            dish.selectedOptions
-              .filter((opt: any) => opt.selected)
-              .map((opt: any) => ({
-                dish_id: dish.dish_id,
-                // inventory_id
-                name: opt.name,
-                price: opt.price,
-                quantity: opt.quantity,
-              }))
-          );
-          this.ingredients_details = this.cartItems.flatMap((dish: any) =>
-            dish.dish_ingredient_array
-              .filter((opt: any) => opt.selected)
-              .map((opt: any) => ({
-                dish_id: dish.dish_id,
-                name: opt.name,
-                price: opt.price,
-                quantity: opt.quantity,
-                // inventory_id
-              }))
-          );
-          console.log(this.toppingDetails, "this.cartItems opennnnnnnnnnnn ");
-          let user = JSON.parse(
-            this.sessionStorageService.getsessionStorage("loginDetails") as any
-          ).user;
-          console.log(
-            JSON.parse(
-              this.sessionStorageService.getsessionStorage(
-                "loginDetails"
-              ) as any
-            ).user.user_id,
-            "new----------> 123",
-            this.orderItemsDeatils
-          );
-          const reqbody = {
-            total_price: this.subtotal,
-            total_quantity: this.cartItems.length,
-            store_id: user.store_id,
-            // "order_type": this.orderForm.get('orderType')?.value,
-            order_type:
-              this.orderForm.get("orderType")?.value === "pickup" ? 1 : 2,
-            pickup_datetime: new Date(),
-            delivery_address: this.orderForm.get("deliveryAddress")?.value,
-            delivery_fees: this.deliveryfee,
-            is_pos_order: 1,
-            delivery_datetime: new Date(),
-            order_notes: this.orderForm.get("deliveryNote")?.value,
-            order_status: "Confirmed",
-            order_created_by: user.store_id,
-            order_details_json: this.orderItemsDetails,
-            // "payment_method": "Card",
-            // "payment_status": "Completed",
-            // "payment_amount": this.total,
-            order_due: this.orderdueForm.get("orderDue")?.value,
-            order_due_datetime: this.orderdueForm.get("orderDateTime")?.value,
-            topping_details: this.toppingDetails,
-            ingredients_details: this.ingredients_details,
-            unitnumber: this.orderForm.value.unitNumber,
-            delivery_notes: this.orderForm.value.deliveryNote,
-            gst_price: this.tax,
-            combo_order_details: this.comboOrderDetails,
-            order_payments_json: this.paymentdetails.order_payments_json,
-            payment_split_percentage_json:
-              this.paymentdetails.payment_split_percentage_json,
-            payment_split_users_json:
-              this.paymentdetails.payment_split_users_json,
-            payment_split_items_json:
-              this.paymentdetails.payment_split_items_json,
-          };
-          console.log(reqbody, "new----------> 123");
-          // /api/order
-          this.apiService
-            .postApi("/api/order/v2 ", reqbody)
-            .subscribe((res: any) => {
-              console.log(res, "new----------> 123");
-              if (res && res.code == 1) {
-                this.toastr.success(res.message, "Success");
-                this.cartItems = [];
-                this.totalCartDetails = [];
-                this.customer = {
-                  name: "",
-                  email: "",
-                  phone: "",
-                };
-              }
-            });
-        }
       },
       (reason: any) => {
         console.log("Modal dismissed:", reason);
       }
     );
   }
+
+  /* ----------------------
+     Address autocomplete helpers (unchanged)
+     ---------------------- */
+
   getAddressAutocomplete() {
     console.log("addressInput");
     const autocomplete = new google.maps.places.Autocomplete(
@@ -631,11 +600,9 @@ export class OrderDetailsComponent {
       }
     });
 
-    // Watch for pac-container and force re-position
     const observer = new MutationObserver(() => {
       document.querySelectorAll(".pac-item span").forEach((el) => {
         if (el.textContent && el.textContent.includes(",")) {
-          // Remove everything after the last comma
           el.textContent = el.textContent.substring(
             0,
             el.textContent.lastIndexOf(",")
@@ -656,14 +623,14 @@ export class OrderDetailsComponent {
 
     observer.observe(document.body, { childList: true, subtree: true });
   }
+
   ngAfterViewInit() {
     const observer = new MutationObserver(() => {
       const pac = document.querySelector(".pac-container") as HTMLElement;
       if (pac && this.addressInput) {
         const rect = this.addressInput.nativeElement.getBoundingClientRect();
-
-        pac.style.zIndex = "2000"; // above modal
-        pac.style.position = "fixed"; // use fixed for modal positioning
+        pac.style.zIndex = "2000";
+        pac.style.position = "fixed";
         pac.style.width = rect.width + "px";
         pac.style.top = rect.bottom + "px";
         pac.style.left = rect.left + "px";
@@ -675,6 +642,7 @@ export class OrderDetailsComponent {
       subtree: true,
     });
   }
+
   openDeliveryPopup() {
     this.showOrderDuePopup = true;
   }
@@ -696,55 +664,19 @@ export class OrderDetailsComponent {
     this.showCustomerModal = true;
   }
   clear() {
-    this.customer = {
-      name: "",
-      email: "",
-      phone: "",
-    };
+    this.customer = { name: "", email: "", phone: "" };
   }
-  @ViewChild(MediaComponent) mediaComponent!: MediaComponent;
 
-  editItem(item: any) {
-    this.isEditing = true;
-    if (this.mediaComponent) {
-      this.mediaComponent.openEditPopup(item); // ✅ call popup method from media
-    }
-  }
-  clearOrderDetails() {
-    this.cartItems = [];
-    this.totalCartDetails = [];
-  }
-  orderList() {
-    const modalRef = this.modal.open(PosOrdersComponent, {
-      windowClass: "theme-modal",
-      centered: true,
-      size: "xl",
-    });
-  }
- onComboSelected(combo: any) {
-  this.showComboSelection = false;
-
-  combo.dish_id = combo.combo_item_dish_id;
-
-  if (this.mediaComponent) {
-    this.mediaComponent.openComboSelectionPopup(combo);
+  logCombo(event: any) {
+    console.log("PARENT RECEIVED EVENT:", event);
   }
 }
 
- onComboYes() {
-  this.showComboAlert = false;
-  this.showComboSelection = true;
-}
-
-
-  onComboNo() {
-    this.showComboAlert = false;
-  }
-}
+// optional CartItem interface left as-is
 export interface CartItem {
-  name: string; // Item name
-  price: number; // Item price
-  quantity: number; // Quantity of the item
-  img?: string; // Optional property for image URL
-  Ingredients: string; //optional property for Ingredients
+  name: string;
+  price: number;
+  quantity: number;
+  img?: string;
+  Ingredients: string;
 }
