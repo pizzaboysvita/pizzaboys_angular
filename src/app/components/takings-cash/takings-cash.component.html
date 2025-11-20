@@ -70,7 +70,7 @@
                    class="counted-input"
                    [(ngModel)]="row.counted"
                    (input)="updateVariance(row)" />
-                   <span class="material-symbols-outlined edit-ico" 
+                   <span class="material-symbols-outlined edit-ico"  style="font-size: 16px !important;cursor: pointer;"
             (click)="enableEdit(row)">
         edit
       </span>
@@ -230,7 +230,10 @@
       <tr *ngFor="let row of cashCountRows">
 
         <td>{{ row.unit }}</td>
-        <td>{{ row.quantity }}</td>
+        <td>{{ row.quantity }} <span class="material-symbols-outlined edit-ico"  style="font-size: 16px !important;cursor: pointer;"
+            (click)="editModal=true">
+        edit
+      </span></td>
 
         <td>{{ row.total }}</td>
 
@@ -248,5 +251,49 @@
   </div>
 
 </div>
+<div class="modal fade"
+     tabindex="-1"
+     role="dialog"
+     [ngClass]="{ 'show d-block': editModal }"
+     (click)="editModal = false"
+     style="background: rgba(0,0,0,0.5); z-index: 1040;">
+
+  <div class="modal-dialog modal-dialog-centered keypad-modal"  style="max-width: 350px;" (click)="$event.stopPropagation()">
+    <div class="modal-content keypad-box">
+
+      <!-- HEADER: Denomination / Total -->
+      <div class="keypad-header d-flex justify-content-between px-3 py-2">
+        <div>
+          <div class="label-title">Denomination</div>
+          <div class="label-value">$0.10</div>
+        </div>
+
+        <div class="text-end">
+          <div class="label-title">Total</div>
+          <div class="label-value">$0.00</div>
+        </div>
+      </div>
+
+      <!-- DISPLAY -->
+      <div class="keypad-display text-end px-3">
+        0
+      </div>
+
+      <!-- KEYPAD GRID -->
+      <div class="keypad-grid">
+        <button class="key-btn" *ngFor="let num of ['7','8','9','4','5','6','1','2','3']"
+                (click)="press(num)">
+          {{ num }}
+        </button>
+
+        <button class="key-btn wide-btn" (click)="press('0')">0</button>
+        <button class="key-btn wide-btn" (click)="press('00')">00</button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
 
 

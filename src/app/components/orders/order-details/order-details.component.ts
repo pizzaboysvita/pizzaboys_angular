@@ -69,7 +69,7 @@ export class OrderDetailsComponent {
   showComboAlert: boolean = false;
   showComboSelection: boolean = false;
   selectedComboItem: any = null;
-
+cashCount=false 
   // combo modal meta (populated from API)
   comboGroups: any[] = [];
   comboName: string = "";
@@ -673,6 +673,18 @@ export class OrderDetailsComponent {
   openholdModal(){
     this.Openmodal=true
   }
+  openmodal(){
+    this.cashCount=true
+  }
+  paymentTab = 'discount';
+typeTab = '%';
+modifyValue = '0';
+
+onKey(key: string) {
+  if (this.modifyValue === '0') this.modifyValue = '';
+  this.modifyValue += key;
+}
+
 }
 
 // optional CartItem interface left as-is
