@@ -27,7 +27,7 @@ CashactiveTab = "exactAmt";
 // ];
   sortColumn: string = "";
   sortDirection: "asc" | "desc" = "asc";
-
+   editModal=false
   gridOptions = {
     pagination: true,
     rowHeight: 60
@@ -151,5 +151,11 @@ submitCash() {
 }
 enableEdit(row:any){
 this.cashCount=true;
+}
+displayValue: string = "0";
+
+press(val: string) {
+  if (this.displayValue === "0") this.displayValue = "";
+  this.displayValue += val;
 }
 }
