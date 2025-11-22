@@ -1,18 +1,15 @@
 <div class="row g-0 unified-card">
-  <!-- Left Section (Menu Items) -->
   <div class="col-xl-8 left-section p-3">
-    <app-media
-      (itemAdded)="addToCart($event)"
-      (popupClosed)="onPopupClosed()">
+    <app-media (itemAdded)="addToCart($event)" (popupClosed)="onPopupClosed()">
     </app-media>
   </div>
 
-  <!-- Right Section (Order Details) -->
-  <div class="col-xl-4 right-section p-0 shadow-sm d-flex flex-column"
-       style="height: 90vh; overflow: hidden !important;">
-
+  <div
+    class="col-xl-4 right-section p-0 shadow-sm d-flex flex-column"
+    style="height: 90vh; overflow: hidden !important"
+  >
     <!-- Order Header -->
-    <div class="d-flex justify-content-center" style="column-gap: 10px;">
+    <div class="d-flex justify-content-center" style="column-gap: 10px">
       <h5 class="text-dark mt-2 mb-3 fw-bold">Order List</h5>
       <div class="order-icon-row mb-2 gap-1">
         <i class="ri-shopping-bag-2-line f-16" (click)="orderList()"></i>
@@ -21,17 +18,21 @@
 
     <!-- Order Type Buttons -->
     <div class="btn-group w-100 mb-3 order-type-toggle">
-      <button type="button"
-              class="toggle-btn"
-              [class.active]="selected === 'dinein'"
-              (click)="selected = 'dinein'; openNewModelPopup()">
+      <button
+        type="button"
+        class="toggle-btn"
+        [class.active]="selected === 'dinein'"
+        (click)="selected = 'dinein'; openNewModelPopup()"
+      >
         {{ orderForm.value.orderType }}
       </button>
 
-      <button type="button"
-              class="toggle-btn"
-              [class.active]="selected === 'delivery'"
-              (click)="selected = 'delivery'; openDeliveryPopup()">
+      <button
+        type="button"
+        class="toggle-btn"
+        [class.active]="selected === 'delivery'"
+        (click)="selected = 'delivery'; openDeliveryPopup()"
+      >
         {{ orderDueDetails }}
       </button>
     </div>
@@ -48,7 +49,10 @@
     </div>
 
     <!-- Order Items List -->
-    <div class="p-3" style="height: 400px; overflow-y: auto; overflow-x: hidden;">
+    <div
+      class="p-3"
+      style="height: 400px; overflow-y: auto; overflow-x: hidden"
+    >
       <ul>
         @for (item of totalCartDetails; track item) {
 
@@ -57,44 +61,73 @@
         <li class="mb-3">
           <div class="horizontal-product-box">
             <div class="row align-items-start">
-
               <!-- Image + Quantity -->
               <div class="col-3 text-center">
-                <img [src]="item.dish_image"
-                     alt="{{ item.dish_name }}"
-                     width="70"
-                     height="60"
-                     class="rounded"
-                     style="object-fit: cover;">
+                <img
+                  [src]="item.dish_image"
+                  alt="{{ item.dish_name }}"
+                  width="70"
+                  height="60"
+                  class="rounded"
+                  style="object-fit: cover"
+                />
 
-                <div class="like-box d-flex justify-content-center mt-2" style="width: 70px;">
-                  <i class="ri-subtract-line" (click)="decreaseModalQuantity(item)" style="cursor:pointer;"></i>
+                <div
+                  class="like-box d-flex justify-content-center mt-2"
+                  style="width: 70px"
+                >
+                  <i
+                    class="ri-subtract-line"
+                    (click)="decreaseModalQuantity(item)"
+                    style="cursor: pointer"
+                  ></i>
                   <span>{{ item.dish_quantity }}</span>
-                  <i class="ri-add-line" (click)="increaseModalQuantity(item)" style="cursor:pointer;"></i>
-                  <i class="ri-delete-bin-line text-danger" (click)="removeItem(item)" style="cursor:pointer;"></i>
+                  <i
+                    class="ri-add-line"
+                    (click)="increaseModalQuantity(item)"
+                    style="cursor: pointer"
+                  ></i>
+                  <i
+                    class="ri-delete-bin-line text-danger"
+                    (click)="removeItem(item)"
+                    style="cursor: pointer"
+                  ></i>
                 </div>
               </div>
 
               <!-- Combo Info -->
               <div class="col-9">
                 <div class="d-flex justify-content-between">
-                  <h6 class="mb-0" style="font-size:14px;"><b>{{ item.dish_name }}</b></h6>
-                  <h6 class="mb-0 fw-bold" style="font-size:14px;">${{ item.item_total_price }}</h6>
+                  <h6 class="mb-0" style="font-size: 14px">
+                    <b>{{ item.dish_name }}</b>
+                  </h6>
+                  <h6 class="mb-0 fw-bold" style="font-size: 14px">
+                    ${{ item.item_total_price }}
+                  </h6>
                 </div>
 
-                <div *ngFor="let comboOpt of item.combo_selected_dishes" class="mt-1">
-                  <div style="font-size: 14px;">
-                    <span style="text-decoration: underline; font-weight:600;">
+                <div
+                  *ngFor="let comboOpt of item.combo_selected_dishes"
+                  class="mt-1"
+                >
+                  <div style="font-size: 14px">
+                    <span style="text-decoration: underline; font-weight: 600">
                       {{ comboOpt.combo_option_name }}
                     </span>
                   </div>
 
-                  <div *ngFor="let option of comboOpt.combo_option_selected_array" class="ms-3">
-                    <div style="font-size:14px; font-weight:500;">
+                  <div
+                    *ngFor="let option of comboOpt.combo_option_selected_array"
+                    class="ms-3"
+                  >
+                    <div style="font-size: 14px; font-weight: 500">
                       {{ option.dish_opt_type }}
                     </div>
 
-                    <ul class="ms-4 mb-1" style="font-size:14px; list-style-type:disc;">
+                    <ul
+                      class="ms-4 mb-1"
+                      style="font-size: 14px; list-style-type: disc"
+                    >
                       <li *ngFor="let opt of option.choose_option">
                         {{ opt.name }}
                         <span *ngIf="opt.price"> - ${{ opt.price }}</span>
@@ -104,16 +137,19 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-3">
-                  <i class="ri-edit-2-line text-primary fs-5"
-                     (click)="editItem(item)"
-                     style="cursor:pointer;"></i>
+                  <i
+                    class="ri-edit-2-line text-primary fs-5"
+                    (click)="editItem(item)"
+                    style="cursor: pointer"
+                  ></i>
 
-                  <i class="ri-delete-bin-line text-danger fs-5"
-                     (click)="removeItems(item)"
-                     style="cursor:pointer;"></i>
+                  <i
+                    class="ri-delete-bin-line text-danger fs-5"
+                    (click)="removeItems(item)"
+                    style="cursor: pointer"
+                  ></i>
                 </div>
               </div>
-
             </div>
           </div>
         </li>
@@ -124,37 +160,63 @@
         <li class="mb-3">
           <div class="horizontal-product-box">
             <div class="row align-items-start">
-
               <!-- Image + Quantity -->
               <div class="col-3 text-center">
-                <img [src]="item.dish_image"
-                     alt="{{ item.dish_name }}"
-                     width="70"
-                     height="60"
-                     class="rounded"
-                     style="object-fit: cover;">
+                <img
+                  [src]="item.dish_image"
+                  alt="{{ item.dish_name }}"
+                  width="70"
+                  height="60"
+                  class="rounded"
+                  style="object-fit: cover"
+                />
 
-                <div class="like-box d-flex justify-content-center mt-2" style="width: 70px;">
-                  <i class="ri-subtract-line" (click)="decreaseModalQuantity(item)" style="cursor:pointer;"></i>
+                <div
+                  class="like-box d-flex justify-content-center mt-2"
+                  style="width: 70px"
+                >
+                  <i
+                    class="ri-subtract-line"
+                    (click)="decreaseModalQuantity(item)"
+                    style="cursor: pointer"
+                  ></i>
                   <span>{{ item.dish_quantity }}</span>
-                  <i class="ri-add-line" (click)="increaseModalQuantity(item)" style="cursor:pointer;"></i>
-                  <i class="ri-delete-bin-line text-danger" (click)="removeItem(item)" style="cursor:pointer;"></i>
+                  <i
+                    class="ri-add-line"
+                    (click)="increaseModalQuantity(item)"
+                    style="cursor: pointer"
+                  ></i>
+                  <i
+                    class="ri-delete-bin-line text-danger"
+                    (click)="removeItem(item)"
+                    style="cursor: pointer"
+                  ></i>
                 </div>
               </div>
 
               <!-- Item Info -->
               <div class="col-9">
                 <div class="d-flex justify-content-between">
-                  <h6 class="mb-0" style="font-size:14px;"><b>{{ item.dish_name }}</b></h6>
-                  <h6 class="mb-0 fw-bold" style="font-size:14px;">${{ item.item_total_price }}</h6>
+                  <h6 class="mb-0" style="font-size: 14px">
+                    <b>{{ item.dish_name }}</b>
+                  </h6>
+                  <h6 class="mb-0 fw-bold" style="font-size: 14px">
+                    ${{ item.item_total_price }}
+                  </h6>
                 </div>
 
-                <div *ngFor="let standedOpt of item.standed_option_selected_array" class="mt-1">
-                  <div style="font-size:14px; font-weight:500;">
+                <div
+                  *ngFor="let standedOpt of item.standed_option_selected_array"
+                  class="mt-1"
+                >
+                  <div style="font-size: 14px; font-weight: 500">
                     {{ standedOpt.dish_opt_type }}
                   </div>
 
-                  <ul class="ms-4 mb-1" style="font-size:14px; list-style-type:disc;">
+                  <ul
+                    class="ms-4 mb-1"
+                    style="font-size: 14px; list-style-type: disc"
+                  >
                     <li *ngFor="let opt of standedOpt.choose_option">
                       {{ opt.name }}
                       <span *ngIf="opt.price"> - ${{ opt.price }}</span>
@@ -163,22 +225,23 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-3">
-                  <i class="ri-edit-2-line text-primary fs-5"
-                     (click)="editItem(item)"
-                     style="cursor:pointer;"></i>
+                  <i
+                    class="ri-edit-2-line text-primary fs-5"
+                    (click)="editItem(item)"
+                    style="cursor: pointer"
+                  ></i>
 
-                  <i class="ri-delete-bin-line text-danger fs-5"
-                     (click)="removeItems(item)"
-                     style="cursor:pointer;"></i>
+                  <i
+                    class="ri-delete-bin-line text-danger fs-5"
+                    (click)="removeItems(item)"
+                    style="cursor: pointer"
+                  ></i>
                 </div>
               </div>
-
             </div>
           </div>
         </li>
-        }
-
-        }
+        } }
       </ul>
     </div>
 
@@ -206,25 +269,27 @@
         <span>${{ total.toFixed(2) }}</span>
       </div>
 
-      <button class="btn btn-primary w-100 fw-bold"
-              style="border-radius:10px; padding:12px;"
-              (click)="submitOrder()">
+      <button
+        class="btn btn-primary w-100 fw-bold"
+        style="border-radius: 10px; padding: 12px"
+        (click)="submitOrder()"
+      >
         Pay ${{ total.toFixed(2) }}
       </button>
     </div>
-
   </div>
 </div>
 
 <!-- Order Type Modal -->
-<div class="modal fade"
-     tabindex="-1"
-     role="dialog"
-     [ngClass]="{ 'show d-block': showNewModelPopup }"
-     style="background: rgba(0,0,0,0.5); z-index:1040;">
+<div
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  [ngClass]="{ 'show d-block': showNewModelPopup }"
+  style="background: rgba(0, 0, 0, 0.5); z-index: 1040"
+>
   <div class="modal-dialog modal-sm modal-dialog-centered">
     <div class="modal-content">
-
       <div class="modal-header">
         <h5 class="modal-title">Order Type</h5>
         <button class="btn-close" (click)="closeNewModelPopup()"></button>
@@ -232,7 +297,6 @@
 
       <div class="modal-body">
         <form [formGroup]="orderForm">
-
           <div class="mb-3">
             <label class="form-label">Order Type</label>
             <select class="form-select" formControlName="orderType">
@@ -241,63 +305,84 @@
             </select>
           </div>
 
-          <div class="mb-3" *ngIf="orderForm.get('orderType')?.value === 'delivery'">
+          <div
+            class="mb-3"
+            *ngIf="orderForm.get('orderType')?.value === 'delivery'"
+          >
             <label class="form-label">Delivery Address</label>
-            <input type="text"
-                   #addressInput
-                   class="form-control"
-                   placeholder="Search your address"
-                   (input)="getAddressAutocomplete()"
-                   formControlName="deliveryAddress">
+            <input
+              type="text"
+              #addressInput
+              class="form-control"
+              placeholder="Search your address"
+              (input)="getAddressAutocomplete()"
+              formControlName="deliveryAddress"
+            />
           </div>
 
           <div *ngIf="orderForm.get('deliveryAddress')?.value">
             <div class="mb-3">
               <label class="form-label">Street Number</label>
-              <input type="text" class="form-control" formControlName="streetNumber">
+              <input
+                type="text"
+                class="form-control"
+                formControlName="streetNumber"
+              />
             </div>
 
             <div class="mb-3">
               <label class="form-label">Unit Number</label>
-              <input type="text" class="form-control" formControlName="unitNumber">
+              <input
+                type="text"
+                class="form-control"
+                formControlName="unitNumber"
+              />
             </div>
 
             <div class="mb-3">
               <label class="form-label">Delivery Note</label>
-              <input type="text" class="form-control" formControlName="deliveryNote">
+              <input
+                type="text"
+                class="form-control"
+                formControlName="deliveryNote"
+              />
             </div>
           </div>
 
-          <button type="button"
-                  class="btn fw-bold text-white"
-                  style="background:#f44336;margin-left:30%;"
-                  (click)="submitDUeOrder()">
+          <button
+            type="button"
+            class="btn fw-bold text-white"
+            style="background: #f44336; margin-left: 30%"
+            (click)="submitDUeOrder()"
+          >
             Submit
           </button>
-
         </form>
       </div>
-
     </div>
   </div>
 </div>
 
 <!-- Order Due Modal -->
-<div class="modal fade show d-block"
-     tabindex="-1"
-     [ngClass]="{ 'show d-block': showOrderDuePopup }"
-     style="background: rgba(0,0,0,0.5); z-index:1040;">
+<div
+  class="modal fade"
+  tabindex="-1"
+  [ngClass]="{ 'show d-block': showOrderDuePopup }"
+  style="background: rgba(0, 0, 0, 0.5); z-index: 1040"
+>
   <div class="modal-dialog modal-sm modal-dialog-centered">
     <div class="modal-content">
-
       <div class="modal-header">
         <h5 class="modal-title">Create New Model</h5>
-        <button type="button" class="btn-close" (click)="closeOrderDuePopup()"></button>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeOrderDuePopup()"
+        ></button>
       </div>
 
       <div class="modal-body">
         <form [formGroup]="orderdueForm">
-
           <div class="mb-3">
             <label class="form-label">Order Due</label>
             <select class="form-select" formControlName="orderDue">
@@ -308,30 +393,35 @@
 
           <div class="mb-3" *ngIf="orderdueForm.value.orderDue == 'Later'">
             <label class="form-label">Date and Time</label>
-            <input type="datetime-local" class="form-control" formControlName="orderDateTime">
+            <input
+              type="datetime-local"
+              class="form-control"
+              formControlName="orderDateTime"
+            />
           </div>
-
         </form>
 
-        <button class="btn fw-bold text-white"
-                style="background:#f44336;margin-left:30%;"
-                (click)="submitDUeOrder()">
+        <button
+          class="btn fw-bold text-white"
+          style="background: #f44336; margin-left: 30%"
+          (click)="submitDUeOrder()"
+        >
           Submit
         </button>
       </div>
-
     </div>
   </div>
 </div>
 
 <!-- Customer Modal -->
-<div class="modal fade"
-     tabindex="-1"
-     [ngClass]="{ 'show d-block': showCustomerModal }"
-     style="background: rgba(0,0,0,0.5); z-index:1050;">
+<div
+  class="modal fade"
+  tabindex="-1"
+  [ngClass]="{ 'show d-block': showCustomerModal }"
+  style="background: rgba(0, 0, 0, 0.5); z-index: 1050"
+>
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content p-3">
-
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="mb-0">Customer</h5>
         <button class="btn-close" (click)="closeCustomerModal()"></button>
@@ -341,26 +431,41 @@
         <div class="row g-3">
           <div class="col-md-12">
             <label class="form-label">Name</label>
-            <input type="text" class="form-control" [(ngModel)]="customer.name">
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="customer.name"
+            />
           </div>
 
           <div class="col-md-12">
             <label class="form-label">Email</label>
-            <input type="email" class="form-control" [(ngModel)]="customer.email">
+            <input
+              type="email"
+              class="form-control"
+              [(ngModel)]="customer.email"
+            />
           </div>
 
           <div class="col-md-12">
             <label class="form-label">Phone</label>
-            <input type="tel" class="form-control" [(ngModel)]="customer.phone">
+            <input
+              type="tel"
+              class="form-control"
+              [(ngModel)]="customer.phone"
+            />
           </div>
         </div>
       </div>
 
       <div class="d-flex justify-content-end gap-2 mt-3">
-        <button class="btn btn-secondary" (click)="clear()">Clear Customer</button>
-        <button class="btn btn-primary" (click)="closeCustomerModal()">OK</button>
+        <button class="btn btn-secondary" (click)="clear()">
+          Clear Customer
+        </button>
+        <button class="btn btn-primary" (click)="closeCustomerModal()">
+          OK
+        </button>
       </div>
-
     </div>
   </div>
 </div>
@@ -371,7 +476,8 @@
   [message]="comboMessage"
   (yes)="onComboYes()"
   (no)="onComboNo()"
-  (closed)="onComboNo()">
+  (closed)="onComboNo()"
+>
 </app-combo-alert>
 
 <!-- Combo Selection Modal -->
@@ -379,7 +485,8 @@
   *ngIf="showComboSelection"
   [combos]="matchingCombos"
   (selected)="onComboSelected($event)"
-  (closed)="showComboSelection = false">
+  (closed)="showComboSelection = false"
+>
 </app-combo-selection>
 
 
