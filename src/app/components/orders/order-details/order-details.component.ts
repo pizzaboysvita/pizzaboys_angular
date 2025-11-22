@@ -58,7 +58,7 @@ export class OrderDetailsComponent {
   showOrderDuePopup = false;
   showCustomerModal = false;
   showNewModelPopup = false;
-
+  Openmodal=false;
   // Cart / combos
   cartItems: any[] = [];
   totalCartDetails: any[] = [];
@@ -114,7 +114,7 @@ export class OrderDetailsComponent {
 
   ngOnInit() {
     this.orderForm = this.fb.group({
-      orderType: ["pickup", Validators.required],
+      orderType: ["PICKUP", Validators.required],
       deliveryAddress: [""],
       streetNumber: [""],
       streetName: [""],
@@ -529,7 +529,7 @@ export class OrderDetailsComponent {
           total_quantity: this.cartItems.length,
           store_id: user.store_id,
           order_type:
-            this.orderForm.get("orderType")?.value === "pickup" ? 1 : 2,
+            this.orderForm.get("orderType")?.value === "PICKUP" ? 1 : 2,
           pickup_datetime: new Date(),
           delivery_address: this.orderForm.get("deliveryAddress")?.value,
           delivery_fees: this.deliveryfee,
@@ -669,6 +669,9 @@ export class OrderDetailsComponent {
 
   logCombo(event: any) {
     console.log("PARENT RECEIVED EVENT:", event);
+  }
+  openholdModal(){
+    this.Openmodal=true
   }
 }
 
