@@ -87,4 +87,73 @@
   border-radius: 8px;
   background: white;
 }
+.cash-takings-table  {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.cash-takings-table th {
+  padding: 5px;
+  font-weight: 600;
+  color: #444;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 12px;
 
+}
+
+.cash-takings-table td {
+  padding: 5px;
+  border-bottom: 1px solid #eee;
+}
+
+
+.keypad-modal .modal-content {
+  border-radius: 10px;
+  padding: 0;
+  border: none;
+  overflow: hidden;
+}
+
+.keypad-header {
+  background: #f8f9fa;
+  border-bottom: 1px solid #ddd;
+}
+
+.label-title {
+  font-size: 13px;
+  color: #555;
+}
+
+.label-value {
+  font-weight: 600;
+  font-size: 15px;
+  margin-top: -2px;
+}
+
+.keypad-display {
+  font-size: 32px;
+  font-weight: 500;
+  padding: 15px 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid #ddd;
+}
+
+.key-btn {
+  border: 1px solid #ddd;
+  background: white;
+  font-size: 20px;
+  padding: 18px 0;
+}
+
+.key-btn:active {
+  background: #eee;
+}
+
+.wide-btn {
+  grid-column: span 1;
+}

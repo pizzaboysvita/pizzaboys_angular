@@ -83,12 +83,22 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   selected: "dinein" | "delivery" = "dinein";
 
   cartItems: CartItem[] = [];
+  Openmodal=false;
+  // Cart / combos
+  cartItems: any[] = [];
   totalCartDetails: any[] = [];
   comboDishDetails: any[] = [];
   matchingCombos: MatchingCombo[] = [];
   comboMessage: string = "";
   showComboAlert: boolean = false;
   showComboSelection: boolean = false;
+  selectedComboItem: any = null;
+cashCount=false 
+  // combo modal meta (populated from API)
+  comboGroups: any[] = [];
+  comboName: string = "";
+  comboPrice: number = 0;
+  comboId: number | null = null;
 
   orderForm!: FormGroup;
   orderdueForm!: FormGroup;
@@ -131,7 +141,7 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
 
   private initializeForms(): void {
     this.orderForm = this.fb.group({
-      orderType: ["pickup", Validators.required],
+      orderType: ["PICKUP", Validators.required],
       deliveryAddress: [""],
       streetNumber: [""],
       streetName: [""],
@@ -550,7 +560,7 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
           total_quantity: this.cartItems.length,
           store_id: user.store_id,
           order_type:
-            this.orderForm.get("orderType")?.value === "pickup" ? 1 : 2,
+            this.orderForm.get("orderType")?.value === "PICKUP" ? 1 : 2,
           pickup_datetime: new Date(),
           delivery_address: this.orderForm.get("deliveryAddress")?.value,
           delivery_fees:
@@ -711,4 +721,32 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   clear() {
     this.customer = { name: "", email: "", phone: "" };
   }
+
+  logCombo(event: any) {
+    console.log("PARENT RECEIVED EVENT:", event);
+  }
+  openholdModal(){
+    this.Openmodal=true
+  }
+  openmodal(){
+    this.cashCount=true
+  }
+  paymentTab = 'discount';
+typeTab = '%';
+modifyValue = '0';
+
+onKey(key: string) {
+  if (this.modifyValue === '0') this.modifyValue = '';
+  this.modifyValue += key;
+}
+
+}
+
+// optional CartItem interface left as-is
+export interface CartItem {
+  name: string;
+  price: number;
+  quantity: number;
+  img?: string;
+  Ingredients: string;
 }

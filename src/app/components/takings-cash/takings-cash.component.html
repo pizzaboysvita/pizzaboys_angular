@@ -37,7 +37,6 @@
       <div class="table-responsive">
     <div class="takings-scroll-container">
   <div class="takings-table-wrapper">
-
   <table class="takings-table">
     <thead>
       <tr>
@@ -71,6 +70,10 @@
                    class="counted-input"
                    [(ngModel)]="row.counted"
                    (input)="updateVariance(row)" />
+                   <span class="material-symbols-outlined edit-ico"  style="font-size: 16px !important;cursor: pointer;"
+            (click)="enableEdit(row)">
+        edit
+      </span>
           </ng-container>
 
           <ng-template #dash>-</ng-template>
@@ -169,3 +172,128 @@
     </button>
   </div>
 </div>
+<div class="modal fade"
+     tabindex="-1"
+     role="dialog"
+     [ngClass]="{ 'show d-block': cashCount }"
+     style="background: rgba(0,0,0,0.5); z-index: 1040;">
+
+  <div class="modal-dialog modal-sm modal-dialog-centered" style="max-width: 350px;">
+    <div class="modal-content p-0">
+
+      <!-- HEADER -->
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">Cash Count</h5>
+        <button type="button" class="btn-close" (click)="closeCashCount()"> <i class="ri-close-line"></i></button>
+      </div>
+<div class="modal-tabs">
+    <button class="tab" [class.active]="CashactiveTab === 'exactAmt'"
+            (click)="CashactiveTab = 'exactAmt'"> EXACT AMOUNT</button>
+
+    <button class="tab" [class.active]="CashactiveTab === 'Denominations'"
+            (click)="CashactiveTab = 'Denominations'">DENOMINATIONS</button>
+  </div>
+   <div class="modal-body">
+    <div *ngIf="CashactiveTab === 'exactAmt'">
+      <div class="amount-display text-end">
+        {{ cashpaymentAmount | currency:'USD' }}
+      </div>
+      <!-- NUMBER PAD -->
+      <div class="number-pad">
+        <div class="row g-2">
+
+          <div class="col-4" *ngFor="let key of ['7','8','9','4','5','6','1','2','3','0','00','←']">
+            <button class="btn w-100"
+                    [ngClass]="key === '←' ? 'btn-danger' : 'btn-light'"
+                    (click)="handleKeyPress(key)">
+              {{ key }}
+            </button>
+          </div>
+
+        </div>
+
+
+      </div>
+</div>
+ <div *ngIf="CashactiveTab === 'Denominations'">
+ <div>
+  <table class="cash-takings-table">
+    <thead>
+      <tr>
+        <th>Unit</th>
+        <th>Quantity</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let row of cashCountRows">
+
+        <td>{{ row.unit }}</td>
+        <td>{{ row.quantity }} <span class="material-symbols-outlined edit-ico"  style="font-size: 16px !important;cursor: pointer;"
+            (click)="editModal=true">
+        edit
+      </span></td>
+
+        <td>{{ row.total }}</td>
+
+
+      </tr>
+    </tbody>
+  </table>
+
+    </div>
+ </div>
+</div>
+    
+
+    </div>
+  </div>
+
+</div>
+<div class="modal fade"
+     tabindex="-1"
+     role="dialog"
+     [ngClass]="{ 'show d-block': editModal }"
+     (click)="editModal = false"
+     style="background: rgba(0,0,0,0.5); z-index: 1040;">
+
+  <div class="modal-dialog modal-dialog-centered keypad-modal"  style="max-width: 350px;" (click)="$event.stopPropagation()">
+    <div class="modal-content keypad-box">
+
+      <!-- HEADER: Denomination / Total -->
+      <div class="keypad-header d-flex justify-content-between px-3 py-2">
+        <div>
+          <div class="label-title">Denomination</div>
+          <div class="label-value">$0.10</div>
+        </div>
+
+        <div class="text-end">
+          <div class="label-title">Total</div>
+          <div class="label-value">$0.00</div>
+        </div>
+      </div>
+
+      <!-- DISPLAY -->
+      <div class="keypad-display text-end px-3">
+        0
+      </div>
+
+      <!-- KEYPAD GRID -->
+      <div class="keypad-grid">
+        <button class="key-btn" *ngFor="let num of ['7','8','9','4','5','6','1','2','3']"
+                (click)="press(num)">
+          {{ num }}
+        </button>
+
+        <button class="key-btn wide-btn" (click)="press('0')">0</button>
+        <button class="key-btn wide-btn" (click)="press('00')">00</button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+
+
