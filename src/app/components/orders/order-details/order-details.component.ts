@@ -1,19 +1,13 @@
-// order-details.component.ts
 import {
   ChangeDetectorRef,
   Component,
   ElementRef,
-  EventEmitter,
-  Input,
-  Output,
   ViewChild,
+  AfterViewInit,
+  OnInit,
 } from "@angular/core";
 import { GoogleMap, GoogleMapsModule } from "@angular/google-maps";
 import { NgbModal, NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
-import { CardComponent } from "../../../shared/components/card/card.component";
-import { DetailsComponent } from "./details/details.component";
-import { OrderStatusComponent } from "./order-status/order-status.component";
-import { MediaComponent } from "../../media/media.component";
 import { CommonModule } from "@angular/common";
 import {
   FormBuilder,
@@ -22,6 +16,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
+
 import { ApisService } from "../../../shared/services/apis.service";
 import { SessionStorageService } from "../../../shared/services/session-storage.service";
 import { ToastrService } from "ngx-toastr";
@@ -29,42 +24,71 @@ import { PosOrdersComponent } from "../pos-orders/pos-orders.component";
 import { OrderPaymentsComponent } from "../order-payments/order-payments.component";
 import { ComboAlertComponent } from "../combo-alert/combo-alert.component";
 import { ComboSelectionComponent } from "../combo-selection/combo-selection.component";
+import { MediaComponent } from "../../media/media.component";
+
+declare const google: any;
+export interface ComboItem {
+  dish_id: number;
+  dish_name: string;
+  dish_image?: string;
+}
+
+export interface MatchingCombo {
+  combo_id: number;
+  combo_dish_id: number;
+  combo_name: string;
+  combo_price: number | string;
+  items: ComboItem[];
+}
+
+export interface CartItem {
+  dish_id: number;
+  dish_name: string;
+  dish_price: number;
+  dish_quantity: number;
+  dish_type: "standard" | "combo" | string;
+  unique_key?: string;
+  [key: string]: any;
+}
 
 @Component({
   selector: "app-order-details",
   templateUrl: "./order-details.component.html",
-  styleUrl: "./order-details.component.scss",
+  styleUrls: ["./order-details.component.scss"],
+  standalone: true,
   imports: [
-    NgbNavModule,
-    MediaComponent,
+    CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    ComboAlertComponent,
+    NgbNavModule,
     GoogleMapsModule,
-    CommonModule,
+    MediaComponent,
+    ComboAlertComponent,
     ComboSelectionComponent,
   ],
 })
-export class OrderDetailsComponent {
+export class OrderDetailsComponent implements OnInit, AfterViewInit {
   @ViewChild("addressInput", { static: false }) addressInput!: ElementRef;
   @ViewChild(MediaComponent) mediaComponent!: MediaComponent;
   @ViewChild(GoogleMap) map!: GoogleMap;
 
-  // UI state
-  selected: string = "dinein";
   public active = 1;
   public markers: any[] = [];
   public zoom: number = 3;
+
   showOrderDuePopup = false;
   showCustomerModal = false;
   showNewModelPopup = false;
+
+  selected: "dinein" | "delivery" = "dinein";
+
+  cartItems: CartItem[] = [];
   Openmodal=false;
   // Cart / combos
   cartItems: any[] = [];
   totalCartDetails: any[] = [];
-  totalPrice: number = 0;
-  comboDishDetails: any;
-  matchingCombos: any[] = [];
+  comboDishDetails: any[] = [];
+  matchingCombos: MatchingCombo[] = [];
   comboMessage: string = "";
   showComboAlert: boolean = false;
   showComboSelection: boolean = false;
@@ -76,43 +100,46 @@ cashCount=false
   comboPrice: number = 0;
   comboId: number | null = null;
 
-  // forms + misc
   orderForm!: FormGroup;
   orderdueForm!: FormGroup;
   orderDueDetails: any;
   orderItemsDetails: any[] = [];
   toppingDetails: any;
   ingredients_details: any;
-  deliveryfee: any = 5.9;
+  deliveryfee: number = 5.9;
   modalRef: any;
   paymentdetails: any;
   comboOrderDetails: any[] = [];
+  totalPrice: number = 0;
 
-  // edit state
   isEditing: boolean = false;
 
-  // customer
   customer = {
     name: "",
     email: "",
     phone: "",
   };
 
-  filterOptions = ["Cash", "Card", "E-Wallet"];
-  selectedOption = "Cash";
-
   constructor(
     private apiService: ApisService,
     private fb: FormBuilder,
     private el: ElementRef,
-    private modal: NgbModal,
+    private modalService: NgbModal,
     private toastr: ToastrService,
     private cdr: ChangeDetectorRef,
-    private sessionStorageService: SessionStorageService,
-    private modalService: NgbModal
+    private sessionStorageService: SessionStorageService
   ) {}
 
   ngOnInit() {
+    this.initializeForms();
+    this.loadInitialData();
+  }
+
+  ngAfterViewInit() {
+    this.setupAddressAutocompleteObserver();
+  }
+
+  private initializeForms(): void {
     this.orderForm = this.fb.group({
       orderType: ["PICKUP", Validators.required],
       deliveryAddress: [""],
@@ -121,15 +148,20 @@ cashCount=false
       unitNumber: [""],
       deliveryNote: [""],
     });
+
     this.orderdueForm = this.fb.group({
       orderDue: ["ASAP", Validators.required],
       orderDateTime: [new Date(), Validators.required],
     });
-    this.orderDueDetails = this.orderdueForm.value.orderDue;
 
-    const userId = JSON.parse(
+    this.orderDueDetails = this.orderdueForm.value.orderDue;
+  }
+
+  private loadInitialData(): void {
+    const user = JSON.parse(
       this.sessionStorageService.getsessionStorage("loginDetails") as any
-    ).user.store_id;
+    ).user;
+    const userId = user.store_id;
 
     this.markers.push({
       position: { lat: 20.5937, lng: 78.9629 },
@@ -137,95 +169,116 @@ cashCount=false
       Option: { draggable: true, animation: google.maps.Animation.DROP },
     });
 
-    // initial fetch of combo definitions (optional) - you used it previously
     this.apiService
       .getApi("/api/dish?store_id=" + userId + "&typeOfDish=combo")
-      .subscribe((res: any) => {
-        this.comboDishDetails = res.data;
-        console.log("comboDishDetails", this.comboDishDetails);
+      .subscribe({
+        next: (res: any) => {
+          this.comboDishDetails = res.data || [];
+          console.log("comboDishDetails loaded", this.comboDishDetails);
+        },
+        error: (err) =>
+          console.error("Failed to load initial combo dishes", err),
       });
   }
 
-  /* ----------------------
-     CART: add / update / remove
-     ---------------------- */
+  private rebuildCartView(): void {
+    const transformed = this.apiService.transformData(this.cartItems) || [];
+    this.totalCartDetails = transformed.map((t: any) => {
+      if (t.dish_type === "combo") {
+        const source =
+          this.cartItems.find(
+            (c) =>
+              c.dish_id === t.dish_id &&
+              (c.unique_key ? c.unique_key === t.unique_key : true)
+          ) || t;
 
+        return {
+          ...t,
+          combo_selected_dishes:
+            source["combo_selected_dishes"] || t["combo_selected_dishes"],
+          combo_items: source["combo_items"] || t["combo_items"],
+        };
+      }
+      return t;
+    });
+
+    this.updateTotals();
+  }
   addToCart(item: any) {
     console.log("Add To Cart", item);
 
+    const key = item["unique_key"] || `${item.dish_id}_${Date.now()}`;
+
     const existingIndex = this.cartItems.findIndex(
-      (x: any) => x.dish_id === item.dish_id
+      (x: CartItem) => x.unique_key === key
     );
 
-    // Editing: replace
     if (this.isEditing && existingIndex > -1) {
       this.cartItems[existingIndex] = {
         ...this.cartItems[existingIndex],
         ...item,
-        dish_option_set_array: [...(item.dish_option_set_array || [])],
-        dish_ingredient_array: [...(item.dish_ingredient_array || [])],
+        unique_key: key,
+        dish_option_set_array: [...(item["dish_option_set_array"] || [])],
+        dish_ingredient_array: [...(item["dish_ingredient_array"] || [])],
       };
       this.isEditing = false;
-    }
-    // New: push
-    else if (existingIndex === -1) {
-      this.cartItems.push({ ...item });
     } else {
-      // item exists and not editing -> increment quantity
-      // (you previously returned early; to preserve that behaviour, keep returning)
-      return;
+      const withKey: CartItem = {
+        ...item,
+        unique_key: key,
+      };
+      this.cartItems.push(withKey);
     }
 
-    // Recalculate view items
-    this.totalCartDetails = this.apiService.transformData(this.cartItems);
+    this.rebuildCartView();
 
-    // --------- COMBO CHECK ----------
     const selectedStandardIds = this.cartItems
-      .filter((x: any) => x.dish_type === "standard")
-      .map((x: any) => x.dish_id);
+      .filter((x: CartItem) => x.dish_type === "standard")
+      .map((x: CartItem) => x.dish_id);
 
     if (selectedStandardIds.length > 0) {
       this.checkComboOffer(selectedStandardIds);
+    } else {
+      this.showComboAlert = false;
     }
 
     this.cartItems = [...this.cartItems];
-    this.cdr.detectChanges();
   }
 
   removeItem(item: any) {
-    this.cartItems = this.cartItems.filter((i: any) => i !== item);
-    this.totalPrice = this.cartItems.reduce(
-      (sum: any, it: any) => sum + this.apiService.getItemSubtotal(it),
-      0
+    this.cartItems = this.cartItems.filter(
+      (i: CartItem) => i.unique_key !== item.unique_key
     );
+    this.rebuildCartView();
   }
 
   removeItems(item: any) {
-    // remove by dish_id from totalCartDetails and cartItems
-    this.totalCartDetails = this.totalCartDetails.filter(
+    this.cartItems = this.cartItems.filter(
       (cartItem: any) => cartItem.dish_id !== item.dish_id
     );
+    this.rebuildCartView();
+  }
 
-    // recalc duplicates
-    this.totalCartDetails.forEach((cartItem: any) => {
-      cartItem.duplicate_dish_price = this.apiService.getItemSubtotal(cartItem);
-    });
-
+  private updateTotals(): void {
     this.totalPrice = this.totalCartDetails.reduce(
-      (sum: any, cartItem: any) => sum + (cartItem.duplicate_dish_price || 0),
+      (sum: number, it: any) => sum + this.apiService.getItemSubtotal(it),
       0
     );
-
-    this.cartItems = [...this.totalCartDetails];
     this.cdr.detectChanges();
   }
 
   increaseModalQuantity(item: any) {
-    item["dish_quantity"]++;
+    item["dish_quantity"] = (item["dish_quantity"] || 0) + 1;
+    this.rebuildCartView();
   }
+
   decreaseModalQuantity(item: any) {
-    if (item["dish_quantity"] > 1) item["dish_quantity"]--;
+    if (item["dish_quantity"] > 1) {
+      item["dish_quantity"]--;
+      this.rebuildCartView();
+    }
   }
+
   openNewModelPopup() {
     this.showNewModelPopup = true;
   }
@@ -236,7 +289,7 @@ cashCount=false
 
   get subtotal(): number {
     return this.totalCartDetails.reduce(
-      (sum: any, item: any) => sum + this.apiService.getItemSubtotal(item),
+      (sum: number, item: any) => sum + this.apiService.getItemSubtotal(item),
       0
     );
   }
@@ -245,22 +298,65 @@ cashCount=false
     return +(this.subtotal * 0.1).toFixed(2);
   }
 
-  get total() {
+  get total(): number {
     const fee =
-      this.orderForm.value.orderType == "delivery" ? this.deliveryfee : 0;
-    return (
-      this.totalCartDetails.reduce(
-        (sum: any, item: any) => sum + this.apiService.getItemSubtotal(item),
-        0
-      ) +
-      this.tax +
-      fee
-    );
+      this.orderForm.value.orderType === "delivery" ? this.deliveryfee : 0;
+    return this.subtotal + this.tax + fee;
   }
 
   checkComboOffer(selectedDishIds: number[]) {
     if (this.isEditing) return;
     this.fetchComboDetails(selectedDishIds);
+  }
+
+  private mapApiDataToMatchingCombos(data: any[]): MatchingCombo[] {
+    const map = new Map<number, MatchingCombo>();
+
+    data.forEach((row: any) => {
+      const comboId = row.combo_id || row.combo_dish_id || row.dish_id || 0;
+      const comboDishId = row.combo_dish_id || row.combo_id || row.dish_id || 0;
+      if (!comboId || !comboDishId) return;
+
+      if (!map.has(comboId)) {
+        map.set(comboId, {
+          combo_id: comboId,
+          combo_dish_id: comboDishId,
+          combo_name:
+            row.combo_name ||
+            row.combo_main_dish_name ||
+            row.dish_name ||
+            "Combo",
+          combo_price: Number(row.combo_price || row.dish_price || 0),
+          items: [],
+        });
+      }
+
+      const itemDishId =
+        row.combo_item_dish_id ||
+        row.dish_id ||
+        row.combo_dish_item_id ||
+        row.item_dish_id;
+      const itemDishName =
+        row.combo_item_dish_name ||
+        row.combo_dish_item_name ||
+        row.dish_name ||
+        "";
+      const itemImage = row.dish_image || row.image_url || "";
+
+      if (itemDishId) {
+        const comboObj = map.get(comboId) as MatchingCombo;
+        const exists = comboObj.items.some((i) => i.dish_id === itemDishId);
+        if (!exists) {
+          comboObj.items.push({
+            dish_id: itemDishId,
+            dish_name: itemDishName || `ID:${itemDishId}`,
+            dish_image: itemImage,
+          });
+        }
+      }
+    });
+
+    return Array.from(map.values());
   }
 
   fetchComboDetails(dishIds: number[]) {
@@ -273,159 +369,128 @@ cashCount=false
       q
     )}&store_id=${storeId}&type=web`;
 
-    this.apiService.getApi(url).subscribe(
-      (res: any) => {
-        // expected structure: res.code === "1", res.data is array of rows
+    this.apiService.getApi(url).subscribe({
+      next: (res: any) => {
         if (
           res &&
           (res.code === "1" || res.code === 1) &&
           Array.isArray(res.data) &&
           res.data.length
         ) {
-          // transform into grouped combos
-          const map = new Map<number, any>();
+          this.matchingCombos = this.mapApiDataToMatchingCombos(res.data);
 
-          res.data.forEach((row: any) => {
-            // prefer combo_id; fallback to dish_id
-            const comboId =
-              row.combo_id || row.combo_dish_id || row.dish_id || 0;
-            if (!map.has(comboId)) {
-              map.set(comboId, {
-                combo_id: comboId,
-                combo_name: row.combo_name || row.dish_name || "Combo",
-                combo_price: row.combo_price || row.dish_price || 0,
-                items: [],
-              });
-            }
-
-            // Determine item dish id & name & image from possible fields in response
-            const itemDishId =
-              row.combo_item_dish_id ||
-              row.dish_id ||
-              row.combo_dish_item_id ||
-              row.item_dish_id;
-            const itemDishName =
-              row.combo_item_dish_name ||
-              row.combo_dish_item_name ||
-              row.dish_name ||
-              (row.items &&
-                row.items[0] &&
-                (row.items[0].dishName || row.items[0].dish_name)) ||
-              "";
-
-            const itemImage = row.dish_image || row.image_url || "";
-
-            // push if not already present
-            const comboObj = map.get(comboId);
-            const exists = comboObj.items.some(
-              (i: any) => i.dish_id === itemDishId
-            );
-            if (!exists) {
-              comboObj.items.push({
-                dish_id: itemDishId,
-                dish_name: itemDishName || `ID:${itemDishId}`,
-                dish_image: itemImage,
-                // we may use more fields later if available
-              });
-            }
-          });
-
-          this.matchingCombos = Array.from(map.values());
-
-          // If at least one combo is valid — prompt user
           if (this.matchingCombos.length > 0) {
             this.comboMessage =
               "Combo offer available. Do you want to choose a combo?";
             this.showComboAlert = true;
-            // keep matchingCombos ready for modal
-            console.log("matchingCombos", this.matchingCombos);
           } else {
+            this.matchingCombos = [];
             this.showComboAlert = false;
           }
         } else {
-          // no combos
           this.matchingCombos = [];
           this.showComboAlert = false;
         }
       },
-      (err: any) => {
+      error: (err: any) => {
         console.error("Failed to fetch combo details", err);
         this.matchingCombos = [];
         this.showComboAlert = false;
-      }
-    );
+      },
+    });
   }
 
-  // user tapped YES on alert -> open selection modal
   onComboYes() {
     this.showComboAlert = false;
-    // open combo selection (we use your existing combo-selection component which lists combos)
     this.showComboSelection = true;
   }
 
-  // user tapped NO -> close alert
   onComboNo() {
     this.showComboAlert = false;
   }
 
-  // combo-selection emitted a selected combo object
-  onComboSelected(combo: any) {
+  onComboSelected(combo: MatchingCombo | null) {
     this.showComboSelection = false;
     if (!combo) return;
 
-    // find dish ids used by this combo
-    const comboDishIds: number[] = (combo.items || [])
-      .map((i: any) => i.dish_id)
-      .filter(Boolean);
+    console.log("SELECTED COMBO:", combo);
 
-    // Remove standard dishes used in this combo (so they don't appear duplicated)
-    this.cartItems = this.cartItems.filter((item: any) => {
-      // keep non-standard or standard dishes that are not part of comboDishIds
-      if (item.dish_type !== "standard") return true;
-      return !comboDishIds.includes(item.dish_id);
+    const matchedDishIds = (combo.items || []).map((i) => i.dish_id);
+    this.cartItems = this.cartItems.filter(
+      (i) => !(i.dish_type === "standard" && matchedDishIds.includes(i.dish_id))
+    );
+
+    const dishUrl = `/api/dish?dish_id=${combo.combo_dish_id}&type=web`;
+
+    this.apiService.getApi(dishUrl).subscribe({
+      next: (res: any) => {
+        if (
+          !res ||
+          !(res.code === "1" || res.code === 1) ||
+          !Array.isArray(res.data) ||
+          !res.data.length
+        ) {
+          console.error("Failed to fetch real combo dish for", combo);
+          this.toastr.error("Unable to load combo details.");
+          this.rebuildCartView();
+          return;
+        }
+
+        const directCombo = res.data[0];
+        console.log("REAL DIRECT COMBO DISH:", directCombo);
+
+        const comboCartItem: CartItem = {
+          ...directCombo,
+          dish_id: directCombo.dish_id,
+          dish_name: directCombo.dish_name,
+          dish_type: "combo",
+          dish_quantity: 1,
+          dish_price: Number(directCombo.dish_price || combo.combo_price),
+          duplicate_dish_price: Number(
+            directCombo.dish_price || combo.combo_price
+          ),
+          unique_key: `combo_${Date.now()}`,
+
+          combo_selected_dishes: (combo.items || []).map(
+            (it: ComboItem, idx: number) => ({
+              combo_option_name: `Pizza ${idx + 1}`,
+              combo_option_dish_name: it.dish_name,
+              combo_option_selected_array: [
+                {
+                  dish_opt_type: "Base Choice",
+                  choose_option: [
+                    {
+                      name: it.dish_name,
+                      price: 0,
+                      quantity: 1,
+                      dish_id: it.dish_id,
+                      image_url: it.dish_image || "",
+                    },
+                  ],
+                },
+              ],
+            })
+          ),
+
+          combo_items: combo.items || [],
+
+          isMatchedCombo: true,
+          matchedCombo: combo,
+        };
+
+        console.log("FINAL COMBO CART ITEM:", comboCartItem);
+
+        this.cartItems.push(comboCartItem);
+        this.rebuildCartView();
+        this.cartItems = [...this.cartItems];
+      },
+      error: (err: any) => {
+        console.error("Error loading real combo dish:", err);
+        this.toastr.error("Unable to load combo details.");
+        this.rebuildCartView();
+      },
     });
-
-    // Add one combo cart item
-    const comboCartItem = {
-      dish_id:
-        combo.combo_id || combo.combo_id || combo.comboId || combo.dish_id,
-      dish_name: combo.combo_name || combo.comboName || "Combo",
-      dish_price: combo.combo_price || combo.comboPrice || 0,
-      dish_quantity: 1,
-      dish_type: "combo",
-      combo_selected_dishes: [
-        {
-          combo_option_name: combo.combo_name || combo.comboName || "Combo",
-          combo_option_dish_name: "", // optional, leave blank or set a group label
-          combo_option_selected_array: combo.items.map((it: any) => ({
-            dish_opt_type: it.dish_name || it.dish_name || `ID:${it.dish_id}`,
-            choose_option: [
-              {
-                name: it.dish_name || `ID:${it.dish_id}`,
-                price: 0,
-                quantity: 1,
-                dish_id: it.dish_id,
-                image_url: it.dish_image || "",
-              },
-            ],
-          })),
-        },
-      ],
-      // preserve raw items for easier server payload
-      combo_items: combo.items,
-    };
-
-    this.cartItems.push(comboCartItem);
-
-    // refresh view data & detect changes
-    this.totalCartDetails = this.apiService.transformData(this.cartItems);
-    this.cartItems = [...this.cartItems];
-    this.cdr.detectChanges();
   }
-
-  /* ----------------------
-     Misc UI handlers
-     ---------------------- */
 
   onPopupClosed() {
     console.log("Popup closed — resetting edit mode");
@@ -446,81 +511,47 @@ cashCount=false
   clearOrderDetails() {
     this.cartItems = [];
     this.totalCartDetails = [];
+    this.matchingCombos = [];
+    this.showComboAlert = false;
+    this.showComboSelection = false;
+    this.updateTotals();
   }
 
   orderList() {
-    const modalRef = this.modal.open(PosOrdersComponent, {
+    this.modalService.open(PosOrdersComponent, {
       windowClass: "theme-modal",
       centered: true,
       size: "xl",
     });
   }
 
-  /* ----------------------
-     SUBMIT ORDER (build final reqbody)
-     ---------------------- */
-
   submitOrder() {
-    this.comboOrderDetails = [];
+    if (this.cartItems.length === 0) {
+      this.toastr.warning(
+        "Cart is empty. Please add items to order.",
+        "Cannot Submit"
+      );
+      return;
+    }
 
     this.modalRef = this.modalService.open(OrderPaymentsComponent, {
       size: "xl",
       centered: true,
     });
+
     this.modalRef.componentInstance.data = this.totalCartDetails;
     this.modalRef.componentInstance.customer = this.customer;
+    this.modalRef.componentInstance.totalAmount = this.total;
 
     this.modalRef.result.then(
       (result: any) => {
         if (!result) return;
+
         this.paymentdetails = result;
 
-        // Build orderItemsDetails (flatten)
-        this.orderItemsDetails = this.cartItems.map((item: any) => ({
-          dish_id: item.dish_id,
-          dish_note: item.dishnote,
-          quantity: item.dish_quantity,
-          price:
-            item.duplicate_dish_price || this.apiService.getItemSubtotal(item),
-        }));
+        this.buildServerPayloads();
 
-        // Build combo_order_details explicitly from cart
-        const combosForOrder = this.cartItems
-          .filter((x: any) => x.dish_type === "combo")
-          .map((combo: any) => ({
-            combo_id: combo.dish_id,
-            combo_name: combo.dish_name,
-            combo_price: combo.dish_price,
-            selected_groups:
-              combo.combo_items || combo.combo_selected_dishes || [],
-          }));
-
-        this.comboOrderDetails = combosForOrder;
-
-        // build toppings & ingredients (if exist)
-        this.toppingDetails = this.cartItems.flatMap((dish: any) =>
-          (dish.selectedOptions || [])
-            .filter((opt: any) => opt.selected)
-            .map((opt: any) => ({
-              dish_id: dish.dish_id,
-              name: opt.name,
-              price: opt.price,
-              quantity: opt.quantity,
-            }))
-        );
-
-        this.ingredients_details = this.cartItems.flatMap((dish: any) =>
-          (dish.dish_ingredient_array || [])
-            .filter((opt: any) => opt.selected)
-            .map((opt: any) => ({
-              dish_id: dish.dish_id,
-              name: opt.name,
-              price: opt.price,
-              quantity: opt.quantity,
-            }))
-        );
-
-        let user = JSON.parse(
+        const user = JSON.parse(
           this.sessionStorageService.getsessionStorage("loginDetails") as any
         ).user;
 
@@ -532,7 +563,10 @@ cashCount=false
             this.orderForm.get("orderType")?.value === "PICKUP" ? 1 : 2,
           pickup_datetime: new Date(),
           delivery_address: this.orderForm.get("deliveryAddress")?.value,
-          delivery_fees: this.deliveryfee,
+          delivery_fees:
+            this.orderForm.get("orderType")?.value === "delivery"
+              ? this.deliveryfee
+              : 0,
           is_pos_order: 1,
           delivery_datetime: new Date(),
           order_notes: this.orderForm.get("deliveryNote")?.value,
@@ -558,73 +592,71 @@ cashCount=false
 
         console.log("order reqbody ->", reqbody);
 
-        // Final submit to backend
-        this.apiService
-          .postApi("/api/order/v2 ", reqbody)
-          .subscribe((res: any) => {
+        this.apiService.postApi("/api/order/v2", reqbody).subscribe({
+          next: (res: any) => {
             if (res && res.code == 1) {
               this.toastr.success(res.message, "Success");
-              this.cartItems = [];
-              this.totalCartDetails = [];
+              this.clearOrderDetails();
               this.customer = { name: "", email: "", phone: "" };
               this.cdr.detectChanges();
             } else {
               this.toastr.error(res?.message || "Order failed", "Error");
             }
-          });
+          },
+          error: (err) => {
+            console.error("Order submission API failed:", err);
+            this.toastr.error("Server error during order submission.", "Error");
+          },
+        });
       },
       (reason: any) => {
-        console.log("Modal dismissed:", reason);
+        console.log("Payment Modal dismissed:", reason);
       }
     );
   }
 
-  /* ----------------------
-     Address autocomplete helpers (unchanged)
-     ---------------------- */
+  private buildServerPayloads(): void {
+    this.orderItemsDetails = this.cartItems.map((item: CartItem) => ({
+      dish_id: item.dish_id,
+      dish_note: item["dishnote"],
+      quantity: item.dish_quantity,
+      price:
+        item["duplicate_dish_price"] || this.apiService.getItemSubtotal(item),
+    }));
 
-  getAddressAutocomplete() {
-    console.log("addressInput");
-    const autocomplete = new google.maps.places.Autocomplete(
-      this.addressInput.nativeElement,
-      {
-        componentRestrictions: { country: "nz" },
-        fields: ["formatted_address", "geometry"],
-      }
+    this.comboOrderDetails = this.cartItems
+      .filter((x: CartItem) => x.dish_type === "combo")
+      .map((combo: any) => ({
+        combo_id: combo.dish_id,
+        combo_name: combo.dish_name,
+        combo_price: combo.dish_price,
+        selected_groups: combo.combo_items || combo.combo_selected_dishes || [],
+      }));
+
+    this.toppingDetails = this.cartItems.flatMap((dish: any) =>
+      (dish.selectedOptions || [])
+        .filter((opt: any) => opt.selected)
+        .map((opt: any) => ({
+          dish_id: dish.dish_id,
+          name: opt.name,
+          price: opt.price,
+          quantity: opt.quantity,
+        }))
     );
 
-    autocomplete.addListener("place_changed", () => {
-      const place = autocomplete.getPlace();
-      if (place?.formatted_address) {
-        // this.addModelForm.patchValue({ address: place.formatted_address });
-      }
-    });
-
-    const observer = new MutationObserver(() => {
-      document.querySelectorAll(".pac-item span").forEach((el) => {
-        if (el.textContent && el.textContent.includes(",")) {
-          el.textContent = el.textContent.substring(
-            0,
-            el.textContent.lastIndexOf(",")
-          );
-        }
-      });
-
-      const pac = document.querySelector(".pac-container") as HTMLElement;
-      if (pac) {
-        pac.style.zIndex = "2000";
-        pac.style.position = "absolute";
-        pac.style.width = this.addressInput.nativeElement.offsetWidth + "px";
-        const rect = this.addressInput.nativeElement.getBoundingClientRect();
-        pac.style.top = rect.bottom + "px";
-        pac.style.left = rect.left + "px";
-      }
-    });
-
-    observer.observe(document.body, { childList: true, subtree: true });
+    this.ingredients_details = this.cartItems.flatMap((dish: any) =>
+      (dish["dish_ingredient_array"] || [])
+        .filter((opt: any) => opt.selected)
+        .map((opt: any) => ({
+          dish_id: dish.dish_id,
+          name: opt.name,
+          price: opt.price,
+          quantity: opt.quantity,
+        }))
+    );
   }
 
-  ngAfterViewInit() {
+  setupAddressAutocompleteObserver() {
     const observer = new MutationObserver(() => {
       const pac = document.querySelector(".pac-container") as HTMLElement;
       if (pac && this.addressInput) {
@@ -643,26 +675,49 @@ cashCount=false
     });
   }
 
+  getAddressAutocomplete() {
+    console.log("addressInput focused");
+    const autocomplete = new google.maps.places.Autocomplete(
+      this.addressInput.nativeElement,
+      {
+        componentRestrictions: { country: "nz" },
+        fields: ["formatted_address", "geometry"],
+      }
+    );
+
+    autocomplete.addListener("place_changed", () => {
+      const place = autocomplete.getPlace();
+      if (place?.formatted_address) {
+        this.orderForm.patchValue({ deliveryAddress: place.formatted_address });
+      }
+    });
+  }
+
   openDeliveryPopup() {
     this.showOrderDuePopup = true;
   }
+
   closeOrderDuePopup() {
     this.showOrderDuePopup = false;
   }
+
   submitDUeOrder() {
     this.orderDueDetails =
-      this.orderdueForm.value.orderDue == "ASAP"
+      this.orderdueForm.value.orderDue === "ASAP"
         ? this.orderdueForm.value.orderDue
         : this.orderdueForm.value.orderDateTime;
     this.showOrderDuePopup = false;
     this.showNewModelPopup = false;
   }
+
   closeCustomerModal() {
     this.showCustomerModal = false;
   }
+
   openCustomerModal() {
     this.showCustomerModal = true;
   }
+
   clear() {
     this.customer = { name: "", email: "", phone: "" };
   }
