@@ -79,7 +79,7 @@ export class AddRestaurantsComponent {
       ],
       password: ["", [Validators.required, Validators.minLength(6)]],
       address: ["", Validators.required],
-      city: ["", Validators.required],
+      city: ["", [Validators.required]],
       state: ["", Validators.required],
       postalCode: ["", Validators.required],
       country: ["", Validators.required],
@@ -87,6 +87,15 @@ export class AddRestaurantsComponent {
       image: [null, Validators.required],
     });
   }
+
+preventLeadingSpace(event: KeyboardEvent) {
+  const input = event.target as HTMLInputElement;
+
+  // Block space if field is empty OR only contains spaces
+  if (event.key === ' ' && input.value.trim().length === 0) {
+    event.preventDefault();
+  }
+}
   addStore() {
     console.log(this.storeForm.value.status);
     console.log(this.workinghours, "step 1");
