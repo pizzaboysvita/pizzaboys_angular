@@ -313,9 +313,10 @@
           <br />
           <small>• {{ rowData.dish_type }}</small>
         </div>
-        <!-- <div class="fw-bold">${{ rowData.item_total_price }}</div> -->
+        <!-- <div class="fw-bold">${{ rowData.dish_price }}</div> -->
           <div class="text-end">
-      <div class="fw-bold mb-1">${{ rowData.item_total_price }}</div>
+      <!-- change item_total_price to dish_price -->
+      <div class="fw-bold mb-1">${{ rowData.dish_price }}</div>
       <a 
    class="text-primary small fw-bold text-decoration-underline a-pointer"
    (click)="moveToPay(rowData, ind)"  [class.disabled]="hasAnySuccess()"
@@ -356,9 +357,9 @@
         <br />
         <small>• {{ rowData.dish_type }}</small>
       </div>
-      <!-- <div class="fw-bold">${{ rowData.item_total_price }}</div>-->
+      <!-- <div class="fw-bold">${{ rowData.dish_price }}</div>-->
         <div class="text-end">
-      <div class="fw-bold mb-1">${{ rowData.item_total_price }}</div> 
+      <div class="fw-bold mb-1">${{ rowData.dish_price }}</div> 
        <a 
    class="text-primary small fw-bold text-decoration-underline a-pointer"
    (click)="removeToPay(rowData, ind)">
@@ -439,7 +440,7 @@
     
                       <!-- <td>{{rowData.dish_type}}</td> -->
                       <td>{{rowData.type}}</td>
-                      <td>${{rowData.item_total_price}}</td>
+                      <td>${{rowData.dish_price}}</td>
                         <td>{{rowData?.tender}}</td>
                       <td>{{rowData?.change}}</td>
             </tr>

@@ -226,14 +226,13 @@ this.router.navigate(["/orders/order-detail"]);
 
      this.CommonService.setTotalDishList( this.totalDishList)
      if(category.name=='Limited Time Deal'){
-       this.CommonService.setDishes(this.totalDishList.filter(x=>(x.dish_type== "combo")));
+       this.CommonService.setDishes(this.totalDishList.filter(x=>(x.dish_type == "combo")));
     }
     else{
        this.dishList = category.dishes;
     this.selectedCategory = category;
     //  this.dishesSelected.emit(this.dishList)
-     this.CommonService.setDishes(this.dishList);
-    
+     this.CommonService.setDishes(this.dishList.filter(x=>(x.dish_type != "combo")));
     }
     this.cdr.detectChanges();
 
