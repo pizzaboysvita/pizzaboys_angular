@@ -1,13 +1,14 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { BehaviorSubject, Subject } from "rxjs";
+import { environment } from "../../../environments/environment";
 
 @Injectable({
   providedIn: "root",
 })
 export class ApisService {
 
-  basesurl = "http://78.142.47.247:3004";
+  basesurl = "http://78.142.47.247:3003";
   
   // basesurl = 'http://localhost:3003'
   private change$ = new BehaviorSubject<boolean>(false);
@@ -16,23 +17,23 @@ export class ApisService {
   private http = inject(HttpClient);
   isLoading = new BehaviorSubject<boolean>(false);
   getApi(endpoint: string) {
-    console.log("GET request URL -->", "http://78.142.47.247:3003" + endpoint);
-    return this.http.get(this.basesurl + endpoint);
+    console.log("GET request URL -->", environment.apiUrl + endpoint);
+    return this.http.get(environment.apiUrl + endpoint);
   }
   postApi(endpoint: any, req_body: any) {
-    return this.http.post(this.basesurl + endpoint, req_body);
+    return this.http.post(environment.apiUrl + endpoint, req_body);
   }
   putApi(endpoint: any, req_body: any) {
-    return this.http.put(this.basesurl + endpoint, req_body);
+    return this.http.put(environment.apiUrl + endpoint, req_body);
   }
 
   deleteApi(endpoint: any) {
-    return this.http.delete(this.basesurl + endpoint);
+    return this.http.delete(environment.apiUrl + endpoint);
   }
   patchStatusApi(reqbody: any) {
     console.log(reqbody, "patchStatusApi");
 
-    return this.http.put(this.basesurl + "/api/updatedetails", reqbody);
+    return this.http.put(environment.apiUrl + "/api/updatedetails", reqbody);
   }
 
   show(): void {
@@ -138,8 +139,8 @@ export class ApisService {
             e
           );
         }
-
-        const type = optSet.dispaly_name === "Base" ? "radio" : "counter";
+console.log(optSet, "optSet.option_type");
+        const type = optSet.option_type === "Checkbox" ?"Counter": optSet.option_type;
         return {
           ...optSet,
           option_set_array,
@@ -219,25 +220,73 @@ export class ApisService {
       };
     });
   }
-  getItemSubtotal(item: any): number {
-    // Sum (price * quantity) for each selected option
-    console.log(item, "optionsTotal");
-    const optionsTotal = item.dish_option_set_array
-      .flatMap((optSet: any) => optSet.option_set_array)
-      .filter((option: any) => option.selected)
-      .reduce((sum: number, option: any) => {
-        const price = Number(option.price) || 0;
-        const qty = Number(option.quantity) || 0;
-        return sum + price * qty;
-      }, 0);
-    console.log(optionsTotal, "optionsTotal");
-    const subtotal =
-      (Number(item.dish_price) + optionsTotal) * Number(item.dish_quantity);
+  // getItemSubtotal(item: any): number {
+  //   // Sum (price * quantity) for each selected option
+  //   // console.log(item, "optionsTotal");
+  //   const optionsTotal = item?.dish_option_set_array
+  //     .flatMap((optSet: any) => optSet?.option_set_array)
+  //     .filter((option: any) => option?.selected)
+  //     .reduce((sum: number, option: any) => {
+  //       const price = Number(option?.price) || 0;
+  //       const qty = Number(option?.quantity) || 0;
+  //       return sum + price * qty;
+  //     }, 0);
+  //   // console.log(optionsTotal, "optionsTotal");
+  //   const subtotal =
+  //     (Number(item.dish_price) + optionsTotal) * Number(item.dish_quantity);
 
-    // ✅ store subtotal inside item itself
-    item.item_total_price = subtotal;
-    return subtotal;
+  //   // ✅ store subtotal inside item itself
+  //   item.item_total_price = subtotal;
+  //   // console.log(subtotal);
+    
+  //   return subtotal;
+  // }
+
+  getItemSubtotal(item: any): number {
+
+  // 👇 CASE 1: Combo item (simple calculation)
+  if (item.dish_type === "combo") {
+    return (item.dish_price || 0) * (item.dish_quantity || 1);
   }
+
+  // 👇 CASE 2: STANDARD dishes
+  let basePrice = item.dish_price || item.duplicate_dish_price || 0;
+  let quantity = item.dish_quantity || 1;
+
+  // ---- Safe arrays (NO more undefined.flatMap errors) ---- //
+  const optionSets = item.standed_option_selected_array || [];
+  const comboOptions = item.combo_selected_dishes || [];
+  const ingredients = item.dish_ingredient_array || [];
+  const toppings = item.selectedOptions || [];
+
+  let extraPrice = 0;
+
+  // Option sets
+  extraPrice += optionSets
+    .flatMap((set: any) => set.choose_option || [])
+    .reduce((sum: number, opt: any) => sum + (opt.price || 0), 0);
+
+  // Combo options
+  extraPrice += comboOptions
+    .flatMap((c: any) => c.combo_option_selected_array || [])
+    .flatMap((opt: any) => opt.choose_option || [])
+    .reduce((sum: number, opt: any) => sum + (opt.price || 0), 0);
+
+  // Ingredients
+  extraPrice += ingredients.reduce(
+    (sum: number, ing: any) => sum + (ing.price || 0),
+    0
+  );
+
+  // Toppings
+  extraPrice += toppings
+    .filter((t: any) => t.selected)
+    .reduce((sum: number, t: any) => sum + (t.price || 0), 0);
+
+  // FINAL
+  return (basePrice + extraPrice) * quantity;
+}
+
 
   combotItemSubtotal(fullcomboDetails: any): number {
     let grandTotal: number = 0;

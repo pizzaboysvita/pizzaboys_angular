@@ -1,0 +1,438 @@
+<div class="modal-content">
+
+  <!-- Header -->
+  <div class="modal-header border-bottom pb-2 flex-column align-items-start">
+    <h5 class="modal-title fw-bold">Settings</h5>
+
+    <button type="button" class="btn-close" (click)="modal.dismissAll()">
+      <i class="ri-close-line"></i>
+    </button>
+  </div>
+
+  <!-- Body -->
+  <div class="modal-body security-body">
+
+    <!-- User Interface Section -->
+    <div class="settings-section">
+      <div class="section-title">
+        <i class="ri-fire-line"></i> User Interface
+      </div>
+
+      <div class="settings-item collapsible">
+       <span class="span-class">Toggle fullscreen</span>
+        <i class="ri-arrow-down-s-line"></i>
+      </div>
+
+      <div class="settings-item collapsible" (click)="openLayoutModal()">
+       <span class="span-class">Layout Size</span>
+        <i class="ri-arrow-down-s-line"></i>
+      </div>
+
+      <!-- Toggles -->
+      <div class="settings-toggle">
+       <span class="span-class">Sort menu alphabetical</span>
+         <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+
+      <div class="settings-toggle">
+       <span class="span-class">Sidebar category color</span>
+       <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+
+      <div class="settings-toggle">
+       <span class="span-class">Use confirm buttons on payments interface</span>
+         <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+
+      <div class="settings-toggle">
+       <span class="span-class">Checkout button show existing order number</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+
+      <!-- Dropdowns -->
+      <div class="form-group dropdown-setting">
+        <label>Profile</label>
+        <select class="form-select">
+          <option>Standard</option>
+          <option>Mobile Table Ordering</option>
+        </select>
+      </div>
+
+      <div class="form-group dropdown-setting">
+        <label>Menu</label>
+        <select class="form-select">
+          <option>Standard</option>
+          <option>Grid</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Orders Section -->
+    <div class="settings-section mt-3">
+      <div class="section-title">
+        <i class="ri-tools-line"></i> Orders
+      </div>
+
+      <div class="settings-toggle">
+        <span class="span-class">Sort dishes by menu order</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+      <div class="settings-toggle">
+       <span class="span-class">Disable item merging</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+      <div class="settings-toggle">
+       <span class="span-class">Disable combo matching</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+      <div class="settings-toggle">
+       <span class="span-class">Disable dish tagging</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+         <div class="settings-toggle">
+       <span class="span-class">Prompt customer info on pickup & delivery</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+         <div class="settings-toggle">
+       <span class="span-class">Show dish popup for ingredients</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+    </div>
+   <!-- Dine-In Orders Section -->
+    <div class="settings-section mt-3">
+      <div class="section-title">
+        <i class="ri-restaurant-2-line
+"></i> Dine-In Orders
+      </div>
+
+      <div class="settings-toggle">
+       <span class="span-class">Table required</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+      <div class="settings-toggle">
+       <span class="span-class">Prompt close table only after payment</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+      <div class="settings-toggle">
+       <span class="span-class">Disable combo matching</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+      <div class="settings-toggle">
+       <span class="span-class">Auto close table after full payment</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+         <div class="settings-toggle">
+       <span class="span-class">Always show dish popup</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+         <div class="settings-toggle">
+       <span class="span-class">Disable table map</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+      <div class="settings-toggle">
+       <span class="span-class">Disable individual table seats</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+      <div class="settings-toggle">
+       <span class="span-class">Disable seat at table</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+    </div>
+     <!-- Print Section -->
+    <div class="settings-section mt-3">
+      <div class="section-title">
+        <i class="ri-printer-fill"></i> Printing
+      </div>
+
+      <div class="settings-toggle">
+       <span class="span-class">Automatic receipt printing</span>
+          <label class="switch">
+                                      <input type="checkbox"  />
+
+                                      <span class="slider round"></span>
+                                    </label>
+      </div>
+      
+       
+    </div>
+    <!-- MISC Section -->
+     <div class="settings-section mt-3" (click)="openSecurityModal()">
+      <div class="section-title">
+        <i class="ri-function-line"></i> Misc
+      </div>
+
+      <div class="settings-item collapsible">
+        <span class="span-class">Security</span>
+        <i class="ri-arrow-down-s-line"></i>
+      </div>
+
+
+      
+       
+    </div>
+    <!-- Payment Section -->
+     <div class="settings-section mt-3">
+      <div class="section-title">
+        <i class="ri-receipt-line"></i> Payment Terminal
+      </div>
+
+      <div class="settings-item collapsible" (click)="openDebugModal()">
+        <span class="span-class">Debug</span>
+        <i class="ri-arrow-down-s-line"></i>
+      </div>
+
+
+      
+       
+    </div>
+  </div>
+</div>
+
+<div class="modal fade"
+     tabindex="-1"
+     role="dialog"
+     [ngClass]="{ 'show d-block': Openmodal }"
+     style="background: rgba(0,0,0,0.5); z-index: 1040;">
+
+  <div class="modal-dialog modal-sm modal-dialog-centered" style="max-width: 450px;">
+    <div class="modal-content p-0">
+
+      <!-- HEADER -->
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">Windcave HIT Debugger</h5><br>
+        <!-- <div class="small text-muted">
+     Last transaction ref: 8854
+    </div> -->
+        <button type="button" class="btn-close" (click)="Openmodal=false"> <i class="ri-close-line"></i></button>
+      </div>
+
+   <div class="modal-body">
+          <p class="text-muted small">
+        To release a terminal stuck on signature verification, enter the last transaction ref. 
+        To accept signature, use button name 'B1' and button value 'YES'. To reject signature, 
+        use button name 'B2' and button value 'NO'.
+      </p>
+    <div >
+      <form [formGroup]="paymentForm">
+
+        <div class="form-group mb-3">
+          <input type="number" class="form-control" placeholder="Transaction Ref" formControlName="transactionRef">
+        </div>
+        <div class="form-group mb-3">
+          <input type="number" class="form-control" placeholder="Button Name" formControlName="buttonName">
+        </div>        
+        <div class="form-group mb-3">
+          <input type="number" class="form-control" placeholder="ButtonValue" formControlName="buttonValue">
+        </div>
+        
+
+
+
+      </form>
+    </div>
+</div>
+    
+ <div class="modal-footer border-0">
+    <button class="btn btn-light px-4">Send Button</button>
+    <button class="btn btn-dark px-4">Send Status</button>
+  </div>
+    </div>
+  </div>
+ 
+</div>
+<!-- LayOut Modal -->
+<div class="modal fade"
+     tabindex="-1"
+     role="dialog"
+     [ngClass]="{ 'show d-block': OpenLayoutModal }"
+     style="background: rgba(0,0,0,0.5); z-index: 1040;">
+
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 550px;">
+    <div class="modal-content">
+
+      <!-- HEADER -->
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">Layout Size</h5>
+        <button type="button" class="btn-close" (click)="OpenLayoutModal=false">
+           <i class="ri-close-line"></i></button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-body">
+
+        <form [formGroup]="layoutForm">
+
+          <div class="row">
+
+            <!-- Navbar Width -->
+            <div class="col-6 mb-4">
+              <label class="form-label">Navbar Width (px) *</label>
+              <input type="number" class="form-control" formControlName="navbarWidth">
+              <div class="text-muted small mt-1">Default is 320</div>
+            </div>
+
+            <!-- Cart Width -->
+            <div class="col-6 mb-4">
+              <label class="form-label">Cart Width (px) *</label>
+              <input type="number" class="form-control" formControlName="cartWidth">
+              <div class="text-muted small mt-1">Default is 320</div>
+            </div>
+
+            <!-- Item Size -->
+            <div class="col-6 mb-4">
+              <label class="form-label">Item Size *</label>
+              <input type="number" class="form-control" formControlName="itemSize">
+              <div class="text-muted small mt-1">Default is 16</div>
+            </div>
+
+            <!-- Item Font Size -->
+            <div class="col-6 mb-4">
+              <label class="form-label">Item Font Size (px) *</label>
+              <input type="number" class="form-control" formControlName="itemFontSize">
+              <div class="text-muted small mt-1">Default is 14</div>
+            </div>
+
+          </div>
+
+        </form>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-footer border-0">
+        <button class="btn btn-dark px-4">SAVE</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- Security Modal -->
+<div class="modal fade"
+     tabindex="-1"
+     role="dialog"
+     [ngClass]="{ 'show d-block': securityModal }"
+     style="background: rgba(0,0,0,0.5); z-index: 1040;">
+
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">Security</h5>
+        <button class="btn-close" (click)="securityModal=false"><i class="ri-close-line"></i></button>
+      </div>
+
+      <div class="modal-body security-body">
+
+        <!-- SECTION 1: PIN CODE -->
+        <div class="section-header d-flex align-items-center">
+          <i class="bi bi-three-dots-vertical me-2"></i>
+          <span class="fw-bold">Pin Code</span>
+        </div>
+
+        <p class="text-muted small mt-2">
+          No pin code currently configured. Actions selected below will not be protected
+        </p>
+
+        <button class="btn btn-warning px-3 py-1 fw-bold">SET PIN</button>
+
+        <!-- Divider -->
+        <div class="divider my-3"></div>
+
+        <!-- SECTION 2 -->
+        <div class="section-header d-flex align-items-center">
+          <i class="bi bi-lock-fill me-2"></i>
+          <span class="fw-bold">Pin Protected Actions</span>
+        </div>
+
+        <!-- ACTION LIST -->
+        <div class="action-row" *ngFor="let item of securityOptions">
+          <div>
+            <div class="span-class">{{ item.label }}</div>
+            <small class="text-muted" *ngIf="item.subText">{{ item.subText }}</small>
+          </div>
+
+          <div class="form-check form-switch">
+            <input class="form-check-input"
+                   type="checkbox"
+                   [(ngModel)]="item.enabled">
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+

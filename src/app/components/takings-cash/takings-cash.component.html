@@ -1,0 +1,299 @@
+<div class="modal-content custom-modal">
+
+  <!-- Header -->
+  <div class="modal-header border-bottom pb-2 flex-column align-items-start">
+    <h5 class="modal-title fw-bold">Takings</h5>
+    <div class="small text-muted">
+      Session started {{ sessionStart }}
+    </div>
+
+     <button type="button" class="btn-close" (click)="modal.dismissAll()">
+     <i class="ri-close-line"></i>
+  </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="modal-tabs">
+    <button class="tab" [class.active]="activeTab === 'end'"
+            (click)="activeTab = 'end'">END OF DAY</button>
+
+    <button class="tab" [class.active]="activeTab === 'history'"
+            (click)="activeTab = 'history'">HISTORY</button>
+  </div>
+
+  <!-- Modal Body -->
+  <div class="modal-body">
+
+    <!-- END OF DAY TAB -->
+    <div *ngIf="activeTab === 'end'">
+
+      <p class="text-muted small">
+        Finalise takings to ensure that you have collected the correct amount of money
+        over the transactions completed in this session. Note that the below cash value
+        includes your float. Summary figures will be shown after.
+      </p>
+
+      <!-- Table -->
+      <div class="table-responsive">
+    <div class="takings-scroll-container">
+  <div class="takings-table-wrapper">
+  <table class="takings-table">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Sales</th>
+        <th>Refunds</th>
+        <th>Cashout</th>
+        <th>Expected</th>
+        <th>Counted</th>
+        <th>Variance</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let row of takingsRows">
+
+        <td>{{ row.type }}</td>
+
+        <td>{{ row.sales !== null ? ('$' + row.sales.toFixed(2)) : '-' }}</td>
+
+        <td>{{ row.refunds !== null ? ('$' + row.refunds.toFixed(2)) : '-' }}</td>
+
+        <td>{{ row.cashout !== null ? ('$' + row.cashout.toFixed(2)) : '-' }}</td>
+
+        <td>{{ row.expected !== null ? ('$' + row.expected.toFixed(2)) : '-' }}</td>
+
+        <!-- Counted -->
+        <td>
+          <ng-container *ngIf="row.editable; else dash">
+            <input type="number"
+                   class="counted-input"
+                   [(ngModel)]="row.counted"
+                   (input)="updateVariance(row)" />
+                   <span class="material-symbols-outlined edit-ico"  style="font-size: 16px !important;cursor: pointer;"
+            (click)="enableEdit(row)">
+        edit
+      </span>
+          </ng-container>
+
+          <ng-template #dash>-</ng-template>
+        </td>
+
+        <!-- Variance -->
+        <td>
+          <ng-container *ngIf="row.variance !== null; else dash2">
+            <span [ngClass]="{ 'negative': row.variance < 0 }">
+              {{ row.variance | currency:'USD':'symbol':'1.2-2' }}
+            </span>
+          </ng-container>
+
+          <ng-template #dash2>-</ng-template>
+        </td>
+
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+</div>
+
+
+      <!-- Notes -->
+      <div class="form-group mt-3">
+        <textarea class="form-control" rows="2" placeholder="Notes"></textarea>
+      </div>
+
+      <!-- EFTPOS Cutover Toggle -->
+      <div class="form-check mt-3">
+        <input class="form-check-input" type="checkbox" id="cutoverToggle">
+        <label class="form-check-label" for="cutoverToggle">
+          Perform EFTPOS Settlement Cutover
+        </label>
+      </div>
+
+    </div>
+    </div>
+
+    <!-- HISTORY TAB -->
+    <div *ngIf="activeTab === 'history'">
+        <ag-grid-angular class="ag-theme-alpine font-family my-grid" style="width: 100%" [columnDefs]="tableConfig"
+            [rowData]="historyRows" [domLayout]="'autoHeight'" [pagination]="true" [paginationPageSize]="10"
+            [gridOptions]="gridOptions" 
+            [defaultColDef]="{ flex: 1, minWidth: 100, sortable: true }">
+          </ag-grid-angular>
+<!-- 
+      <table class="table table-hover takings-history-table">
+        <thead>
+          <tr>
+            <th>Takings #</th>
+            <th>Session Ended</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let t of historyRows; let i = index">
+            <td>{{ t.number }}</td>
+            <td>
+              <span *ngIf="t.current">CURRENT</span>
+              <span *ngIf="!t.current">{{ t.ended }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    
+     <div class="takings-pagination">
+  <div>
+    Rows per page:
+    <select class="form-select d-inline w-auto" [(ngModel)]="rowsPerPage">
+      <option>5</option>
+      <option>10</option>
+      <option>25</option>
+    </select>
+  </div>
+
+  <div>{{ pageStart }} - {{ pageEnd }} of {{ historyRows.length }}</div>
+
+  <div>
+    <button class="btn btn-sm btn-light">‹</button>
+    <button class="btn btn-sm btn-light">›</button>
+  </div>
+</div> -->
+
+
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="modal-footer border-0">
+    <button class="btn btn-dark">
+      FINALISE TAKINGS
+    </button>
+  </div>
+</div>
+<div class="modal fade"
+     tabindex="-1"
+     role="dialog"
+     [ngClass]="{ 'show d-block': cashCount }"
+     style="background: rgba(0,0,0,0.5); z-index: 1040;">
+
+  <div class="modal-dialog modal-sm modal-dialog-centered" style="max-width: 350px;">
+    <div class="modal-content p-0">
+
+      <!-- HEADER -->
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">Cash Count</h5>
+        <button type="button" class="btn-close" (click)="closeCashCount()"> <i class="ri-close-line"></i></button>
+      </div>
+<div class="modal-tabs">
+    <button class="tab" [class.active]="CashactiveTab === 'exactAmt'"
+            (click)="CashactiveTab = 'exactAmt'"> EXACT AMOUNT</button>
+
+    <button class="tab" [class.active]="CashactiveTab === 'Denominations'"
+            (click)="CashactiveTab = 'Denominations'">DENOMINATIONS</button>
+  </div>
+   <div class="modal-body">
+    <div *ngIf="CashactiveTab === 'exactAmt'">
+      <div class="amount-display text-end">
+        {{ cashpaymentAmount | currency:'USD' }}
+      </div>
+      <!-- NUMBER PAD -->
+      <div class="number-pad">
+        <div class="row g-2">
+
+          <div class="col-4" *ngFor="let key of ['7','8','9','4','5','6','1','2','3','0','00','←']">
+            <button class="btn w-100"
+                    [ngClass]="key === '←' ? 'btn-danger' : 'btn-light'"
+                    (click)="handleKeyPress(key)">
+              {{ key }}
+            </button>
+          </div>
+
+        </div>
+
+
+      </div>
+</div>
+ <div *ngIf="CashactiveTab === 'Denominations'">
+ <div>
+  <table class="cash-takings-table">
+    <thead>
+      <tr>
+        <th>Unit</th>
+        <th>Quantity</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let row of cashCountRows">
+
+        <td>{{ row.unit }}</td>
+        <td>{{ row.quantity }} <span class="material-symbols-outlined edit-ico"  style="font-size: 16px !important;cursor: pointer;"
+            (click)="editModal=true">
+        edit
+      </span></td>
+
+        <td>{{ row.total }}</td>
+
+
+      </tr>
+    </tbody>
+  </table>
+
+    </div>
+ </div>
+</div>
+    
+
+    </div>
+  </div>
+
+</div>
+<div class="modal fade"
+     tabindex="-1"
+     role="dialog"
+     [ngClass]="{ 'show d-block': editModal }"
+     (click)="editModal = false"
+     style="background: rgba(0,0,0,0.5); z-index: 1040;">
+
+  <div class="modal-dialog modal-dialog-centered keypad-modal"  style="max-width: 350px;" (click)="$event.stopPropagation()">
+    <div class="modal-content keypad-box">
+
+      <!-- HEADER: Denomination / Total -->
+      <div class="keypad-header d-flex justify-content-between px-3 py-2">
+        <div>
+          <div class="label-title">Denomination</div>
+          <div class="label-value">$0.10</div>
+        </div>
+
+        <div class="text-end">
+          <div class="label-title">Total</div>
+          <div class="label-value">$0.00</div>
+        </div>
+      </div>
+
+      <!-- DISPLAY -->
+      <div class="keypad-display text-end px-3">
+        0
+      </div>
+
+      <!-- KEYPAD GRID -->
+      <div class="keypad-grid">
+        <button class="key-btn" *ngFor="let num of ['7','8','9','4','5','6','1','2','3']"
+                (click)="press(num)">
+          {{ num }}
+        </button>
+
+        <button class="key-btn wide-btn" (click)="press('0')">0</button>
+        <button class="key-btn wide-btn" (click)="press('00')">00</button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+
+

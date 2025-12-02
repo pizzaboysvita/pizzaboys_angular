@@ -1,7 +1,8 @@
+@if(pos!=3){
 <div>
     <div class="logo-wrapper logo-wrapper-center">
         <a [routerLink]="['/dashboard']">
-            <img class="img-fluid for-white" src="assets/pizzaImg/pizza-white.png" alt="logo">
+            <img class="img-fluid for-white" src="assets/pizzaImg/pizza-black-2.JPG" alt="logo" style="height: 75px !important;">
         </a>
         <div class="back-btn" (click)="navService.collapseSidebar = !navService.collapseSidebar">
             <i class="fa fa-angle-left"></i>
@@ -78,3 +79,136 @@
       
       
 </div>
+}
+@else{
+
+<div class="pos-sidebar-container">
+  <!-- 🔹 POS HEADER -->
+  <div class="pos-header d-flex align-items-center justify-content-between p-2" style="background-color: black !important;">
+    <div class="d-flex align-items-center">
+      <!-- [routerLink]="['/dashboard']" -->
+      <a >
+            <img class="img-fluid for-white" src="assets/pizzaImg/pizza-black-2.JPG" alt="logo" style="height: 55px !important;">
+        </a>
+        <!-- me-3 -->
+        <span class="pos-time" style="margin-right: 0.5rem;">{{ currentTime }}</span>
+      <!-- 3-dot menu button -->
+      <div class="menu-toggle-btn" (click)="toggleFunctionsMenu()">
+        <i class="ri-more-2-fill"></i>
+      </div>
+         <!-- <div class="back-btn" (click)="navService.collapseSidebar = !navService.collapseSidebar">
+            <i class="fa fa-angle-left"></i>
+        </div> -->
+        <div class="toggle-sidebar" (click)="navService.collapseSidebar = !navService.collapseSidebar">
+            <i class="ri-apps-2-line status_toggle middle sidebar-toggle"></i>
+        </div>
+        </div>
+
+    <!-- <div class="d-flex align-items-center">
+      <span class="pos-time me-3">{{ currentTime }}</span>
+      <div class="menu-toggle-btn" (click)="toggleFunctionsMenu()">
+        <i class="ri-more-2-fill"></i>
+      </div>
+        <div class="toggle-sidebar" (click)="navService.collapseSidebar = !navService.collapseSidebar">
+            <i class="ri-apps-2-line status_toggle middle sidebar-toggle"></i>
+        </div>
+      
+    </div> -->
+  </div>
+ <div class="logo-icon-wrapper">
+    
+        <a [routerLink]="['/dashboard']">
+            <img class="img-fluid main-logo" src="assets/images/logo/logo.png" alt="logo">
+        </a>
+    </div>
+  <!-- 🔹 SIDEBAR MENU -->
+  <nav class="sidebar-main" >
+      <div class="left-arrow">
+            <app-feather-icons [icons]="'arrow-left'"></app-feather-icons>
+        </div>
+    <div id="sidebar-menu">
+    <ul class="sidebar-links theme-scrollbar category-list p-0 m-0">
+  
+  <!-- Functions Menu (Shown when true) -->
+   @if(showFunctionsMenu){
+    <li class="pos-header p-3">Functions</li>
+
+   <li class="function-item d-flex align-items-center gap-2"  (click)="changeStaff()">
+  <i class="ri-user-3-fill fs-5"></i>
+     <div>
+  <span class="function-title">Change Staff</span>
+   <div class="function-sub small text-muted">POS Staff</div>
+   </div>
+  <!-- <span class="function-title">POS Staff</span> -->
+</li>
+
+
+     <li class="function-item d-flex align-items-center gap-2" (click)="openFloat()">
+            <i class="ri-money-dollar-circle-line fs-5"></i>
+            <div>
+              <span class="function-title">Float Adjustment</span>
+              <div class="function-sub small text-muted">Float: $160 / Cash: $199</div>
+            </div>
+          </li>
+
+          <li class="function-item d-flex align-items-center gap-2" (click)="openTakingsCash()">
+            <i class="ri-file-list-3-line fs-5"></i>
+            <span class="function-title">Takings / Cash up</span>
+          </li>
+
+          <li class="function-item d-flex align-items-center gap-2">
+            <i class="ri-inbox-unarchive-line fs-5"></i>
+            <span class="function-title">Open Cash Draw</span>
+          </li>
+
+          <li class="function-item d-flex align-items-center gap-2" (click)="openPosSettings()">
+            <i class="ri-settings-3-line fs-5"></i>
+            <span class="function-title">Settings</span>
+          </li>
+
+          <li class="function-item d-flex align-items-center gap-2">
+            <i class="ri-refresh-line fs-5"></i>
+            <span class="function-title">Sync Data</span>
+          </li>
+
+          <li class="function-item d-flex align-items-center gap-2" (click)="logOut()">
+            <i class="ri-shut-down-line fs-5"></i>
+            <span class="function-title">Close POS</span>
+          </li>
+
+   }
+
+  <!-- Menu Categories (Shown when Functions menu is hidden) -->
+    <!-- <li class="pos-header p-3" >Menus</li>
+    <li class="category-item">Limited Time Deal</li>
+   <li class="category-item" *ngFor="let cat of categoriesList" (click)="selectCategory(cat)"
+    [class.active]="selectedCategory?.name === cat.name">
+  <span class="category-name">{{ cat.name }}</span>
+</li> -->
+<!-- <div class="category-item">
+   <span class="category-name">Limited Time Deal</span>
+   <span class="category-indicator"></span>
+</div> -->
+<li class="pos-header p-3" >Menus</li>
+<div 
+  class="category-item" 
+  *ngFor="let cat of categoriesList" 
+  (click)="selectCategory(cat)"
+  [class.active]="selectedCategory?.name === cat.name"
+>
+  <span class="category-name">{{ cat.name }}</span>
+  <span class="category-indicator"></span>
+</div>
+
+  
+
+</ul>
+
+    </div>
+    <div class="right-arrow">
+            <app-feather-icons [icons]="'arrow-right'"></app-feather-icons>
+        </div>
+  </nav>
+</div>
+
+}

@@ -1,25 +1,28 @@
+  @if(ishidepos != 'true'){
 <div class="header-wrapper m-0">
     <div class="header-logo-wrapper p-0">
+       
         <div class="logo-wrapper">
             <a [routerLink]="['/dashboard']">
                 <img class="img-fluid main-logo" src="assets/images/logo/1.png" alt="logo">
                 <img class="img-fluid white-logo" src="assets/images/logo/1-white.png" alt="logo">
             </a>
         </div>
-        <div class="toggle-sidebar" (click)="navService.collapseSidebar =!navService.collapseSidebar">
+    
+        <div class="toggle-sidebar" (click)="navService.collapseSidebar =!navService.collapseSidebar" >
             <app-feather-icons [icons]="'align-center'"
                 [class]="'status_toggle middle sidebar-toggle'"></app-feather-icons>
             <a [routerLink]="['/dashboard']">
-                <img class="img-fluid for-light" src="assets/images/logo/1.png" alt="logo">
+                <!-- <img class="img-fluid for-light" src="assets/images/logo/1.png" alt="logo"> -->
                 <img class="img-fluid for-dark" src="assets/images/logo/1-white.png" alt="logo">
             </a>
         </div>
     </div>
       <!-- <a href="" class="logo-login"><img src="assets/pizzaImg/pizza-black-1.png" class="img-fluid" alt=""></a> -->
     <div class="welcome-title">
-        @if(ishidepos == 'true'){
-          <a href="" class="logo-login"><img src="assets/pizzaImg/pizza-black-1.png" class="img-fluid" alt=""></a>
-        }
+        <!-- @if(ishidepos == 'true'){
+          <a href="" class="logo-login"><img src="assets/pizzaImg/pizza-black-2.JPG" class="img-fluid" alt="" style="height: 62px !important;"></a>
+        } -->
 @if(ishidepos != 'true'){
         <h5>
             Food that's you loved!
@@ -54,7 +57,7 @@
             } 
              @if (users.user.role_id==3) {
             <li class="onhover-dropdown" (click)="orderList()">
-               <i class="ri-shopping-bag-2-line"></i>
+               <i class="ri-shopping-bag-2-line" style="color: white;"></i>
             </li>
         }
             <!-- <li class="onhover-dropdown">
@@ -98,4 +101,28 @@
             <div class="EmptyMessage" style="color: black;">Oops!! There are no result found.</div>
         </div>
     </div>
+
 </div>
+}
+  @else{
+<!-- 🔹 MOBILE HEADER (Visible only on mobile) -->
+<div class="mobile-header-wrapper align-items-center justify-content-between px-3 py-2">
+  <div class="d-flex align-items-center">
+    <!-- Hamburger / Toggle Icon -->
+    <div class="toggle-sidebar me-2" (click)="navService.collapseSidebar = !navService.collapseSidebar">
+      <app-feather-icons
+        [icons]="'align-center'"
+        class="status_toggle middle sidebar-toggle"
+      ></app-feather-icons>
+    </div>
+
+    <!-- Logo -->
+     <!-- [routerLink]="['/dashboard']" -->
+    <a  class="logo-link d-flex align-items-center">
+      <!-- <img class="img-fluid for-light" src="assets/images/logo/1.png" alt="logo" /> -->
+      <img class="img-fluid for-dark" src="assets/images/logo/1-white.png" alt="logo" />
+    </a>
+  </div>
+</div>
+
+  }

@@ -18,6 +18,8 @@ export interface menuItem {
   providedIn: "root",
 })
 export class NavService {
+ public showFunctionsMenu :boolean;
+
   public collapseSidebar: boolean = window.innerWidth < 1200 ? true : false;
   constructor(public modal: NgbModal) {}
 

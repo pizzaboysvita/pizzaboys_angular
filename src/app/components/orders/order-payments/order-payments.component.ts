@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, Input, TemplateRef, ViewChild } from '@angular/core';
 import { NgbActiveModal, NgbModal, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { SessionStorageService } from '../../../shared/services/session-storage.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-order-payments',
@@ -12,7 +13,8 @@ import { SessionStorageService } from '../../../shared/services/session-storage.
 export class OrderPaymentsComponent {
   @Input() data: any;
   @Input() customer: any;
-
+isLoading = false;
+progressValue = 10;
   splitBy = 2;
   splitRows: any;
   isSplitPayment: boolean=false;
@@ -21,10 +23,11 @@ export class OrderPaymentsComponent {
   // totalPrice: number;
   unpaidItems: any;
   payItems: any[] = [];     // selected items waiting for payment
-  paidItems: any[] = [];    // confirmed paid items
+  paidItems: any = [];    // confirmed paid items
   isModalOpen: boolean=true;
   showPopup: boolean=true;
   confirmRemove = false;
+  showEftModal=false
   paid: any;
   paymentAmount: number = 0;
   totalPrice: number = 0;
@@ -34,7 +37,7 @@ export class OrderPaymentsComponent {
   splitCash: boolean;
   cashModal=false
   showNewModelPopup = false;
-  selectedRowIndex: number | null = null;
+  selectedRowIndex: number | any = null;
   selectedRowData: any = null;
   cashpaymentAmount: number;
   percentageJson:any=[];
@@ -51,7 +54,8 @@ export class OrderPaymentsComponent {
   itemsJson: any=[];
   isVoucherConfirm = false;
   paymentAmountStr: string;
- constructor(public modal: NgbModal,private cdr: ChangeDetectorRef,public activeModal: NgbActiveModal, private sessionStorageService: SessionStorageService) {}
+  newPayments:any=[];
+ constructor(public modal: NgbModal,private cdr: ChangeDetectorRef,public activeModal: NgbActiveModal, private sessionStorageService: SessionStorageService,private toastr: ToastrService,) {}
   ngOnInit(): void {
     this.payItems=[]
     this.paidItems= [];    // confirmed paid items
@@ -73,20 +77,64 @@ export class OrderPaymentsComponent {
     change:'-'
   });
   }
+  setDefaultSelectedRow() {
+  if (!this.fullArray || this.fullArray.length === 0) return;
+
+  // Find the first non-success row
+  const firstNonSuccessIndex = this.fullArray.findIndex(
+    (row: any) => row.status !== 'Success'
+  );
+
+  // If found, select it; otherwise, select the first row
+  this.selectedRowIndex =
+    firstNonSuccessIndex !== -1 ? firstNonSuccessIndex : 0;
+
+  // Also call your selection logic (optional)
+  const selectedRow = this.fullArray[this.selectedRowIndex];
+  this.selectRow(selectedRow, this.selectedRowIndex);
+}
+
 setActiveTab(tab: string) {
   this.activeTab = tab;
-  if(this.activeTab=='people' ||   this.activeTab=='items'){
+  if(this.activeTab =='people' ||   this.activeTab =='items'){
   this.splitCash=true
  // ✅ Keep only 'Success' rows in fullArray
-    const successfulRows = this.fullArray.filter((row: { status: string; }) => row.status === 'Success');
-    this.fullArray = successfulRows.length > 0 ? successfulRows : [];
-
+    // const successfulRows = this.fullArray.filter((row: { status: string; }) => row.status === 'Success');
+    // this.fullArray = successfulRows.length > 0 ? successfulRows : [];
+    // console.log(this.fullArray );
+    
+const hasSuccess = this.fullArray.some((row: { status: string }) => row.status === 'Success');
+this.fullArray = hasSuccess ? this.fullArray : [];
     // ✅ If empty, reset remaining & paymentAmount to totalPrice
     if (this.fullArray.length === 0) {
       this.remaining = this.totalPrice;
       this.paymentAmount = this.totalPrice;
     }
+     if (this.splitRows.length>0){
+this.isSplitPayment = true;
+    } 
   }
+    if(this.activeTab =='full' ||   this.activeTab =='items'){
+    this.isSplitPayment = false;
+
+  //  const splitfulRows = this.splitRows.filter((row: { status: string; }) => row.status === 'Success');
+  //   this.splitRows = splitfulRows.length > 0 ? splitfulRows : [];
+  const splitfulRows = this.splitRows.some((row: { status: string }) => row.status === 'Success');
+this.splitRows = splitfulRows ? this.splitRows : [];
+console.log(this.splitRows);
+    if (this.splitRows.length>0){
+       this.isSplitPayment = true;
+    } 
+    }
+     if(this.activeTab =='full' ||   this.activeTab =='people'){
+ this.isSplitPayment = false;
+   const splitfulRows = this.paidItems.some((row: { status: string; }) => row.status === 'Success');
+    this.paidItems = splitfulRows.length > 0 ? splitfulRows : [] ;
+    if (!splitfulRows.length) this.unpaidItems = this.data;
+       }
+        if (this.splitRows.length>0){
+this.isSplitPayment = true;
+    } 
 }
 incSplit() { 
   this.splitBy++;
@@ -244,8 +292,15 @@ appendNumber(num: any) {
 
 clearAmount() {
    this.paymentAmountStr = '';
-  this.paymentAmount = 0;
+  if(this.fullArray.length>0){
+      const totalPaid = this.fullArray?.reduce((sum: any, p: { amount: any; }) => sum + (p.amount || 0), 0);
+        this.remaining = this.totalPrice - totalPaid;
+        this.paymentAmount =  this.remaining ;
+  }
+  else{
   this.remaining = this.totalPrice;
+  this.paymentAmount =  this.remaining ;
+  }
 }
 setPayment(percent: number) {
   this.percentage=percent
@@ -261,6 +316,10 @@ get isFullyPaid(): boolean {
 fullAddPayment() {
   if (!this.paymentAmount || this.paymentAmount <= 0) {
     return; 
+  }
+    if (this.paymentAmount > this.remaining) {
+    this.toastr.warning("Entered amount exceeds the remaining balance!", "Warning");
+    return;
   }
   const newRow = {
     status:'Pending',
@@ -295,8 +354,15 @@ openCashModal(type:any) {
   if(this.activeTab=='items'){
       this.cashpaymentAmount = this.selectedRowData.item_total_price; 
     }
-  if(type =='Cash'){
+  if(type == 'Cash'){
   this.showNewModelPopup=true
+  }
+  else if(type=='EFTPOS'){
+       this.showEftModal=true
+       this.isLoading = true;
+         setTimeout(() => {
+    this.isLoading = false;
+  }, 2000);
   }
   else{
     this.confirmCashPayment()
@@ -397,6 +463,7 @@ else if(this.activeTab =='items'){
   }
   this.selectedRowIndex = null;
   this.selectedRowData = null;
+  this.showEftModal=false
   // this.cashpaymentAmount = 0;
 }
  collectSuccessfulPayments() {
@@ -438,19 +505,27 @@ checkAllItemsPaymentsSuccess(): boolean {
   closeOrdersModal(){
     this.showChangeModal=false
     this.showNewModelPopup = false;
-      const newPayments = this.fullArray
-  .filter((x: any) => x.status === 'Success')
-  .map((x: any) => ({
-    payment_method: x.type,
-    payment_status: 'Completed',
-    amount: +x.amount,
-    payment_created_by:  JSON.parse(
-      this.sessionStorageService.getsessionStorage("loginDetails") as any
-    ).user.user_id
-  }));
+    this.newPayments = [];
 
-// ✅ Push each new payment to the existing array
-this.order_payments_json.push(...newPayments);
+[this.fullArray, this.splitRows, this.paidItems].forEach(arr => {
+  if (Array.isArray(arr)) {
+    const successPayments = arr
+      .filter(x => x.status?.trim() === 'Success')
+      .map(x => ({
+        payment_method: x.type,
+        payment_status: 'Completed',
+        amount: +x.amount,
+        payment_created_by: JSON.parse(
+          this.sessionStorageService.getsessionStorage("loginDetails") as any
+        ).user.user_id
+      }));
+
+    this.newPayments.push(...successPayments);
+  }
+});
+
+this.order_payments_json.push(...this.newPayments);
+
      this.payload = {
     payment_split_percentage_json: this.percentageJson,
     payment_split_users_json: this.userJson,
@@ -469,5 +544,23 @@ handleVoucherClick() {
     this.openCashModal('Voucher');
     this.isVoucherConfirm = false;
   }
+}
+//items
+hasAnySuccess(): boolean {
+  const fullSuccess = this.fullArray?.some((row: any) => row.status === 'Success');
+  const splitSuccess = this.splitRows?.some((row: any) => row.status === 'Success');
+  return fullSuccess || splitSuccess;
+}
+//for full
+hasSplitSuccess(): boolean {
+  const paidItems = this.paidItems?.some((row: any) => row.status === 'Success');
+  const splitSuccess = this.splitRows?.some((row: any) => row.status === 'Success');
+  return paidItems || splitSuccess;
+}
+//people
+hasItemsSuccess(): boolean {
+  const paidSuccess  = this.paidItems?.some((row: any) => row.status === 'Success');
+  const fullSuccess = this.fullArray?.some((row: any) => row.status === 'Success');
+  return paidSuccess || fullSuccess;
 }
 }

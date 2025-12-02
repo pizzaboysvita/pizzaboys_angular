@@ -1,0 +1,31 @@
+<div class="combo-selection-backdrop" (click)="close()"></div>
+
+<div class="combo-selection-modal">
+  <div class="modal-header">
+    <h5>Choose a Combo</h5>
+    <button class="btn-close" (click)="close()"></button>
+  </div>
+
+  <div class="modal-body">
+    <div *ngIf="!combos.length" class="text-center text-muted p-3">
+      No combos available.
+    </div>
+
+    <div *ngFor="let combo of combos" class="combo-box" (click)="select(combo)">
+      <div class="combo-content">
+        <div>
+          <div class="fw-bold">{{ combo.combo_name }}</div>
+          <div class="small text-muted">{{ getDishNames(combo) }}</div>
+        </div>
+        <div class="text-end">
+          <div class="fw-semibold">${{ combo.combo_price }}</div>
+          <div class="small text-muted">Tap to select</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn btn-secondary" (click)="close()">Cancel</button>
+  </div>
+</div>

@@ -1,0 +1,159 @@
+.custom-modal {
+  border-radius: 10px;
+}
+
+.modal-tabs {
+  display: flex;
+  margin: 0 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.modal-tabs .tab {
+  flex: 1;
+  padding: 12px 0;
+  border: none;
+  background: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modal-tabs .tab.active {
+  border-bottom: 3px solid #ff6a00;
+  color: #ff6a00;
+}
+
+.takings-table-wrapper {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+  margin-top: 10px;
+}
+
+.takings-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.takings-table thead {
+  background: #f7f7f7;
+}
+
+.takings-table th {
+  padding: 8px;
+  font-weight: 600;
+  color: #444;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 12px;
+
+}
+
+.takings-table td {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.counted-input {
+  width: 50px;
+  padding: 4px 6px;
+  text-align: right;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.negative {
+  color: #d9534f !important;
+  font-weight: 600;
+}
+.takings-scroll-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+}
+
+.takings-scroll-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.takings-scroll-container::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+
+.takings-table-wrapper {
+  min-width: 750px; /* forces horizontal scroll when screen is small */
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: white;
+}
+.cash-takings-table  {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.cash-takings-table th {
+  padding: 5px;
+  font-weight: 600;
+  color: #444;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 12px;
+
+}
+
+.cash-takings-table td {
+  padding: 5px;
+  border-bottom: 1px solid #eee;
+}
+
+
+.keypad-modal .modal-content {
+  border-radius: 10px;
+  padding: 0;
+  border: none;
+  overflow: hidden;
+}
+
+.keypad-header {
+  background: #f8f9fa;
+  border-bottom: 1px solid #ddd;
+}
+
+.label-title {
+  font-size: 13px;
+  color: #555;
+}
+
+.label-value {
+  font-weight: 600;
+  font-size: 15px;
+  margin-top: -2px;
+}
+
+.keypad-display {
+  font-size: 32px;
+  font-weight: 500;
+  padding: 15px 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid #ddd;
+}
+
+.key-btn {
+  border: 1px solid #ddd;
+  background: white;
+  font-size: 20px;
+  padding: 18px 0;
+}
+
+.key-btn:active {
+  background: #eee;
+}
+
+.wide-btn {
+  grid-column: span 1;
+}

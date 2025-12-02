@@ -6,6 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
+    "build:stg": "ng build zomo-admin --configuration stg",
+    "build:prod": "ng build zomo-admin --configuration prod",
     "test": "ng test"
   },
   "private": true,

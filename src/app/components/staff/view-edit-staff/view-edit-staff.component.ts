@@ -26,10 +26,12 @@ import { NgxMaskDirective, NgxMaskPipe } from "ngx-mask";
     ReactiveFormsModule,
     NgbNavModule,
     CardComponent,
-    NgSelectModule
+    NgSelectModule,NgxMaskDirective
   ],
   templateUrl: "./view-edit-staff.component.html",
   styleUrls: ["./view-edit-staff.component.scss"], 
+   providers:[NgxMaskPipe]
+
 })
 export class ViewEditStaffComponent implements OnInit {
   staffForm!: FormGroup;
@@ -114,7 +116,7 @@ export class ViewEditStaffComponent implements OnInit {
       firstName: [{ value: "", disabled: this.isViewMode }, Validators.required],
       lastName: [{ value: "", disabled: this.isViewMode }],
       email: [{ value: "", disabled: this.isViewMode }, [Validators.required, Validators.email]],
-      phone: [{ value: "", disabled: this.isViewMode }],
+      phone: [{ value: "", disabled: this.isViewMode },[Validators.required, Validators.pattern(/^\+?\d[\d\s]{7,13}$/)]],
       address: [{ value: "", disabled: this.isViewMode }],
       country: [{ value: "", disabled: this.isViewMode }],
       state: [{ value: "", disabled: this.isViewMode }],
@@ -172,6 +174,7 @@ console.log(staff)
           this.permissionForm.patchValue({
             store: staff.store_id ,
           });
+        this.rolesId=staff.role_id || "",
 this.selectedPreset =staff.role_id 
           const parsedPermissions =
             typeof staff.permissions === "string" ? JSON.parse(staff.permissions) : staff.permissions;
@@ -332,7 +335,7 @@ this.selectedPreset =staff.role_id
 
     const formValues = this.staffForm.getRawValue();
     const permissionValues = this.permissionForm.getRawValue();
-
+console.log(formValues,permissionValues)
     if (!permissionValues.store) {
       Swal.fire("Error", "Please select a store", "error");
       return;
@@ -355,7 +358,7 @@ this.selectedPreset =staff.role_id
     const reqBody: any = {
       type: "update",
       user_id: this.staffId,
-      role_id: formValues.role,
+      role_id: this.rolesId,
       first_name: formValues.firstName,
       last_name: formValues.lastName,
       email: formValues.email,
@@ -370,20 +373,20 @@ this.selectedPreset =staff.role_id
       updated_by: 1,
       refresh_token: "",
       permissions,
-      store_id: permissionValues.store,
+      store_id: this.permissionForm.getRawValue().store,
     };
 
     if (!this.file && this.profileImage && this.profileImage !== this.defaultImage) {
       reqBody.profiles = this.profileImage;
     }
-
+console.log(reqBody)
     const formData = new FormData();
     // if (this.file) {
       formData.append("image", this.file?this.file:'');
     // }
     formData.append("body", JSON.stringify(reqBody));
 
-    this.apis.postApi(AppConstants.api_end_points.staff, formData).subscribe({
+    this.apis.postApi(AppConstants.api_end_points.staffV2, formData).subscribe({
       next: (res: any) => {
         // 🔍 Debug log (optional)
         console.log("API response:", res);
@@ -403,5 +406,33 @@ this.selectedPreset =staff.role_id
       },
     });
   }
+  goBack() {
+   this.router.navigate(["/staff/staff-list"]);
+  }
+   allowOnlyAlphabets(event: KeyboardEvent) {
+    const char = event.key;
+    const regex = /^[A-Za-z\s]+$/;
 
+    if (!regex.test(char)) {
+      event.preventDefault();
+    }
+  }
+   capitalizeWords_firstName(event: any) {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value
+      .toLowerCase()
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+    this.staffForm.patchValue({
+      firstName: input.value,
+    });
+  }
+  capitalizeWords_lastName(event: any) {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value
+      .toLowerCase()
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+    this.staffForm.patchValue({
+      lastName: input.value,
+    });
+  }
 }

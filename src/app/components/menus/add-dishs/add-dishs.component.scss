@@ -159,3 +159,27 @@
   color: #666;
 }
 
+.inventory-section {
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.inventory-section .form-select,
+.inventory-section .form-control {
+  height: 38px;
+  font-size: 0.9rem;
+}
+
+.inventory-section .btn-dark {
+  background-color: #383838;
+  border: none;
+  font-size: 0.9rem;
+}
+
+.inventory-section .row.border.rounded {
+  transition: all 0.2s ease-in-out;
+}
+
+.inventory-section .row.border.rounded:hover {
+  background-color: #f8f9fa;
+}
