@@ -66,7 +66,8 @@ progressValue = 10;
   }
  calculateTotal(): void {
     this.totalPrice = this.data.reduce(
-      (sum: number, row: { item_total_price: any; }) => sum + (Number(row.item_total_price) || 0),
+      // change item_total_price to dish_price
+      (sum: number, row: { dish_price: any; }) => sum + (Number(row.dish_price) || 0),
       0
     );
     this.fullArray.push({
@@ -149,9 +150,9 @@ generateSplitPayments() {
   console.log(this.isSplitPayment);
   this.isSplitPayment=true
   this.splitRows = [];
-  // this.data.forEach((item: { item_total_price: number; dish_type: any; }) => {
-  //   const splitAmount = +(item.item_total_price / this.splitBy).toFixed(2);
-  //   let remaining = item.item_total_price;
+  // this.data.forEach((item: { dish_price: number; dish_type: any; }) => {
+  //   const splitAmount = +(item.dish_price / this.splitBy).toFixed(2);
+  //   let remaining = item.dish_price;
 
   //   for (let i = 0; i < this.splitBy; i++) {
   //     let amount = splitAmount;
@@ -172,7 +173,7 @@ generateSplitPayments() {
   // });
  
 const totalAmount = this.data.reduce(
-  (sum: number, item: { item_total_price: number }) => sum + item.item_total_price,
+  (sum: number, item: { dish_price: number }) => sum + item.dish_price,
   0
 );
 const splitAmount = +(totalAmount / this.splitBy).toFixed(2);
@@ -207,11 +208,13 @@ removeToPay(item: any, index: number) {
 }
 
 getUnpaidTotal() {
-  return this.unpaidItems.reduce((sum: any, item: { item_total_price: any; }) => sum + item.item_total_price, 0).toFixed(2);
+  console.log(this.unpaidItems);
+  
+  return this.unpaidItems.reduce((sum: any, item: { dish_price: any; }) => sum + parseInt(item.dish_price) , 0).toFixed(2);
 }
 
 getPayTotal() {
-  return this.payItems.reduce((sum, item) => sum + item.item_total_price, 0).toFixed(2);
+  return this.payItems.reduce((sum, item) => sum + parseInt(item.dish_price), 0).toFixed(2);
 }
 addPayment() {
   console.log("this.addPayment");
@@ -352,7 +355,7 @@ openCashModal(type:any) {
     if (!this.selectedRowData) return; // no row selected
   this.cashpaymentAmount = this.selectedRowData.amount; 
   if(this.activeTab=='items'){
-      this.cashpaymentAmount = this.selectedRowData.item_total_price; 
+      this.cashpaymentAmount = this.selectedRowData.dish_price; 
     }
   if(type == 'Cash'){
   this.showNewModelPopup=true
