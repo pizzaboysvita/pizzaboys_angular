@@ -185,7 +185,7 @@ export class MediaComponent implements OnInit {
   dishnote = "";
   comboDishDetails: any = [];
   totalDishList: any[];
-  selectedChildPerCombo: { [comboIndex: number]: any } = {};
+  selectedChildPerCombo: any = {};
   isEditing: boolean;
   private subscription!: Subscription;
   selectedDish: any;
@@ -200,9 +200,11 @@ export class MediaComponent implements OnInit {
     // this.getDishslist();
     this.subscription = this.CommonService.dishes$.subscribe((data) => {
       this.dishList = data;
+        console.log("Initial Dish List:", this.dishList);
     });
     this.subscription = this.CommonService.totalDishList$.subscribe((data) => {
       this.totalDishList = data;
+      console.log("Total Dish List:", this.totalDishList);
     });
   }
   ngOnDestroy(): void {
@@ -238,6 +240,8 @@ export class MediaComponent implements OnInit {
         if (this.categoriesList && this.categoriesList.length > 0) {
           this.selectedCategory = this.categoriesList[0];
           this.dishList = this.selectedCategory.dishes;
+
+          console.log("Initial Dish List:", this.dishList);
         }
         this.cdr.detectChanges();
       },
@@ -266,6 +270,7 @@ export class MediaComponent implements OnInit {
   }
   selectCategory(category: any) {
     this.dishList = category.dishes;
+      console.log("Initial Dish List:", this.dishList);
     this.selectedCategory = category;
     this.cdr.detectChanges();
   }
@@ -355,7 +360,8 @@ export class MediaComponent implements OnInit {
 
     if (item.dish_type === "combo") {
       this.comboDishDetails = [];
-
+  console.log("Editing combo item:", item,item.comboDishList
+);
       // Parse existing dish_choices_json if needed
       if (typeof item.dish_choices_json === "string") {
         item.dish_choices_json_array = this.filterIndeterminateCategories(
@@ -370,9 +376,28 @@ export class MediaComponent implements OnInit {
       this.selectedDishFromList.duplicate_dish_price = item.dish_price;
 
       this.cartItems = [item];
+      const dishes = Object.values(item.comboDishList);
+      console.log(item,dishes, "dishes in edit");
       this.showPopup = true;
+     dishes.forEach((comboDish: any, idx: number) => {
+  console.log(comboDish, idx, comboDish.dish_ingredient_array, "comboDish in edit");
 
-      console.log("Editing combo item:", item);
+  // Make sure main array exists
+  if (!this.selectedChildPerCombo) {
+    this.selectedChildPerCombo = [];
+  }
+
+  // Make sure the object for this index exists
+  if (!this.selectedChildPerCombo[idx]) {
+    this.selectedChildPerCombo[idx] = {};
+  }
+
+  // Now safe to assign
+  this.selectedChildPerCombo[idx].dish_ingredient_array = comboDish.dish_ingredient_array;
+});
+
+// this.selectedChildPerCombo
+    
     } else {
       this.cartItems = [];
 
@@ -696,21 +721,22 @@ export class MediaComponent implements OnInit {
     comboIndex: number,
     combo_option_details: any
   ) {
-    console.log(">>>>>>>>>>>>???????????????");
+    console.log(">>>>>>>>>>>>??????????????? 2333");
     if (!this.selectedChildPerCombo[comboIndex]) {
       this.selectedChildPerCombo[comboIndex] = {};
     }
 
     this.comboDishDetails = [];
-    console.log(
+ 
+    this.comboDishDetails = this.totalDishList.filter(
+      (d: any) => d.dish_id == dish.dishId
+    );
+       console.log(
       "Selected child:",
       parentIndex,
       dish,
       comboIndex,
-      combo_option_details
-    );
-    this.comboDishDetails = this.totalDishList.filter(
-      (d: any) => d.dish_id == dish.dishId
+      combo_option_details, this.comboDishDetails
     );
     // this.openComboIndex = comboIndex;
     this.comboDishDetails.forEach((comboDish: any, idx: number) => {
