@@ -106,6 +106,7 @@ export class MediaComponent implements OnInit {
     this.selectedCategory = category;
     this.cdr.detectChanges();
   }
+
   searchTerm(term: string) {
     this.cdr.detectChanges();
   }
@@ -133,9 +134,8 @@ export class MediaComponent implements OnInit {
     this.isOptionSelected = true;
     this.selectedChildPerCombo = {};
 
-    // ======================================================
     // CASE 1: STANDARD DISH EDIT
-    // ======================================================
+
     if (item.dish_type !== "combo") {
       const dish = this.totalDishList.find((d) => d.dish_id == item.dish_id);
       const converted = this.apiService.convertDishObject(dish);
@@ -143,44 +143,64 @@ export class MediaComponent implements OnInit {
       converted.dish_quantity = item.dish_quantity;
       converted.unique_key = item.unique_key;
 
-      // PATCH OPTION SETS
-      if (item.dish_option_set_array) {
-        converted.dish_option_set_array.forEach(
-          (optSet: { option_set_id: any; option_set_array: any[] }) => {
-            const selectedGroup = item.dish_option_set_array.find(
-              (s: { option_set_id: any }) =>
-                s.option_set_id == optSet.option_set_id
-            );
+      // READ SAVED OPTION SETS
+      const savedSets = Array.isArray(item.standed_option_selected_array)
+        ? item.standed_option_selected_array
+        : [];
 
-            if (selectedGroup) {
-              selectedGroup.choose_option.forEach(
-                (chosen: { name: any; quantity: number }) => {
-                  const opt = optSet.option_set_array.find(
-                    (o: { name: any }) => o.name === chosen.name
-                  );
-                  if (opt) {
-                    opt.selected = true;
-                    opt.quantity = chosen.quantity ?? 1;
-                  }
-                }
-              );
+      if (
+        Array.isArray(savedSets) &&
+        Array.isArray(converted.dish_option_set_array)
+      ) {
+        converted.dish_option_set_array.forEach((optSet: any) => {
+          const optSetLabel =
+            optSet.display_name || optSet.dispaly_name || optSet.name;
+
+          const savedGroup = savedSets.find(
+            (s: any) => s.dish_opt_type === optSetLabel
+          );
+
+          if (!savedGroup) return;
+
+          const chosenOptions = Array.isArray(savedGroup.choose_option)
+            ? savedGroup.choose_option
+            : [];
+
+          const targetOptions = Array.isArray(optSet.option_set_array)
+            ? optSet.option_set_array
+            : [];
+
+          if (!chosenOptions.length || !targetOptions.length) return;
+
+          chosenOptions.forEach((chosen: any) => {
+            const opt = targetOptions.find((o: any) => o.name === chosen.name);
+            if (opt) {
+              opt.selected = true;
+              opt.quantity = chosen.quantity ?? 1;
             }
-          }
-        );
+          });
+        });
       }
 
-      if (item.dish_ingredient_array) {
-        converted.dish_ingredient_array.forEach(
-          (ing: { name: any; selected: boolean; quantity: any }) => {
-            const sel = item.dish_ingredient_array.find(
-              (i: { name: any }) => i.name === ing.name
-            );
-            if (sel) {
-              ing.selected = true;
-              ing.quantity = sel.quantity;
-            }
+      // PATCH INGREDIENTS
+      const ingredientsGroup = savedSets.find(
+        (s: any) => s.dish_opt_type === "Ingredients"
+      );
+
+      if (
+        ingredientsGroup &&
+        Array.isArray(ingredientsGroup.choose_option) &&
+        Array.isArray(converted.dish_ingredient_array)
+      ) {
+        converted.dish_ingredient_array.forEach((ing: any) => {
+          const sel = ingredientsGroup.choose_option.find(
+            (c: any) => c.name === ing.name
+          );
+          if (sel) {
+            ing.selected = true;
+            ing.quantity = sel.quantity ?? 1;
           }
-        );
+        });
       }
 
       this.selectedDishFromList = converted;
@@ -188,6 +208,8 @@ export class MediaComponent implements OnInit {
       this.cdr.detectChanges();
       return;
     }
+
+    // CASE 2: COMBO DISH EDIT
 
     const mainCombo = this.totalDishList.find((d) => d.dish_id == item.dish_id);
     const convertedMain = this.apiService.convertDishObject(mainCombo);
@@ -198,6 +220,7 @@ export class MediaComponent implements OnInit {
     convertedMain.combo_selected_dishes = item.combo_selected_dishes;
     convertedMain.comboDishList = {};
 
+    // BUILD CHILD DISHES
     for (let i = 0; i < item.combo_selected_dishes.length; i++) {
       const child = item.combo_selected_dishes[i];
 
@@ -259,9 +282,9 @@ export class MediaComponent implements OnInit {
       convertedMain.comboDishList[i] = convertedChild;
     }
 
+    // LABEL CHILDREN
     Object.keys(convertedMain.comboDishList).forEach((index) => {
       const child = convertedMain.comboDishList[index];
-
       child.dish_display_name =
         child.dish_name ||
         child.dish_display_name ||
@@ -269,14 +292,15 @@ export class MediaComponent implements OnInit {
         "Selected Dish";
     });
 
-    let parsed = [];
+    let parsed: any[] = [];
     try {
       parsed = JSON.parse(mainCombo.dish_choices_json || "[]");
     } catch (e) {
       parsed = [];
     }
 
-    convertedMain.dish_choices_json_array = parsed;
+    const filteredChoices = this.filterIndeterminateCategories(parsed);
+    convertedMain.dish_choices_json_array = filteredChoices;
 
     convertedMain.dish_choices_json_array.forEach(
       (choice: any, idx: number) => {
@@ -593,17 +617,6 @@ export class MediaComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  comboAddItemToCart(item: any) {
-    const cartItem = this.comboSelectedOptions(item);
-    cartItem.unique_key = item.unique_key || `combo_${Date.now()}`;
-    cartItem.dish_type = "combo";
-    cartItem.dish_id = item.dish_id;
-    cartItem.dish_name = item.dish_name;
-    cartItem.dish_quantity = item.dish_quantity || 1;
-    cartItem.dish_price = item.duplicate_dish_price ?? item.dish_price;
-    this.itemAdded.emit(cartItem);
-  }
-
   comboSelectedOptions(fullcomboDetails: any) {
     let selectedOptions: any[] = [];
     if (
@@ -654,7 +667,35 @@ export class MediaComponent implements OnInit {
       : [];
 
     fullcomboDetails.combo_selected_dishes = combo_selected_dishes;
+    fullcomboDetails.combo_display_array = Object.keys(
+      fullcomboDetails.comboDishList
+    ).map((idx) => {
+      const child = fullcomboDetails.comboDishList[idx];
+      return {
+        slot_name: child.combo_option_name,
+        dish_name: child.dish_display_name,
+      };
+    });
     return fullcomboDetails;
+  }
+  comboAddItemToCart(item: any) {
+    const cartItem = this.comboSelectedOptions(item);
+    cartItem.unique_key = item.unique_key || `combo_${Date.now()}`;
+    cartItem.dish_type = "combo";
+    cartItem.dish_id = item.dish_id;
+    cartItem.dish_name = item.dish_name;
+    cartItem.dish_quantity = item.dish_quantity || 1;
+    cartItem.dish_price = item.duplicate_dish_price ?? item.dish_price;
+
+    cartItem.combo_display_array = Object.values(item.comboDishList).map(
+      (child: any, idx: number) => ({
+        slot_name: item.dish_choices_json_array[idx]?.name || `Item ${idx + 1}`,
+        dish_name: child.dish_display_name || child.dish_name,
+        dish_image: child.dish_image,
+      })
+    );
+
+    this.itemAdded.emit(cartItem);
   }
 
   openComboSelectionPopup(comboItem: any) {

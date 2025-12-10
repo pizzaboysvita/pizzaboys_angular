@@ -41,9 +41,15 @@
     <div class="container-fluid p-0">
       <div class="row g-0 icon-row text-center">
         <div class="col icon-box"><i class="ri-file-line"></i></div>
-        <div class="col icon-box" (click)="openCustomerModal()"><i class="ri-user-line"></i></div>
-        <div class="col icon-box" ><i class="ri-price-tag-line" (click)="openmodal()"></i></div>
-        <div class="col icon-box" (click)="openholdModal()"><i class="ri-hand"></i></div>
+        <div class="col icon-box" (click)="openCustomerModal()">
+          <i class="ri-user-line"></i>
+        </div>
+        <div class="col icon-box">
+          <i class="ri-price-tag-line" (click)="openmodal()"></i>
+        </div>
+        <div class="col icon-box" (click)="openholdModal()">
+          <i class="ri-hand"></i>
+        </div>
         <div class="col icon-box"><i class="ri-shopping-cart-line"></i></div>
       </div>
     </div>
@@ -110,9 +116,11 @@
                   *ngFor="let comboOpt of item.combo_selected_dishes"
                   class="mt-1"
                 >
-                  <div style="font-size: 14px">
-                    <span style="text-decoration: underline; font-weight: 600">
-                      {{ comboOpt.combo_option_dish_name  }}
+                  <div style="font-size: 14px; margin-top: 4px">
+                    <b>{{ comboOpt.combo_option_name }}</b
+                    >:
+                    <span style="font-weight: 600">
+                      {{ comboOpt.combo_option_dish_name }}
                     </span>
                   </div>
 
@@ -489,23 +497,24 @@
 >
 </app-combo-selection>
 
-
-<div class="modal fade"
-     tabindex="-1"
-     role="dialog"
-     [ngClass]="{ 'show d-block': Openmodal }"
-     style="background: rgba(0,0,0,0.5); z-index: 1040;">
-
+<div
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  [ngClass]="{ 'show d-block': Openmodal }"
+  style="background: rgba(0, 0, 0, 0.5); z-index: 1040"
+>
   <div class="modal-dialog modal-dialog-centered hold-modal">
     <div class="modal-content">
-
       <!-- Title -->
       <!-- <div class="p-3 pb-0">
         <h5 class="fw-bold mb-0">Hold Order</h5>
       </div> -->
-  <div class="modal-header">
+      <div class="modal-header">
         <h5 class="modal-title fw-bold">Hold Order</h5>
-        <button class="btn-close" (click)="Openmodal=false"><i class="ri-close-line"></i></button>
+        <button class="btn-close" (click)="Openmodal = false">
+          <i class="ri-close-line"></i>
+        </button>
       </div>
 
       <!-- Body -->
@@ -514,79 +523,97 @@
           Stash the order away to be retrieved later
         </p>
 
-        <input
-          type="text"
-          class="form-control hold-input"
-          placeholder="Note"
-           />
+        <input type="text" class="form-control hold-input" placeholder="Note" />
       </div>
 
       <!-- Footer -->
-       
+
       <div class="modal-footer justify-content-end border-0 pt-0 pb-3 px-3">
-        <button class="btn hold-cancel"  (click)="Openmodal=false">CANCEL</button>
+        <button class="btn hold-cancel" (click)="Openmodal = false">
+          CANCEL
+        </button>
         <!-- <button class="btn hold-proceed" >PROCEED</button> -->
-         <button class="btn fw-bold text-white"
-                style="background:#f44336;"
-                >
+        <button class="btn fw-bold text-white" style="background: #f44336">
           PROCEED
         </button>
       </div>
-
     </div>
   </div>
-
 </div>
-<div class="modal fade"
-     tabindex="-1"
-     role="dialog"
-     [ngClass]="{ 'show d-block': cashCount }"
-     (click)="cashCount=false"
-     style="background: rgba(0,0,0,0.5); z-index: 1040;">
-
-  <div class="modal-dialog modal-dialog-centered modify-modal"
-       (click)="$event.stopPropagation()">
-
+<div
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  [ngClass]="{ 'show d-block': cashCount }"
+  (click)="cashCount = false"
+  style="background: rgba(0, 0, 0, 0.5); z-index: 1040"
+>
+  <div
+    class="modal-dialog modal-dialog-centered modify-modal"
+    (click)="$event.stopPropagation()"
+  >
     <div class="modal-content">
-
       <!-- TITLE -->
       <div class="modal-header border-0 pt-3 pb-2">
         <h5 class="modal-title fw-bold">Modify Price</h5>
-        <button class="btn-close" (click)="cashCount=false"></button>
+        <button class="btn-close" (click)="cashCount = false"></button>
       </div>
 
       <!-- TABS -->
       <div class="modify-tabs d-flex">
-        <button class="tab-btn"
-                [class.active]="paymentTab==='specific'"
-                (click)="paymentTab='specific'">SPECIFIC</button>
+        <button
+          class="tab-btn"
+          [class.active]="paymentTab === 'specific'"
+          (click)="paymentTab = 'specific'"
+        >
+          SPECIFIC
+        </button>
 
-        <button class="tab-btn"
-                [class.active]="paymentTab==='discount'"
-                (click)="paymentTab='discount'">DISCOUNT</button>
+        <button
+          class="tab-btn"
+          [class.active]="paymentTab === 'discount'"
+          (click)="paymentTab = 'discount'"
+        >
+          DISCOUNT
+        </button>
 
-        <button class="tab-btn"
-                [class.active]="paymentTab==='surcharge'"
-                (click)="paymentTab='surcharge'">SURCHARGE</button>
+        <button
+          class="tab-btn"
+          [class.active]="paymentTab === 'surcharge'"
+          (click)="paymentTab = 'surcharge'"
+        >
+          SURCHARGE
+        </button>
 
-        <button class="symbol-btn"
-                [class.active]="typeTab==='$'"
-                (click)="typeTab='$'">$</button>
+        <button
+          class="symbol-btn"
+          [class.active]="typeTab === '$'"
+          (click)="typeTab = '$'"
+        >
+          $
+        </button>
 
-        <button class="symbol-btn"
-                [class.active]="typeTab==='%'"
-                (click)="typeTab='%'">%</button>
+        <button
+          class="symbol-btn"
+          [class.active]="typeTab === '%'"
+          (click)="typeTab = '%'"
+        >
+          %
+        </button>
       </div>
 
       <!-- DISPLAY VALUE -->
-      <div class="modify-display text-end">
-        {{ modifyValue }}{{ typeTab }}
-      </div>
+      <div class="modify-display text-end">{{ modifyValue }}{{ typeTab }}</div>
 
       <!-- KEYPAD -->
       <div class="modify-grid">
-        <button class="grid-btn" *ngFor="let n of ['7','8','9','4','5','6','1','2','3','0','00']"
-                (click)="onKey(n)">
+        <button
+          class="grid-btn"
+          *ngFor="
+            let n of ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', '00']
+          "
+          (click)="onKey(n)"
+        >
           {{ n }}
         </button>
       </div>
@@ -611,8 +638,6 @@
 
       <!-- APPLY BUTTON -->
       <button class="apply-btn w-100">APPLY</button>
-
     </div>
   </div>
 </div>
-

@@ -6,7 +6,6 @@ import {
   AfterViewInit,
   OnInit,
 } from "@angular/core";
-import { CommonModule } from "@angular/common";
 import {
   FormsModule,
   ReactiveFormsModule,
@@ -176,6 +175,7 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
 
   private rebuildCartView(): void {
     const transformed = this.apiService.transformData(this.cartItems) || [];
+
     this.totalCartDetails = transformed.map((t: any) => {
       if (t.dish_type === "combo") {
         const source =
@@ -184,15 +184,28 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
               c.dish_id === t.dish_id &&
               (c.unique_key ? c.unique_key === t.unique_key : true)
           ) || t;
+
+        const combo_selected_dishes =
+          source["combo_selected_dishes"] || t["combo_selected_dishes"] || [];
+
+        const combo_display_array = combo_selected_dishes.map(
+          (cs: any, idx: number) => ({
+            slot_name: cs.combo_option_name || `Item ${idx + 1}`,
+            dish_name: cs.combo_option_dish_name || "",
+          })
+        );
+
         return {
           ...t,
-          combo_selected_dishes:
-            source["combo_selected_dishes"] || t["combo_selected_dishes"],
+          combo_selected_dishes,
           combo_items: source["combo_items"] || t["combo_items"],
+          combo_display_array,
         };
       }
+
       return t;
     });
+
     this.updateTotals();
   }
 
@@ -226,7 +239,7 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
       .filter((x: CartItem) => x.dish_type === "standard")
       .map((x: CartItem) => x.dish_id);
 
-    if (selectedStandardIds.length > 0)
+    if (selectedStandardIds.length > 1)
       this.checkComboOffer(selectedStandardIds);
     else this.showComboAlert = false;
 
@@ -418,7 +431,7 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
           return;
         }
         const directCombo = res.data[0];
-
+        let dishChoicesArray: any[] = [];
         const comboCartItem: any = {
           ...directCombo,
           dish_id: directCombo.dish_id,
@@ -432,7 +445,9 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
           unique_key: `combo_${Date.now()}`,
           combo_selected_dishes: userSelectedItems.map(
             (item: any, idx: number) => ({
-              combo_option_name: `Item ${idx + 1}`,
+              combo_option_name:
+                dishChoicesArray[idx]?.name || `Item ${idx + 1}`,
+
               combo_option_dish_id: item.dish_id,
               combo_option_dish_name: item.dish_name,
               combo_option_dish_image: item.dish_image,
