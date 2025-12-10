@@ -101,35 +101,52 @@
                 </div>
                 </div>
                 <!-- Payment Table -->
-                <table class="table table-sm align-middle" *ngIf="fullArray.length>0">
-                  <thead style="background-color: #f9f9fa !important;">
-                    <tr>
-                      <th>Status</th>
-                      <th>Type</th>
-                      <th>Amount</th>
-                      <th>Tender</th>
-                      <th>Change</th>
-                    </tr>
-                  </thead>
-                  <tbody style="background-color: #eeeeef;">
-                       <!-- @for (rowData of data; track rowData;let ind = $index) { -->
-                          @for (rowData of fullArray; track rowData;let ind = $index) {
-                    <tr (click)=" rowData.status !== 'Success' && selectRow(rowData, ind)" 
-    [ngClass]="{'table-active': selectedRowIndex === ind}" 
-    style="cursor: pointer;">
-                      <td><span class="badge fs-16"   [ngClass]="{
-      'badge-pending': rowData.status === 'Pending',
-      'badge-success': rowData.status === 'Success', 
-      'badge-failed': rowData.status === 'Failed'
-    }">{{rowData.status}}</span></td>
-                      <td>{{rowData.type}}</td>
-                      <td>${{rowData.amount}}</td>
-                      <td>{{rowData.tender}}</td>
-                      <td>{{rowData.change}}</td>
-                    </tr>
-                }
-                  </tbody>
-                </table>
+              <div class="table-responsive">
+                  <table
+                    class="table table-sm align-middle"
+                    *ngIf="fullArray.length > 0"
+                  >
+                    <thead style="background-color: #f9f9fa !important;">
+                      <tr>
+                        <th>Status</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Tender</th>
+                        <th>Change</th>
+                      </tr>
+                    </thead>
+                    <tbody style="background-color: #eeeeef">
+                      <!-- @for (rowData of data; track rowData;let ind = $index) { -->
+                      @for (rowData of fullArray; track rowData;let ind =
+                      $index) {
+                      <tr
+                        (click)="
+                          rowData.status !== 'Success' &&
+                            selectRow(rowData, ind)
+                        "
+                        [ngClass]="{ 'table-active': selectedRowIndex === ind }"
+                        style="cursor: pointer"
+                      >
+                        <td>
+                          <span
+                            class="badge fs-16"
+                            [ngClass]="{
+                              'badge-pending': rowData.status === 'Pending',
+                              'badge-success': rowData.status === 'Success',
+                              'badge-failed': rowData.status === 'Failed'
+                            }"
+                            >{{ rowData.status }}</span
+                          >
+                        </td>
+                        <td>{{ rowData.type }}</td>
+                        <td>${{ rowData.amount }}</td>
+                        <td>{{ rowData.tender }}</td>
+                        <td>{{ rowData.change }}</td>
+                      </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
 
                 <!-- Payment Buttons -->
                <div class="d-flex flex-wrap gap-2 my-3" *ngIf="fullArray.length>0" >
@@ -210,34 +227,51 @@
       </div>
 @if(isSplitPayment && splitRows.length>0){
   <div class="text-muted text-center py-5">
-         <table class="table table-sm align-middle"  >
-                  <thead style="background-color: #f9f9fa !important;">
-                    <tr>
-                      <th>Status</th>
-                      <th>Type</th>
-                      <th>Amount</th>
-                      <th>Tender</th>
-                      <th>Change</th>
-                    </tr>
-                  </thead>
-                  <tbody style="background-color: #eeeeef;">
-                       @for (rowData of splitRows; track rowData;let ind = $index) {
-                    <tr (click)=" rowData.status !== 'Success' && selectRow(rowData, ind)" 
-    [ngClass]="{'table-active': selectedRowIndex === ind}" 
-    style="cursor: pointer;">
-                      <td ><span class="badge fs-16"   [ngClass]="{
-      'badge-pending': rowData.status === 'Pending',
-      'badge-success': rowData.status === 'Success',
-      'badge-failed': rowData.status === 'Failed'
-    }">{{rowData.status}}</span></td>
-                      <td>{{rowData.type}}</td>
-                      <td>${{rowData.amount}}</td>
-                       <td>{{rowData.tender}}</td>
-                      <td>{{rowData.change}}</td>
-                    </tr>
-                }
-                  </tbody>
-                </table>
+<div class="table-responsive">
+                    <table class="table table-sm align-middle">
+                      <thead style="background-color: #f9f9fa !important">
+                        <tr>
+                          <th>Status</th>
+                          <th>Type</th>
+                          <th>Amount</th>
+                          <th>Tender</th>
+                          <th>Change</th>
+                        </tr>
+                      </thead>
+                      <tbody style="background-color: #eeeeef">
+                        @for (rowData of splitRows; track rowData;let ind =
+                        $index) {
+                        <tr
+                          (click)="
+                            rowData.status !== 'Success' &&
+                              selectRow(rowData, ind)
+                          "
+                          [ngClass]="{
+                            'table-active': selectedRowIndex === ind
+                          }"
+                          style="cursor: pointer"
+                        >
+                          <td>
+                            <span
+                              class="badge fs-16"
+                              [ngClass]="{
+                                'badge-pending': rowData.status === 'Pending',
+                                'badge-success': rowData.status === 'Success',
+                                'badge-failed': rowData.status === 'Failed'
+                              }"
+                              >{{ rowData.status }}</span
+                            >
+                          </td>
+                          <td>{{ rowData.type }}</td>
+                          <td>${{ rowData.amount }}</td>
+                          <td>{{ rowData.tender }}</td>
+                          <td>{{ rowData.change }}</td>
+                        </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+ 
               <div class="d-flex flex-wrap gap-2 my-3">
                 <!-- [disabled]="!selectedRowData" -->
                 <button class="btn btn-outline-warning d-flex align-items-center gap-2"  (click)="openCashModal('Cash')">
@@ -417,6 +451,7 @@
  
                 @if(paidItems.length > 0) {
     <div class="text-muted">
+       <div class="table-responsive">
       <table class="table table-sm align-middle">
         <thead style="background-color: #f9f9fa !important;">
           <tr>
@@ -447,6 +482,7 @@
           }
         </tbody>
       </table>
+      </div>
     </div>
   } 
   @if(paidItems.length > 0){
@@ -633,6 +669,7 @@
       </table> -->
       <!-- ✅ Order Details Table -->
       <!-- <h6 class="mb-2">Order Details</h6> -->
+        <div class="table-responsive">
       <table class="table table-sm table-bordered mb-3">
         <thead class="table-light">
           <tr>
@@ -665,7 +702,7 @@
           </tr>
         </tbody>
       </table>
-
+</div>
       <!-- ✅ Payment Summary Table -->
    
 
