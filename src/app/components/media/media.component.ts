@@ -205,6 +205,13 @@ export class MediaComponent implements OnInit {
         });
       }
 
+      converted.selectedOptions = [];
+      converted.dish_option_set_array.forEach((optSet: any) => {
+        optSet.option_set_array.forEach((opt: any) => {
+          if (opt.selected) converted.selectedOptions.push(opt);
+        });
+      });
+
       this.selectedDishFromList = converted;
       this.showPopup = true;
       this.cdr.detectChanges();
@@ -287,11 +294,7 @@ export class MediaComponent implements OnInit {
     // LABEL CHILDREN
     Object.keys(convertedMain.comboDishList).forEach((index) => {
       const child = convertedMain.comboDishList[index];
-      child.dish_display_name =
-        child.dish_name ||
-        child.dish_display_name ||
-        child.combo_item_dish_name ||
-        "Selected Dish";
+      child.dish_display_name = child.dish_display_name || child.dish_name;
     });
 
     let parsed: any[] = [];
@@ -306,14 +309,7 @@ export class MediaComponent implements OnInit {
 
     convertedMain.dish_choices_json_array.forEach(
       (choice: any, idx: number) => {
-        const child = convertedMain.comboDishList[idx];
-        if (child) {
-          choice.name =
-            child.dish_display_name ||
-            child.dish_name ||
-            choice.name ||
-            "Selected Dish";
-        }
+        choice.name = choice.name || `Item ${idx + 1}`;
       }
     );
 
@@ -475,14 +471,33 @@ export class MediaComponent implements OnInit {
   }
 
   calculateTotal() {
-    this.totalPrice = this.cartItems.reduce(
-      (sum: any, item: any) => sum + this.apiService.getItemSubtotal(item),
-      0
-    );
+    this.totalPrice = this.cartItems.reduce((sum: any, item: any) => {
+      let subtotal = this.apiService.getItemSubtotal(item);
+
+      if (isNaN(subtotal)) subtotal = 0;
+
+      return sum + subtotal;
+    }, 0);
+
     this.cartItems.forEach((item: any) => {
-      item.subtotal = this.totalPrice;
-      item.duplicate_dish_price = this.totalPrice;
+      let itemSubtotal = this.apiService.getItemSubtotal(item);
+
+      if (isNaN(itemSubtotal)) itemSubtotal = 0;
+
+      item.subtotal = Number(itemSubtotal);
+      item.duplicate_dish_price = Number(itemSubtotal);
+
+      item.item_total_price = Number(itemSubtotal) * (item.dish_quantity || 1);
     });
+  }
+
+  calculateComboPrice(combo: any): number {
+    try {
+      return this.apiService.combotItemSubtotal(combo) || 0;
+    } catch (e) {
+      console.error("calculateComboPrice error", e);
+      return 0;
+    }
   }
 
   addItemToCart(item: any) {
@@ -525,12 +540,9 @@ export class MediaComponent implements OnInit {
     this.selectedChildPerCombo[comboIndex].selectedChildIndex = parentIndex;
     this.selectedChildPerCombo[comboIndex].selectedChildLabel = dish;
 
-    const subtotal = this.apiService.combotItemSubtotal(
-      this.selectedDishFromList
-    );
     this.selectedDishFromList = {
       ...this.selectedDishFromList,
-      duplicate_dish_price: subtotal,
+      duplicate_dish_price: this.calculateComboPrice(this.selectedDishFromList),
     };
     this.cdr.detectChanges();
   }
@@ -552,12 +564,9 @@ export class MediaComponent implements OnInit {
       opt.value = option.name;
       opt.selected = opt === option;
     });
-    const subtotal = this.apiService.combotItemSubtotal(
-      this.selectedDishFromList
-    );
     this.selectedDishFromList = {
       ...this.selectedDishFromList,
-      duplicate_dish_price: subtotal,
+      duplicate_dish_price: this.calculateComboPrice(this.selectedDishFromList),
     };
     this.cdr.detectChanges();
   }
@@ -580,7 +589,7 @@ export class MediaComponent implements OnInit {
     const subtotal = this.apiService.combotItemSubtotal(fullcomboDetails);
     this.selectedDishFromList = {
       ...this.selectedDishFromList,
-      duplicate_dish_price: subtotal,
+      duplicate_dish_price: this.calculateComboPrice(this.selectedDishFromList),
     };
     this.cdr.detectChanges();
   }
@@ -596,7 +605,7 @@ export class MediaComponent implements OnInit {
     const subtotal = this.apiService.combotItemSubtotal(fullcomboDetails);
     this.selectedDishFromList = {
       ...this.selectedDishFromList,
-      duplicate_dish_price: subtotal,
+      duplicate_dish_price: this.calculateComboPrice(this.selectedDishFromList),
     };
   }
 
@@ -605,7 +614,7 @@ export class MediaComponent implements OnInit {
     const subtotal = this.apiService.combotItemSubtotal(option);
     this.selectedDishFromList = {
       ...this.selectedDishFromList,
-      duplicate_dish_price: subtotal,
+      duplicate_dish_price: this.calculateComboPrice(this.selectedDishFromList),
     };
     this.cdr.detectChanges();
   }
@@ -614,7 +623,7 @@ export class MediaComponent implements OnInit {
     const subtotal = this.apiService.combotItemSubtotal(option);
     this.selectedDishFromList = {
       ...this.selectedDishFromList,
-      duplicate_dish_price: subtotal,
+      duplicate_dish_price: this.calculateComboPrice(this.selectedDishFromList),
     };
     this.cdr.detectChanges();
   }
@@ -687,13 +696,17 @@ export class MediaComponent implements OnInit {
     cartItem.dish_id = item.dish_id;
     cartItem.dish_name = item.dish_name;
     cartItem.dish_quantity = item.dish_quantity || 1;
-    cartItem.dish_price = item.duplicate_dish_price ?? item.dish_price;
 
-    cartItem.combo_display_array = Object.values(item.comboDishList).map(
-      (child: any, idx: number) => ({
-        slot_name: item.dish_choices_json_array[idx]?.name || `Item ${idx + 1}`,
-        dish_name: child.dish_display_name || child.dish_name,
-        dish_image: child.dish_image,
+    // Use central combo price calculator
+    const comboPrice = this.calculateComboPrice(item);
+    cartItem.dish_price = comboPrice;
+    cartItem.item_total_price = comboPrice * (item.dish_quantity || 1);
+
+    cartItem.combo_display_array = (item.combo_selected_dishes || []).map(
+      (slot: any, idx: number) => ({
+        slot_name: slot.combo_option_name,
+        dish_name: slot.combo_option_dish_name,
+        dish_image: slot.combo_option_dish_image,
       })
     );
 

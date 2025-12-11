@@ -25,6 +25,7 @@ import { OrderPaymentsComponent } from "../order-payments/order-payments.compone
 import { ComboAlertComponent } from "../combo-alert/combo-alert.component";
 import { ComboSelectionComponent } from "../combo-selection/combo-selection.component";
 import { CommonModule as NgCommon } from "@angular/common";
+import { CommonService } from "../../../shared/services/common.service";
 
 export interface ComboItem {
   dish_id: number;
@@ -95,6 +96,7 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   comboName: string = "";
   comboPrice: number = 0;
   comboId: number | null = null;
+  convertedDish: any[] = [];
 
   orderForm!: FormGroup;
   orderdueForm!: FormGroup;
@@ -113,7 +115,8 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   customer = { name: "", email: "", phone: "" };
 
   constructor(
-    private apiService: ApisService,    private CommonService: CommonService,
+    private apiService: ApisService,
+    private CommonService: CommonService,
     private fb: FormBuilder,
     private el: ElementRef,
     private modalService: NgbModal,
@@ -403,13 +406,14 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   onComboNo() {
     this.showComboAlert = false;
   }
-getDishDetailsForComboItem(dishId: number) {
+  getDishDetailsForComboItem(dishId: number) {
     const dishUrl = `/api/dish?dish_id=${dishId}&type=web`;
     this.apiService.getApi(dishUrl).subscribe({
       next: (res: any) => {
         console.log("Dish details for combo item:", res);
-        }  }) 
-      }
+      },
+    });
+  }
   onComboSelected(combo: MatchingCombo | null) {
     this.showComboSelection = false;
     if (!combo) return;
@@ -430,28 +434,23 @@ getDishDetailsForComboItem(dishId: number) {
         )
     );
 
-this.CommonService.totalDishList$.subscribe((data) => {
+    this.CommonService.totalDishList$.subscribe((data) => {
       // this.totalDishList = data;
       console.log("Total Dish List:", data);
       data.forEach((dish: any) => {
-        combo.items.forEach((comboItem: ComboItem,id) => {
-          
+        combo.items.forEach((comboItem: ComboItem, id) => {
           if (dish.dish_id === comboItem.dish_id) {
             console.log("Adding combo item to cart:", dish);
-             this.convertedDish[id] = this.apiService.convertDishObject(dish);
-              
-               
-          
+            this.convertedDish[id] = this.apiService.convertDishObject(dish);
           }
         });
       });
+    });
 
-    })
-      console.log("Adding combo item to cart converted:", this.convertedDish);
- 
-  console.log()
+    console.log();
 
     const dishUrl = `/api/dish?dish_id=${combo.combo_dish_id}&type=web`;
+
     this.apiService.getApi(dishUrl).subscribe({
       next: (res: any) => {
         if (!res?.data?.length) {
@@ -459,32 +458,54 @@ this.CommonService.totalDishList$.subscribe((data) => {
           this.rebuildCartView();
           return;
         }
+
         const directCombo = res.data[0];
-        let dishChoicesArray: any[] = [];
+
+        let parsedChoices: any[] = [];
+        try {
+          parsedChoices = JSON.parse(directCombo.dish_choices_json || "[]");
+        } catch {
+          parsedChoices = [];
+        }
+
+        const slotNames = parsedChoices.map(
+          (choice: any, idx: number) => choice?.name || `Item ${idx + 1}`
+        );
+
+        const comboSelected = userSelectedItems.map(
+          (item: any, idx: number) => ({
+            combo_option_name: slotNames[idx] || `Item ${idx + 1}`,
+            combo_option_dish_id: item.dish_id,
+            combo_option_dish_name: item.dish_name,
+            combo_option_dish_image: item.dish_image,
+
+            combo_option_selected_array:
+              this._buildSelectedArrayFromStandardItem(item),
+          })
+        );
+
+        const comboPrice = Number(
+          directCombo.dish_price ?? combo.combo_price ?? 0
+        );
+
         const comboCartItem: any = {
           ...directCombo,
+
           dish_id: directCombo.dish_id,
           dish_name: directCombo.dish_name,
           dish_type: "combo",
           dish_quantity: 1,
-          dish_price: Number(directCombo.dish_price ?? combo.combo_price ?? 0),
-          duplicate_dish_price: Number(
-            directCombo.dish_price ?? combo.combo_price ?? 0
-          ),
-          unique_key: `combo_${Date.now()}`,
-          combo_selected_dishes: userSelectedItems.map(
-            (item: any, idx: number) => ({
-              combo_option_name:
-                dishChoicesArray[idx]?.name || `Item ${idx + 1}`,
 
-              combo_option_dish_id: item.dish_id,
-              combo_option_dish_name: item.dish_name,
-              combo_option_dish_image: item.dish_image,
-              combo_option_selected_array:
-                this._buildSelectedArrayFromStandardItem(item),
-            })
-          ),
+          dish_price: comboPrice,
+          duplicate_dish_price: comboPrice,
+
+          item_total_price: comboPrice * 1,
+
+          unique_key: `combo_${Date.now()}`,
+
+          combo_selected_dishes: comboSelected,
           combo_items: combo.items || [],
+
           isMatchedCombo: true,
           matchedCombo: combo,
         };
@@ -493,6 +514,7 @@ this.CommonService.totalDishList$.subscribe((data) => {
         this.rebuildCartView();
         this.cartItems = [...this.cartItems];
       },
+
       error: (err: any) => {
         console.error("Error loading real combo dish:", err);
         this.toastr.error("Unable to load combo details.");
@@ -500,7 +522,7 @@ this.CommonService.totalDishList$.subscribe((data) => {
       },
     });
   }
-   filterIndeterminateCategories(menuData: any[]) {
+  filterIndeterminateCategories(menuData: any[]) {
     return menuData.map((menuGroup) => ({
       ...menuGroup,
       menuItems: menuGroup.menuItems.map((menu: any) => ({
