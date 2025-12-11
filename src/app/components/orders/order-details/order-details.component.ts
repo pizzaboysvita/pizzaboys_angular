@@ -113,7 +113,7 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   customer = { name: "", email: "", phone: "" };
 
   constructor(
-    private apiService: ApisService,
+    private apiService: ApisService,    private CommonService: CommonService,
     private fb: FormBuilder,
     private el: ElementRef,
     private modalService: NgbModal,
@@ -264,6 +264,8 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
       (sum: number, it: any) => sum + this.apiService.getItemSubtotal(it),
       0
     );
+
+    console.log("Updated total price:", this.totalCartDetails, this.totalPrice);
     this.cdr.detectChanges();
   }
 
@@ -401,7 +403,13 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   onComboNo() {
     this.showComboAlert = false;
   }
-
+getDishDetailsForComboItem(dishId: number) {
+    const dishUrl = `/api/dish?dish_id=${dishId}&type=web`;
+    this.apiService.getApi(dishUrl).subscribe({
+      next: (res: any) => {
+        console.log("Dish details for combo item:", res);
+        }  }) 
+      }
   onComboSelected(combo: MatchingCombo | null) {
     this.showComboSelection = false;
     if (!combo) return;
@@ -421,6 +429,27 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
           uniqueKeysToRemove.includes(ci.unique_key)
         )
     );
+
+this.CommonService.totalDishList$.subscribe((data) => {
+      // this.totalDishList = data;
+      console.log("Total Dish List:", data);
+      data.forEach((dish: any) => {
+        combo.items.forEach((comboItem: ComboItem,id) => {
+          
+          if (dish.dish_id === comboItem.dish_id) {
+            console.log("Adding combo item to cart:", dish);
+             this.convertedDish[id] = this.apiService.convertDishObject(dish);
+              
+               
+          
+          }
+        });
+      });
+
+    })
+      console.log("Adding combo item to cart converted:", this.convertedDish);
+ 
+  console.log()
 
     const dishUrl = `/api/dish?dish_id=${combo.combo_dish_id}&type=web`;
 
@@ -497,6 +526,33 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
         this.rebuildCartView();
       },
     });
+  }
+   filterIndeterminateCategories(menuData: any[]) {
+    return menuData.map((menuGroup) => ({
+      ...menuGroup,
+      menuItems: menuGroup.menuItems.map((menu: any) => ({
+        ...menu,
+        categories: menu.categories
+          .map((cat: any) => {
+            const checkedDishes = cat.dishes.filter(
+              (dish: any) => dish.checked
+            );
+            const isIndeterminate =
+              checkedDishes.length > 0 &&
+              checkedDishes.length < cat.dishes.length;
+            const isChecked =
+              checkedDishes.length === cat.dishes.length &&
+              checkedDishes.length > 0;
+            return {
+              ...cat,
+              dishes: checkedDishes,
+              indeterminate: isIndeterminate,
+              checked: isChecked,
+            };
+          })
+          .filter((cat: any) => cat.indeterminate || cat.checked),
+      })),
+    }));
   }
 
   private _buildSelectedArrayFromStandardItem(item: any) {

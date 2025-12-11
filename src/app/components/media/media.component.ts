@@ -74,6 +74,7 @@ export class MediaComponent implements OnInit {
   ngOnInit() {
     this.subscription = this.CommonService.dishes$.subscribe((data: any) => {
       this.dishList = data;
+        console.log("Initial Dish List:", this.dishList);
     });
     this.subscription = this.CommonService.totalDishList$.subscribe(
       (data: any) => {
@@ -103,6 +104,7 @@ export class MediaComponent implements OnInit {
 
   selectCategory(category: any) {
     this.dishList = category.dishes;
+      console.log("Initial Dish List:", this.dishList);
     this.selectedCategory = category;
     this.cdr.detectChanges();
   }

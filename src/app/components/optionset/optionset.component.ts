@@ -143,6 +143,7 @@ export class OptionsetComponent implements OnInit {
   optSetDetails: RowData[] =[];
   optSetRowData: any;
   optSetDetailsLeng: any =0;
+  optSortSetDetails: any;
 
   constructor(private fb: FormBuilder, private modal: NgbModal, private apis: ApisService, private sessionStorage: SessionStorageService) {
     this.searchForm = this.fb.group({
@@ -165,6 +166,8 @@ export class OptionsetComponent implements OnInit {
           item.status=item.status ==1?'Active':item.status ==0?'Inactive':'--'
          })
         this.optSetDetails = data.data
+        this.optSortSetDetails = data.data
+
          this.optSetDetailsLeng = data.data.length
       }
     })
@@ -172,7 +175,23 @@ export class OptionsetComponent implements OnInit {
 
   reset() {
     this.searchForm.reset();
+    this.getOptionSets();
   }
+searchOpt() {
+  const f = this.searchForm.value;
+
+  this.optSetDetails = this.optSortSetDetails.filter((x: any) => {
+    return (
+      (!f.name || x.option_set_name.toLowerCase().includes(f.name.toLowerCase())) &&
+      (!f.displayName || x.dispaly_name.toLowerCase().includes(f.displayName.toLowerCase())) &&
+      (!f.status || x.status.toLowerCase().includes(f.status.toLowerCase()))
+    );
+  });
+
+  console.log(this.optSetDetails);
+}
+
+
 
 
   onCellClicked(event: any) {
