@@ -7,9 +7,8 @@ import { environment } from "../../../environments/environment";
   providedIn: "root",
 })
 export class ApisService {
-
   basesurl = "http://78.142.47.247:3003";
-  
+
   // basesurl = 'http://localhost:3003'
   private change$ = new BehaviorSubject<boolean>(false);
   poschanges$ = this.change$.asObservable();
@@ -139,8 +138,9 @@ export class ApisService {
             e
           );
         }
-console.log(optSet, "optSet.option_type");
-        const type = optSet.option_type === "Checkbox" ?"Counter": optSet.option_type;
+        console.log(optSet, "optSet.option_type");
+        const type =
+          optSet.option_type === "Checkbox" ? "Counter" : optSet.option_type;
         return {
           ...optSet,
           option_set_array,
@@ -220,73 +220,60 @@ console.log(optSet, "optSet.option_type");
       };
     });
   }
-  // getItemSubtotal(item: any): number {
-  //   // Sum (price * quantity) for each selected option
-  //   // console.log(item, "optionsTotal");
-  //   const optionsTotal = item?.dish_option_set_array
-  //     .flatMap((optSet: any) => optSet?.option_set_array)
-  //     .filter((option: any) => option?.selected)
-  //     .reduce((sum: number, option: any) => {
-  //       const price = Number(option?.price) || 0;
-  //       const qty = Number(option?.quantity) || 0;
-  //       return sum + price * qty;
-  //     }, 0);
-  //   // console.log(optionsTotal, "optionsTotal");
-  //   const subtotal =
-  //     (Number(item.dish_price) + optionsTotal) * Number(item.dish_quantity);
-
-  //   // ✅ store subtotal inside item itself
-  //   item.item_total_price = subtotal;
-  //   // console.log(subtotal);
-    
-  //   return subtotal;
-  // }
 
   getItemSubtotal(item: any): number {
+    if (item.dish_type === "combo") {
+      const comboPrice = Number(item.dish_price) || 0;
+      const qty = Number(item.dish_quantity) || 1;
+      return comboPrice * qty;
+    }
 
-  // 👇 CASE 1: Combo item (simple calculation)
-  if (item.dish_type === "combo") {
-    return (item.dish_price || 0) * (item.dish_quantity || 1);
+    const basePrice =
+      Number(item.dish_price) || Number(item.duplicate_dish_price) || 0;
+
+    const quantity = Number(item.dish_quantity) || 1;
+
+    const optionSets = item.standed_option_selected_array || [];
+    const comboOptions = item.combo_selected_dishes || [];
+    const ingredients = item.dish_ingredient_array || [];
+    const toppings = item.selectedOptions || [];
+
+    let extraPrice = 0;
+
+    extraPrice += optionSets
+      .flatMap((set: any) => set.choose_option || [])
+      .reduce(
+        (sum: number, opt: any) =>
+          sum + (Number(opt.price) || 0) * (Number(opt.quantity) || 1),
+        0
+      );
+
+    extraPrice += comboOptions
+      .flatMap((c: any) => c.combo_option_selected_array || [])
+      .flatMap((opt: any) => opt.choose_option || [])
+      .reduce(
+        (sum: number, opt: any) =>
+          sum + (Number(opt.price) || 0) * (Number(opt.quantity) || 1),
+        0
+      );
+
+    extraPrice += ingredients.reduce(
+      (sum: number, ing: any) => sum + (Number(ing.price) || 0),
+      0
+    );
+
+    extraPrice += toppings
+      .filter((t: any) => t.selected)
+      .reduce(
+        (sum: number, t: any) =>
+          sum + (Number(t.price) || 0) * (Number(t.quantity) || 1),
+        0
+      );
+
+    const subtotal = (basePrice + extraPrice) * quantity;
+
+    return Number.isFinite(subtotal) ? subtotal : 0;
   }
-
-  // 👇 CASE 2: STANDARD dishes
-  let basePrice = item.dish_price || item.duplicate_dish_price || 0;
-  let quantity = item.dish_quantity || 1;
-
-  // ---- Safe arrays (NO more undefined.flatMap errors) ---- //
-  const optionSets = item.standed_option_selected_array || [];
-  const comboOptions = item.combo_selected_dishes || [];
-  const ingredients = item.dish_ingredient_array || [];
-  const toppings = item.selectedOptions || [];
-
-  let extraPrice = 0;
-
-  // Option sets
-  extraPrice += optionSets
-    .flatMap((set: any) => set.choose_option || [])
-    .reduce((sum: number, opt: any) => sum + (opt.price || 0), 0);
-
-  // Combo options
-  extraPrice += comboOptions
-    .flatMap((c: any) => c.combo_option_selected_array || [])
-    .flatMap((opt: any) => opt.choose_option || [])
-    .reduce((sum: number, opt: any) => sum + (opt.price || 0), 0);
-
-  // Ingredients
-  extraPrice += ingredients.reduce(
-    (sum: number, ing: any) => sum + (ing.price || 0),
-    0
-  );
-
-  // Toppings
-  extraPrice += toppings
-    .filter((t: any) => t.selected)
-    .reduce((sum: number, t: any) => sum + (t.price || 0), 0);
-
-  // FINAL
-  return (basePrice + extraPrice) * quantity;
-}
-
 
   combotItemSubtotal(fullcomboDetails: any): number {
     let grandTotal: number = 0;
@@ -385,40 +372,37 @@ console.log(optSet, "optSet.option_type");
           combo_selected_dishes: selectedDishes,
         };
       } else {
-        
         const dish_ingredient_array = element.dish_ingredient_array
           .filter((ingredient: any) => ingredient.selected === false) // only false
           .map((ingredient: any) => ({
-           // category label
-          
-              name: ingredient.name,
-            
-          }));
-         const dish_ingredient_array_obj = {
-            dish_opt_type: "Ingredients",
-            choose_option: dish_ingredient_array
-          }
-        const standed_option_selected_array = element.dish_option_set_array
-            .map((optionSet: any) => {
-              const chosen = optionSet.option_set_array
-                .filter((opt: any) => opt.selected)
-                .map((opt: any) => ({
-                  name: opt.name,
-                  price: opt.price,
-                  quantity: opt.quantity,
-                }));
+            // category label
 
-              return {
-              
-                dish_opt_type: optionSet.dispaly_name, // <-- fixed spelling
-                choose_option: chosen,
-              };
-            })
-            .filter((item: any) => item.choose_option.length > 0);
-const mergedArray = [
-  ...standed_option_selected_array, // Options
-   dish_ingredient_array_obj,
-];
+            name: ingredient.name,
+          }));
+        const dish_ingredient_array_obj = {
+          dish_opt_type: "Ingredients",
+          choose_option: dish_ingredient_array,
+        };
+        const standed_option_selected_array = element.dish_option_set_array
+          .map((optionSet: any) => {
+            const chosen = optionSet.option_set_array
+              .filter((opt: any) => opt.selected)
+              .map((opt: any) => ({
+                name: opt.name,
+                price: opt.price,
+                quantity: opt.quantity,
+              }));
+
+            return {
+              dish_opt_type: optionSet.dispaly_name, // <-- fixed spelling
+              choose_option: chosen,
+            };
+          })
+          .filter((item: any) => item.choose_option.length > 0);
+        const mergedArray = [
+          ...standed_option_selected_array, // Options
+          dish_ingredient_array_obj,
+        ];
         // console.log(dish_ingredient_array_obj, 'element.dish_ingredient_array')
         return {
           ...element,
@@ -428,8 +412,7 @@ const mergedArray = [
           dish_type: element.dish_type,
           // combo_selected_dishes: chosen
 
-          standed_option_selected_array: mergedArray
-          
+          standed_option_selected_array: mergedArray,
         };
       }
     });

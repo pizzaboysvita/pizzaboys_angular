@@ -423,6 +423,7 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
     );
 
     const dishUrl = `/api/dish?dish_id=${combo.combo_dish_id}&type=web`;
+
     this.apiService.getApi(dishUrl).subscribe({
       next: (res: any) => {
         if (!res?.data?.length) {
@@ -430,40 +431,66 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
           this.rebuildCartView();
           return;
         }
+
         const directCombo = res.data[0];
-        let dishChoicesArray: any[] = [];
+
+      
+        let parsedChoices: any[] = [];
+        try {
+          parsedChoices = JSON.parse(directCombo.dish_choices_json || "[]");
+        } catch {
+          parsedChoices = [];
+        }
+
+        const slotNames = parsedChoices.map(
+          (choice: any, idx: number) => choice?.name || `Item ${idx + 1}`
+        );
+
+       
+        const comboSelected = userSelectedItems.map(
+          (item: any, idx: number) => ({
+            combo_option_name: slotNames[idx] || `Item ${idx + 1}`,
+            combo_option_dish_id: item.dish_id,
+            combo_option_dish_name: item.dish_name,
+            combo_option_dish_image: item.dish_image,
+
+            combo_option_selected_array:
+              this._buildSelectedArrayFromStandardItem(item),
+          })
+        );
+
+        const comboPrice = Number(
+          directCombo.dish_price ?? combo.combo_price ?? 0
+        );
+
+    
         const comboCartItem: any = {
           ...directCombo,
+
           dish_id: directCombo.dish_id,
           dish_name: directCombo.dish_name,
           dish_type: "combo",
           dish_quantity: 1,
-          dish_price: Number(directCombo.dish_price ?? combo.combo_price ?? 0),
-          duplicate_dish_price: Number(
-            directCombo.dish_price ?? combo.combo_price ?? 0
-          ),
-          unique_key: `combo_${Date.now()}`,
-          combo_selected_dishes: userSelectedItems.map(
-            (item: any, idx: number) => ({
-              combo_option_name:
-                dishChoicesArray[idx]?.name || `Item ${idx + 1}`,
 
-              combo_option_dish_id: item.dish_id,
-              combo_option_dish_name: item.dish_name,
-              combo_option_dish_image: item.dish_image,
-              combo_option_selected_array:
-                this._buildSelectedArrayFromStandardItem(item),
-            })
-          ),
+          dish_price: comboPrice,
+          duplicate_dish_price: comboPrice,
+
+          item_total_price: comboPrice * 1,
+
+          unique_key: `combo_${Date.now()}`,
+
+          combo_selected_dishes: comboSelected,
           combo_items: combo.items || [],
+
           isMatchedCombo: true,
           matchedCombo: combo,
-        };
+        }; 
 
         this.cartItems.push(comboCartItem);
         this.rebuildCartView();
         this.cartItems = [...this.cartItems];
       },
+
       error: (err: any) => {
         console.error("Error loading real combo dish:", err);
         this.toastr.error("Unable to load combo details.");
