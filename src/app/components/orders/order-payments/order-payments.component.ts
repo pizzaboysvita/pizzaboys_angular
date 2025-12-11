@@ -79,9 +79,11 @@ export class OrderPaymentsComponent {
     this.calculateTotal();
     this.remaining = this.totalPrice;
     this.paymentAmount = this.totalPrice;
+    this.setActiveTab("full");
   }
   calculateTotal(): void {
     this.totalPrice = this.data.reduce(
+      // change item_total_price to dish_price
       (sum: number, row: { dish_price: any }) =>
         sum + (Number(row.dish_price) || 0),
       0
@@ -113,13 +115,18 @@ export class OrderPaymentsComponent {
   setActiveTab(tab: string) {
     this.activeTab = tab;
 
+    // --- AUTOSELECT RULES ---
+    // Auto-select ONLY for full tab
     if (tab === "full") {
+      // small timeout so DOM/binding updates settle (keeps UX smooth)
       setTimeout(() => this.setDefaultSelectedRowForFull(), 50);
     } else {
+      // Clear any selection for other tabs
       this.selectedRowIndex = null;
       this.selectedRowData = null;
     }
 
+    // --- EXISTING LOGIC FOLLOWS ---
     if (this.activeTab == "people" || this.activeTab == "items") {
       this.splitCash = true;
       const hasSuccess = this.fullArray.some(
@@ -225,6 +232,7 @@ export class OrderPaymentsComponent {
 
       remaining -= splitAmount;
     }
+    // this.fullArray=this.splitRows
   }
   moveToPay(item: any, index: number) {
     this.payItems.push(item);
@@ -405,6 +413,9 @@ export class OrderPaymentsComponent {
     this.paymentType = type;
     console.log("Payment Type:", type);
 
+    // ---- VALIDATION ----
+    // Full tab → auto-select happens in setActiveTab(), so this is safe
+    // People/Items tab → require manual selection
     if (!this.selectedRowData) {
       if (this.activeTab !== "full") {
         this.toastr.warning("Please select a payment row first.");
@@ -412,12 +423,15 @@ export class OrderPaymentsComponent {
       }
     }
 
+    // ---- ASSIGN PAYMENT AMOUNT ----
     this.cashpaymentAmount = this.selectedRowData?.amount || 0;
 
+    // For "Split by Items", use dish_price instead of amount
     if (this.activeTab === "items") {
       this.cashpaymentAmount = this.selectedRowData?.dish_price || 0;
     }
 
+    // ---- OPEN MODALS ----
     if (type === "Cash") {
       this.showNewModelPopup = true;
     } else if (type === "EFTPOS") {
@@ -428,6 +442,7 @@ export class OrderPaymentsComponent {
         this.isLoading = false;
       }, 2000);
     } else {
+      // Voucher / Mobile EFTPOS or "other"
       this.confirmCashPayment();
     }
   }
