@@ -103,7 +103,9 @@
         <span class="fw-bold fs-4">{{ selectedDishFromList.dish_name }}</span>
 
         <div class="d-flex align-items-center gap-3">
-          <span class="fw-bold fs-4">${{ selectedDishFromList.duplicate_dish_price }}</span>
+          <!-- <span class="fw-bold fs-4">${{ selectedDishFromList.duplicate_dish_price }}</span> -->
+          <span class="fw-bold fs-4">${{ duplicateDishPrice | number:'1.2-2'}}</span>
+
           <span (click)="closePopup()">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
               <g id="close_icon" transform="translate(-763 -18)">
@@ -327,17 +329,23 @@
                             'collapse-' + comboIndex + '-' + i
                           ">
                           <div class="w-100 d-flex flex-column align-items-start">
-                            <span style="
-                                font-size: 14px;
-                                font-weight: 500;
-                                color: #000;
-                              ">
-                              {{
+                                                  <span
+                        [ngStyle]="{
+                          'font-size': '14px',
+                          'font-weight': (
+                            dishOption.dispaly_name ||
+                            dishOption.display_name ||
+                            dishOption.name
+                          ) === 'Base Choice' ? 'bold' : 'normal'
+                        }"
+                      >
+                                                      {{
                               dishOption.display_name ||
                               dishOption.dispaly_name ||
                               dishOption.name
                               }}
-                            </span>
+                      </span>
+                            
                           </div>
                         </button>
                       </h2>
@@ -446,8 +454,7 @@
                           <div class="w-100 d-flex flex-column align-items-start">
                             <span style="
                                 font-size: 14px;
-                                font-weight: 500;
-                                color: #000;
+                                font-weight: normal;
                               ">Ingredients</span>
                           </div>
                         </button>
@@ -543,15 +550,23 @@
                     data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse-' + $index" aria-expanded="false"
                     [attr.aria-controls]="'collapse-' + $index">
                     <div class="w-100 d-flex flex-column align-items-start">
-                      <span style="
-                          font-size: 14px !important;
-                          font-weight: 500 !important;
-                          color: #000000 !important;
-                        ">{{
-                        dish_option.dispaly_name ||
-                        dish_option.display_name ||
-                        dish_option.name
-                        }}</span>
+                      <span
+                        [ngStyle]="{
+                          'font-size': '14px',
+                          'font-weight': (
+                            dish_option.dispaly_name ||
+                            dish_option.display_name ||
+                            dish_option.name
+                          ) === 'Base Choice' ? 'bold' : 'normal'
+                        }"
+                      >
+                        {{
+                          dish_option.dispaly_name ||
+                          dish_option.display_name ||
+                          dish_option.name
+                        }}
+                      </span>
+
                       <!-- <small class="text-muted">Select one (Optional)</small> -->
                     </div>
                   </button>
@@ -634,7 +649,7 @@
                     data-bs-toggle="collapse" data-bs-target="#collapse-ingredients" aria-expanded="false"
                     aria-controls="collapse-ingredients">
                     <div class="w-100 d-flex flex-column align-items-start">
-                      <span class="fw-bold" style="color: #000">Ingredients</span>
+                      <span style="font-weight: normal;font-size: 14px;">Ingredients</span>
                     </div>
                   </button>
                 </h2>
@@ -709,7 +724,7 @@
             </button>
             <button class="btn fw-bold text-white" style="background: #f44336; min-width: 180px"
               (click)="comboAddItemToCart(selectedDishFromList); closePopup()" [disabled]="!isOptionSelected">
-              ADD DISH ( ${{ selectedDishFromList.duplicate_dish_price }} )
+              ADD DISH ( ${{ duplicateDishPrice| number:'1.2-2' }} )
             </button>
           </div>
         </div>
@@ -743,7 +758,8 @@
             </button>
             <button class="btn fw-bold text-white" style="background: #f44336; min-width: 180px"
               (click)="addItemToCart(selectedDishFromList); closePopup()" [disabled]="!isOptionSelected">
-              ADD DISH ( ${{ selectedDishFromList.duplicate_dish_price }} )
+              ADD DISH ( ${{ duplicateDishPrice| number:'1.2-2' }} )
+              <!-- ADD DISH ( ${{ selectedDishFromList.duplicate_dish_price }} )  -->
             </button>
           </div>
         </div>

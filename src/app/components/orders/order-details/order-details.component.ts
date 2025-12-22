@@ -302,7 +302,9 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   get total(): number {
     const fee =
       this.orderForm.value.orderType === "delivery" ? this.deliveryfee : 0;
-    return this.subtotal + this.tax + fee;
+    // return this.subtotal + this.tax + fee;
+     return this.subtotal + fee;
+
   }
 
   checkComboOffer(selectedDishIds: number[]) {

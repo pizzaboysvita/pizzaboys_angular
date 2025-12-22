@@ -532,7 +532,7 @@
                   $index) {
                   <div
                     class="d-flex justify-content-between align-items-start py-2 div-pointer"
-                    [class.border-bottom]="ind < data.length - 1"
+                    [class.border-bottom]="ind < data.length - 1" (click)="moveToPay(rowData, ind)"
                   >
                     <div>
                       <span>{{ ind + 1 }}</span> {{ rowData.dish_name }}
@@ -542,8 +542,8 @@
                     <!-- <div class="fw-bold">${{ rowData.dish_price }}</div> -->
                     <div class="text-end">
                       <!-- change item_total_price to dish_price -->
-                      <div class="fw-bold mb-1">${{ rowData.dish_price }}</div>
-                      <a
+                      <div class="fw-bold mb-1">${{ rowData.duplicate_dish_price }}</div>
+                      <!-- <a
                         class="text-primary small fw-bold text-decoration-underline a-pointer"
                         (click)="moveToPay(rowData, ind)"
                         [class.disabled]="hasAnySuccess()"
@@ -553,7 +553,7 @@
                         [style.opacity]="hasAnySuccess() ? 0.5 : 1"
                       >
                         Move to Pay
-                      </a>
+                      </a> -->
                       <!-- <button class="btn btn-xs btn-primary" (click)="moveToPay(rowData, ind)">
         Move to Pay
       </button> -->
@@ -591,7 +591,7 @@
                     </div>
                     <!-- <div class="fw-bold">${{ rowData.dish_price }}</div>-->
                     <div class="text-end">
-                      <div class="fw-bold mb-1">${{ rowData.dish_price }}</div>
+                      <div class="fw-bold mb-1">${{ rowData.duplicate_dish_price }}</div>
                       <a
                         class="text-primary small fw-bold text-decoration-underline a-pointer"
                         (click)="removeToPay(rowData, ind)"
@@ -690,7 +690,7 @@
 
                         <!-- <td>{{rowData.dish_type}}</td> -->
                         <td>{{ rowData.type }}</td>
-                        <td>${{ rowData.dish_price }}</td>
+                        <td>${{ rowData.duplicate_dish_price }}</td>
                         <td>{{ rowData?.tender }}</td>
                         <td>{{ rowData?.change }}</td>
                       </tr>

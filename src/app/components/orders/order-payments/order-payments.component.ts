@@ -84,8 +84,8 @@ export class OrderPaymentsComponent {
   calculateTotal(): void {
     this.totalPrice = this.data.reduce(
       // change item_total_price to dish_price
-      (sum: number, row: { dish_price: any }) =>
-        sum + (Number(row.dish_price) || 0),
+      (sum: number, row: { duplicate_dish_price: any }) =>
+        sum + (Number(row.duplicate_dish_price) || 0),
       0
     );
     this.fullArray.push({
@@ -209,7 +209,7 @@ export class OrderPaymentsComponent {
     // });
 
     const totalAmount = this.data.reduce(
-      (sum: number, item: { dish_price: number }) => sum + item.dish_price,
+      (sum: number, item: { duplicate_dish_price: number }) => sum + item.duplicate_dish_price,
       0
     );
     const splitAmount = +(totalAmount / this.splitBy).toFixed(2);
@@ -248,8 +248,8 @@ export class OrderPaymentsComponent {
 
     return this.unpaidItems
       .reduce(
-        (sum: any, item: { dish_price: any }) =>
-          sum + parseInt(item.dish_price),
+        (sum: any, item: { duplicate_dish_price: any }) =>
+          sum + parseInt(item.duplicate_dish_price),
         0
       )
       .toFixed(2);
@@ -257,7 +257,7 @@ export class OrderPaymentsComponent {
 
   getPayTotal() {
     return this.payItems
-      .reduce((sum, item) => sum + parseInt(item.dish_price), 0)
+      .reduce((sum, item) => sum + parseInt(item.duplicate_dish_price), 0)
       .toFixed(2);
   }
   addPayment() {
@@ -428,7 +428,7 @@ export class OrderPaymentsComponent {
 
     // For "Split by Items", use dish_price instead of amount
     if (this.activeTab === "items") {
-      this.cashpaymentAmount = this.selectedRowData?.dish_price || 0;
+      this.cashpaymentAmount = this.selectedRowData?.duplicate_dish_price || 0;
     }
 
     // ---- OPEN MODALS ----

@@ -50,7 +50,7 @@
         <div class="col icon-box" (click)="openholdModal()">
           <i class="ri-hand"></i>
         </div>
-        <div class="col icon-box"><i class="ri-shopping-cart-line"></i></div>
+        <div class="col icon-box" (click)="clearOrderDetails()"><i class="ri-shopping-cart-line"></i></div>
       </div>
     </div>
 
@@ -93,11 +93,11 @@
                     (click)="increaseModalQuantity(item)"
                     style="cursor: pointer"
                   ></i>
-                  <i
+                  <!-- <i
                     class="ri-delete-bin-line text-danger"
                     (click)="removeItem(item)"
                     style="cursor: pointer"
-                  ></i>
+                  ></i> -->
                 </div>
               </div>
 
@@ -194,11 +194,11 @@
                     (click)="increaseModalQuantity(item)"
                     style="cursor: pointer"
                   ></i>
-                  <i
+                  <!-- <i
                     class="ri-delete-bin-line text-danger"
                     (click)="removeItem(item)"
                     style="cursor: pointer"
-                  ></i>
+                  ></i> -->
                 </div>
               </div>
 
@@ -209,7 +209,9 @@
                     <b>{{ item.dish_name }}</b>
                   </h6>
                   <h6 class="mb-0 fw-bold" style="font-size: 14px">
-                    ${{ item.item_total_price }}
+                    <!-- ${{ item.item_total_price }} -->
+                    ${{ item.duplicate_dish_price }}
+
                   </h6>
                 </div>
 
@@ -260,10 +262,10 @@
         <span class="fw-semibold">${{ subtotal.toFixed(2) }}</span>
       </div>
 
-      <div class="d-flex justify-content-between mb-2">
+      <!-- <div class="d-flex justify-content-between mb-2">
         <span class="text-muted">GST 10%</span>
         <span class="fw-semibold">${{ tax }}</span>
-      </div>
+      </div> -->
 
       @if(orderForm.value.orderType === 'delivery'){
       <div class="d-flex justify-content-between mb-2">

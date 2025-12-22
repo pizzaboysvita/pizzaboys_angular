@@ -442,28 +442,101 @@ export class MediaComponent implements OnInit {
     }
   }
 
+  // increment(option: any) {
+  //   this.showPopup = true;
+  //   option.quantity = (option.quantity || 0) + 1;
+  //   if (option.quantity > 0) option.selected = true;
+  //   console.log(option);
+    
+  //   this.calculateTotal();
+  // }
+  // decrement(option: any) {
+  //   if (option.quantity > 0) option.quantity--;
+  //   if (option.quantity == 0) option.selected = false;
+  //   this.calculateTotal();
+  //   this.cdr.detectChanges();
+  // }
+
+  // selectRadio(group: any, option: any) {
+  //   this.isOptionSelected = true;
+  //   group.option_set_array.forEach(
+  //     (opt: any) => (opt.selected = opt === option)
+  //   );
+  //   option.quantity = 1;
+  //   this.calculateTotal();
+  //   this.cdr.detectChanges();
+  // }
   increment(option: any) {
-    this.showPopup = true;
-    option.quantity = (option.quantity || 0) + 1;
-    if (option.quantity > 0) option.selected = true;
-    this.calculateTotal();
-  }
-  decrement(option: any) {
-    if (option.quantity > 0) option.quantity--;
-    if (option.quantity == 0) option.selected = false;
-    this.calculateTotal();
-    this.cdr.detectChanges();
+  this.showPopup = true;
+  option.quantity = (Number(option.quantity) || 0) + 1;
+  option.selected = true;
+
+  const optionPrice = Number(option.price) || 0;
+
+  this.selectedDishFromList.duplicate_dish_price =
+    Number(
+      (this.selectedDishFromList.duplicate_dish_price + optionPrice).toFixed(2)
+    );
+
+  console.log(
+    'Increment +',
+    optionPrice,
+    'Total:',
+    this.selectedDishFromList.duplicate_dish_price
+  );
+}
+decrement(option: any) {
+  if (!option.quantity || option.quantity <= 0) return;
+
+  option.quantity = option.quantity - 1;
+
+  const optionPrice = Number(option.price) || 0;
+
+  this.selectedDishFromList.duplicate_dish_price =
+    Number(
+      (this.selectedDishFromList.duplicate_dish_price - optionPrice).toFixed(2)
+    );
+
+  if (option.quantity === 0) {
+    option.selected = false;
   }
 
-  selectRadio(group: any, option: any) {
-    this.isOptionSelected = true;
-    group.option_set_array.forEach(
-      (opt: any) => (opt.selected = opt === option)
-    );
-    option.quantity = 1;
-    this.calculateTotal();
-    this.cdr.detectChanges();
-  }
+  console.log(
+    'Decrement -',
+    optionPrice,
+    'Total:',
+    this.selectedDishFromList.duplicate_dish_price
+  );
+}
+
+
+selectRadio(group: any, option: any) {
+  this.isOptionSelected = true;
+
+  // mark selection
+  group.option_set_array.forEach(
+    (opt: any) => (opt.selected = opt === option)
+  );
+
+  option.quantity = 1;
+
+  // ✅ ALWAYS calculate from BASE
+  const base = Number(this.selectedDishFromList.dish_price);
+  const radioPrice = Number(option.price);
+
+  this.selectedDishFromList.duplicate_dish_price =
+    Number((base + radioPrice).toFixed(2));
+
+  console.log('Updated price:', this.selectedDishFromList.duplicate_dish_price);
+   this.calculateTotal();
+
+}
+get duplicateDishPrice(): number {
+  return Number(this.selectedDishFromList?.duplicate_dish_price || 0);
+  
+}
+
+
   toggleCheckbox(option: any) {
     option.selected = !option.selected;
     this.cartItems = [...this.cartItems];
@@ -485,7 +558,7 @@ export class MediaComponent implements OnInit {
       if (isNaN(itemSubtotal)) itemSubtotal = 0;
 
       item.subtotal = Number(itemSubtotal);
-      item.duplicate_dish_price = Number(itemSubtotal);
+      // item.duplicate_dish_price = Number(itemSubtotal);
 
       item.item_total_price = Number(itemSubtotal) * (item.dish_quantity || 1);
     });

@@ -222,6 +222,8 @@ export class ApisService {
   }
 
   getItemSubtotal(item: any): number {
+    console.log(item);
+    
     if (item.dish_type === "combo") {
       const comboPrice = Number(item.dish_price) || 0;
       const qty = Number(item.dish_quantity) || 1;
@@ -262,13 +264,14 @@ export class ApisService {
       0
     );
 
-    extraPrice += toppings
-      .filter((t: any) => t.selected)
-      .reduce(
-        (sum: number, t: any) =>
-          sum + (Number(t.price) || 0) * (Number(t.quantity) || 1),
-        0
-      );
+    // extraPrice += toppings
+    //   .filter((t: any) => t.selected)
+    //   .reduce(
+    //     (sum: number, t: any) =>
+    //       sum + (Number(t.price) || 0) * (Number(t.quantity) || 1),
+    //     0
+    //   );
+console.log(basePrice,extraPrice,quantity);
 
     const subtotal = (basePrice + extraPrice) * quantity;
 
