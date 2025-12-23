@@ -512,7 +512,7 @@ decrement(option: any) {
 
 selectRadio(group: any, option: any) {
   this.isOptionSelected = true;
-
+  
   // mark selection
   group.option_set_array.forEach(
     (opt: any) => (opt.selected = opt === option)
@@ -536,6 +536,15 @@ get duplicateDishPrice(): number {
   
 }
 
+hasUnselectedRadioOption(): boolean {
+  if (!this.selectedDishFromList?.dish_option_set_array) return false;
+
+  return this.selectedDishFromList.dish_option_set_array.some(
+    (opt: any) =>
+      opt.option_type === 'Radio' &&
+      !opt.option_set_array?.some((o: any) => o.selected)
+  );
+}
 
   toggleCheckbox(option: any) {
     option.selected = !option.selected;

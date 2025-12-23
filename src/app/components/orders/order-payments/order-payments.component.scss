@@ -41,6 +41,20 @@
 }
 .div-pointer{
   cursor: pointer;
+  transition: 0.2s ease-in-out;
+  border: 1px solid #ddd;
+  // border-radius: 12px;
+   padding: 15px;
+
+}
+
+.div-pointer:hover {
+  border-color: #ffcc00;
+   background: #f6f7ff;
+}
+.div-pointer.selected {
+  border-color:#ffcc00;
+   background: #eef1ff;
 }
 .a-pointer{
   cursor: pointer;

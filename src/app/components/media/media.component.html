@@ -52,7 +52,7 @@
 
         <div class="row gx-2 gy-0">
           @for (item of dishList; track item.dish_id) {
-          <div class="col-md-3">
+          <div class="col-md-4">
             <div class="card flex-row align-items-center p-2 shadow-sm h-100"
               style="height: 110px !important; cursor: pointer" (click)="openIngredientsPopup(item)">
               <img [src]="item.dish_image" alt="{{ item.dish_name }}" class="img-thumbnail me-3" style="
@@ -723,7 +723,7 @@
               <i class="ri-price-tag-3-line"></i>
             </button>
             <button class="btn fw-bold text-white" style="background: #f44336; min-width: 180px"
-              (click)="comboAddItemToCart(selectedDishFromList); closePopup()" [disabled]="!isOptionSelected">
+              (click)="comboAddItemToCart(selectedDishFromList); closePopup()" [disabled]="hasUnselectedRadioOption()">
               ADD DISH ( ${{ duplicateDishPrice| number:'1.2-2' }} )
             </button>
           </div>
@@ -757,7 +757,7 @@
               <i class="ri-price-tag-3-line"></i>
             </button>
             <button class="btn fw-bold text-white" style="background: #f44336; min-width: 180px"
-              (click)="addItemToCart(selectedDishFromList); closePopup()" [disabled]="!isOptionSelected">
+              (click)="addItemToCart(selectedDishFromList); closePopup()"  [disabled]="hasUnselectedRadioOption()">
               ADD DISH ( ${{ duplicateDishPrice| number:'1.2-2' }} )
               <!-- ADD DISH ( ${{ selectedDishFromList.duplicate_dish_price }} )  -->
             </button>

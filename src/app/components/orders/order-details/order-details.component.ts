@@ -274,12 +274,15 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
 
   increaseModalQuantity(item: any) {
     item["dish_quantity"] = (item["dish_quantity"] || 0) + 1;
-    this.rebuildCartView();
+      this.updateTotals()
+    //  this.rebuildCartView();
   }
   decreaseModalQuantity(item: any) {
     if (item["dish_quantity"] > 1) {
       item["dish_quantity"]--;
-      this.rebuildCartView();
+      this.updateTotals()
+
+      // this.rebuildCartView();
     }
   }
 

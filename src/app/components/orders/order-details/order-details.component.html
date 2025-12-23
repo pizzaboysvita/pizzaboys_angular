@@ -50,7 +50,16 @@
         <div class="col icon-box" (click)="openholdModal()">
           <i class="ri-hand"></i>
         </div>
-        <div class="col icon-box" (click)="clearOrderDetails()"><i class="ri-shopping-cart-line"></i></div>
+        <div class="col icon-box" (click)="matchingCombos.length > 0 && showComboAlert=true">
+          <!-- <i class="ri-shopping-cart-line"></i> -->
+           <!-- <i class="ri-stack-line"></i> -->
+            <!-- <i class="ri-group-line"></i> -->
+            <i class="ri-stack-line"></i> 
+
+
+      </div>
+        <div class="col icon-box" (click)="clearOrderDetails()">
+          <i class="ri-delete-bin-6-line"></i></div>
       </div>
     </div>
 
@@ -78,7 +87,7 @@
                   style="object-fit: cover"
                 />
 
-                <div
+                <!-- <div
                   class="like-box d-flex justify-content-center mt-2"
                   style="width: 70px"
                 >
@@ -93,12 +102,21 @@
                     (click)="increaseModalQuantity(item)"
                     style="cursor: pointer"
                   ></i>
-                  <!-- <i
+                  <i
                     class="ri-delete-bin-line text-danger"
                     (click)="removeItem(item)"
                     style="cursor: pointer"
-                  ></i> -->
-                </div>
+                  ></i>
+                </div> -->
+                    <div class="d-flex align-items-center justify-content-center mt-2">
+                    <button class="qty-btn" (click)="decreaseModalQuantity(item)">
+                      -
+                    </button>
+                    <span class="qty-count">{{  item.dish_quantity }}</span>
+                    <button class="qty-btn"  (click)="increaseModalQuantity(item)">
+                      +
+                    </button>
+                    </div>
               </div>
 
               <!-- Combo Info -->
@@ -179,7 +197,7 @@
                   style="object-fit: cover"
                 />
 
-                <div
+                <!-- <div
                   class="like-box d-flex justify-content-center mt-2"
                   style="width: 70px"
                 >
@@ -194,12 +212,21 @@
                     (click)="increaseModalQuantity(item)"
                     style="cursor: pointer"
                   ></i>
-                  <!-- <i
+                  <i
                     class="ri-delete-bin-line text-danger"
                     (click)="removeItem(item)"
                     style="cursor: pointer"
-                  ></i> -->
-                </div>
+                  ></i>
+                </div> -->
+                <div class="d-flex align-items-center justify-content-center mt-2">
+                    <button class="qty-btn" (click)="decreaseModalQuantity(item)">
+                      -
+                    </button>
+                    <span class="qty-count">{{  item.dish_quantity }}</span>
+                    <button class="qty-btn"  (click)="increaseModalQuantity(item)">
+                      +
+                    </button>
+                    </div>
               </div>
 
               <!-- Item Info -->
@@ -228,7 +255,7 @@
                     style="font-size: 14px; list-style-type: disc"
                   >
                     <li *ngFor="let opt of standedOpt.choose_option">
-                      {{ opt.name }}
+                      {{ opt.name }}asdasd
                       <span *ngIf="opt.price"> - ${{ opt.price }}</span>
                     </li>
                   </ul>

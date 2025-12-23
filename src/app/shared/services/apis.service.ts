@@ -271,7 +271,7 @@ export class ApisService {
     //       sum + (Number(t.price) || 0) * (Number(t.quantity) || 1),
     //     0
     //   );
-console.log(basePrice,extraPrice,quantity);
+      console.log(basePrice,extraPrice,quantity);
 
     const subtotal = (basePrice + extraPrice) * quantity;
 
