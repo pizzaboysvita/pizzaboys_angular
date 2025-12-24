@@ -156,7 +156,7 @@ export class MediaComponent implements OnInit {
       ) {
         converted.dish_option_set_array.forEach((optSet: any) => {
           const optSetLabel =
-            optSet.display_name || optSet.dispaly_name || optSet.name;
+            optSet.dispaly_name || optSet.dispaly_name || optSet.name;
 
           const savedGroup = savedSets.find(
             (s: any) => s.dish_opt_type === optSetLabel
@@ -211,9 +211,10 @@ export class MediaComponent implements OnInit {
           if (opt.selected) converted.selectedOptions.push(opt);
         });
       });
-
       this.selectedDishFromList = converted;
       this.showPopup = true;
+      this.patchRadioSelections();
+      this.recalculatePriceFromSelections();
       this.cdr.detectChanges();
       return;
     }
@@ -335,6 +336,8 @@ export class MediaComponent implements OnInit {
     });
 
     this.selectedDishFromList = convertedMain;
+    this.selectedDishFromList.duplicate_dish_price =
+  this.calculateComboPrice(this.selectedDishFromList);
     this.showPopup = true;
     this.cdr.detectChanges();
   }
@@ -430,6 +433,49 @@ export class MediaComponent implements OnInit {
     this.popupClosed.emit();
     this.cdr.detectChanges();
   }
+  //edit
+  patchRadioSelections() {
+  this.selectedDishFromList.dish_option_set_array.forEach((group: any) => {
+    if (group.type === 'Radio') {
+      const selected = group.option_set_array.find((opt: any) => opt.selected);
+      if (selected) {
+        this.selectRadio(group, selected); // 🔥 THIS CALL
+      }
+    }
+  });
+}
+
+recalculatePriceFromSelections() {
+  let price = Number(this.selectedDishFromList.dish_price) || 0;
+  this.selectedDishFromList.dish_option_set_array?.forEach((group: any) => {
+    group.option_set_array?.forEach((opt: any) => {
+      if (opt.selected) {
+        price += (Number(opt.price) || 0) * (opt.quantity || 1);
+      }
+    });
+  });
+
+  this.selectedDishFromList.duplicate_dish_price = Number(price.toFixed(2));
+}
+calculateEditComboPrice(combo: any): number {
+  let total = Number(combo.dish_price || 0);
+
+  Object.values(combo.comboDishList || {}).forEach((child: any) => {
+    // child base
+    total += Number(child.dish_price || 0);
+
+    // options
+    child.dish_option_set_array?.forEach((set: any) => {
+      set.option_set_array?.forEach((opt: any) => {
+        if (opt.selected && opt.quantity > 0) {
+          total += Number(opt.price || 0) * opt.quantity;
+        }
+      });
+    });
+  });
+
+  return Number(total.toFixed(2));
+}
 
   increaseModalQuantity(item: any) {
     item["dish_quantity"]++;
@@ -446,11 +492,14 @@ export class MediaComponent implements OnInit {
     this.showPopup = true;
     option.quantity = (option.quantity || 0) + 1;
     if (option.quantity > 0) option.selected = true;
+    console.log(option);
+    this.recalculatePriceFromSelections();
     this.calculateTotal();
   }
   decrement(option: any) {
     if (option.quantity > 0) option.quantity--;
     if (option.quantity == 0) option.selected = false;
+    this.recalculatePriceFromSelections();
     this.calculateTotal();
     this.cdr.detectChanges();
   }
@@ -461,9 +510,92 @@ export class MediaComponent implements OnInit {
       (opt: any) => (opt.selected = opt === option)
     );
     option.quantity = 1;
+      this.recalculatePriceFromSelections();
+
     this.calculateTotal();
     this.cdr.detectChanges();
   }
+//   increment(option: any) {
+//   console.log(this.selectedDishFromList);
+//   this.showPopup = true;
+//   option.quantity = (Number(option.quantity) || 0) + 1;
+//   option.selected = true;
+
+//   const optionPrice = Number(option.price) || 0;
+
+//   this.selectedDishFromList.duplicate_dish_price =
+//     Number(
+//       (this.selectedDishFromList.duplicate_dish_price + optionPrice).toFixed(2)
+//     );
+
+//   console.log(
+//     'Increment +',
+//     optionPrice,
+//     'Total:',
+//     this.selectedDishFromList.duplicate_dish_price
+//   );
+// }
+// decrement(option: any) {
+//   if (!option.quantity || option.quantity <= 0) return;
+
+//   option.quantity = option.quantity - 1;
+
+//   const optionPrice = Number(option.price) || 0;
+
+//   this.selectedDishFromList.duplicate_dish_price =
+//     Number(
+//       (this.selectedDishFromList.duplicate_dish_price - optionPrice).toFixed(2)
+//     );
+
+//   if (option.quantity === 0) {
+//     option.selected = false;
+//   }
+
+//   console.log(
+//     'Decrement -',
+//     optionPrice,
+//     'Total:',
+//     this.selectedDishFromList.duplicate_dish_price
+//   );
+// }
+
+
+// selectRadio(group: any, option: any) {
+//   this.isOptionSelected = true;
+  
+//   // mark selection
+//   group.option_set_array.forEach(
+//     (opt: any) => (opt.selected = opt === option)
+//   );
+
+//   option.quantity = 1;
+
+//   // ✅ ALWAYS calculate from BASE
+//   const base = Number(this.selectedDishFromList.dish_price);
+//   const radioPrice = Number(option.price);
+
+//   this.selectedDishFromList.duplicate_dish_price =
+//     Number((base + radioPrice).toFixed(2));
+
+//   console.log('Updated price:', this.selectedDishFromList.duplicate_dish_price);
+//    this.calculateTotal();
+
+// }
+get duplicateDishPrice(): number {
+  return Number(this.selectedDishFromList?.duplicate_dish_price || 0);
+  
+}
+
+hasUnselectedRadioOption(): boolean {
+  if (!this.selectedDishFromList?.dish_option_set_array) return false;
+
+  return this.selectedDishFromList.dish_option_set_array.some(
+    (opt: any) =>
+      opt.option_type === 'Radio' &&
+      !opt.option_set_array?.some((o: any) => o.selected)
+  );
+}
+
   toggleCheckbox(option: any) {
     option.selected = !option.selected;
     this.cartItems = [...this.cartItems];
@@ -485,7 +617,7 @@ export class MediaComponent implements OnInit {
       if (isNaN(itemSubtotal)) itemSubtotal = 0;
 
       item.subtotal = Number(itemSubtotal);
-      item.duplicate_dish_price = Number(itemSubtotal);
+      // item.duplicate_dish_price = Number(itemSubtotal);
 
       item.item_total_price = Number(itemSubtotal) * (item.dish_quantity || 1);
     });

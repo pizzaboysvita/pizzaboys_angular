@@ -51,7 +51,8 @@
           @if(activeTab === 'full'){
           <div class="row">
             <!-- Full & Partial -->
-            <div class="col-6 border-end p-3" *ngIf="splitCash && !isFullyPaid">
+            <!-- <div class="col-6 border-end p-3" *ngIf="splitCash && !isFullyPaid"> -->
+            <div class="col-6 border-end p-3" >
               <div class="mb-3">
                 <div class="mb-2 fw-semibold">
                   <span>Quick Percent:</span>
@@ -99,7 +100,7 @@
               <!-- Keypad -->
               <div class="border rounded p-3 text-center">
                 <div class="fs-4 fw-bold mb-2 text-end">
-                  ${{ paymentAmount }}
+                  ${{ paymentAmount | number:'1.2-2'}}
                 </div>
                 <div class="row g-2">
                   <div class="col-4">
@@ -215,12 +216,13 @@
                 </button>
               </div>
             </div>
-            <div [ngClass]="splitCash && !isFullyPaid ? 'col-6' : 'col-12'">
+            <!-- <div [ngClass]="splitCash && !isFullyPaid ? 'col-6' : 'col-12'"> -->
+            <div class="col-6">
               <div class="border-bottom pb-2 mb-3">
                 <!-- Row 1: Total -->
                 <div class="d-flex justify-content-between">
                   <div class="fs-6 fw-semibold">Total</div>
-                  <div class="fs-6 fw-semibold">${{ totalPrice }}</div>
+                  <div class="fs-6 fw-semibold">${{ totalPrice | number:'1.2-2'}}</div>
                 </div>
 
                 <!-- Row 2: Paid -->
@@ -230,6 +232,7 @@
                 </div>
               </div>
               <!-- Payment Table -->
+               <div class="table-responsive">
               <table
                 class="table table-sm align-middle"
                 *ngIf="fullArray.length > 0"
@@ -272,7 +275,7 @@
                   }
                 </tbody>
               </table>
-
+</div>
               <!-- Payment Buttons -->
               <div
                 class="d-flex flex-wrap gap-2 my-3"
@@ -396,12 +399,12 @@
               >
                 <div><strong>Total</strong><br /><strong>Paid</strong></div>
                 <div>
-                  <strong>${{ totalPrice }}</strong
+                  <strong>${{ totalPrice | number:'1.2-2'}}</strong
                   ><br /><strong>$0.00</strong>
                 </div>
               </div>
               @if(isSplitPayment && splitRows.length>0){
-              <div class="text-muted text-center py-5">
+              <div class="text-muted text-center py-5 table-responsive">
                 <table class="table table-sm align-middle">
                   <thead style="background-color: #f9f9fa !important">
                     <tr>
@@ -531,8 +534,11 @@
                   } @for (rowData of unpaidItems; track rowData; let ind =
                   $index) {
                   <div
-                    class="d-flex justify-content-between align-items-start py-2 div-pointer"
-                    [class.border-bottom]="ind < data.length - 1"
+                    class="d-flex justify-content-between align-items-start py-2 div-pointer"  
+                    [class.border-bottom]="ind < data.length - 1" (click)="moveToPay(rowData, ind)" [class.disabled]="hasAnySuccess()"
+                        [style.pointer-events]="
+                          hasAnySuccess() ? 'none' : 'auto'
+                        "
                   >
                     <div>
                       <span>{{ ind + 1 }}</span> {{ rowData.dish_name }}
@@ -542,8 +548,8 @@
                     <!-- <div class="fw-bold">${{ rowData.dish_price }}</div> -->
                     <div class="text-end">
                       <!-- change item_total_price to dish_price -->
-                      <div class="fw-bold mb-1">${{ rowData.dish_price }}</div>
-                      <a
+                      <div class="fw-bold mb-1">${{ rowData.duplicate_dish_price }}</div>
+                      <!-- <a
                         class="text-primary small fw-bold text-decoration-underline a-pointer"
                         (click)="moveToPay(rowData, ind)"
                         [class.disabled]="hasAnySuccess()"
@@ -553,7 +559,7 @@
                         [style.opacity]="hasAnySuccess() ? 0.5 : 1"
                       >
                         Move to Pay
-                      </a>
+                      </a> -->
                       <!-- <button class="btn btn-xs btn-primary" (click)="moveToPay(rowData, ind)">
         Move to Pay
       </button> -->
@@ -582,8 +588,8 @@
                   } @for (rowData of payItems; track rowData; let ind = $index)
                   {
                   <div
-                    class="d-flex justify-content-between align-items-start border-bottom py-2 div-pointer"
-                  >
+                    class="d-flex justify-content-between align-items-start border-bottom py-2 div-pointer" 
+                    (click)="removeToPay(rowData, ind)">
                     <div>
                       <span>{{ ind + 1 }}</span> {{ rowData.dish_name }}
                       <br />
@@ -591,13 +597,13 @@
                     </div>
                     <!-- <div class="fw-bold">${{ rowData.dish_price }}</div>-->
                     <div class="text-end">
-                      <div class="fw-bold mb-1">${{ rowData.dish_price }}</div>
-                      <a
+                      <div class="fw-bold mb-1">${{ rowData.duplicate_dish_price }}</div>
+                      <!-- <a
                         class="text-primary small fw-bold text-decoration-underline a-pointer"
                         (click)="removeToPay(rowData, ind)"
                       >
                         Removed to Pay
-                      </a>
+                      </a> -->
                     </div>
                   </div>
                   } @if(payItems.length > 0){
@@ -647,14 +653,14 @@
               >
                 <div><strong>Total</strong><br /><strong>Paid</strong></div>
                 <div>
-                  <strong>${{ totalPrice }}</strong
+                  <strong>${{ totalPrice | number:'1.2-2'}}</strong
                   ><br /><strong>$0.00</strong>
                 </div>
               </div>
 
               <div class="text-muted text-center py-5">
                 @if(paidItems.length > 0) {
-                <div class="text-muted">
+                <div class="text-muted table-responsive">
                   <table class="table table-sm align-middle">
                     <thead style="background-color: #f9f9fa !important">
                       <tr>
@@ -690,7 +696,7 @@
 
                         <!-- <td>{{rowData.dish_type}}</td> -->
                         <td>{{ rowData.type }}</td>
-                        <td>${{ rowData.dish_price }}</td>
+                        <td>${{ rowData.duplicate_dish_price }}</td>
                         <td>{{ rowData?.tender }}</td>
                         <td>{{ rowData?.change }}</td>
                       </tr>
@@ -976,6 +982,7 @@
       </table> -->
       <!-- ✅ Order Details Table -->
       <!-- <h6 class="mb-2">Order Details</h6> -->
+        <div class="table-responsive">
       <table class="table table-sm table-bordered mb-3">
         <thead class="table-light">
           <tr>
@@ -1012,7 +1019,7 @@
           </tr>
         </tbody>
       </table>
-
+</div>
       <!-- ✅ Payment Summary Table -->
 
       <!-- ✅ OK Button -->

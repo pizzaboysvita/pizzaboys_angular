@@ -208,7 +208,7 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
 
       return t;
     });
-
+    
     this.updateTotals();
   }
 
@@ -274,12 +274,15 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
 
   increaseModalQuantity(item: any) {
     item["dish_quantity"] = (item["dish_quantity"] || 0) + 1;
-    this.rebuildCartView();
+      this.updateTotals()
+    //  this.rebuildCartView();
   }
   decreaseModalQuantity(item: any) {
     if (item["dish_quantity"] > 1) {
       item["dish_quantity"]--;
-      this.rebuildCartView();
+      this.updateTotals()
+
+      // this.rebuildCartView();
     }
   }
 
@@ -302,7 +305,9 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   get total(): number {
     const fee =
       this.orderForm.value.orderType === "delivery" ? this.deliveryfee : 0;
-    return this.subtotal + this.tax + fee;
+    // return this.subtotal + this.tax + fee;
+     return this.subtotal + fee;
+
   }
 
   checkComboOffer(selectedDishIds: number[]) {

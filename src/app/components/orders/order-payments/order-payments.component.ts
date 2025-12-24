@@ -75,7 +75,6 @@ export class OrderPaymentsComponent {
   ngOnInit(): void {
     this.payItems = [];
     this.paidItems = []; // confirmed paid items
-    this.unpaidItems = this.data;
     this.calculateTotal();
     this.remaining = this.totalPrice;
     this.paymentAmount = this.totalPrice;
@@ -83,18 +82,29 @@ export class OrderPaymentsComponent {
   }
   calculateTotal(): void {
     this.totalPrice = this.data.reduce(
-      // change item_total_price to dish_price
-      (sum: number, row: { dish_price: any }) =>
-        sum + (Number(row.dish_price) || 0),
+      (sum: number, row: {
+        dish_quantity: number; duplicate_dish_price: any 
+}) =>
+        sum + (Number(row.duplicate_dish_price) * row.dish_quantity || 0),
       0
     );
-    this.fullArray.push({
-      status: "Pending",
-      type: "New",
-      amount: this.totalPrice,
-      tender: "-",
-      change: "-",
-    });
+    // this.data.forEach((row: any) => {
+    //   const price = Number(row.duplicate_dish_price) || 0;
+    //   const qty = Number(row.dish_quantity) || 0;
+    //   // update row value
+    //   row.duplicate_dish_price = +(price * qty).toFixed(2);
+    //   // add to total
+    //   this.totalPrice += row.duplicate_dish_price;
+    // });
+    this.unpaidItems = [...this.data]; 
+
+    // this.fullArray.push({
+    //   status: "Pending",
+    //   type: "New",
+    //   amount: this.totalPrice,
+    //   tender: "-",
+    //   change: "-",
+    // });
   }
   setDefaultSelectedRowForFull(): void {
     if (!this.fullArray || this.fullArray.length === 0) {
@@ -113,6 +123,8 @@ export class OrderPaymentsComponent {
   }
 
   setActiveTab(tab: string) {
+        console.log(this.data );
+
     this.activeTab = tab;
 
     // --- AUTOSELECT RULES ---
@@ -160,12 +172,19 @@ export class OrderPaymentsComponent {
             (row: { status: string }) => row.status === "Success"
           )
         : false;
+        console.log(splitfulRows,this.data );
+        
       this.paidItems = splitfulRows ? this.paidItems : [];
-      if (!splitfulRows) this.unpaidItems = this.data;
+    this.unpaidItems = !splitfulRows ? [...this.data] : [];
+    if(this.unpaidItems){
+      this.payItems=[]
+    }
     }
     if (this.splitRows && this.splitRows.length > 0) {
       this.isSplitPayment = true;
     }
+    console.log(this.unpaidItems);
+    
   }
 
   incSplit() {
@@ -209,7 +228,9 @@ export class OrderPaymentsComponent {
     // });
 
     const totalAmount = this.data.reduce(
-      (sum: number, item: { dish_price: number }) => sum + item.dish_price,
+      (sum: number, item: {
+        dish_quantity: number; duplicate_dish_price: number 
+}) => sum + item.duplicate_dish_price * item.dish_quantity,
       0
     );
     const splitAmount = +(totalAmount / this.splitBy).toFixed(2);
@@ -235,8 +256,12 @@ export class OrderPaymentsComponent {
     // this.fullArray=this.splitRows
   }
   moveToPay(item: any, index: number) {
+    console.log(this.data);
+    
     this.payItems.push(item);
     this.unpaidItems.splice(index, 1);
+    console.log(this.data);
+
   }
   removeToPay(item: any, index: number) {
     this.unpaidItems.push(item);
@@ -248,8 +273,10 @@ export class OrderPaymentsComponent {
 
     return this.unpaidItems
       .reduce(
-        (sum: any, item: { dish_price: any }) =>
-          sum + parseInt(item.dish_price),
+        (sum: any, item: {
+          dish_quantity: any; duplicate_dish_price: any 
+}) =>
+          sum + parseInt(item.duplicate_dish_price) * item.dish_quantity,
         0
       )
       .toFixed(2);
@@ -257,7 +284,7 @@ export class OrderPaymentsComponent {
 
   getPayTotal() {
     return this.payItems
-      .reduce((sum, item) => sum + parseInt(item.dish_price), 0)
+      .reduce((sum, item) => sum + parseInt(item.duplicate_dish_price) * item.dish_quantity, 0)
       .toFixed(2);
   }
   addPayment() {
@@ -289,7 +316,7 @@ export class OrderPaymentsComponent {
 
   doRemove(tab: string) {
     if (tab === "partial" || tab === "full") {
-      this.data = [];
+      // this.data = [];
       this.totalPrice = 0;
     }
     if (tab === "people") {
@@ -384,20 +411,30 @@ export class OrderPaymentsComponent {
     };
     this.fullArray.push(newRow);
 
-    this.remaining =
-      this.totalPrice -
-      this.fullArray.reduce(
-        (sum: any, row: { amount: any }) => sum + (Number(row.amount) || 0),
-        0
-      );
+    // this.remaining =
+    //   this.totalPrice -
+    //   this.fullArray.reduce(
+    //     (sum: any, row: { amount: any }) => sum + (Number(row.amount) || 0),
+    //     0
+    //   );
+    this.remaining = Number(
+  (
+    this.totalPrice -
+    this.fullArray.reduce(
+      (sum: number, row: any) => sum + (Number(row.amount) || 0),
+      0
+    )
+  ).toFixed(2)
+);
+
 
     this.paymentAmount = this.remaining;
     this.paymentAmountStr = "";
 
     this.setDefaultSelectedRowForFull();
 
-    this.paymentAmount = this.remaining;
-    this.paymentAmountStr = "";
+    // this.paymentAmount = this.remaining;
+    // this.paymentAmountStr = "";
   }
   selectRow(row: any, index: number) {
     this.selectedRowIndex = index;
@@ -428,7 +465,7 @@ export class OrderPaymentsComponent {
 
     // For "Split by Items", use dish_price instead of amount
     if (this.activeTab === "items") {
-      this.cashpaymentAmount = this.selectedRowData?.dish_price || 0;
+      this.cashpaymentAmount = this.selectedRowData?.duplicate_dish_price * this.selectedRowData.dish_quantity || 0;
     }
 
     // ---- OPEN MODALS ----

@@ -262,13 +262,13 @@ export class ApisService {
       0
     );
 
-    extraPrice += toppings
-      .filter((t: any) => t.selected)
-      .reduce(
-        (sum: number, t: any) =>
-          sum + (Number(t.price) || 0) * (Number(t.quantity) || 1),
-        0
-      );
+    // extraPrice += toppings
+    //   .filter((t: any) => t.selected)
+    //   .reduce(
+    //     (sum: number, t: any) =>
+    //       sum + (Number(t.price) || 0) * (Number(t.quantity) || 1),
+    //     0
+    //   );
 
     const subtotal = (basePrice + extraPrice) * quantity;
 

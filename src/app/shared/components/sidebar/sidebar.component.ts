@@ -132,7 +132,7 @@ this.router.navigate(["/orders/order-detail"]);
   }, 1000);
     }else{
     if (item.type === 'method' && item.methodName) {
-      this.navService.logOut(); // ✅ dynamically call the method in NavService
+      this.navService.logOut(); //  dynamically call the method in NavService
     }
     else{
       if (!item.active) {
