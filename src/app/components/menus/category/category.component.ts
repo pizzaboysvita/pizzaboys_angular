@@ -45,8 +45,12 @@ interface RowData {
 export class CategoryComponent implements OnInit {
   @ViewChild("confirmModal") confirmModalRef!: TemplateRef<any>;
   modules = [ClientSideRowModelModule];
-  stausList = ["Active", "No Stock", "Hide"];
-
+  // stausList = ["Active", "No Stock", "Hide"];
+statusList = [
+  { label: "Active", value: "Active" },
+  { label: "Inactive", value: "Inactive" },
+  { label: "Hide", value: 3 }
+];
   rowData: RowData[] = [];
   public categoryList = [];
   gridOptions = {
@@ -278,6 +282,7 @@ delete
   storeList: any;
   categoriesForm: FormGroup;
   loginUser: any;
+  sortMenuItemList: any;
   constructor(
     public modal: NgbModal,
     private apiService: ApisService,
@@ -292,7 +297,7 @@ delete
 
     this.categoriesForm = this.formBuilder.group({
       store: ["-1"],
-      address: [""],
+      catName: [""],
       status: [""],
     });
     if (this.loginUser.role_id != 1) {
@@ -401,7 +406,26 @@ delete
         }
       });
   }
-  searchCategory() {}
+searchCategory() {
+  const f = this.categoriesForm.value;
+
+  this.rowData = this.sortMenuItemList.filter((x: any) => {
+    return (
+      (!f.store || x.store_id == f.store) &&
+      (!f.catName || x.name.toLowerCase().includes(f.catName.toLowerCase())) &&
+      (!f.status || x.status.toLowerCase().includes(f.status.toLowerCase()))
+    );
+  });
+
+  console.log(this.rowData);
+}
+
+
+  reset(){
+this.categoriesForm.reset();
+this.categoriesForm.get('store')?.setValue('-1')
+this.fetchCategories();
+  }
   getmenuList() {
     this.apiService
       .getApi(
@@ -453,7 +477,12 @@ delete
             //   : "--";
           });
           this.rowData = res.categories;
+          console.log(this.rowData,"row");
+          
+          this.sortMenuItemList=res.categories;
+
         } else {
+
           console.error("Failed to load categories:", res.message);
         }
       });

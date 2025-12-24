@@ -74,6 +74,7 @@ export class MediaComponent implements OnInit {
   ngOnInit() {
     this.subscription = this.CommonService.dishes$.subscribe((data: any) => {
       this.dishList = data;
+        console.log("Initial Dish List:", this.dishList);
     });
     this.subscription = this.CommonService.totalDishList$.subscribe(
       (data: any) => {
@@ -103,9 +104,11 @@ export class MediaComponent implements OnInit {
 
   selectCategory(category: any) {
     this.dishList = category.dishes;
+      console.log("Initial Dish List:", this.dishList);
     this.selectedCategory = category;
     this.cdr.detectChanges();
   }
+
   searchTerm(term: string) {
     this.cdr.detectChanges();
   }
@@ -133,9 +136,8 @@ export class MediaComponent implements OnInit {
     this.isOptionSelected = true;
     this.selectedChildPerCombo = {};
 
-    // ======================================================
     // CASE 1: STANDARD DISH EDIT
-    // ======================================================
+
     if (item.dish_type !== "combo") {
       const dish = this.totalDishList.find((d) => d.dish_id == item.dish_id);
       const converted = this.apiService.convertDishObject(dish);
@@ -143,51 +145,81 @@ export class MediaComponent implements OnInit {
       converted.dish_quantity = item.dish_quantity;
       converted.unique_key = item.unique_key;
 
-      // PATCH OPTION SETS
-      if (item.dish_option_set_array) {
-        converted.dish_option_set_array.forEach(
-          (optSet: { option_set_id: any; option_set_array: any[] }) => {
-            const selectedGroup = item.dish_option_set_array.find(
-              (s: { option_set_id: any }) =>
-                s.option_set_id == optSet.option_set_id
-            );
+      // READ SAVED OPTION SETS
+      const savedSets = Array.isArray(item.standed_option_selected_array)
+        ? item.standed_option_selected_array
+        : [];
 
-            if (selectedGroup) {
-              selectedGroup.choose_option.forEach(
-                (chosen: { name: any; quantity: number }) => {
-                  const opt = optSet.option_set_array.find(
-                    (o: { name: any }) => o.name === chosen.name
-                  );
-                  if (opt) {
-                    opt.selected = true;
-                    opt.quantity = chosen.quantity ?? 1;
-                  }
-                }
-              );
+      if (
+        Array.isArray(savedSets) &&
+        Array.isArray(converted.dish_option_set_array)
+      ) {
+        converted.dish_option_set_array.forEach((optSet: any) => {
+          const optSetLabel =
+            optSet.dispaly_name || optSet.dispaly_name || optSet.name;
+
+          const savedGroup = savedSets.find(
+            (s: any) => s.dish_opt_type === optSetLabel
+          );
+
+          if (!savedGroup) return;
+
+          const chosenOptions = Array.isArray(savedGroup.choose_option)
+            ? savedGroup.choose_option
+            : [];
+
+          const targetOptions = Array.isArray(optSet.option_set_array)
+            ? optSet.option_set_array
+            : [];
+
+          if (!chosenOptions.length || !targetOptions.length) return;
+
+          chosenOptions.forEach((chosen: any) => {
+            const opt = targetOptions.find((o: any) => o.name === chosen.name);
+            if (opt) {
+              opt.selected = true;
+              opt.quantity = chosen.quantity ?? 1;
             }
-          }
-        );
+          });
+        });
       }
 
-      if (item.dish_ingredient_array) {
-        converted.dish_ingredient_array.forEach(
-          (ing: { name: any; selected: boolean; quantity: any }) => {
-            const sel = item.dish_ingredient_array.find(
-              (i: { name: any }) => i.name === ing.name
-            );
-            if (sel) {
-              ing.selected = true;
-              ing.quantity = sel.quantity;
-            }
+      // PATCH INGREDIENTS
+      const ingredientsGroup = savedSets.find(
+        (s: any) => s.dish_opt_type === "Ingredients"
+      );
+
+      if (
+        ingredientsGroup &&
+        Array.isArray(ingredientsGroup.choose_option) &&
+        Array.isArray(converted.dish_ingredient_array)
+      ) {
+        converted.dish_ingredient_array.forEach((ing: any) => {
+          const sel = ingredientsGroup.choose_option.find(
+            (c: any) => c.name === ing.name
+          );
+          if (sel) {
+            ing.selected = true;
+            ing.quantity = sel.quantity ?? 1;
           }
-        );
+        });
       }
 
+      converted.selectedOptions = [];
+      converted.dish_option_set_array.forEach((optSet: any) => {
+        optSet.option_set_array.forEach((opt: any) => {
+          if (opt.selected) converted.selectedOptions.push(opt);
+        });
+      });
       this.selectedDishFromList = converted;
       this.showPopup = true;
+      this.patchRadioSelections();
+      this.recalculatePriceFromSelections();
       this.cdr.detectChanges();
       return;
     }
+
+    // CASE 2: COMBO DISH EDIT
 
     const mainCombo = this.totalDishList.find((d) => d.dish_id == item.dish_id);
     const convertedMain = this.apiService.convertDishObject(mainCombo);
@@ -198,6 +230,7 @@ export class MediaComponent implements OnInit {
     convertedMain.combo_selected_dishes = item.combo_selected_dishes;
     convertedMain.comboDishList = {};
 
+    // BUILD CHILD DISHES
     for (let i = 0; i < item.combo_selected_dishes.length; i++) {
       const child = item.combo_selected_dishes[i];
 
@@ -259,35 +292,25 @@ export class MediaComponent implements OnInit {
       convertedMain.comboDishList[i] = convertedChild;
     }
 
+    // LABEL CHILDREN
     Object.keys(convertedMain.comboDishList).forEach((index) => {
       const child = convertedMain.comboDishList[index];
-
-      child.dish_display_name =
-        child.dish_name ||
-        child.dish_display_name ||
-        child.combo_item_dish_name ||
-        "Selected Dish";
+      child.dish_display_name = child.dish_display_name || child.dish_name;
     });
 
-    let parsed = [];
+    let parsed: any[] = [];
     try {
       parsed = JSON.parse(mainCombo.dish_choices_json || "[]");
     } catch (e) {
       parsed = [];
     }
 
-    convertedMain.dish_choices_json_array = parsed;
+    const filteredChoices = this.filterIndeterminateCategories(parsed);
+    convertedMain.dish_choices_json_array = filteredChoices;
 
     convertedMain.dish_choices_json_array.forEach(
       (choice: any, idx: number) => {
-        const child = convertedMain.comboDishList[idx];
-        if (child) {
-          choice.name =
-            child.dish_display_name ||
-            child.dish_name ||
-            choice.name ||
-            "Selected Dish";
-        }
+        choice.name = choice.name || `Item ${idx + 1}`;
       }
     );
 
@@ -313,6 +336,8 @@ export class MediaComponent implements OnInit {
     });
 
     this.selectedDishFromList = convertedMain;
+    this.selectedDishFromList.duplicate_dish_price =
+  this.calculateComboPrice(this.selectedDishFromList);
     this.showPopup = true;
     this.cdr.detectChanges();
   }
@@ -408,6 +433,49 @@ export class MediaComponent implements OnInit {
     this.popupClosed.emit();
     this.cdr.detectChanges();
   }
+  //edit
+  patchRadioSelections() {
+  this.selectedDishFromList.dish_option_set_array.forEach((group: any) => {
+    if (group.type === 'Radio') {
+      const selected = group.option_set_array.find((opt: any) => opt.selected);
+      if (selected) {
+        this.selectRadio(group, selected); // 🔥 THIS CALL
+      }
+    }
+  });
+}
+
+recalculatePriceFromSelections() {
+  let price = Number(this.selectedDishFromList.dish_price) || 0;
+  this.selectedDishFromList.dish_option_set_array?.forEach((group: any) => {
+    group.option_set_array?.forEach((opt: any) => {
+      if (opt.selected) {
+        price += (Number(opt.price) || 0) * (opt.quantity || 1);
+      }
+    });
+  });
+
+  this.selectedDishFromList.duplicate_dish_price = Number(price.toFixed(2));
+}
+calculateEditComboPrice(combo: any): number {
+  let total = Number(combo.dish_price || 0);
+
+  Object.values(combo.comboDishList || {}).forEach((child: any) => {
+    // child base
+    total += Number(child.dish_price || 0);
+
+    // options
+    child.dish_option_set_array?.forEach((set: any) => {
+      set.option_set_array?.forEach((opt: any) => {
+        if (opt.selected && opt.quantity > 0) {
+          total += Number(opt.price || 0) * opt.quantity;
+        }
+      });
+    });
+  });
+
+  return Number(total.toFixed(2));
+}
 
   increaseModalQuantity(item: any) {
     item["dish_quantity"]++;
@@ -424,11 +492,14 @@ export class MediaComponent implements OnInit {
     this.showPopup = true;
     option.quantity = (option.quantity || 0) + 1;
     if (option.quantity > 0) option.selected = true;
+    console.log(option);
+    this.recalculatePriceFromSelections();
     this.calculateTotal();
   }
   decrement(option: any) {
     if (option.quantity > 0) option.quantity--;
     if (option.quantity == 0) option.selected = false;
+    this.recalculatePriceFromSelections();
     this.calculateTotal();
     this.cdr.detectChanges();
   }
@@ -439,9 +510,92 @@ export class MediaComponent implements OnInit {
       (opt: any) => (opt.selected = opt === option)
     );
     option.quantity = 1;
+      this.recalculatePriceFromSelections();
+
     this.calculateTotal();
     this.cdr.detectChanges();
   }
+//   increment(option: any) {
+//   console.log(this.selectedDishFromList);
+//   this.showPopup = true;
+//   option.quantity = (Number(option.quantity) || 0) + 1;
+//   option.selected = true;
+
+//   const optionPrice = Number(option.price) || 0;
+
+//   this.selectedDishFromList.duplicate_dish_price =
+//     Number(
+//       (this.selectedDishFromList.duplicate_dish_price + optionPrice).toFixed(2)
+//     );
+
+//   console.log(
+//     'Increment +',
+//     optionPrice,
+//     'Total:',
+//     this.selectedDishFromList.duplicate_dish_price
+//   );
+// }
+// decrement(option: any) {
+//   if (!option.quantity || option.quantity <= 0) return;
+
+//   option.quantity = option.quantity - 1;
+
+//   const optionPrice = Number(option.price) || 0;
+
+//   this.selectedDishFromList.duplicate_dish_price =
+//     Number(
+//       (this.selectedDishFromList.duplicate_dish_price - optionPrice).toFixed(2)
+//     );
+
+//   if (option.quantity === 0) {
+//     option.selected = false;
+//   }
+
+//   console.log(
+//     'Decrement -',
+//     optionPrice,
+//     'Total:',
+//     this.selectedDishFromList.duplicate_dish_price
+//   );
+// }
+
+
+// selectRadio(group: any, option: any) {
+//   this.isOptionSelected = true;
+  
+//   // mark selection
+//   group.option_set_array.forEach(
+//     (opt: any) => (opt.selected = opt === option)
+//   );
+
+//   option.quantity = 1;
+
+//   // ✅ ALWAYS calculate from BASE
+//   const base = Number(this.selectedDishFromList.dish_price);
+//   const radioPrice = Number(option.price);
+
+//   this.selectedDishFromList.duplicate_dish_price =
+//     Number((base + radioPrice).toFixed(2));
+
+//   console.log('Updated price:', this.selectedDishFromList.duplicate_dish_price);
+//    this.calculateTotal();
+
+// }
+get duplicateDishPrice(): number {
+  return Number(this.selectedDishFromList?.duplicate_dish_price || 0);
+  
+}
+
+hasUnselectedRadioOption(): boolean {
+  if (!this.selectedDishFromList?.dish_option_set_array) return false;
+
+  return this.selectedDishFromList.dish_option_set_array.some(
+    (opt: any) =>
+      opt.option_type === 'Radio' &&
+      !opt.option_set_array?.some((o: any) => o.selected)
+  );
+}
+
   toggleCheckbox(option: any) {
     option.selected = !option.selected;
     this.cartItems = [...this.cartItems];
@@ -449,14 +603,33 @@ export class MediaComponent implements OnInit {
   }
 
   calculateTotal() {
-    this.totalPrice = this.cartItems.reduce(
-      (sum: any, item: any) => sum + this.apiService.getItemSubtotal(item),
-      0
-    );
+    this.totalPrice = this.cartItems.reduce((sum: any, item: any) => {
+      let subtotal = this.apiService.getItemSubtotal(item);
+
+      if (isNaN(subtotal)) subtotal = 0;
+
+      return sum + subtotal;
+    }, 0);
+
     this.cartItems.forEach((item: any) => {
-      item.subtotal = this.totalPrice;
-      item.duplicate_dish_price = this.totalPrice;
+      let itemSubtotal = this.apiService.getItemSubtotal(item);
+
+      if (isNaN(itemSubtotal)) itemSubtotal = 0;
+
+      item.subtotal = Number(itemSubtotal);
+      // item.duplicate_dish_price = Number(itemSubtotal);
+
+      item.item_total_price = Number(itemSubtotal) * (item.dish_quantity || 1);
     });
+  }
+
+  calculateComboPrice(combo: any): number {
+    try {
+      return this.apiService.combotItemSubtotal(combo) || 0;
+    } catch (e) {
+      console.error("calculateComboPrice error", e);
+      return 0;
+    }
   }
 
   addItemToCart(item: any) {
@@ -499,12 +672,9 @@ export class MediaComponent implements OnInit {
     this.selectedChildPerCombo[comboIndex].selectedChildIndex = parentIndex;
     this.selectedChildPerCombo[comboIndex].selectedChildLabel = dish;
 
-    const subtotal = this.apiService.combotItemSubtotal(
-      this.selectedDishFromList
-    );
     this.selectedDishFromList = {
       ...this.selectedDishFromList,
-      duplicate_dish_price: subtotal,
+      duplicate_dish_price: this.calculateComboPrice(this.selectedDishFromList),
     };
     this.cdr.detectChanges();
   }
@@ -526,12 +696,9 @@ export class MediaComponent implements OnInit {
       opt.value = option.name;
       opt.selected = opt === option;
     });
-    const subtotal = this.apiService.combotItemSubtotal(
-      this.selectedDishFromList
-    );
     this.selectedDishFromList = {
       ...this.selectedDishFromList,
-      duplicate_dish_price: subtotal,
+      duplicate_dish_price: this.calculateComboPrice(this.selectedDishFromList),
     };
     this.cdr.detectChanges();
   }
@@ -554,7 +721,7 @@ export class MediaComponent implements OnInit {
     const subtotal = this.apiService.combotItemSubtotal(fullcomboDetails);
     this.selectedDishFromList = {
       ...this.selectedDishFromList,
-      duplicate_dish_price: subtotal,
+      duplicate_dish_price: this.calculateComboPrice(this.selectedDishFromList),
     };
     this.cdr.detectChanges();
   }
@@ -570,7 +737,7 @@ export class MediaComponent implements OnInit {
     const subtotal = this.apiService.combotItemSubtotal(fullcomboDetails);
     this.selectedDishFromList = {
       ...this.selectedDishFromList,
-      duplicate_dish_price: subtotal,
+      duplicate_dish_price: this.calculateComboPrice(this.selectedDishFromList),
     };
   }
 
@@ -579,7 +746,7 @@ export class MediaComponent implements OnInit {
     const subtotal = this.apiService.combotItemSubtotal(option);
     this.selectedDishFromList = {
       ...this.selectedDishFromList,
-      duplicate_dish_price: subtotal,
+      duplicate_dish_price: this.calculateComboPrice(this.selectedDishFromList),
     };
     this.cdr.detectChanges();
   }
@@ -588,20 +755,9 @@ export class MediaComponent implements OnInit {
     const subtotal = this.apiService.combotItemSubtotal(option);
     this.selectedDishFromList = {
       ...this.selectedDishFromList,
-      duplicate_dish_price: subtotal,
+      duplicate_dish_price: this.calculateComboPrice(this.selectedDishFromList),
     };
     this.cdr.detectChanges();
-  }
-
-  comboAddItemToCart(item: any) {
-    const cartItem = this.comboSelectedOptions(item);
-    cartItem.unique_key = item.unique_key || `combo_${Date.now()}`;
-    cartItem.dish_type = "combo";
-    cartItem.dish_id = item.dish_id;
-    cartItem.dish_name = item.dish_name;
-    cartItem.dish_quantity = item.dish_quantity || 1;
-    cartItem.dish_price = item.duplicate_dish_price ?? item.dish_price;
-    this.itemAdded.emit(cartItem);
   }
 
   comboSelectedOptions(fullcomboDetails: any) {
@@ -654,7 +810,39 @@ export class MediaComponent implements OnInit {
       : [];
 
     fullcomboDetails.combo_selected_dishes = combo_selected_dishes;
+    fullcomboDetails.combo_display_array = Object.keys(
+      fullcomboDetails.comboDishList
+    ).map((idx) => {
+      const child = fullcomboDetails.comboDishList[idx];
+      return {
+        slot_name: child.combo_option_name,
+        dish_name: child.dish_display_name,
+      };
+    });
     return fullcomboDetails;
+  }
+  comboAddItemToCart(item: any) {
+    const cartItem = this.comboSelectedOptions(item);
+    cartItem.unique_key = item.unique_key || `combo_${Date.now()}`;
+    cartItem.dish_type = "combo";
+    cartItem.dish_id = item.dish_id;
+    cartItem.dish_name = item.dish_name;
+    cartItem.dish_quantity = item.dish_quantity || 1;
+
+    // Use central combo price calculator
+    const comboPrice = this.calculateComboPrice(item);
+    cartItem.dish_price = comboPrice;
+    cartItem.item_total_price = comboPrice * (item.dish_quantity || 1);
+
+    cartItem.combo_display_array = (item.combo_selected_dishes || []).map(
+      (slot: any, idx: number) => ({
+        slot_name: slot.combo_option_name,
+        dish_name: slot.combo_option_dish_name,
+        dish_image: slot.combo_option_dish_image,
+      })
+    );
+
+    this.itemAdded.emit(cartItem);
   }
 
   openComboSelectionPopup(comboItem: any) {

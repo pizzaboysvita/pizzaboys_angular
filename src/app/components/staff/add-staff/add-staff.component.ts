@@ -304,6 +304,14 @@ export class AddStaffComponent {
       }
     });
   }
+  preventLeadingSpace(event: KeyboardEvent) {
+  const input = event.target as HTMLInputElement;
+
+  // Block space if field is empty OR only contains spaces
+  if (event.key === ' ' && input.value.trim().length === 0) {
+    event.preventDefault();
+  }
+}
   onSubmit() {
     // if (isValid) {
 console.log(this.staffForm.controls,this.permissionForm.controls)

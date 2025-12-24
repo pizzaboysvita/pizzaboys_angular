@@ -26,8 +26,8 @@
                         <div class="input-items" [formGroup]="staffForm">
                           <div class="row gy-3">
                             <!-- Profile Image -->
-                            <div class="col-xl-3 d-flex justify-content-center mt-4">
-                              <label for="fileInput" class="position-relative">
+                           <div class="col-xl-3 d-flex justify-content-center mt-4">
+                            <label for="fileInput" class="position-relative">
                                 <img class="img1" style="width: 180px; border-radius: 12px;"
                                   [src]="uploadImagUrl || 'https://www.w3schools.com/howto/img_avatar.png'" />
                                 <div class="background position-absolute top-0 start-0 w-100 h-100" style="z-index: 1;">
@@ -35,7 +35,7 @@
                               </label>
                               <input id="fileInput" type="file" accept="image/*" style="display: none"
                                 (change)="onSelectFile($event)" />
-                            </div>
+</div>
 
 
                             <!-- Form Fields -->
@@ -158,7 +158,7 @@
                                 <div class="col-xl-6">
                                   <div class="input-box">
                                     <h6 class="f-w-600 p-1">Address<span class="text-danger">*</span></h6>
-                                    <input type="text" formControlName="address" placeholder="Enter Address" />
+                                    <input type="text" formControlName="address" placeholder="Enter Address" (keydown)="preventLeadingSpace($event)" />
                                       @if (staffForm.get('address')?.touched && staffForm.get('address')?.errors?.['required']) {
               <div class="text-danger">Address is required</div>
             }
@@ -169,7 +169,7 @@
                                 <div class="col-xl-6">
                                   <div class="input-box">
                                     <h6 class="f-w-600 p-1">Country<span class="text-danger">*</span></h6>
-                                    <input type="text" formControlName="country" placeholder="Enter Country" />
+                                    <input type="text" formControlName="country" placeholder="Enter Country" (keydown)="preventLeadingSpace($event)" />
                                             @if (staffForm.get('country')?.touched && staffForm.get('country')?.errors?.['required']) {
               <div class="text-danger">Country is required</div>
             }
@@ -180,7 +180,7 @@
                                 <div class="col-xl-6">
                                   <div class="input-box">
                                     <h6 class="f-w-600 p-1">State<span class="text-danger">*</span></h6>
-                                    <input type="text" formControlName="state" placeholder="Enter State" />
+                                    <input type="text" formControlName="state" placeholder="Enter State"  (keydown)="preventLeadingSpace($event)"/>
                                             @if (staffForm.get('state')?.touched && staffForm.get('state')?.errors?.['required']) {
               <div class="text-danger">State is required</div>
             }
@@ -191,7 +191,7 @@
                                 <div class="col-xl-6">
                                   <div class="input-box">
                                     <h6 class="f-w-600 p-1">City<span class="text-danger">*</span></h6>
-                                    <input type="text" formControlName="city" placeholder="Enter City" />
+                                    <input type="text" formControlName="city" placeholder="Enter City"  (keydown)="preventLeadingSpace($event)"/>
                                             @if (staffForm.get('city')?.touched && staffForm.get('city')?.errors?.['required']) {
               <div class="text-danger">City is required</div>
             }

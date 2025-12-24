@@ -6,7 +6,6 @@ import {
   AfterViewInit,
   OnInit,
 } from "@angular/core";
-import { CommonModule } from "@angular/common";
 import {
   FormsModule,
   ReactiveFormsModule,
@@ -26,6 +25,7 @@ import { OrderPaymentsComponent } from "../order-payments/order-payments.compone
 import { ComboAlertComponent } from "../combo-alert/combo-alert.component";
 import { ComboSelectionComponent } from "../combo-selection/combo-selection.component";
 import { CommonModule as NgCommon } from "@angular/common";
+import { CommonService } from "../../../shared/services/common.service";
 
 export interface ComboItem {
   dish_id: number;
@@ -96,6 +96,7 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   comboName: string = "";
   comboPrice: number = 0;
   comboId: number | null = null;
+  convertedDish: any[] = [];
 
   orderForm!: FormGroup;
   orderdueForm!: FormGroup;
@@ -115,6 +116,7 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
 
   constructor(
     private apiService: ApisService,
+    private CommonService: CommonService,
     private fb: FormBuilder,
     private el: ElementRef,
     private modalService: NgbModal,
@@ -176,6 +178,7 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
 
   private rebuildCartView(): void {
     const transformed = this.apiService.transformData(this.cartItems) || [];
+
     this.totalCartDetails = transformed.map((t: any) => {
       if (t.dish_type === "combo") {
         const source =
@@ -184,15 +187,28 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
               c.dish_id === t.dish_id &&
               (c.unique_key ? c.unique_key === t.unique_key : true)
           ) || t;
+
+        const combo_selected_dishes =
+          source["combo_selected_dishes"] || t["combo_selected_dishes"] || [];
+
+        const combo_display_array = combo_selected_dishes.map(
+          (cs: any, idx: number) => ({
+            slot_name: cs.combo_option_name || `Item ${idx + 1}`,
+            dish_name: cs.combo_option_dish_name || "",
+          })
+        );
+
         return {
           ...t,
-          combo_selected_dishes:
-            source["combo_selected_dishes"] || t["combo_selected_dishes"],
+          combo_selected_dishes,
           combo_items: source["combo_items"] || t["combo_items"],
+          combo_display_array,
         };
       }
+
       return t;
     });
+    
     this.updateTotals();
   }
 
@@ -226,7 +242,7 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
       .filter((x: CartItem) => x.dish_type === "standard")
       .map((x: CartItem) => x.dish_id);
 
-    if (selectedStandardIds.length > 0)
+    if (selectedStandardIds.length > 1)
       this.checkComboOffer(selectedStandardIds);
     else this.showComboAlert = false;
 
@@ -251,17 +267,22 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
       (sum: number, it: any) => sum + this.apiService.getItemSubtotal(it),
       0
     );
+
+    console.log("Updated total price:", this.totalCartDetails, this.totalPrice);
     this.cdr.detectChanges();
   }
 
   increaseModalQuantity(item: any) {
     item["dish_quantity"] = (item["dish_quantity"] || 0) + 1;
-    this.rebuildCartView();
+      this.updateTotals()
+    //  this.rebuildCartView();
   }
   decreaseModalQuantity(item: any) {
     if (item["dish_quantity"] > 1) {
       item["dish_quantity"]--;
-      this.rebuildCartView();
+      this.updateTotals()
+
+      // this.rebuildCartView();
     }
   }
 
@@ -284,7 +305,9 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   get total(): number {
     const fee =
       this.orderForm.value.orderType === "delivery" ? this.deliveryfee : 0;
-    return this.subtotal + this.tax + fee;
+    // return this.subtotal + this.tax + fee;
+     return this.subtotal + fee;
+
   }
 
   checkComboOffer(selectedDishIds: number[]) {
@@ -388,7 +411,14 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   onComboNo() {
     this.showComboAlert = false;
   }
-
+  getDishDetailsForComboItem(dishId: number) {
+    const dishUrl = `/api/dish?dish_id=${dishId}&type=web`;
+    this.apiService.getApi(dishUrl).subscribe({
+      next: (res: any) => {
+        console.log("Dish details for combo item:", res);
+      },
+    });
+  }
   onComboSelected(combo: MatchingCombo | null) {
     this.showComboSelection = false;
     if (!combo) return;
@@ -409,7 +439,23 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
         )
     );
 
+    this.CommonService.totalDishList$.subscribe((data) => {
+      // this.totalDishList = data;
+      console.log("Total Dish List:", data);
+      data.forEach((dish: any) => {
+        combo.items.forEach((comboItem: ComboItem, id) => {
+          if (dish.dish_id === comboItem.dish_id) {
+            console.log("Adding combo item to cart:", dish);
+            this.convertedDish[id] = this.apiService.convertDishObject(dish);
+          }
+        });
+      });
+    });
+
+    console.log();
+
     const dishUrl = `/api/dish?dish_id=${combo.combo_dish_id}&type=web`;
+
     this.apiService.getApi(dishUrl).subscribe({
       next: (res: any) => {
         if (!res?.data?.length) {
@@ -417,30 +463,54 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
           this.rebuildCartView();
           return;
         }
+
         const directCombo = res.data[0];
+
+        let parsedChoices: any[] = [];
+        try {
+          parsedChoices = JSON.parse(directCombo.dish_choices_json || "[]");
+        } catch {
+          parsedChoices = [];
+        }
+
+        const slotNames = parsedChoices.map(
+          (choice: any, idx: number) => choice?.name || `Item ${idx + 1}`
+        );
+
+        const comboSelected = userSelectedItems.map(
+          (item: any, idx: number) => ({
+            combo_option_name: slotNames[idx] || `Item ${idx + 1}`,
+            combo_option_dish_id: item.dish_id,
+            combo_option_dish_name: item.dish_name,
+            combo_option_dish_image: item.dish_image,
+
+            combo_option_selected_array:
+              this._buildSelectedArrayFromStandardItem(item),
+          })
+        );
+
+        const comboPrice = Number(
+          directCombo.dish_price ?? combo.combo_price ?? 0
+        );
 
         const comboCartItem: any = {
           ...directCombo,
+
           dish_id: directCombo.dish_id,
           dish_name: directCombo.dish_name,
           dish_type: "combo",
           dish_quantity: 1,
-          dish_price: Number(directCombo.dish_price ?? combo.combo_price ?? 0),
-          duplicate_dish_price: Number(
-            directCombo.dish_price ?? combo.combo_price ?? 0
-          ),
+
+          dish_price: comboPrice,
+          duplicate_dish_price: comboPrice,
+
+          item_total_price: comboPrice * 1,
+
           unique_key: `combo_${Date.now()}`,
-          combo_selected_dishes: userSelectedItems.map(
-            (item: any, idx: number) => ({
-              combo_option_name: `Item ${idx + 1}`,
-              combo_option_dish_id: item.dish_id,
-              combo_option_dish_name: item.dish_name,
-              combo_option_dish_image: item.dish_image,
-              combo_option_selected_array:
-                this._buildSelectedArrayFromStandardItem(item),
-            })
-          ),
+
+          combo_selected_dishes: comboSelected,
           combo_items: combo.items || [],
+
           isMatchedCombo: true,
           matchedCombo: combo,
         };
@@ -449,12 +519,40 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
         this.rebuildCartView();
         this.cartItems = [...this.cartItems];
       },
+
       error: (err: any) => {
         console.error("Error loading real combo dish:", err);
         this.toastr.error("Unable to load combo details.");
         this.rebuildCartView();
       },
     });
+  }
+  filterIndeterminateCategories(menuData: any[]) {
+    return menuData.map((menuGroup) => ({
+      ...menuGroup,
+      menuItems: menuGroup.menuItems.map((menu: any) => ({
+        ...menu,
+        categories: menu.categories
+          .map((cat: any) => {
+            const checkedDishes = cat.dishes.filter(
+              (dish: any) => dish.checked
+            );
+            const isIndeterminate =
+              checkedDishes.length > 0 &&
+              checkedDishes.length < cat.dishes.length;
+            const isChecked =
+              checkedDishes.length === cat.dishes.length &&
+              checkedDishes.length > 0;
+            return {
+              ...cat,
+              dishes: checkedDishes,
+              indeterminate: isIndeterminate,
+              checked: isChecked,
+            };
+          })
+          .filter((cat: any) => cat.indeterminate || cat.checked),
+      })),
+    }));
   }
 
   private _buildSelectedArrayFromStandardItem(item: any) {

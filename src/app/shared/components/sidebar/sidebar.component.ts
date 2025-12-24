@@ -132,7 +132,7 @@ this.router.navigate(["/orders/order-detail"]);
   }, 1000);
     }else{
     if (item.type === 'method' && item.methodName) {
-      this.navService.logOut(); // ✅ dynamically call the method in NavService
+      this.navService.logOut(); //  dynamically call the method in NavService
     }
     else{
       if (!item.active) {
@@ -226,14 +226,13 @@ this.router.navigate(["/orders/order-detail"]);
 
      this.CommonService.setTotalDishList( this.totalDishList)
      if(category.name=='Limited Time Deal'){
-       this.CommonService.setDishes(this.totalDishList.filter(x=>(x.dish_type== "combo")));
+       this.CommonService.setDishes(this.totalDishList.filter(x=>(x.dish_type == "combo")));
     }
     else{
        this.dishList = category.dishes;
     this.selectedCategory = category;
     //  this.dishesSelected.emit(this.dishList)
-     this.CommonService.setDishes(this.dishList);
-    
+     this.CommonService.setDishes(this.dishList.filter(x=>(x.dish_type != "combo")));
     }
     this.cdr.detectChanges();
 

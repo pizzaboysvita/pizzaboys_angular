@@ -84,6 +84,14 @@ export class ViewRestaurantsComponent {
     this.uploadImagUrl_data = details.image
     this.workinghours = JSON.parse(details.working_hours)
   }
+  preventLeadingSpace(event: KeyboardEvent) {
+  const input = event.target as HTMLInputElement;
+
+  // Block space if field is empty OR only contains spaces
+  if (event.key === ' ' && input.value.trim().length === 0) {
+    event.preventDefault();
+  }
+}
   onSelectFile(event: Event): void {
     const input = event.target as HTMLInputElement;
 
