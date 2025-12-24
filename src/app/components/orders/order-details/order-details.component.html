@@ -146,9 +146,16 @@
                     *ngFor="let option of comboOpt.combo_option_selected_array"
                     class="ms-3"
                   >
-                    <div style="font-size: 14px; font-weight: 500">
+                    <!-- <div style="font-size: 14px; font-weight: 500">
                       {{ option.dish_opt_type }}
-                    </div>
+                    </div> -->
+                     <div style="font-size: 14px; font-weight: 500" *ngIf="option.choose_option?.length">
+                  {{
+                    option.dish_opt_type === 'Ingredients'
+                      ? 'Removed Ingredients'
+                      : option.dish_opt_type
+                  }}
+                </div>
 
                     <ul
                       class="ms-4 mb-1"
@@ -246,16 +253,19 @@
                   *ngFor="let standedOpt of item.standed_option_selected_array"
                   class="mt-1"
                 >
-                  <div style="font-size: 14px; font-weight: 500">
-                    {{ standedOpt.dish_opt_type }}
-                  </div>
-
+                <div style="font-size: 14px; font-weight: 500" *ngIf="standedOpt.choose_option?.length">
+                  {{
+                    standedOpt.dish_opt_type === 'Ingredients'
+                      ? 'Removed Ingredients'
+                      : standedOpt.dish_opt_type
+                  }}
+                </div>
                   <ul
                     class="ms-4 mb-1"
                     style="font-size: 14px; list-style-type: disc"
                   >
                     <li *ngFor="let opt of standedOpt.choose_option">
-                      {{ opt.name }}asdasd
+                      {{ opt.name }}
                       <span *ngIf="opt.price"> - ${{ opt.price }}</span>
                     </li>
                   </ul>

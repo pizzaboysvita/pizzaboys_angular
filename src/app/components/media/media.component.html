@@ -579,9 +579,9 @@
                     <!-- Radio Options -->
                     <ng-container *ngIf="dish_option.option_type === 'Radio'">
                       <div *ngFor="let option of dish_option.option_set_array" class="option-row">
-                        <span>{{ option.name }} <b>(${{ option.price }})</b></span>
-                        <input type="radio" class="custom-radio" [name]="dish_option.title"
-                          [checked]="option.selected === option" (change)="selectRadio(dish_option, option)" />
+                        <span>{{ option.name }} <b>(${{ option.price }}) {{option.selected}}</b></span>
+                        <input type="radio" class="custom-radio" [name]="dish_option.title" 
+                          [checked]="option.selected === true" (change)="selectRadio(dish_option, option)" />
                       </div>
                     </ng-container>
 

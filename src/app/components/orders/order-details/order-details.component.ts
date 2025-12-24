@@ -208,7 +208,7 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
 
       return t;
     });
-
+    
     this.updateTotals();
   }
 
