@@ -548,7 +548,7 @@
                     <!-- <div class="fw-bold">${{ rowData.dish_price }}</div> -->
                     <div class="text-end">
                       <!-- change item_total_price to dish_price -->
-                      <div class="fw-bold mb-1">${{ rowData.duplicate_dish_price }}</div>
+                      <div class="fw-bold mb-1">${{ rowData.duplicate_dish_price * rowData.dish_quantity }} </div>
                       <!-- <a
                         class="text-primary small fw-bold text-decoration-underline a-pointer"
                         (click)="moveToPay(rowData, ind)"
@@ -571,7 +571,7 @@
                     class="d-flex justify-content-between fw-bold border-top pt-2 mt-2"
                   >
                     <span>Total</span>
-                    <span>${{ getUnpaidTotal() }}</span>
+                    <span>${{ getUnpaidTotal()  }}</span>
                   </div>
                 </div>
               </div>
@@ -597,7 +597,7 @@
                     </div>
                     <!-- <div class="fw-bold">${{ rowData.dish_price }}</div>-->
                     <div class="text-end">
-                      <div class="fw-bold mb-1">${{ rowData.duplicate_dish_price }}</div>
+                      <div class="fw-bold mb-1">${{ rowData.duplicate_dish_price * rowData.dish_quantity}}</div>
                       <!-- <a
                         class="text-primary small fw-bold text-decoration-underline a-pointer"
                         (click)="removeToPay(rowData, ind)"
@@ -696,7 +696,7 @@
 
                         <!-- <td>{{rowData.dish_type}}</td> -->
                         <td>{{ rowData.type }}</td>
-                        <td>${{ rowData.duplicate_dish_price }}</td>
+                        <td>${{ rowData.duplicate_dish_price * rowData.dish_quantity }}</td>
                         <td>{{ rowData?.tender }}</td>
                         <td>{{ rowData?.change }}</td>
                       </tr>

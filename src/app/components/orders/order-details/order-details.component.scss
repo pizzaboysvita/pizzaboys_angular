@@ -228,9 +228,9 @@ body.modal-open {
 }
 
 /* remove right border for last icon in row */
-.icon-box:nth-child(3n) {
-  border-right: none;
-}
+// .icon-box:nth-child(3n) {
+//   border-right: none;
+// }
 
 /* for tablets and larger */
 @media (min-width: 768px) {

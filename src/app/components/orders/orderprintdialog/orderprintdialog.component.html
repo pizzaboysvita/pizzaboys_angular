@@ -51,16 +51,16 @@
         <!-- TOTALS -->
         <div class="summary">
             <div class="line-row"><span>Cart</span><span>{{ data?.total_price | currency:'$' }}</span></div>
-            <div class="dotted"></div>
+            <!-- <div class="dotted"></div>
             <div class="line-row"><span>GST (15%) inc. in price</span><span>{{ data?.gst_price | currency:'$' }}</span>
-            </div>
+            </div> -->
             <div class="dotted"></div>
             <hr class="solid" />
             <div class="line-row total"><strong>Total</strong><strong>{{ data?.total_price | currency:'$' }}</strong>
             </div>
         </div>
         <!-- Split Payment Section -->
-        <div class="no-print">
+        <!-- <div class="no-print">
             <div *ngIf="paymentDetails?.length">
                 <hr />
                 <button class="btn btn-sm btn-outline-secondary w-100 mt-1" (click)="toggleSplitView()">
@@ -85,7 +85,7 @@
                     </option>
                 </select>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>
 

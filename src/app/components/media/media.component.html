@@ -579,7 +579,7 @@
                     <!-- Radio Options -->
                     <ng-container *ngIf="dish_option.option_type === 'Radio'">
                       <div *ngFor="let option of dish_option.option_set_array" class="option-row">
-                        <span>{{ option.name }} <b>(${{ option.price }}) {{option.selected}}</b></span>
+                        <span>{{ option.name }} <b>(${{ option.price }})</b></span>
                         <input type="radio" class="custom-radio" [name]="dish_option.title" 
                           [checked]="option.selected === true" (change)="selectRadio(dish_option, option)" />
                       </div>
@@ -723,7 +723,7 @@
               <i class="ri-price-tag-3-line"></i>
             </button>
             <button class="btn fw-bold text-white" style="background: #f44336; min-width: 180px"
-              (click)="comboAddItemToCart(selectedDishFromList); closePopup()" [disabled]="hasUnselectedRadioOption()">
+              (click)="comboAddItemToCart(selectedDishFromList); closePopup()" [disabled]="!hasUnselectedComboRadioOption()">
               ADD DISH ( ${{ duplicateDishPrice| number:'1.2-2' }} )
             </button>
           </div>
@@ -765,7 +765,8 @@
         </div>
         }
 
-        <div></div>
+        <div>
+        </div>
       </div>
     </div>
   </div>
