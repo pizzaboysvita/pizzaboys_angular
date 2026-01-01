@@ -268,25 +268,46 @@ export class OrderPaymentsComponent {
     this.payItems.splice(index, 1);
   }
 
-  getUnpaidTotal() {
-    console.log(this.unpaidItems);
+//   getUnpaidTotal() {
+//     console.log(this.unpaidItems);
 
-    return this.unpaidItems
-      .reduce(
-        (sum: any, item: {
-          dish_quantity: any; duplicate_dish_price: any 
-}) =>
-          sum + parseInt(item.duplicate_dish_price) * item.dish_quantity,
-        0
-      )
-      .toFixed(2);
-  }
+//     return this.unpaidItems
+//       .reduce(
+//         (sum: any, item: {
+//           dish_quantity: any; duplicate_dish_price: any 
+// }) =>
+//           sum + parseInt(item.duplicate_dish_price) * item.dish_quantity,
+//         0
+//       )
+//       ;
+//   }
+getUnpaidTotal() {
+  return this.unpaidItems.reduce(
+    (sum: number, item: any) => {
+      const price = Number(item.duplicate_dish_price) || 0;
+      const qty = Number(item.dish_quantity) || 1;
 
-  getPayTotal() {
-    return this.payItems
-      .reduce((sum, item) => sum + parseInt(item.duplicate_dish_price) * item.dish_quantity, 0)
-      .toFixed(2);
-  }
+      return sum + price * qty;
+    },
+    0
+  );
+}
+getPayTotal() {
+  return this.payItems
+    .reduce((sum: number, item: any) => {
+      const price = Number(item.duplicate_dish_price) || 0;
+      const qty = Number(item.dish_quantity) || 1;
+      return sum + price * qty;
+    }, 0)
+    .toFixed(2);
+}
+
+
+  // getPayTotal() {
+  //   return this.payItems
+  //     .reduce((sum, item) => sum + parseInt(item.duplicate_dish_price) * item.dish_quantity, 0)
+  //     .toFixed(2);
+  // }
   addPayment() {
     console.log("this.addPayment");
     // this.paidItems.push(...this.payItems);
@@ -295,6 +316,8 @@ export class OrderPaymentsComponent {
         ...item,
         status: "Pending",
         type: "New",
+    //     duplicate_dish_price:
+    // (item.duplicate_dish_price || 0) * (item.dish_quantity || 1)
       }))
     );
     console.log(this.paidItems, "paiditems");

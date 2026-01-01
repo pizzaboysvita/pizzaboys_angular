@@ -205,7 +205,7 @@ this.router.navigate(["/orders/order-detail"]);
         );
         console.log("Processed Menu:", processedMenu);
         this.categoriesList = processedMenu.filter(x=>(x.hide_category_in_POS == 0));
-        this.categoriesList.unshift({ name: 'Limited Time Deal' });
+        this.categoriesList.unshift({ name: 'Specials' });
         this.totalDishList = dishRes.data;
         if (this.categoriesList && this.categoriesList.length > 0) {
           this.selectedCategory = this.categoriesList[0];
@@ -225,7 +225,7 @@ this.router.navigate(["/orders/order-detail"]);
    selectCategory(category: any) {
 
      this.CommonService.setTotalDishList( this.totalDishList)
-     if(category.name=='Limited Time Deal'){
+     if(category.name=='Specials'){
        this.CommonService.setDishes(this.totalDishList.filter(x=>(x.dish_type == "combo")));
     }
     else{

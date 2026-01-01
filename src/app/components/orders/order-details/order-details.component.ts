@@ -212,42 +212,89 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
     this.updateTotals();
   }
 
-  addToCart(item: any) {
-    console.log("Add To Cart", item);
-    const key = item.unique_key || `${item.dish_id}_${Date.now()}`;
+  // addToCart(item: any) {
+  //   console.log("Add To Cart", item);
+  //   const key = item.unique_key || `${item.dish_id}_${Date.now()}`;
 
-    if (this.isEditing && item.unique_key) {
-      const idx = this.cartItems.findIndex(
-        (ci) => ci.unique_key === item.unique_key
-      );
-      if (idx > -1) {
-        this.cartItems[idx] = {
-          ...this.cartItems[idx],
-          ...item,
-          unique_key: item.unique_key,
-        };
-        this.isEditing = false;
-      } else {
-        this.cartItems.push({ ...item, unique_key: key });
-        this.isEditing = false;
-      }
-    } else {
-      const withKey: CartItem = { ...item, unique_key: key } as any;
-      this.cartItems.push(withKey);
+  //   if (this.isEditing && item.unique_key) {
+  //     const idx = this.cartItems.findIndex(
+  //       (ci) => ci.unique_key === item.unique_key
+  //     );
+  //     if (idx > -1) {
+  //       this.cartItems[idx] = {
+  //         ...this.cartItems[idx],
+  //         ...item,
+  //         unique_key: item.unique_key,
+  //       };
+  //       this.isEditing = false;
+  //     } else {
+  //       this.cartItems.push({ ...item, unique_key: key });
+  //       this.isEditing = false;
+  //     }
+  //   } else {
+  //     const withKey: CartItem = { ...item, unique_key: key } as any;
+  //     this.cartItems.push(withKey);
+  //   }
+
+  //   this.rebuildCartView();
+
+  //   const selectedStandardIds = this.cartItems
+  //     .filter((x: CartItem) => x.dish_type === "standard")
+  //     .map((x: CartItem) => x.dish_id);
+
+  //   if (selectedStandardIds.length > 1)
+  //     this.checkComboOffer(selectedStandardIds);
+  //   else this.showComboAlert = false;
+
+  //   this.cartItems = [...this.cartItems];
+  // }
+  addToCart(item: any) {
+  console.log("Add To Cart", item);
+
+  //  Prevent duplicate dish_id
+  const alreadyExists = this.cartItems.some(
+    (ci) => ci.dish_id === item.dish_id
+  );
+
+  if (alreadyExists && !this.isEditing) {
+    console.warn("Dish already added to cart");
+    return; //  stop here
+  }
+
+  const key = item.unique_key || `${item.dish_id}_${Date.now()}`;
+
+  if (this.isEditing && item.unique_key) {
+    const idx = this.cartItems.findIndex(
+      (ci) => ci.unique_key === item.unique_key
+    );
+
+    if (idx > -1) {
+      this.cartItems[idx] = {
+        ...this.cartItems[idx],
+        ...item,
+        unique_key: item.unique_key,
+      };
     }
 
-    this.rebuildCartView();
-
-    const selectedStandardIds = this.cartItems
-      .filter((x: CartItem) => x.dish_type === "standard")
-      .map((x: CartItem) => x.dish_id);
-
-    if (selectedStandardIds.length > 1)
-      this.checkComboOffer(selectedStandardIds);
-    else this.showComboAlert = false;
-
-    this.cartItems = [...this.cartItems];
+    this.isEditing = false;
+  } else {
+    const withKey: CartItem = { ...item, unique_key: key } as any;
+    this.cartItems.push(withKey);
   }
+
+  this.rebuildCartView();
+
+  const selectedStandardIds = this.cartItems
+    .filter((x: CartItem) => x.dish_type === "standard")
+    .map((x: CartItem) => x.dish_id);
+
+  if (selectedStandardIds.length > 1)
+    this.checkComboOffer(selectedStandardIds);
+  else this.showComboAlert = false;
+
+  this.cartItems = [...this.cartItems];
+}
+
 
   removeItem(item: any) {
     this.cartItems = this.cartItems.filter(
@@ -274,12 +321,27 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
 
   increaseModalQuantity(item: any) {
     item["dish_quantity"] = (item["dish_quantity"] || 0) + 1;
+      const index = this.cartItems.findIndex(
+    i => i.unique_key === item.unique_key
+  );
+
+  if (index !== -1) {
+    this.cartItems[index].dish_quantity++;
+  }
+
       this.updateTotals()
     //  this.rebuildCartView();
   }
   decreaseModalQuantity(item: any) {
     if (item["dish_quantity"] > 1) {
       item["dish_quantity"]--;
+       const index = this.cartItems.findIndex(
+    i => i.unique_key === item.unique_key
+  );
+
+  if (index !== -1 && this.cartItems[index].dish_quantity > 1) {
+    this.cartItems[index].dish_quantity--;
+  }
       this.updateTotals()
 
       // this.rebuildCartView();

@@ -570,7 +570,7 @@ calculateEditComboPrice(combo: any): number {
 
 //   option.quantity = 1;
 
-//   // ✅ ALWAYS calculate from BASE
+//   //  ALWAYS calculate from BASE
 //   const base = Number(this.selectedDishFromList.dish_price);
 //   const radioPrice = Number(option.price);
 
@@ -595,6 +595,21 @@ hasUnselectedRadioOption(): boolean {
       !opt.option_set_array?.some((o: any) => o.selected)
   );
 }
+hasUnselectedComboRadioOption(): boolean {
+  const comboDishList = this.selectedDishFromList?.comboDishList;
+  if (!comboDishList) return false;
+
+  return Object.values(comboDishList).some((combo: any) =>
+    combo.dish_option_set_array?.some(
+      (opt: any) =>
+        opt.option_type === 'Radio' &&
+        opt.option_set_array?.some((o: any) => o.selected === true)
+    )
+  );
+}
+
+
+
 
   toggleCheckbox(option: any) {
     option.selected = !option.selected;
