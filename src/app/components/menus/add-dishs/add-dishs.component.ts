@@ -10,11 +10,12 @@ import { forkJoin } from 'rxjs';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { AgGridAngular } from '@ag-grid-community/angular';
 
 @Component({
   selector: 'app-add-dishs',
   standalone: true,
-  imports: [NgbNavModule, NgSelectModule, FormsModule, ReactiveFormsModule, CommonModule],
+  imports: [NgbNavModule, NgSelectModule, FormsModule, ReactiveFormsModule, CommonModule, AgGridAngular],
   templateUrl: './add-dishs.component.html',
   styleUrl: './add-dishs.component.scss'
 })
@@ -48,7 +49,84 @@ export class AddDishsComponent {
   selectedInventoryItem: any = '';
   quantity: string = '';
   // dishInventory: any= [];
+  baseTypeList = [
+  { id: 1, name: 'Small Pizza' },
+  { id: 2, name: 'Large Pizza' },
+  { id: 3, name: 'Drinks' },
+  { id: 4, name: 'Sides' },
+  // { id: 5, name: 'Desserts' } // new base type
+];
+
   dishInventory: any[] = [];
+   rowData :any= [];
+isHide=false
+  days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+  columnDefs :any= [
+    {
+      headerName: 'Day',
+      field: 'day',
+      editable: true,
+      cellEditor: 'agSelectCellEditor',
+      cellEditorParams: {
+        values: this.days
+      }
+    },
+    {
+    headerName: 'Open',
+    field: 'open',
+    editable: (params: any) => !params.data.is24Hour
+  },
+  {
+    headerName: 'Close',
+    field: 'close',
+    editable: (params: any) => !params.data.is24Hour
+  },
+    {
+  headerName: '24 Hours',
+  field: 'is24Hour',
+  cellRenderer: (params: any) => {
+    const checked = params.value ? 'checked' : '';
+    return `
+      <div class="d-flex align-items-center justify-content-center gap-2">
+        <input type="checkbox" class="checkbox-24hr" ${checked} data-row="${params.rowIndex}" />
+        <button class="btn btn-sm btn-outline-danger delete-btn" data-row="${params.rowIndex}">🗑</button>
+        
+        <button class="btn btn-sm btn-outline-secondary copy-btn" data-row="${params.rowIndex}">📄</button>
+      </div>
+    `;
+  },
+  onCellClicked: (params: any) => {
+    const target = params.event.target as HTMLElement;
+    const rowIndex = params.node.rowIndex;
+
+    if (target.classList.contains('delete-btn')) {
+      params.api.applyTransaction({ remove: [params.node.data] });
+    }
+
+    if (target.classList.contains('copy-btn')) {
+      const copy = { ...params.node.data };
+      params.api.applyTransaction({ add: [copy], addIndex: rowIndex + 1 });
+    }
+
+    if (target.classList.contains('checkbox-24hr')) {
+      const checked = (target as HTMLInputElement).checked;
+      params.node.setDataValue('is24Hour', checked);
+
+      // Force Open/Close cells to update editable status
+      params.api.refreshCells({
+        rowNodes: [params.node],
+        force: true,
+        columns: ['open', 'close']
+      });
+    }
+  },
+  minWidth: 150,
+  flex: 1
+}
+
+    
+  ];
   constructor(private fb: FormBuilder, public modal: NgbModal, private router: Router,private toastr: ToastrService,private apiService: ApisService, private sessionStorage: SessionStorageService) { }
 
   ngOnInit() {
@@ -143,8 +221,44 @@ if (this.myData?.dish_inventory_json) {
   // ✅ When no data present at all
   this.dishInventory = [];
 }
+   // ---------- Applicable Hours PATCH ----------
+   console.log(
+  'TYPE:',
+  typeof this.myData.applicable_hours,
+  this.myData.applicable_hours
+);
 
-    // this.dishInventory= JSON.parse(this.myData.dish_inventory_json)
+   let hours: any[] = [];
+
+if (this.myData?.applicable_hours) {
+  try {
+    hours = JSON.parse(this.myData.applicable_hours);
+
+    // safety: ensure array
+    if (!Array.isArray(hours)) {
+      hours = [];
+    }
+  } catch (e) {
+    console.error('Failed to parse applicable_hours', e);
+    hours = [];
+  }
+}
+
+if (hours.length > 0) {
+  this.isHide = true;
+
+  this.rowData = hours.map(row => ({
+    day: row.day,
+    open: row.open,
+    close: row.close,
+    is24Hour: row.is24Hour ?? false
+  }));
+} else {
+  this.isHide = false;
+  this.rowData = [];
+}
+
+    console.log(  this.rowData,'  this.rowData');
     console.log(  this.dishInventory,'  this.dishInventory');
     
     }
@@ -267,23 +381,50 @@ if (this.myData?.dish_inventory_json) {
   }
   insertDishData() {
     console.log("innnnnnnnnnnnn", this.choices)
-    if (this.menuForm.value.dishType == 'combo') {
-    this.checkedDishString = [
-  ...new Set(
-    this.choices.flatMap(side =>
-      side.menuItems.flatMap((menuItem:any) =>
-        menuItem.categories.flatMap((category:any) =>
-          category.dishes
-            .filter((dish:any) => dish.checked)
-            .map((dish:any) => dish.dishId)
-        )
-      )
-    )
-  )
-]
-.map(id => `${id},1`)
-.join('|');
-    }
+//     if (this.menuForm.value.dishType == 'combo') {
+//     this.checkedDishString = [
+//   ...new Set(
+//     this.choices.flatMap(side =>
+//       side.menuItems.flatMap((menuItem:any) =>
+//         menuItem.categories.flatMap((category:any) =>
+//           category.dishes
+//             .filter((dish:any) => dish.checked)
+//             .map((dish:any) => dish.dishId)
+//         )
+//       )
+//     )
+//   )
+// ]
+// .map(id => `${id},1`)
+// .join('|');
+//     }
+if (this.menuForm.value.dishType === 'combo') {
+    if (!this.validateBaseTypes()) {
+    return; // stop execution
+  }
+  const result: string[] = [];
+  this.choices.forEach(choice => {
+    const baseType = choice.baseType ?? 0;
+    choice.menuItems.forEach((menuItem: any) => {
+      menuItem.categories.forEach((category: any) => {
+        category.dishes
+          .filter((dish: any) => dish.checked)
+          .forEach((dish: any) => {
+            result.push(`${dish.dishId},1,${baseType}`);
+          });
+      });
+    });
+  });
+
+  this.checkedDishString = [...new Set(result)].join('|');
+}
+
+        if (this.menuForm.value.dishType == 'combo') {
+           if(this.checkedDishString ==""){    
+                this.toastr.info("Dish Choices is required.", "Info");
+                 return
+           }
+        }
     if( this.dishInventory.length>0){
         this.dish_inventory_json = JSON.stringify(
     this.dishInventory.map((item: { inventory_item_id: any; quantity: any; unit: any;inventory_item_name:any }) => ({
@@ -302,7 +443,7 @@ if (this.myData?.dish_inventory_json) {
     if (this.type == 'Edit') {
       this.reqbody = {
         "type": "update",
-            combo_dish_id_csv: this.checkedDishString,
+        combo_dish_id_csv: this.checkedDishString,
         "dish_id": this.myData?.dish_id,
         "dish_menu_id": this.menuForm.getRawValue().menuType,
         "dish_category_id": this.menuForm.getRawValue().categoryType,
@@ -324,7 +465,9 @@ if (this.myData?.dish_inventory_json) {
         "dish_option_set_json": JSON.stringify(this.selectedSubcategories),
         "dish_ingredients_json": JSON.stringify(this.Ingredients),
         "dish_choices_json": JSON.stringify(this.choices),
-        "dish_inventory_json":this.dish_inventory_json
+        "dish_inventory_json":this.dish_inventory_json,
+        "applicable_hours":this.rowData.length ==0?'':JSON.stringify(this.rowData),
+
       }
     } else {
       this.reqbody = {
@@ -351,10 +494,12 @@ if (this.myData?.dish_inventory_json) {
         "dish_option_set_json": JSON.stringify(this.selectedSubcategories),
         "dish_ingredients_json": JSON.stringify(this.Ingredients as any),
         "dish_choices_json": JSON.stringify(this.choices),
-        "dish_inventory_json":this.dish_inventory_json
+        "dish_inventory_json":this.dish_inventory_json,
+        "applicable_hours":this.rowData.length ==0?'':JSON.stringify(this.rowData),
 
       }
     }
+    console.log(this.reqbody);
     if (this.menuForm.invalid) {
       Object.keys(this.menuForm.controls).forEach(key => {
         this.menuForm.get(key)?.markAsTouched();
@@ -382,6 +527,18 @@ if (this.myData?.dish_inventory_json) {
     }
   }
 
+validateBaseTypes(): boolean {
+  let isValid = true;
+
+  this.choices.forEach(choice => {
+    if (choice.expanded && !choice.baseType) {
+      choice.showBaseTypeError = true;
+      isValid = false;
+    }
+  });
+
+  return isValid;
+}
 
 
 
@@ -514,4 +671,29 @@ removeDishInventory(index: number) {
 
     });
   }
+   formatTime(params: any) {
+    return params.value;
+  }
+
+  onCellClicked(params: any) {
+    const rowIndex = params.rowIndex;
+    const actionTarget = params.event.target as HTMLElement;
+
+    if (actionTarget.classList.contains('delete-btn')) {
+      console.log(rowIndex)
+      this.rowData.splice(rowIndex, 1);
+      // this.rowData = [...this.rowData];
+    }
+
+    // if (actionTarget.classList.contains('copy-btn')) {
+    //   const copiedRow = { ...this.rowData[rowIndex] };
+    //   this.rowData.splice(rowIndex + 1, 0, copiedRow);
+    //   this.rowData = [...this.rowData];
+    // }
+  }
+  addNewRow() {
+  this.isHide =true
+  this.rowData.push({ day: 'Monday', open: '09:00', close: '21:00', is24Hour: false });
+  this.rowData = [...this.rowData]; // forces change detection
+}
 }

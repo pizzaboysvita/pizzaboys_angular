@@ -165,6 +165,7 @@ export class ApisService {
       const filteredDishes = dishes
         .filter((d) => d.dish_category_id === category.id)
         .map((dish) => {
+          dish.category_name=category?.name
           // Initialize option set array
           dish.dish_ingredient_array = JSON.parse(dish.dish_ingredients_json);
           let dish_option_set_array = [];

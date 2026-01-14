@@ -113,6 +113,10 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   isEditing: boolean = false;
 
   customer = { name: "", email: "", phone: "" };
+  showOrderLaterPopup: boolean;
+  selectedScheduleItem: any;
+  skipAvailabilityCheck: boolean;
+  pendingCartItem: any;
 
   constructor(
     private apiService: ApisService,
@@ -260,7 +264,15 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
     console.warn("Dish already added to cart");
     return; //  stop here
   }
-
+  // if (!this.isDishAvailableToday(item)) {
+  //   this.openApplicableHourModal(item); // show message
+  //   return;
+  // }
+  if (!this.skipAvailabilityCheck && !this.isDishAvailableToday(item)) {
+    this.pendingCartItem = item;      // store item
+    this.openApplicableHourModal(item);
+    return;
+  }
   const key = item.unique_key || `${item.dish_id}_${Date.now()}`;
 
   if (this.isEditing && item.unique_key) {
@@ -283,16 +295,17 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   }
 
   this.rebuildCartView();
-
-  const selectedStandardIds = this.cartItems
-    .filter((x: CartItem) => x.dish_type === "standard")
-    .map((x: CartItem) => x.dish_id);
-
-  if (selectedStandardIds.length > 1)
-    this.checkComboOffer(selectedStandardIds);
-  else this.showComboAlert = false;
-
   this.cartItems = [...this.cartItems];
+  console.log(this.cartItems,);
+  
+  //  const selectedStandardIds = this.cartItems
+  //   .filter((x: CartItem) => x.dish_type === "standard")
+  //   .map((x: CartItem) => x.dish_id);
+
+  // if (selectedStandardIds.length > 1)
+  //   this.checkComboOffer(selectedStandardIds);
+  // else this.showComboAlert = false;
+ this.getComboItems(this.cartItems)
 }
 
 
@@ -307,6 +320,8 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
       (cartItem: any) => cartItem.dish_id !== item.dish_id
     );
     this.rebuildCartView();
+      this.getComboItems(this.cartItems)
+
   }
 
   private updateTotals(): void {
@@ -330,6 +345,8 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   }
 
       this.updateTotals()
+      this.getComboItems(this.cartItems)
+
     //  this.rebuildCartView();
   }
   decreaseModalQuantity(item: any) {
@@ -343,7 +360,7 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
     this.cartItems[index].dish_quantity--;
   }
       this.updateTotals()
-
+      this.getComboItems(this.cartItems)
       // this.rebuildCartView();
     }
   }
@@ -371,8 +388,50 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
      return this.subtotal + fee;
 
   }
+  getComboItems(cartItems: any){
+    console.log(cartItems);
+    
+  const comboDishIdCsv = cartItems
+  .filter((item: any) => item.dish_type === 'standard')
+  .map((item: any) => {
+    const baseType = this.getBaseType(item);
+    return `${item.dish_id},${item.dish_quantity},${baseType}`;
+  })
+  .join('|');
+  console.log(comboDishIdCsv);
+  
+  if (comboDishIdCsv.split('|').length > 1)
+    this.checkComboOffer(comboDishIdCsv);
+  else this.showComboAlert = false;
+  }
+getBaseType(cartItem: any): number {
 
-  checkComboOffer(selectedDishIds: number[]) {
+  // 1️⃣ If options exist (Pizza Small / Large)
+  if (cartItem.selectedOptions?.length) {
+    const selected = cartItem.selectedOptions.find(
+      (opt: any) => opt.selected
+    );
+
+    return selected?.name?.toLowerCase() === 'small' ? 1 : 2;
+  }
+
+  // 2️ Keyword match on category name
+  const category = cartItem.category_name?.toLowerCase() || '';
+   console.log(category);
+
+  if (category.includes('drink')) {
+    return 3; // Drinks (cool drinks, soft drinks, etc.)
+  }
+
+  if (category.includes('side')) {
+    return 4; // Pizza sides, veg sides, etc.
+  }
+
+  // fallback
+  return 0;
+}
+
+  checkComboOffer(selectedDishIds: any) {
     if (this.isEditing) return;
     this.fetchComboDetails(selectedDishIds);
   }
@@ -427,14 +486,14 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   }
 
   fetchComboDetails(dishIds: number[]) {
+    console.log(dishIds);
+    
     const user = JSON.parse(
       this.sessionStorageService.getsessionStorage("loginDetails") as any
     ).user;
     const storeId = user.store_id;
-    const q = dishIds.join(",");
-    const url = `/api/dish/combo-details?dish_ids=${encodeURIComponent(
-      q
-    )}&store_id=${storeId}&type=web`;
+    // const q = dishIds.join(",");
+    const url = `/api/dish/combo-details?combo_dish_id_csv=${dishIds}&store_id=${storeId}&type=web`;
 
     this.apiService.getApi(url).subscribe({
       next: (res: any) => {
@@ -850,12 +909,17 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   }
 
   submitDUeOrder() {
+    if (this.orderdueForm.invalid || this.dateError) return;
     this.orderDueDetails =
       this.orderdueForm.value.orderDue === "ASAP"
         ? this.orderdueForm.value.orderDue
         : this.orderdueForm.value.orderDateTime;
+         this.skipAvailabilityCheck = true;
+    this.addToCart(this.pendingCartItem)
     this.showOrderDuePopup = false;
     this.showNewModelPopup = false;
+    this.selectedScheduleItem=null
+    this.pendingCartItem=null
   }
   closeCustomerModal() {
     this.showCustomerModal = false;
@@ -883,4 +947,126 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
     if (this.modifyValue === "0") this.modifyValue = "";
     this.modifyValue += key;
   }
+  isDishAvailableToday(item: any): boolean {
+  if (!item?.applicable_hours) {
+    // no restriction → available all days
+    return true;
+  }
+
+  let hours: any[] = [];
+
+  try {
+    hours = JSON.parse(item.applicable_hours);
+    if (!Array.isArray(hours)) return true;
+  } catch {
+    return true;
+  }
+
+  const today = this.getTodayName().toLowerCase();
+
+  return hours.some(
+    h => h.day?.toLowerCase() === today
+  );
+}
+getTodayName(): string {
+  return new Date().toLocaleDateString('en-US', { weekday: 'long' });
+}
+openApplicableHourModal(item: any) {
+  this.selectedScheduleItem=item
+  const today = this.getTodayName();
+   this.showOrderLaterPopup=true
+  // alert(
+  //   `This item is not available today (${today}). Please check applicable hours.`
+  // );
+
+  // OR open Angular Material / Bootstrap modal instead
+}
+
+scheduleLater(){
+  this.showOrderDuePopup=true
+   this.showOrderLaterPopup=false
+   this.orderdueForm.get('orderDue')?.setValue('Later')
+
+}
+// getAllowedDays(item: any): string[] {
+//   if (!item?.applicable_hours) return [];
+
+//   try {
+//     const parsed =
+//       typeof item.applicable_hours === 'string'
+//         ? JSON.parse(item.applicable_hours)
+//         : item.applicable_hours;
+
+//     if (!Array.isArray(parsed) || !parsed.length) return [];
+
+//     return parsed
+//       .map((h: any) => h.day?.toLowerCase())
+//       .filter(Boolean);
+//   } catch {
+//     return [];
+//   }
+  
+// }
+ getAllowedDays(item: any): string[] {
+    if (!item?.applicable_hours) return [];
+
+    try {
+      const parsed =
+        typeof item.applicable_hours === 'string'
+          ? JSON.parse(item.applicable_hours)
+          : item.applicable_hours;
+
+      if (!Array.isArray(parsed) || !parsed.length) return [];
+
+      return parsed
+        .map((h: any) => h.day?.toLowerCase())
+        .filter(Boolean);
+    } catch {
+      return [];
+    }
+  }
+
+  // ✅ ADD THIS METHOD JUST BELOW / ABOVE IT
+  getAvailableDaysLabel(item: any): string {
+    const days = this.getAllowedDays(item);
+
+    if (!days.length) return 'All days';
+
+    return days
+      .map(d => d.charAt(0).toUpperCase() + d.slice(1))
+      .join(', ');
+  }
+
+  
+
+
+dateError = false;
+
+validateApplicableDay(event: any) {
+  const value = event.target.value;
+  if (!value) return;
+
+  const selectedDate = new Date(value);
+  const selectedDay = selectedDate
+    .toLocaleDateString('en-US', { weekday: 'long' })
+    .toLowerCase();
+
+  const allowedDays = this.getAllowedDays(this.selectedScheduleItem);
+
+  // ✅ No restriction → allow all
+  if (!allowedDays.length) {
+    this.dateError = false;
+    return;
+  }
+
+  if (!allowedDays.includes(selectedDay)) {
+    this.dateError = true;
+
+    //  Clear invalid date
+    this.orderdueForm.get('orderDateTime')?.setValue(null);
+  } else {
+    this.dateError = false;
+  }
+}
+
 }
