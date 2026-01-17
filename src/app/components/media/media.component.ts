@@ -131,7 +131,7 @@ export class MediaComponent implements OnInit {
     }
   }
 
-  async openEditPopup(item: any) {
+  async openEditPopup(item: any) {    
     this.isEditing = true;
     this.isOptionSelected = true;
     this.selectedChildPerCombo = {};
@@ -212,6 +212,7 @@ export class MediaComponent implements OnInit {
         });
       });
       this.selectedDishFromList = converted;
+      this.selectedDishFromList.dishnote = item.dishnote;
       this.showPopup = true;
       this.patchRadioSelections();
       this.recalculatePriceFromSelections();
@@ -338,8 +339,11 @@ export class MediaComponent implements OnInit {
     this.selectedDishFromList = convertedMain;
     this.selectedDishFromList.duplicate_dish_price =
   this.calculateComboPrice(this.selectedDishFromList);
+  console.log(this.selectedDishFromList);
+  
     this.showPopup = true;
     this.cdr.detectChanges();
+    // dishnote
   }
 
   openIngredientsPopup(item: any) {
@@ -648,6 +652,8 @@ hasUnselectedComboRadioOption(): boolean {
   }
 
   addItemToCart(item: any) {
+    console.log(item);
+    
     const cartItem = this.moveSelectedOptionsToMainObject(item);
     this.itemAdded.emit(cartItem);
   }

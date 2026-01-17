@@ -290,7 +290,7 @@ getUnpaidTotal() {
       return sum + price * qty;
     },
     0
-  );
+  ).toFixed(2);
 }
 getPayTotal() {
   return this.payItems

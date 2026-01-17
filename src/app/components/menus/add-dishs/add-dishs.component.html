@@ -168,7 +168,31 @@
                       sweet</span>
                   </div>
 
+  <!-- Applicable Hours -->
+                  <div class="col-12">
+                    <div class="input-box position-relative">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6>Applicable Hours</h6>
+                        <!-- <span class="optional-tag">OPTIONAL</span> -->
+                      </div>
+                      <!-- <button type="button" class="btn btn-outline-primary btn-sm" (click)="addTimeSlot()">Add Time Slot</button> -->
+                      <button type="button" class="add-time-slot-btn" (click)="addNewRow()">
+                        Add Time Slot
+                      </button>
 
+
+                      @if(isHide){
+                      <ag-grid-angular class="ag-theme-alpine" style="width: 100%; height: 300px" [rowData]="rowData"
+                        [columnDefs]="columnDefs" rowSelection="single" [stopEditingWhenCellsLoseFocus]="true"
+                        (cellClicked)="onCellClicked($event)" [domLayout]="'autoHeight'">
+                      </ag-grid-angular>
+                      }
+                      <span class="lableSubtext">
+                        Set which hours this menu will be available for. If no hours entered, menu applies at all times.
+                        Enter time in 24H format, e.g., 21:00 for 9:00 PM.
+                      </span>
+                    </div>
+                  </div>
 
 
                   <div class="col-12">
@@ -343,6 +367,27 @@
               </div>
 
               @if (choice.expanded) {
+                 <div class="col-12 p-3">
+                    <div class="input-box">
+ <ng-select
+    [items]="baseTypeList"
+    [searchable]="true"
+    [multiple]="false"
+    bindLabel="name"
+    bindValue="id"
+    placeholder="Select base type"
+    [(ngModel)]="choice.baseType"
+    (change)="choice.showBaseTypeError = false">
+  </ng-select>
+
+  @if (choice.showBaseTypeError) {
+    <div class="text-danger mt-1" style="font-size: 0.85rem;">
+      Base Type is required
+    </div>
+  }
+              </div>
+              </div>
+
               <!-- Menu Toggle -->
               @for (menu of choice.menuItems; track menu; let j = $index) {
               <div class="row ps-4 py-1" style="font-size: 0.92rem;">
@@ -388,7 +433,7 @@
               }
             </div>
             }
-
+    
           </ng-template>
         </li>
         }
