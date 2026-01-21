@@ -308,6 +308,40 @@
         <li [ngbNavItem]="2" class="nav-item m-0">
           <button ngbNavLink class="nav-link" type="button">Dish Choices</button>
           <ng-template ngbNavContent>
+            <div class="row mb-2">
+                  <div class="col-md-3 col-sm-12">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="No.of Large Pizzas"
+          [(ngModel)]="largePizzas"
+        />
+      </div>
+      <div class="col-md-3 col-sm-12">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="No.of Small Pizzas"
+          [(ngModel)]="smallPizzas"
+        />
+      </div>
+      <div class="col-md-3 col-sm-12">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="No.of drinks"
+          [(ngModel)]="drinks"
+        />
+      </div>
+      <div class="col-md-3 col-sm-12">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="No.of Sides"
+          [(ngModel)]="sides"
+        />
+      </div>
+      </div>
             <!-- <div class="input-items">
                             <div class="row">
                                 <div class="col-12">
