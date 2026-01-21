@@ -48,6 +48,10 @@ export class AddDishsComponent {
   dish_inventory_json: any=[] ;
   selectedInventoryItem: any = '';
   quantity: string = '';
+  largePizzas:number=0
+  smallPizzas:number=0
+  drinks:number=0
+  sides:number=0
   // dishInventory: any= [];
   baseTypeList = [
   { id: 1, name: 'Small Pizza' },
@@ -201,6 +205,13 @@ isHide=false
       this.Ingredients = JSON.parse(this.myData.dish_ingredients_json)
       this.choices = JSON.parse(this.myData.dish_choices_json)
       this.previewUrl = this.myData.dish_image;
+      this.largePizzas=this.myData?.no_of_large_pizzas
+      this.smallPizzas=this.myData?.no_of_small_pizzas
+      this.drinks=this.myData?.no_of_drinks
+      this.sides=this.myData?.no_of_sides
+
+      
+
       // dish_choices_json
       let parsed;
       console.log(this.dishInventory);
@@ -467,6 +478,10 @@ if (this.menuForm.value.dishType === 'combo') {
         "dish_choices_json": JSON.stringify(this.choices),
         "dish_inventory_json":this.dish_inventory_json,
         "applicable_hours":this.rowData.length ==0?'':JSON.stringify(this.rowData),
+        "no_of_large_pizzas":this.largePizzas,
+        "no_of_small_pizzas":this.smallPizzas,
+        "no_of_sides":this.sides,
+        "no_of_drinks":this.drinks
 
       }
     } else {
@@ -496,6 +511,10 @@ if (this.menuForm.value.dishType === 'combo') {
         "dish_choices_json": JSON.stringify(this.choices),
         "dish_inventory_json":this.dish_inventory_json,
         "applicable_hours":this.rowData.length ==0?'':JSON.stringify(this.rowData),
+        "no_of_large_pizzas":this.largePizzas,
+        "no_of_small_pizzas":this.smallPizzas,
+        "no_of_sides":this.sides,
+        "no_of_drinks":this.drinks
 
       }
     }
