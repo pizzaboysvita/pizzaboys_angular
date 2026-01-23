@@ -1116,10 +1116,52 @@ validateApplicableDay(event: any) {
 //   this.cartItems = [...this.cartItems, newItem];
 // }
 
-splitItem(item: any) {
-  if (!item || item.dish_quantity < 2 || item.dish_type !== 'combo') return;
+// splitItem(item: any) {
+//   if (!item || item.dish_quantity < 2 || item.dish_type !== 'combo') return;
 
-  // find original in totalCartDetails
+//   // find original in totalCartDetails
+//   const index = this.totalCartDetails.findIndex(
+//     (i: any) => i.unique_key === item.unique_key
+//   );
+//   if (index === -1) return;
+
+//   const totalQty = item.dish_quantity;
+//   const totalPrice = item.item_total_price;
+//   // const unitPrice = totalPrice / totalQty;
+
+//   // Deep clone original item
+//   const newItem = JSON.parse(JSON.stringify(item));
+
+//   // 🔑 Give new unique key for split item
+//   newItem.unique_key = `${item.unique_key}_${Date.now()}_${Math.random()
+//     .toString(36)
+//     .substr(2, 5)}`;
+
+//   // Set quantities & prices
+//   newItem.dish_quantity = totalQty - 1;       // remaining quantity
+//   newItem.item_total_price = +totalPrice;
+
+//   // Update original item
+//   this.totalCartDetails[index].dish_quantity = 1;    // always 1
+//   this.totalCartDetails[index].item_total_price = +totalPrice;
+
+//   // Insert split item after original
+//   this.totalCartDetails.splice(index + 1, 0, newItem);
+
+//   // Update cartItems array
+//   this.cartItems = [
+//     ...this.cartItems.filter((c) => c.unique_key !== item.unique_key),
+//     this.totalCartDetails[index],
+//     newItem,
+//   ];
+
+//   // Force UI refresh
+//   this.totalCartDetails = [...this.totalCartDetails];
+// }
+splitItem(item: any) {
+  if (!item || item.dish_type !== 'combo' || item.dish_quantity < 2) return;
+
+  // Find original in totalCartDetails
   const index = this.totalCartDetails.findIndex(
     (i: any) => i.unique_key === item.unique_key
   );
@@ -1129,34 +1171,34 @@ splitItem(item: any) {
   const totalPrice = item.item_total_price;
   // const unitPrice = totalPrice / totalQty;
 
-  // Deep clone original item
-  const newItem = JSON.parse(JSON.stringify(item));
+  // Remove original item
+  this.totalCartDetails.splice(index, 1);
 
-  // 🔑 Give new unique key for split item
-  newItem.unique_key = `${item.unique_key}_${Date.now()}_${Math.random()
-    .toString(36)
-    .substr(2, 5)}`;
+  // Create split items (qty times)
+  const splitItems = Array.from({ length: totalQty }).map(() => {
+    const newItem = JSON.parse(JSON.stringify(item));
 
-  // Set quantities & prices
-  newItem.dish_quantity = totalQty - 1;       // remaining quantity
-  newItem.item_total_price = +totalPrice;
+    newItem.dish_quantity = 1;
+    newItem.item_total_price = +totalPrice;
+    newItem.unique_key = `${item.dish_id}_${Date.now()}_${Math.random()
+      .toString(36)
+      .substr(2, 6)}`;
 
-  // Update original item
-  this.totalCartDetails[index].dish_quantity = 1;    // always 1
-  this.totalCartDetails[index].item_total_price = +totalPrice;
+    return newItem;
+  });
 
-  // Insert split item after original
-  this.totalCartDetails.splice(index + 1, 0, newItem);
+  // Insert all split items at same position
+  this.totalCartDetails.splice(index, 0, ...splitItems);
 
-  // Update cartItems array
-  this.cartItems = [
-    ...this.cartItems.filter((c) => c.unique_key !== item.unique_key),
-    this.totalCartDetails[index],
-    newItem,
-  ];
+  // Sync cartItems (source of truth)
+  this.cartItems = this.cartItems.filter(
+    (c: any) => c.unique_key !== item.unique_key
+  );
+  this.cartItems.push(...splitItems);
 
   // Force UI refresh
   this.totalCartDetails = [...this.totalCartDetails];
+  this.cartItems = [...this.cartItems];
 }
 
 }
