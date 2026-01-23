@@ -185,13 +185,14 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
 
     this.totalCartDetails = transformed.map((t: any) => {
       if (t.dish_type === "combo") {
-        const source =
-          this.cartItems.find(
-            (c) =>
-              c.dish_id === t.dish_id &&
-              (c.unique_key ? c.unique_key === t.unique_key : true)
-          ) || t;
-
+        // const source =
+        //   this.cartItems.find(
+        //     (c) =>
+        //       c.dish_id === t.dish_id &&
+        //       (c.unique_key ? c.unique_key === t.unique_key : true)
+        //   ) || t;
+          const source =
+            this.cartItems.find((c) => c.unique_key === t.unique_key) || t;
         const combo_selected_dishes =
           source["combo_selected_dishes"] || t["combo_selected_dishes"] || [];
 
@@ -260,10 +261,10 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
     (ci) => ci.dish_id === item.dish_id
   );
 
-  if (alreadyExists && !this.isEditing) {
-    console.warn("Dish already added to cart");
-    return; //  stop here
-  }
+  // if (alreadyExists && !this.isEditing) {
+  //   console.warn("Dish already added to cart");
+  //   return; //  stop here
+  // }
   // if (!this.isDishAvailableToday(item)) {
   //   this.openApplicableHourModal(item); // show message
   //   return;
@@ -315,14 +316,28 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
     );
     this.rebuildCartView();
   }
-  removeItems(item: any) {
-    this.cartItems = this.cartItems.filter(
-      (cartItem: any) => cartItem.dish_id !== item.dish_id
-    );
-    this.rebuildCartView();
-      this.getComboItems(this.cartItems)
+  // removeItems(item: any) {
+  //   this.cartItems = this.cartItems.filter(
+  //     (cartItem: any) => cartItem.dish_id !== item.dish_id
+  //   );
+  //   this.rebuildCartView();
+  //     this.getComboItems(this.cartItems)
 
-  }
+  // }
+removeItems(item: any) {
+  if (!item) return;
+
+  // Remove only the specific cart row (split or original)
+  this.cartItems = this.cartItems.filter(
+    (cartItem: any) => cartItem.unique_key !== item.unique_key
+  );
+
+  // Rebuild totalCartDetails for UI
+  this.rebuildCartView();
+
+  // Update combo items if needed
+  this.getComboItems(this.cartItems);
+}
 
   private updateTotals(): void {
     this.totalPrice = this.totalCartDetails.reduce(
@@ -573,8 +588,6 @@ getBaseType(cartItem: any): number {
       });
     });
 
-    console.log();
-
     const dishUrl = `/api/dish?dish_id=${combo.combo_dish_id}&type=web`;
 
     this.apiService.getApi(dishUrl).subscribe({
@@ -698,7 +711,7 @@ getBaseType(cartItem: any): number {
     });
 
     const ing = (item.dish_ingredient_array || []).filter(
-      (i: any) => i.selected
+      (i: any) => !i.selected
     );
     if (ing && ing.length) {
       result.push({
@@ -1067,6 +1080,83 @@ validateApplicableDay(event: any) {
   } else {
     this.dateError = false;
   }
+}
+// splitItem(item: any) {
+//   if (!item || item.dish_quantity < 2 || item.dish_type !== 'combo') return;
+
+//   const index = this.totalCartDetails.findIndex(
+//     (i: any) => i.unique_key === item.unique_key
+//   );
+
+//   if (index === -1) return;
+
+//   const totalQty = item.dish_quantity;
+//   const totalPrice = item.item_total_price;
+//   // const unitPrice = totalPrice / totalQty;
+
+//   const newItem = JSON.parse(JSON.stringify(item));
+
+//   // Generate new unique_key for split
+//   newItem.unique_key = `${item.unique_key}_${Date.now()}_${Math.random()
+//     .toString(36)
+//     .substr(2, 5)}`;
+
+//   newItem.dish_quantity = totalQty - 1;
+//   newItem.item_total_price = +totalPrice;
+
+//   // Update original
+//   this.totalCartDetails[index].dish_quantity = 1;
+//   this.totalCartDetails[index].item_total_price = +totalPrice;
+
+//   // Insert new split item
+//   this.totalCartDetails.splice(index + 1, 0, newItem);
+
+//   // Refresh cart
+//   this.totalCartDetails = [...this.totalCartDetails];
+//   this.cartItems = [...this.cartItems, newItem];
+// }
+
+splitItem(item: any) {
+  if (!item || item.dish_quantity < 2 || item.dish_type !== 'combo') return;
+
+  // find original in totalCartDetails
+  const index = this.totalCartDetails.findIndex(
+    (i: any) => i.unique_key === item.unique_key
+  );
+  if (index === -1) return;
+
+  const totalQty = item.dish_quantity;
+  const totalPrice = item.item_total_price;
+  // const unitPrice = totalPrice / totalQty;
+
+  // Deep clone original item
+  const newItem = JSON.parse(JSON.stringify(item));
+
+  // 🔑 Give new unique key for split item
+  newItem.unique_key = `${item.unique_key}_${Date.now()}_${Math.random()
+    .toString(36)
+    .substr(2, 5)}`;
+
+  // Set quantities & prices
+  newItem.dish_quantity = totalQty - 1;       // remaining quantity
+  newItem.item_total_price = +totalPrice;
+
+  // Update original item
+  this.totalCartDetails[index].dish_quantity = 1;    // always 1
+  this.totalCartDetails[index].item_total_price = +totalPrice;
+
+  // Insert split item after original
+  this.totalCartDetails.splice(index + 1, 0, newItem);
+
+  // Update cartItems array
+  this.cartItems = [
+    ...this.cartItems.filter((c) => c.unique_key !== item.unique_key),
+    this.totalCartDetails[index],
+    newItem,
+  ];
+
+  // Force UI refresh
+  this.totalCartDetails = [...this.totalCartDetails];
 }
 
 }

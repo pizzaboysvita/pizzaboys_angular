@@ -357,9 +357,9 @@
                           '#comboInnerAccordion-' + comboIndex
                         ">
                         <div class="accordion-body">
-                          {{ dishOption.type }}
+                          <!-- {{ dishOption.type }} -->
                           <!-- Radio group -->
-                          <ng-container *ngIf="dishOption.type === 'Radio'">
+                           <!-- <ng-container *ngIf="dishOption.type === 'Radio'">
                             <div *ngFor="let option of dishOption.option_set_array" class="option-row">
                               <span>
                                 {{ option.name }} (<b>${{ option.price | number : "1.2-2" }}</b>)
@@ -374,7 +374,35 @@
                                   )
                                 " [checked]="option.selected" />
                             </div>
-                          </ng-container>
+                          </ng-container> -->
+                  <ng-container *ngIf="dishOption.type === 'Radio'">
+                    <ng-container *ngFor="let option of dishOption.option_set_array">
+                      <div
+                        class="option-row"
+                        *ngIf="shouldShowOption(option, combo_dish.baseType)"
+                      >
+                        <span>
+                          {{ option.name }}
+                          (<b>${{ option.price | number : '1.2-2' }}</b>)
+                        </span>
+
+                        <input
+                          type="radio"
+                          class="custom-radio"
+                          [name]="dishOption.title + '_' + comboIndex"
+                          (change)="
+                            combo_selectRadio(
+                              option,
+                              dishOption,
+                              comboIndex,
+                              selectedDishFromList
+                            )
+                          "
+                          [checked]="option.selected"
+                        />
+                      </div>
+                    </ng-container>
+                  </ng-container>
 
                           <!-- Counter group -->
                           <ng-container *ngIf="dishOption.type === 'Counter'">
@@ -441,7 +469,7 @@
 
                     <!-- Ingredients Accordion -->
                     @if
-                    (selectedChildPerCombo[comboIndex].dish_ingredient_array.length
+                    (selectedChildPerCombo[comboIndex]?.dish_ingredient_array?.length
                     > 0) {
                     <div class="accordion-item">
                       <h2 class="accordion-header" [id]="'heading-ingredients-' + comboIndex">
@@ -468,10 +496,10 @@
                         ">
                         <div class="accordion-body">
                           @for (comboIngredients of
-                          selectedChildPerCombo[comboIndex].dish_ingredient_array;
+                          selectedChildPerCombo[comboIndex]?.dish_ingredient_array ??[];
                           track $index) {
                           <div class="option-row d-flex justify-content-between align-items-center">
-                            <span>{{ comboIngredients.name }}</span>
+                            <span style="font-size: 14px; color: #000">{{ comboIngredients.name }}</span>
                             <label class="custom-checkbox mb-0">
                               <input type="checkbox" [checked]="comboIngredients.selected"
                                 (change)="toggleCheckbox(comboIngredients)" />
