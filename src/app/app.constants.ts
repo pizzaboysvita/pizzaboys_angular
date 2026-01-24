@@ -16,5 +16,6 @@ export const AppConstants = {
        dishV2:'/api/dishV2',
        orderList:'/api/order',
        inventory:'/api/settings/inventory',
+       cashflow:"/api/cashflow"
     }
     }

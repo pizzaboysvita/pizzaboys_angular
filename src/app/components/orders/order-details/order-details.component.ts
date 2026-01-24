@@ -825,6 +825,8 @@ getBaseType(cartItem: any): number {
               this.toastr.success(res.message, "Success");
               this.clearOrderDetails();
               this.customer = { name: "", email: "", phone: "" };
+              this.orderForm.value.orderType === 'PICKUP'
+              this.deliveryfee=5.9
               this.cdr.detectChanges();
             } else {
               this.toastr.error(res?.message || "Order failed", "Error");
@@ -927,12 +929,26 @@ getBaseType(cartItem: any): number {
       this.orderdueForm.value.orderDue === "ASAP"
         ? this.orderdueForm.value.orderDue
         : this.orderdueForm.value.orderDateTime;
+    this.showOrderDuePopup = false;
+    this.showNewModelPopup = false;
+    this.selectedScheduleItem=null
+    this.pendingCartItem=null
+    console.log("asdasd");
+    
+  }
+  submitLatDUeOrder(){
+     if (this.orderdueForm.invalid || this.dateError) return;
+    this.orderDueDetails =
+      this.orderdueForm.value.orderDue === "ASAP"
+        ? this.orderdueForm.value.orderDue
+        : this.orderdueForm.value.orderDateTime;
          this.skipAvailabilityCheck = true;
     this.addToCart(this.pendingCartItem)
     this.showOrderDuePopup = false;
     this.showNewModelPopup = false;
     this.selectedScheduleItem=null
     this.pendingCartItem=null
+    console.log("asdasd");
   }
   closeCustomerModal() {
     this.showCustomerModal = false;
