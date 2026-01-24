@@ -199,7 +199,7 @@ export class MediaComponent implements OnInit {
             (c: any) => c.name === ing.name
           );
           if (sel) {
-            ing.selected = true;
+            ing.selected = false;
             ing.quantity = sel.quantity ?? 1;
           }
         });
@@ -276,19 +276,38 @@ export class MediaComponent implements OnInit {
       }
 
       // PATCH INGREDIENTS
-      if (child.dish_ingredient_array) {
-        convertedChild.dish_ingredient_array.forEach(
-          (ing: { name: any; selected: boolean; quantity: any }) => {
-            const selIng = child.dish_ingredient_array.find(
-              (i: { name: any }) => i.name === ing.name
-            );
-            if (selIng) {
-              ing.selected = true;
-              ing.quantity = selIng.quantity;
-            }
+         const ingredientsGroup = child.combo_option_selected_array.find(
+        (s: any) => s.dish_opt_type === "Ingredients"
+      );
+
+      if (
+        ingredientsGroup &&
+        Array.isArray(ingredientsGroup.choose_option) &&
+        Array.isArray(convertedChild.dish_ingredient_array)
+      ) {
+        convertedChild.dish_ingredient_array.forEach((ing: any) => {
+          const sel = ingredientsGroup.choose_option.find(
+            (c: any) => c.name === ing.name
+          );
+          if (sel) {
+            ing.selected = false;
+            ing.quantity = sel.quantity ?? 1;
           }
-        );
+        });
       }
+      // if (child.dish_ingredient_array) {
+      //   convertedChild.dish_ingredient_array.forEach(
+      //     (ing: { name: any; selected: boolean; quantity: any }) => {
+      //       const selIng = child.dish_ingredient_array.find(
+      //         (i: { name: any }) => i.name === ing.name
+      //       );
+      //       if (selIng) {
+      //         ing.selected = true;
+      //         ing.quantity = selIng.quantity;
+      //       }
+      //     }
+      //   );
+      // }
 
       convertedMain.comboDishList[i] = convertedChild;
     }
@@ -810,7 +829,7 @@ hasUnselectedComboRadioOption(): boolean {
             })
           );
           const ingredients = (child.dish_ingredient_array || [])
-            .filter((ig: any) => ig.selected)
+            .filter((ig: any) => !ig.selected)
             .map((ig: any) => ({
               name: ig.name,
               price: ig.price ?? 0,
@@ -883,4 +902,16 @@ hasUnselectedComboRadioOption(): boolean {
     this.showPopup = true;
     this.cdr.detectChanges();
   }
+  shouldShowOption(option: any, baseType: number): boolean {
+  if (baseType === 1) {
+    return option.name === 'Small';
+  }
+
+  if (baseType === 2) {
+    return option.name !== 'Small';
+  }
+
+  return true;
+}
+
 }

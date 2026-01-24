@@ -1,5 +1,5 @@
-<div class="modal-content">
 
+<div class="modal-content modal-lg">
   <!-- Header -->
   <div class="modal-header border-bottom pb-2 flex-column align-items-start">
     <h5 class="modal-title fw-bold">Float Adjustments</h5>
@@ -27,7 +27,6 @@
 
   <!-- Body -->
   <div class="modal-body">
-
     <!-- CREATE TAB -->
     <div *ngIf="activeTab === 'create'">
       <form [formGroup]="paymentForm">
@@ -37,18 +36,45 @@
         </div>
 
         <div class="form-group mb-3">
-          <select class="form-select" formControlName="source"
-                  (change)="updateDestinationOptions()">
-            <option value="" disabled>Select Source Cash Account</option>
-            <option *ngFor="let s of sourceOptions" [value]="s">{{ s }}</option>
-          </select>
-        </div>
+   <ng-select
+  [items]="sourceOptions"
+  bindLabel="label"
+  bindValue="value"
+  placeholder="Select Source Cash Account"
+  formControlName="source"
+  [searchable]="false"
+  (change)="updateDestinationOptions()">
 
+</ng-select>
+
+  <!-- <select class="form-select"
+          formControlName="source"
+          (change)="updateDestinationOptions()">
+
+    <option value="">Select Source Cash Account</option>
+
+    <option *ngFor="let s of sourceOptions"
+            [value]="s.value">
+      {{ s.label }}
+    </option>
+
+  </select> -->
+</div>
         <div class="form-group mb-3">
-          <select class="form-select" formControlName="destination">
-            <option value="" disabled>Select Destination Cash Account</option>
-            <option *ngFor="let d of destinationOptions" [value]="d">{{ d }}</option>
-          </select>
+          <!-- <select class="form-select" formControlName="destination">
+            <option value="">Select Destination Cash Account</option>
+            <option *ngFor="let d of destinationOptions" [value]="d.value">{{ d.label }}</option>
+          </select> -->
+          <ng-select
+  [items]="destinationOptions"
+  bindLabel="label"
+  bindValue="value"
+  placeholder="Select Destination Cash Account"
+  formControlName="destination"
+  [searchable]="false">
+
+</ng-select>
+
         </div>
 
         <div class="form-group mb-3">
@@ -57,10 +83,24 @@
 
       </form>
     </div>
-
     <!-- HISTORY TAB -->
     <div *ngIf="activeTab === 'history'" class="text-center py-4 text-muted">
-      No adjustment made this session
+      <!-- <ag-grid-angular
+  class="ag-theme-alpine"
+  style="width: 100%; height: 400px"
+  [rowData]="rowData"
+  [columnDefs]="columnDefs"
+  [defaultColDef]="defaultColDef"
+>
+</ag-grid-angular> -->
+<ag-grid-angular
+  class="ag-theme-alpine"
+  style="width: 100%; height: 300px"
+  [rowData]="rowData"
+  [columnDefs]="columnDefs"
+  [defaultColDef]="defaultColDef"></ag-grid-angular>
+
+      <!-- No adjustment made this session -->
     </div>
 
   </div>
@@ -68,7 +108,7 @@
   <!-- Footer -->
   <div class="modal-footer border-0">
     <button class="btn btn-light px-4">Cancel</button>
-    <button class="btn btn-dark px-4">Create</button>
+    <button class="btn btn-dark px-4" (click)="createCashflow()">Create</button>
   </div>
 
 </div>

@@ -181,6 +181,14 @@
                     (click)="removeItems(item)"
                     style="cursor: pointer"
                   ></i>
+                    <i
+    *ngIf="item.dish_quantity >= 2"
+    class="ri-split-cells-horizontal text-warning fs-5"
+    (click)="splitItem(item)"
+    style="cursor: pointer"
+    title="Split item"
+  ></i>
+
                 </div>
               </div>
             </div>
@@ -457,7 +465,7 @@
           class="btn fw-bold text-white"
           style="background: #f44336; margin-left: 30%"
           [disabled]="dateError || orderdueForm.invalid"
-          (click)="submitDUeOrder()"
+          (click)="submitLatDUeOrder()"
         >
           Submit
         </button>

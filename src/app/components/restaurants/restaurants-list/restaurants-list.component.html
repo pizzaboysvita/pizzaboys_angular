@@ -96,6 +96,7 @@
 
           <ag-grid-angular class="ag-theme-alpine font-family" style="width: 100%;" [columnDefs]="columnDefs"
             [rowData]="storeList" [domLayout]="'autoHeight'" [pagination]="true" [paginationPageSize]="10"
+            [paginationPageSizeSelector]="[10, 20, 50, 100]"
             [gridOptions]="gridOptions" [suppressColumnVirtualisation]="true"
             [defaultColDef]="{ flex: 1, minWidth: 100, sortable: true }" (cellClicked)="onCellClicked($event)">
           </ag-grid-angular>
