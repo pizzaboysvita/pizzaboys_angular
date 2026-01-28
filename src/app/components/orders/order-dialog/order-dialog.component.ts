@@ -278,6 +278,24 @@ closeOrdersModal(){
     const stepIndex = this.statuses.indexOf(step);
     return stepIndex <= currentIndex ? "progtrckr-done" : "progtrckr-todo";
   }
+
+  get orderAddress(): string {
+    // Delivery address priority
+    if (this.data?.delivery_address) {
+      return this.data.delivery_address;
+    }
+
+    // If address is split into fields
+    const parts = [
+      this.data?.address_line1,
+      this.data?.address_line2,
+      this.data?.city,
+      this.data?.state,
+      this.data?.pincode,
+    ].filter(Boolean);
+
+    return parts.length ? parts.join(", ") : "--";
+  }
 }
 
 /** small utility outside the class to safely parse possible JSON strings */

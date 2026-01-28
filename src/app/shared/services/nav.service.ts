@@ -293,7 +293,14 @@ export class NavService {
       type: "link",
       active: false,
     },
-
+ {
+      level: 1,
+      title: "Media",
+      path: "/media",
+      icon: "ri-store-3-line",
+      type: "link",
+      active: false,
+    },
     // {
     //   level: 1,
     //   title: "Setting",

@@ -102,6 +102,10 @@
                         <p>Due:</p>
                         <span>{{ data.order_due_datetime | date : "medium" }}</span>
                     </div>
+                    <div class="row-info" *ngIf="data.order_type === 2">
+                        <p>Address:</p>
+                        <span>{{ orderAddress }}</span>
+                    </div>
                     <div *ngIf="data.name" class="row-info">
                         <p>Name:</p>
                         <span>{{ data.name }}</span>
