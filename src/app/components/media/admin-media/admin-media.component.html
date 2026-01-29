@@ -1,0 +1,113 @@
+<div class="accordion" id="accordionExample">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingOne">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+        aria-expanded="true" aria-controls="collapseOne">
+        <strong>Search Criteria </strong>
+      </button>
+    </h2>
+    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+      data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        <form [formGroup]="adminMediaForm">
+          <div class="row">
+
+
+
+            <div class="col-xl-3">
+              <div class="media-cell">
+                <h6 class="fw-bold">Store ID *</h6>
+
+                <ng-select [items]="storesList" bindLabel="store_name" bindValue="store_id" placeholder="Select Store"
+                  formControlName="store_id">
+                </ng-select>
+
+                <div *ngIf="adminMediaForm.get('store_id')?.touched &&
+             adminMediaForm.get('store_id')?.invalid" class="text-danger">
+                  Store ID is required
+                </div>
+              </div>
+            </div>
+            <div class="row align-items-end">
+              <div class="d-flex gap-2 align-items-end h-100">
+                <button class="btn btn-animation save-button" type="button" (click)="search()">
+                  <i class="ri-search-line"></i>&nbsp; Search
+                </button>
+
+                <button class="btn btn-animation reset-button" type="button" (click)="reset()">
+                  <i class="ri-loop-right-line"></i>&nbsp; Reset
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<br />
+
+<div class="row">
+  <div class="col-sm-12">
+    <app-card [cardClass]="'card-table'" [body]="true">
+      <div class="title-header option-title d-sm-flex d-block" body>
+        <h5>Media</h5>
+        <div class="right-options">
+          <ul>
+            <li>
+              <span style="font-size: 14px; color: #787c8b; font-weight: 600">No.of.Records:{{ this.staff_list?.length
+                || 0
+                }}</span>
+            </li>
+            <li>
+              <a class="export-btn" (click)="openNew($event)">
+                <i class="ri-add-box-fill"></i> Add New
+              </a>
+            </li>
+
+          </ul>
+        </div>
+      </div>
+      <div body>
+        <div style="overflow: auto">
+          <ag-grid-angular class="ag-theme-alpine font-family my-grid" style="width: 100%" [columnDefs]="tableConfig"
+            [rowData]="staff_list" [domLayout]="'autoHeight'" [pagination]="true" [paginationPageSize]="10"
+            [gridOptions]="gridOptions" [suppressColumnVirtualisation]="true" (cellClicked)="onCellClicked($event)"
+            [defaultColDef]="{ flex: 1, minWidth: 100, sortable: true }">
+          </ag-grid-angular>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>
+
+<ng-template #confirmModal let-modal>
+  <div class="modal-content">
+    <div class="modal-header d-block text-center">
+      <h5 class="modal-title w-100" style="font-size: 20px; font-weight: 600">
+        Confirm Staff Deletion
+      </h5>
+      <button type="button" class="btn-close" (click)="modal.dismiss()">
+        <!-- <i class="fa fa-times"></i> -->
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="text-center">
+        <span style="font-size: 16px">
+          Are you sure you want to delete this staff member?
+        </span>
+        <span class="text-danger fw-bold">This action cannot be undone.</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-sm fw-bold btn-animation" (click)="modal.dismiss()">
+        No
+      </button>
+      <button type="button" class="btn btn-sm fw-bold btn-animation" (click)="onConfirm(modal)">
+        Yes
+      </button>
+    </div>
+  </div>
+</ng-template>
