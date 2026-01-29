@@ -45,7 +45,7 @@
           <i class="ri-user-line"></i>
         </div>
         <div class="col icon-box">
-          <i class="ri-price-tag-line" (click)="openmodal()"></i>
+          <i class="ri-price-tag-line" (click)="openModifyPrice()"></i>
         </div>
         <div class="col icon-box" (click)="openholdModal()">
           <i class="ri-hand"></i>
@@ -576,7 +576,7 @@
           Stash the order away to be retrieved later
         </p>
 
-        <input type="text" class="form-control hold-input" placeholder="Note" />
+        <input type="text"  [(ngModel)]="holdNote" class="form-control hold-input" placeholder="Note" />
       </div>
 
       <!-- Footer -->
@@ -586,10 +586,36 @@
           CANCEL
         </button>
         <!-- <button class="btn hold-proceed" >PROCEED</button> -->
-        <button class="btn fw-bold text-white" style="background: #f44336">
+        <button class="btn fw-bold text-white" (click)="proceedHoldOrder()" style="background: #f44336">
           PROCEED
         </button>
       </div>
+      <hr class="my-0" />
+
+<div class="px-3 pb-3" *ngIf="heldOrders.length">
+
+  <div
+    class="held-order-row"
+    *ngFor="let order of heldOrders; let i = index"
+  >
+    <div class="d-flex justify-content-between align-items-start">
+      <div (click)="restoreHoldOrder(order,i)" class="cursor-pointer">
+        <div class="fw-bold">{{ order.note || 'No Note' }}</div>
+        <div class="text-muted small">
+          {{ order.createdAt | date:'dd/MM, hh:mm a' }}
+          | {{ order.items.length }} items
+        </div>
+      </div>
+
+      <i
+        class="ri-delete-bin-line text-muted cursor-pointer fs-16"
+        (click)="deleteHoldOrder(order)"
+      ></i>
+    </div>
+  </div>
+
+</div>
+
     </div>
   </div>
 </div>
@@ -614,7 +640,7 @@
 
       <!-- TABS -->
       <div class="modify-tabs d-flex">
-        <button
+        <!-- <button
           class="tab-btn"
           [class.active]="paymentTab === 'specific'"
           (click)="paymentTab = 'specific'"
@@ -636,9 +662,27 @@
           (click)="paymentTab = 'surcharge'"
         >
           SURCHARGE
-        </button>
+        </button> -->
+<button class="tab-btn"
+  [class.active]="paymentTab === 'specific'"
+  (click)="onTabChange('specific')">
+  SPECIFIC
+</button>
+
+<button class="tab-btn"
+  [class.active]="paymentTab === 'discount'"
+  (click)="onTabChange('discount')">
+  DISCOUNT
+</button>
+
+<button class="tab-btn"
+  [class.active]="paymentTab === 'surcharge'"
+  (click)="onTabChange('surcharge')">
+  SURCHARGE
+</button>
 
         <button
+        *ngIf="paymentTab !== 'specific'"
           class="symbol-btn"
           [class.active]="typeTab === '$'"
           (click)="typeTab = '$'"
@@ -647,6 +691,7 @@
         </button>
 
         <button
+        *ngIf="paymentTab !== 'specific'"
           class="symbol-btn"
           [class.active]="typeTab === '%'"
           (click)="typeTab = '%'"
@@ -673,24 +718,33 @@
 
       <!-- SUMMARY -->
       <div class="summary-box">
-        <div class="row summary-row">
-          <div class="col">Base Price</div>
-          <div class="col text-end">$0.00</div>
-        </div>
+                
+      <div class="summary-row row">
+  <div class="col">Base Price</div>
+  <div class="col text-end">${{ baseTotal.toFixed(2) }}</div>
+</div>
 
-        <div class="row summary-row">
-          <div class="col">New Price</div>
-          <div class="col text-end">$0.00</div>
-        </div>
-
+<div class="summary-row row" *ngIf="paymentTab === 'discount'">
+  <div class="col">Discount</div>
+  <div class="col text-end text-danger">
+    -${{ discountAmount.toFixed(2) }}
+  </div>
+</div>
         <div class="row summary-row">
           <div class="col">Surcharge</div>
           <div class="col text-end">$0.00</div>
         </div>
+<div class="summary-row row fw-bold">
+  <div class="col">New Price</div>
+  <div class="col text-end">
+    ${{ (baseTotal - discountAmount).toFixed(2) }}
+  </div>
+</div>
       </div>
 
+
       <!-- APPLY BUTTON -->
-      <button class="apply-btn w-100">APPLY</button>
+      <button class="apply-btn w-100" (click)="applyModifyPrice()">APPLY</button>
     </div>
   </div>
 </div>

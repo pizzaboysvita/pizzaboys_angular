@@ -117,6 +117,11 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   selectedScheduleItem: any;
   skipAvailabilityCheck: boolean;
   pendingCartItem: any;
+  baseTotal = 0;        // original total
+  discountValue = 0;   // entered value (number)
+  discountAmount = 0;  // calculated amount
+  isDiscountApplied = false;
+  surchargeAmount: number;
 
   constructor(
     private apiService: ApisService,
@@ -396,13 +401,19 @@ removeItems(item: any) {
   get tax(): number {
     return +(this.subtotal * 0.1).toFixed(2);
   }
-  get total(): number {
-    const fee =
-      this.orderForm.value.orderType === "delivery" ? this.deliveryfee : 0;
-    // return this.subtotal + this.tax + fee;
-     return this.subtotal + fee;
+  // get total(): number {
+  //   const fee =
+  //     this.orderForm.value.orderType === "delivery" ? this.deliveryfee : 0;
+  //   // return this.subtotal + this.tax + fee;
+  //    return this.subtotal + fee;
 
-  }
+  // }
+  get total(): number {
+  const fee =
+    this.orderForm.value.orderType === 'delivery' ? this.deliveryfee : 0;
+
+  return this.subtotal + fee - this.discountAmount;
+}
   getComboItems(cartItems: any){
     console.log(cartItems);
     
@@ -963,19 +974,18 @@ getBaseType(cartItem: any): number {
     console.log("PARENT RECEIVED EVENT:", event);
   }
   openholdModal() {
+  const stored = localStorage.getItem('heldOrders');
+  this.heldOrders = stored ? JSON.parse(stored) : [];
     this.Openmodal = true;
   }
-  openmodal() {
+ 
+openModifyPrice() {
     this.cashCount = true;
-  }
-
-  paymentTab = "discount";
-  typeTab = "%";
-  modifyValue = "0";
-  onKey(key: string) {
-    if (this.modifyValue === "0") this.modifyValue = "";
-    this.modifyValue += key;
-  }
+  this.baseTotal = this.total; // store original
+  this.modifyValue = '';
+  this.discountAmount = 0;
+  this.isDiscountApplied = false;
+}
   isDishAvailableToday(item: any): boolean {
   if (!item?.applicable_hours) {
     // no restriction → available all days
@@ -1216,5 +1226,132 @@ splitItem(item: any) {
   this.totalCartDetails = [...this.totalCartDetails];
   this.cartItems = [...this.cartItems];
 }
+holdNote: string = '';
+heldOrders: any[] = [];
+
+proceedHoldOrder() {
+  if (!this.cartItems.length) return;
+
+  const holdOrder = {
+    holdId: Date.now(), // unique
+    note: this.holdNote || '',
+    items: [...this.cartItems], // clone cart
+    createdAt: new Date().toISOString()
+  };
+
+  // 🔹 Get existing held orders
+  // const stored = localStorage.getItem('heldOrders');
+  // this.heldOrders = stored ? JSON.parse(stored) : [];
+
+  // 🔹 Add new hold order
+  this.heldOrders.push(holdOrder);
+  // 🔹 Save back to storage
+  localStorage.setItem('heldOrders', JSON.stringify(this.heldOrders));
+  // 🔹 CLEAR CART
+  this.cartItems = [];
+  this.totalCartDetails=[]
+  // localStorage.removeItem('cartItems'); // if cart stored
+  // 🔹 Reset note & close modal
+  this.holdNote = '';
+  this.Openmodal = false
+  // this.closeHoldModal();
+}
+deleteHoldOrder(index: number) {
+  this.heldOrders.splice(index, 1);
+  // update storage
+  localStorage.setItem('holdOrders', JSON.stringify(this.heldOrders));
+}
+restoreHoldOrder(order: any, index: number) {
+  // 1️⃣ Restore items
+  order.items.forEach((item: any) => {
+    this.cartItems.push({
+      ...item,
+      unique_key: item.unique_key || `${item.dish_id}_${Date.now()}`
+    });
+  });
+
+  // 2️⃣ Refresh cart
+  this.cartItems = [...this.cartItems];
+  this.totalCartDetails = this.cartItems;
+  this.rebuildCartView();
+  this.getComboItems(this.cartItems);
+
+  // 3️⃣ Remove by index ✅
+  this.heldOrders.splice(index, 1);
+
+  // 4️⃣ Sync localStorage (SAME KEY!)
+  localStorage.setItem('heldOrders', JSON.stringify(this.heldOrders));
+
+  // 5️⃣ Close modal
+  this.Openmodal = false;
+}
+onTabChange(tab: 'specific' | 'discount' | 'surcharge') {
+  this.paymentTab = tab;
+
+  // reset input
+  this.modifyValue = '';
+
+  if (tab === 'specific') {
+    this.typeTab = '$'; // force amount
+    this.discountAmount = 0;
+    this.surchargeAmount = 0;
+  }
+}
+
+applyModifyPrice() {
+  // if (this.paymentTab === 'discount') {
+  //   this.total = +(this.baseTotal - this.discountAmount).toFixed(2);
+  //   this.isDiscountApplied = true;
+  // }
+
+  this.cashCount = false;
+}
+paymentTab = "discount";
+  typeTab = "%";
+  modifyValue = "0";
+  // onKey(key: string) {
+  //   if (this.modifyValue === "0") this.modifyValue = "";
+  //   this.modifyValue += key;
+  // }
+onKey(n: string) {
+  if (this.modifyValue === "0") this.modifyValue = "";
+    
+  this.modifyValue += n;
+  this.modifyValue += n;
+
+  if (this.paymentTab === 'discount') {
+    this.calculateDiscount();
+  }
+
+  if (this.paymentTab === 'specific') {
+    this.calculateSpecific();
+  }
+}
+
+// specificAmount = 0;
+
+calculateSpecific() {
+  const value = Number(this.modifyValue || 0);
+
+  this.discountAmount = value;
+
+  if (this.discountAmount < 0) this.discountAmount = 0;
+}
+
+calculateDiscount() {
+  const value = Number(this.modifyValue || 0);
+
+  if (this.typeTab === '%') {
+    this.discountAmount = +(this.subtotal * value / 100).toFixed(2);
+  } else {
+    this.discountAmount = +value.toFixed(2);
+  }
+
+  // safety
+  if (this.discountAmount > this.subtotal) {
+    this.discountAmount = this.subtotal;
+  }
+}
+
 
 }
