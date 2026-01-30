@@ -11,35 +11,33 @@
       <div class="accordion-body">
         <form [formGroup]="adminMediaForm">
           <div class="row">
+            <div class="d-flex gap-3 ">
+              <div class="col-xl-3">
+                <div class="media-cell mt-1">
+                  <h6 class="fw-bold">Store ID *</h6>
 
+                  <ng-select [items]="storesList" bindLabel="store_name" bindValue="store_id" formControlName="store_id"
+                    [clearable]="true" [searchable]="false">
+                  </ng-select>
 
-
-            <div class="col-xl-3">
-              <div class="media-cell">
-                <h6 class="fw-bold">Store ID *</h6>
-
-                <ng-select [items]="storesList" bindLabel="store_name" bindValue="store_id" placeholder="Select Store"
-                  formControlName="store_id">
-                </ng-select>
-
-                <div *ngIf="adminMediaForm.get('store_id')?.touched &&
+                  <div *ngIf="adminMediaForm.get('store_id')?.touched &&
              adminMediaForm.get('store_id')?.invalid" class="text-danger">
-                  Store ID is required
+                    Store ID is required
+                  </div>
+                </div>
+              </div>
+              <div class="row align-items-end">
+                <div class="d-flex gap-3 align-items-end h-100">
+                  <button class="btn btn-animation save-button" type="button" (click)="search()">
+                    <i class="ri-search-line"></i>&nbsp; Search
+                  </button>
+
+                  <button class="btn btn-animation reset-button" type="button" (click)="reset()">
+                    <i class="ri-loop-right-line"></i>&nbsp; Reset
+                  </button>
                 </div>
               </div>
             </div>
-            <div class="row align-items-end">
-              <div class="d-flex gap-2 align-items-end h-100">
-                <button class="btn btn-animation save-button" type="button" (click)="search()">
-                  <i class="ri-search-line"></i>&nbsp; Search
-                </button>
-
-                <button class="btn btn-animation reset-button" type="button" (click)="reset()">
-                  <i class="ri-loop-right-line"></i>&nbsp; Reset
-                </button>
-              </div>
-            </div>
-
           </div>
         </form>
       </div>
@@ -87,7 +85,7 @@
   <div class="modal-content">
     <div class="modal-header d-block text-center">
       <h5 class="modal-title w-100" style="font-size: 20px; font-weight: 600">
-        Confirm Staff Deletion
+        Confirm Media Deletion
       </h5>
       <button type="button" class="btn-close" (click)="modal.dismiss()">
         <!-- <i class="fa fa-times"></i> -->
@@ -96,7 +94,7 @@
     <div class="modal-body">
       <div class="text-center">
         <span style="font-size: 16px">
-          Are you sure you want to delete this staff member?
+          Are you sure you want to delete this media item?
         </span>
         <span class="text-danger fw-bold">This action cannot be undone.</span>
       </div>
