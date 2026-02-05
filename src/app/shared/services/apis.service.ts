@@ -165,6 +165,7 @@ export class ApisService {
       const filteredDishes = dishes
         .filter((d) => d.dish_category_id === category.id)
         .map((dish) => {
+          dish.category_name=category?.name
           // Initialize option set array
           dish.dish_ingredient_array = JSON.parse(dish.dish_ingredients_json);
           let dish_option_set_array = [];
@@ -283,9 +284,9 @@ export class ApisService {
       typeof fullcomboDetails.comboDishList === "object"
     ) {
       grandTotal = Object.values(fullcomboDetails.comboDishList)
-        .flatMap((dish: any) => dish.dish_option_set_array)
-        .flatMap((optSet: any) => optSet.option_set_array)
-        .filter((option: any) => option.selected === true)
+        .flatMap((dish: any) => dish?.dish_option_set_array)
+        .flatMap((optSet: any) => optSet?.option_set_array)
+        .filter((option: any) => option?.selected === true)
         .reduce((sum: number, option: any) => {
           const price = Number(option.price) || 0;
           const qty = Number(option.quantity) || 0;

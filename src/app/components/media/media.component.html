@@ -52,22 +52,24 @@
 
         <div class="row gx-2 gy-0">
           @for (item of dishList; track item.dish_id) {
-          <div class="col-md-4">
+          <div class="col-md-3">
+                <span class="corner-badge"></span>
+
             <div class="card flex-row align-items-center p-2 shadow-sm h-100"
               style="height: 110px !important; cursor: pointer" (click)="openIngredientsPopup(item)">
-              <img [src]="item.dish_image" alt="{{ item.dish_name }}" class="img-thumbnail me-3" style="
+              <!-- <img [src]="item.dish_image" alt="{{ item.dish_name }}" class="img-thumbnail me-3" style="
                   width: 80px;
                   height: 80px;
                   object-fit: cover;
                   border-radius: 8px;
-                " />
-
+                " /> -->
+<!-- <span class="dish-badge">NEW</span> -->
               <div class="flex-grow-1" (click)="openIngredientsPopup(item)">
                 <h6 class="mb-1">{{ item.dish_name }}</h6>
                 <div class="d-flex justify-content-between align-items-center mb-1">
                   <span class="fw-bold" style="cursor: pointer">${{ item.dish_price }}</span>
                 </div>
-                <div class="d-flex align-items-end gap-1 quantity-controls" style="justify-content: end">
+                <!-- <div class="d-flex align-items-end gap-1 quantity-controls" style="justify-content: end">
                   <button *ngIf="!item.quantity || item.quantity === 0" class="qty-btn">
                     +
                   </button>
@@ -81,7 +83,7 @@
                       +
                     </button>
                   </ng-container>
-                </div>
+                </div> -->
               </div>
             </div>
           </div>
@@ -357,9 +359,9 @@
                           '#comboInnerAccordion-' + comboIndex
                         ">
                         <div class="accordion-body">
-                          {{ dishOption.type }}
+                          <!-- {{ dishOption.type }} -->
                           <!-- Radio group -->
-                          <ng-container *ngIf="dishOption.type === 'Radio'">
+                           <!-- <ng-container *ngIf="dishOption.type === 'Radio'">
                             <div *ngFor="let option of dishOption.option_set_array" class="option-row">
                               <span>
                                 {{ option.name }} (<b>${{ option.price | number : "1.2-2" }}</b>)
@@ -374,7 +376,35 @@
                                   )
                                 " [checked]="option.selected" />
                             </div>
-                          </ng-container>
+                          </ng-container> -->
+                  <ng-container *ngIf="dishOption.type === 'Radio'">
+                    <ng-container *ngFor="let option of dishOption.option_set_array">
+                      <div
+                        class="option-row"
+                        *ngIf="shouldShowOption(option, combo_dish.baseType)"
+                      >
+                        <span>
+                          {{ option.name }}
+                          (<b>${{ option.price | number : '1.2-2' }}</b>)
+                        </span>
+
+                        <input
+                          type="radio"
+                          class="custom-radio"
+                          [name]="dishOption.title + '_' + comboIndex"
+                          (change)="
+                            combo_selectRadio(
+                              option,
+                              dishOption,
+                              comboIndex,
+                              selectedDishFromList
+                            )
+                          "
+                          [checked]="option.selected"
+                        />
+                      </div>
+                    </ng-container>
+                  </ng-container>
 
                           <!-- Counter group -->
                           <ng-container *ngIf="dishOption.type === 'Counter'">
@@ -441,7 +471,7 @@
 
                     <!-- Ingredients Accordion -->
                     @if
-                    (selectedChildPerCombo[comboIndex].dish_ingredient_array.length
+                    (selectedChildPerCombo[comboIndex]?.dish_ingredient_array?.length
                     > 0) {
                     <div class="accordion-item">
                       <h2 class="accordion-header" [id]="'heading-ingredients-' + comboIndex">
@@ -468,10 +498,10 @@
                         ">
                         <div class="accordion-body">
                           @for (comboIngredients of
-                          selectedChildPerCombo[comboIndex].dish_ingredient_array;
+                          selectedChildPerCombo[comboIndex]?.dish_ingredient_array ??[];
                           track $index) {
                           <div class="option-row d-flex justify-content-between align-items-center">
-                            <span>{{ comboIngredients.name }}</span>
+                            <span style="font-size: 14px; color: #000">{{ comboIngredients.name }}</span>
                             <label class="custom-checkbox mb-0">
                               <input type="checkbox" [checked]="comboIngredients.selected"
                                 (change)="toggleCheckbox(comboIngredients)" />
@@ -579,7 +609,7 @@
                     <!-- Radio Options -->
                     <ng-container *ngIf="dish_option.option_type === 'Radio'">
                       <div *ngFor="let option of dish_option.option_set_array" class="option-row">
-                        <span>{{ option.name }} <b>(${{ option.price }}) {{option.selected}}</b></span>
+                        <span>{{ option.name }} <b>(${{ option.price }})</b></span>
                         <input type="radio" class="custom-radio" [name]="dish_option.title" 
                           [checked]="option.selected === true" (change)="selectRadio(dish_option, option)" />
                       </div>
@@ -723,7 +753,7 @@
               <i class="ri-price-tag-3-line"></i>
             </button>
             <button class="btn fw-bold text-white" style="background: #f44336; min-width: 180px"
-              (click)="comboAddItemToCart(selectedDishFromList); closePopup()" [disabled]="hasUnselectedRadioOption()">
+              (click)="comboAddItemToCart(selectedDishFromList); closePopup()" [disabled]="!hasUnselectedComboRadioOption()">
               ADD DISH ( ${{ duplicateDishPrice| number:'1.2-2' }} )
             </button>
           </div>
@@ -765,7 +795,8 @@
         </div>
         }
 
-        <div></div>
+        <div>
+        </div>
       </div>
     </div>
   </div>

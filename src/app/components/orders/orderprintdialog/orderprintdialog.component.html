@@ -51,16 +51,25 @@
         <!-- TOTALS -->
         <div class="summary">
             <div class="line-row"><span>Cart</span><span>{{ data?.total_price | currency:'$' }}</span></div>
-            <div class="dotted"></div>
+            <!-- <div class="dotted"></div>
             <div class="line-row"><span>GST (15%) inc. in price</span><span>{{ data?.gst_price | currency:'$' }}</span>
+            </div> -->
+            <div class="dotted"></div>
+            <div class="line-row" *ngIf="data.delivery_fees"><span>Delivery Fees</span><span>${{ formatPrice(data.delivery_fees) }}</span>
             </div>
             <div class="dotted"></div>
+            <div class="line-row" *ngIf="data.discount_amount"><span>Discount</span><span>-${{ formatPrice(data.discount_amount) }}</span>
+            </div>
+            <!-- <div class="dotted"></div> -->
             <hr class="solid" />
-            <div class="line-row total"><strong>Total</strong><strong>{{ data?.total_price | currency:'$' }}</strong>
+            <div class="line-row total"><strong>Total</strong><strong>${{ formatPrice(data.payment_amount ?? data.total_price) }}</strong>
             </div>
         </div>
+        <div>
+            <p class="thank-you-note">Thank you for your order!</p>
+        </div>
         <!-- Split Payment Section -->
-        <div class="no-print">
+        <!-- <div class="no-print">
             <div *ngIf="paymentDetails?.length">
                 <hr />
                 <button class="btn btn-sm btn-outline-secondary w-100 mt-1" (click)="toggleSplitView()">
@@ -85,7 +94,7 @@
                     </option>
                 </select>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>
 

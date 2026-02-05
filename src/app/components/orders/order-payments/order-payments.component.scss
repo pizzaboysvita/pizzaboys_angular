@@ -277,3 +277,27 @@
     padding: 8px !important;
   }
 }
+.quick-percent {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+}
+
+.quick-percent .btn {
+  display: block;              /* remove flex */
+  padding: 6px 0;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 4px;
+}
+@media (max-width: 768px) {
+  .quick-percent {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .quick-percent {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

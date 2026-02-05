@@ -131,7 +131,7 @@ export class MediaComponent implements OnInit {
     }
   }
 
-  async openEditPopup(item: any) {
+  async openEditPopup(item: any) {    
     this.isEditing = true;
     this.isOptionSelected = true;
     this.selectedChildPerCombo = {};
@@ -199,7 +199,7 @@ export class MediaComponent implements OnInit {
             (c: any) => c.name === ing.name
           );
           if (sel) {
-            ing.selected = true;
+            ing.selected = false;
             ing.quantity = sel.quantity ?? 1;
           }
         });
@@ -212,6 +212,7 @@ export class MediaComponent implements OnInit {
         });
       });
       this.selectedDishFromList = converted;
+      this.selectedDishFromList.dishnote = item.dishnote;
       this.showPopup = true;
       this.patchRadioSelections();
       this.recalculatePriceFromSelections();
@@ -275,19 +276,38 @@ export class MediaComponent implements OnInit {
       }
 
       // PATCH INGREDIENTS
-      if (child.dish_ingredient_array) {
-        convertedChild.dish_ingredient_array.forEach(
-          (ing: { name: any; selected: boolean; quantity: any }) => {
-            const selIng = child.dish_ingredient_array.find(
-              (i: { name: any }) => i.name === ing.name
-            );
-            if (selIng) {
-              ing.selected = true;
-              ing.quantity = selIng.quantity;
-            }
+         const ingredientsGroup = child.combo_option_selected_array.find(
+        (s: any) => s.dish_opt_type === "Ingredients"
+      );
+
+      if (
+        ingredientsGroup &&
+        Array.isArray(ingredientsGroup.choose_option) &&
+        Array.isArray(convertedChild.dish_ingredient_array)
+      ) {
+        convertedChild.dish_ingredient_array.forEach((ing: any) => {
+          const sel = ingredientsGroup.choose_option.find(
+            (c: any) => c.name === ing.name
+          );
+          if (sel) {
+            ing.selected = false;
+            ing.quantity = sel.quantity ?? 1;
           }
-        );
+        });
       }
+      // if (child.dish_ingredient_array) {
+      //   convertedChild.dish_ingredient_array.forEach(
+      //     (ing: { name: any; selected: boolean; quantity: any }) => {
+      //       const selIng = child.dish_ingredient_array.find(
+      //         (i: { name: any }) => i.name === ing.name
+      //       );
+      //       if (selIng) {
+      //         ing.selected = true;
+      //         ing.quantity = selIng.quantity;
+      //       }
+      //     }
+      //   );
+      // }
 
       convertedMain.comboDishList[i] = convertedChild;
     }
@@ -338,8 +358,11 @@ export class MediaComponent implements OnInit {
     this.selectedDishFromList = convertedMain;
     this.selectedDishFromList.duplicate_dish_price =
   this.calculateComboPrice(this.selectedDishFromList);
+  console.log(this.selectedDishFromList);
+  
     this.showPopup = true;
     this.cdr.detectChanges();
+    // dishnote
   }
 
   openIngredientsPopup(item: any) {
@@ -570,7 +593,7 @@ calculateEditComboPrice(combo: any): number {
 
 //   option.quantity = 1;
 
-//   // ✅ ALWAYS calculate from BASE
+//   //  ALWAYS calculate from BASE
 //   const base = Number(this.selectedDishFromList.dish_price);
 //   const radioPrice = Number(option.price);
 
@@ -595,6 +618,21 @@ hasUnselectedRadioOption(): boolean {
       !opt.option_set_array?.some((o: any) => o.selected)
   );
 }
+hasUnselectedComboRadioOption(): boolean {
+  const comboDishList = this.selectedDishFromList?.comboDishList;
+  if (!comboDishList) return false;
+
+  return Object.values(comboDishList).some((combo: any) =>
+    combo.dish_option_set_array?.some(
+      (opt: any) =>
+        opt.option_type === 'Radio' &&
+        opt.option_set_array?.some((o: any) => o.selected === true)
+    )
+  );
+}
+
+
+
 
   toggleCheckbox(option: any) {
     option.selected = !option.selected;
@@ -633,6 +671,8 @@ hasUnselectedRadioOption(): boolean {
   }
 
   addItemToCart(item: any) {
+    console.log(item);
+    
     const cartItem = this.moveSelectedOptionsToMainObject(item);
     this.itemAdded.emit(cartItem);
   }
@@ -789,7 +829,7 @@ hasUnselectedRadioOption(): boolean {
             })
           );
           const ingredients = (child.dish_ingredient_array || [])
-            .filter((ig: any) => ig.selected)
+            .filter((ig: any) => !ig.selected)
             .map((ig: any) => ({
               name: ig.name,
               price: ig.price ?? 0,
@@ -862,4 +902,16 @@ hasUnselectedRadioOption(): boolean {
     this.showPopup = true;
     this.cdr.detectChanges();
   }
+  shouldShowOption(option: any, baseType: number): boolean {
+  if (baseType === 1) {
+    return option.name === 'Small';
+  }
+
+  if (baseType === 2) {
+    return option.name !== 'Small';
+  }
+
+  return true;
+}
+
 }

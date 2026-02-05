@@ -228,9 +228,9 @@ body.modal-open {
 }
 
 /* remove right border for last icon in row */
-.icon-box:nth-child(3n) {
-  border-right: none;
-}
+// .icon-box:nth-child(3n) {
+//   border-right: none;
+// }
 
 /* for tablets and larger */
 @media (min-width: 768px) {
@@ -290,10 +290,10 @@ body.modal-open {
 .tab-btn,
 .symbol-btn {
   flex: 1;
-  padding: 8px 0;
+  padding: 10px 0;
   background: #f8f9fa;
   border: none;
-  border-right: 1px solid #ddd;
+  // border-left: 1px solid #ddd;
   font-size: 12px;
 }
 
@@ -319,11 +319,12 @@ body.modal-open {
 .modify-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  border-bottom: 1px solid #ddd;
+  // border-bottom: 1px solid #ddd;
+  
 }
 
 .grid-btn {
-  padding: 20px 0;
+  padding: 20px 0px;
   border: 1px solid #ddd;
   background: white;
   font-size: 18px;
@@ -344,14 +345,14 @@ body.modal-open {
   padding: 4px 0;
 }
 
-.apply-btn {
-  background: #ff6b00;
-  color: white;
-  padding: 12px;
-  border: none;
-  font-weight: 600;
-  font-size: 15px;
-}
+// .apply-btn {
+//   background: #ff6b00;
+//   color: white;
+//   padding: 12px;
+//   border: none;
+//   font-weight: 600;
+//   font-size: 15px;
+// }
   .qty-btn {
     width: 25px;
     height: 25px;
@@ -379,3 +380,146 @@ body.modal-open {
     text-align: center;
     font-weight: 600;
   }
+  .hold-modal {
+  max-width: 420px;
+}
+
+.hold-input {
+  border-radius: 6px;
+}
+
+.held-order-row {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.held-order-row:last-child {
+  border-bottom: none;
+}
+
+.hold-cancel {
+  color: #f44336;
+  font-weight: 600;
+  background: transparent;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+
+/* MODAL CARD */
+.modify-modal .modal-content {
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* HEADER */
+.modal-header {
+  padding: 14px 18px;
+}
+
+/* TABS */
+.modify-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+  background: #fafafa;
+}
+
+.tab-btn,
+.symbol-btn {
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.tab-btn.active,
+.symbol-btn.active {
+  background: #fff;
+  color: #ff6b00;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.symbol-btn {
+  width: 38px;
+  text-align: center;
+}
+
+/* DISPLAY */
+.modify-display {
+  font-size: 34px;
+  padding: 16px 18px;
+  text-align: right;
+  font-weight: 600;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+/* KEYPAD */
+.modify-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 14px;
+}
+
+.grid-btn {
+  padding: 14px 0;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.grid-btn:active {
+  background: #f2f2f2;
+}
+
+// .clear-btn {
+//   color: #e53935;
+//   font-size: 20px;
+// }
+
+/* SUMMARY */
+.summary-box {
+  margin: 10px 14px;
+  padding: 14px;
+  background: #f9fafb;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+.summary-row {
+  padding: 6px 0;
+}
+
+.summary-row:not(:last-child) {
+  border-bottom: 1px dashed #ddd;
+}
+
+/* APPLY BUTTON */
+.apply-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 12px;
+  background: #ff6b00;
+  color: #fff;
+  border: none;
+  //  width: calc(100% - 28px); /* 👈 fixes right + left */
+}
+.apply-wrapper {
+  padding: 14px;
+}
+.apply-btn:active {
+  transform: scale(0.98);
+}

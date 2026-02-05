@@ -51,15 +51,31 @@
 }
 
 /* ----- HEADER ----- */
+// .pos-header {
+//    background-color: #3c404e !important;
+//    color: white;
+//   height: 56px;
+//   font-size: 1rem;
+//   flex-shrink: 0;
+//   padding: 10px;
+// }
 .pos-header {
-   background-color: #3c404e !important;
-   color: white;
-  height: 56px;
-  font-size: 1rem;
-  flex-shrink: 0;
-  padding: 10px;
+   background-color: black !important;
+    color: #fff;
+    height: 56px;
+    font-size: 1rem;
+    flex-shrink: 0;
+    padding-right: 10px !important;
+    padding-left: 0px !important;
 }
-
+.pos-header-menu {
+    background-color: #3c404e !important;
+    color: #fff;
+    height: 56px;
+    font-size: 1rem;
+    flex-shrink: 0;
+    padding: 10px;
+}
 .pos-logo {
   width: 32px;
   height: 32px;
@@ -109,19 +125,19 @@
 }
 
 .function-item {
-  padding: 5px 10px !important;      /* ⬅️ More padding around each item */
+  padding: 5px 10px !important;      /* ⬅ More padding around each item */
   cursor: pointer;
   color: #333;
   font-size: 15px;
   border-bottom: 1px solid #f1f1f1;
   font-weight: 500;
   letter-spacing: 0.3px;
-  line-height: 1.6;         /* ⬅️ Increases text-to-text spacing */
+  line-height: 1.6;         /* ⬅ Increases text-to-text spacing */
 }
 
 .function-item .function-title {
   display: block;
-  margin-bottom: 4px;       /* ⬅️ Adds small space between title and subtext */
+  margin-bottom: 4px;       /* ⬅ Adds small space between title and subtext */
   font-weight: 600;
 }
 
@@ -138,15 +154,15 @@
 
 /* Compact layout adjustments */
 .function-item, .category-item {
-  padding: 14px 20px;   /* ⬅️ Increased padding (was 10px 15px) */
-color: black;
-  font-size: 13px;         /* ↓ slightly smaller text */
+  padding: 14px 20px;   /*Increased padding (was 10px 15px) */
+   color: black;
+  font-size: 13px;         /*  slightly smaller text */
   line-height: 1.8;        /* tighter spacing */
 }
 .category-item {
-  padding: 5px 18px !important;   /* ⬅️ Increased padding (was 10px 15px) */
+  padding: 5px 18px !important;   /*Increased padding (was 10px 15px) */
   color: black;
-  font-size: 13px;         /* ↓ slightly smaller text */
+  font-size: 13px;         /* slightly smaller text */
   line-height: 1.8;        /* tighter spacing */
 }
 
@@ -207,4 +223,64 @@ color: black;
 .category-item:hover { background-color: #e5e5e6; }
 .category-item.active { background-color: #e5e5e6; }
 // .category-item.active .category-indicator { background-color: #fff; }
+
+/* Sidebar */
+// .pos-sidebar-container {
+//   // position: fixed;
+//   top: 0;
+//   left: 0;
+//   // height: 100vh;
+//   z-index: 1050; // 🔥 ABOVE overlay
+// }
+
+// /* Overlay */
+// .sidebar-overlay {
+//    position: fixed;
+//   top: 0;
+//   left: 0;
+//   // width: 100vw;
+//   // height: 100vh;
+//   background: rgba(0, 0, 0, 0.4);
+//   z-index: 1040; // 🔥 BELOW sidebar
+// }
+// @media (min-width: 769px) {
+//   .sidebar-overlay {
+//     display: none !important;
+//   }
+// }
+/* DEFAULT (Desktop & Tablet) */
+.pos-sidebar-container {
+  position: relative;   // 👈 normal layout
+  z-index: auto;
+}
+
+/* MOBILE ONLY */
+@media (max-width: 768px) {
+  .pos-sidebar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 280px;              // adjust to your sidebar width
+    z-index: 1050;
+    background: #fff;
+    transition: transform 0.3s ease;
+  }
+
+  /* Closed state */
+  .pos-sidebar-container.closed {
+    transform: translateX(-100%);
+  }
+}
+@media (max-width: 768px) {
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 280px;                 // 👈 don’t cover sidebar
+    width: calc(100vw - 280px);
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1040;
+  }
+}
 
