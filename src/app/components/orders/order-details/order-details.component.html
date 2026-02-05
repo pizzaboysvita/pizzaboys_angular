@@ -12,7 +12,7 @@
     <div class="d-flex justify-content-center" style="column-gap: 10px">
       <h5 class="text-dark mt-2 mb-3 fw-bold">Order List</h5>
       <div class="order-icon-row mb-2 gap-1">
-        <i class="ri-shopping-bag-2-line f-16" (click)="orderList()"></i>
+        <i class="ri-shopping-bag-2-line f-16" style="cursor: pointer" (click)="orderList()"></i>
       </div>
     </div>
 
@@ -22,19 +22,29 @@
         type="button"
         class="toggle-btn"
         [class.active]="selected === 'dinein'"
-        (click)="selected = 'dinein'; openNewModelPopup()"
+        (click)="selected = 'dinein'; openNewModelPopup('PICKUP')"
       >
-        {{ orderForm.value.orderType }}
+      PICKUP
+        <!-- {{ orderForm.value.orderType }} -->
       </button>
-
-      <button
+<button
+        type="button"
+        class="toggle-btn"
+        [class.active]="selected === 'dinein'"
+        (click)="selected = 'dinein'; openNewModelPopup('DELIVERY')"
+      >
+      DELIVERY
+        <!-- {{ orderForm.value.orderType }} -->
+      </button>
+      
+      <!-- <button
         type="button"
         class="toggle-btn"
         [class.active]="selected === 'delivery'"
         (click)="selected = 'delivery'; openDeliveryPopup()"
       >
         {{ orderDueDetails }}
-      </button>
+      </button> -->
     </div>
 
     <!-- Icons Row -->
@@ -45,7 +55,7 @@
           <i class="ri-user-line"></i>
         </div>
         <div class="col icon-box">
-          <i class="ri-price-tag-line" (click)="openmodal()"></i>
+          <i class="ri-price-tag-line" (click)="openModifyPrice()"></i>
         </div>
         <div class="col icon-box" (click)="openholdModal()">
           <i class="ri-hand"></i>
@@ -311,6 +321,47 @@
         <span class="text-muted">GST 10%</span>
         <span class="fw-semibold">${{ tax }}</span>
       </div> -->
+      
+@if(discounts.length){
+@for (d of discounts; track d; let i = $index) {
+  <div class="d-flex justify-content-between align-items-center mb-1">
+    <span class="d-flex align-items-center gap-2">
+      <i
+        class="ri-close-circle-line"
+        style="cursor:pointer"
+        (click)="removeDiscount(i)"
+      ></i>
+
+      <span>
+        Discount
+        @if(d.type === '%'){
+          ({{ d.value }}%)
+        }
+      </span>
+    </span>
+
+    <span>- ${{ d.amount.toFixed(2) }}</span>
+  </div>
+}
+}
+@if(surcharges.length){
+  <div *ngFor="let s of surcharges; let i = index"
+       class="d-flex justify-content-between mb-1">
+
+    <span class="d-flex align-items-center gap-2">
+      <i class="ri-close-circle-line"
+         style="cursor:pointer"
+         (click)="removeSurcharge(i)">
+      </i>
+
+      Surcharge ({{ s.value }}{{ s.type }})
+    </span>
+
+    <span>+ ${{ s.amount.toFixed(2) }}</span>
+  </div>
+}
+
+
 
       @if(orderForm.value.orderType === 'delivery'){
       <div class="d-flex justify-content-between mb-2">
@@ -347,19 +398,59 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Order Type</h5>
-        <button class="btn-close" (click)="closeNewModelPopup()"></button>
+        <!-- <button class="btn-close" (click)="closeNewModelPopup()"></button> -->
+         <button class="btn-close" (click)="closeNewModelPopup()"></button>
       </div>
 
       <div class="modal-body">
         <form [formGroup]="orderForm">
-          <div class="mb-3">
+          <!-- <div class="mb-3">
             <label class="form-label">Order Type</label>
             <select class="form-select" formControlName="orderType">
               <option value="pickup">Pick Up</option>
               <option value="delivery">Delivery</option>
             </select>
+          </div> -->
+      <!-- <div class="p-3 border rounded mb-3"> -->
+        <!-- <div class="row g-3"> -->
+         <div  class="mb-3">
+            <!-- <label class="form-label">Name</label> -->
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="customer.name"
+              placeholder="Search Name,Phone Number "
+            />
           </div>
 
+          <div  class="mb-3">
+            <label class="form-label">Name</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="customer.name"
+            />
+          </div>
+
+          <div  class="mb-3">
+            <label class="form-label">Email</label>
+            <input
+              type="email"
+              class="form-control"
+              [(ngModel)]="customer.email"
+            />
+          </div>
+
+          <div  class="mb-3">
+            <label class="form-label">Phone</label>
+            <input
+              type="tel"
+              class="form-control"
+              [(ngModel)]="customer.phone"
+            />
+          </div>
+        <!-- </div>
+      </div> -->
           <div
             class="mb-3"
             *ngIf="orderForm.get('orderType')?.value === 'delivery'"
@@ -402,8 +493,29 @@
                 formControlName="deliveryNote"
               />
             </div>
+
+          </div>
+            <div class="mb-3">
+            <label class="form-label">Order Due</label>
+            <select class="form-select" formControlName="orderDue">
+              <option value="ASAP">ASAP</option>
+              <option value="Later">Later</option>
+            </select>
           </div>
 
+          <div class="mb-3" *ngIf="orderForm.value.orderDue == 'Later'">
+            <label class="form-label">Date and Time</label>
+          <input
+            type="datetime-local"
+            class="form-control"
+            formControlName="orderDateTime"
+            (change)="validateApplicableDay($event)"
+          />
+
+          <div class="text-danger mt-1" *ngIf="dateError">
+            This item is available only on selected days.
+          </div>
+          </div>
           <button
             type="button"
             class="btn fw-bold text-white"
@@ -419,7 +531,7 @@
 </div>
 
 <!-- Order Due Modal -->
-<div
+<!-- <div
   class="modal fade"
   tabindex="-1"
   [ngClass]="{ 'show d-block': showOrderDuePopup }"
@@ -472,7 +584,7 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
 
 <!-- Customer Modal -->
 <div
@@ -576,7 +688,7 @@
           Stash the order away to be retrieved later
         </p>
 
-        <input type="text" class="form-control hold-input" placeholder="Note" />
+        <input type="text"  [(ngModel)]="holdNote" class="form-control hold-input" placeholder="Note" />
       </div>
 
       <!-- Footer -->
@@ -586,10 +698,36 @@
           CANCEL
         </button>
         <!-- <button class="btn hold-proceed" >PROCEED</button> -->
-        <button class="btn fw-bold text-white" style="background: #f44336">
+        <button class="btn fw-bold text-white" (click)="proceedHoldOrder()" style="background: #f44336">
           PROCEED
         </button>
       </div>
+      <hr class="my-0" />
+
+<div class="px-3 pb-3" *ngIf="heldOrders.length">
+
+  <div
+    class="held-order-row"
+    *ngFor="let order of heldOrders; let i = index"
+  >
+    <div class="d-flex justify-content-between align-items-start">
+      <div (click)="restoreHoldOrder(order,i)" class="cursor-pointer">
+        <div class="fw-bold">{{ order.note || 'No Note' }}</div>
+        <div class="text-muted small">
+          {{ order.createdAt | date:'dd/MM, hh:mm a' }}
+          | {{ order.items.length }} items
+        </div>
+      </div>
+
+      <i
+        class="ri-delete-bin-line text-muted cursor-pointer fs-16"
+        (click)="deleteHoldOrder(order)"
+      ></i>
+    </div>
+  </div>
+
+</div>
+
     </div>
   </div>
 </div>
@@ -607,14 +745,14 @@
   >
     <div class="modal-content">
       <!-- TITLE -->
-      <div class="modal-header border-0 pt-3 pb-2">
+      <div class="modal-header border-bottom pt-3 pb-2">
         <h5 class="modal-title fw-bold">Modify Price</h5>
         <button class="btn-close" (click)="cashCount = false"></button>
       </div>
 
       <!-- TABS -->
-      <div class="modify-tabs d-flex">
-        <button
+      <div class="modify-tabs d-flex p-2">
+        <!-- <button
           class="tab-btn"
           [class.active]="paymentTab === 'specific'"
           (click)="paymentTab = 'specific'"
@@ -636,30 +774,58 @@
           (click)="paymentTab = 'surcharge'"
         >
           SURCHARGE
-        </button>
+        </button> -->
+<button class="tab-btn"
+  [class.active]="paymentTab === 'specific'"
+  (click)="onTabChange('specific')">
+  SPECIFIC
+</button>
+
+<button class="tab-btn"
+  [class.active]="paymentTab === 'discount'"
+  (click)="onTabChange('discount')">
+  DISCOUNT
+</button>
+
+<button class="tab-btn"
+  [class.active]="paymentTab === 'surcharge'"
+  (click)="onTabChange('surcharge')">
+  SURCHARGE
+</button>
 
         <button
+        *ngIf="paymentTab !== 'specific'"
           class="symbol-btn"
           [class.active]="typeTab === '$'"
-          (click)="typeTab = '$'"
+            (click)="onTypeChange('$')"
+
         >
           $
         </button>
 
         <button
+        *ngIf="paymentTab !== 'specific'"
           class="symbol-btn"
           [class.active]="typeTab === '%'"
-          (click)="typeTab = '%'"
+            (click)="onTypeChange('%')"
         >
           %
         </button>
       </div>
 
       <!-- DISPLAY VALUE -->
-      <div class="modify-display text-end">{{ modifyValue }}{{ typeTab }}</div>
+      <div class="modify-display text-end"> <!-- $ on LEFT -->
+  <ng-container *ngIf="typeTab === '$'">
+    {{ typeTab }}{{ modifyValue }}
+  </ng-container>
+
+  <!-- % on RIGHT -->
+  <ng-container *ngIf="typeTab === '%'">
+    {{ modifyValue }}{{ typeTab }}
+  </ng-container></div>
 
       <!-- KEYPAD -->
-      <div class="modify-grid">
+      <div class="modify-grid border">
         <button
           class="grid-btn"
           *ngFor="
@@ -669,28 +835,47 @@
         >
           {{ n }}
         </button>
+          <button class="grid-btn clear-btn" (click)="clearValue()">
+    ✕
+  </button>
+
       </div>
 
       <!-- SUMMARY -->
       <div class="summary-box">
-        <div class="row summary-row">
-          <div class="col">Base Price</div>
-          <div class="col text-end">$0.00</div>
-        </div>
+                
+      <div class="summary-row row">
+  <div class="col">Base Price</div>
+  <div class="col text-end">${{ baseTotal.toFixed(2) }}</div>
+</div>
 
-        <div class="row summary-row">
-          <div class="col">New Price</div>
-          <div class="col text-end">$0.00</div>
-        </div>
-
-        <div class="row summary-row">
+<div class="summary-row row" *ngIf="paymentTab === 'discount'">
+  <div class="col">Discount</div>
+  <div class="col text-end text-danger">
+    -${{ discountAmount.toFixed(2) }}
+  </div>
+</div>
+        <div class="row summary-row" *ngIf="paymentTab === 'surcharge'">
           <div class="col">Surcharge</div>
-          <div class="col text-end">$0.00</div>
+          <div class="col text-end">+${{surchargeAmount.toFixed(2)}}</div>
         </div>
+<div class="summary-row row fw-bold">
+  <div class="col">New Price</div>
+  <div class="col text-end">
+    ${{ ((baseTotal + surchargeAmount) - discountAmount).toFixed(2) }}
+  </div>
+</div>
       </div>
 
+
       <!-- APPLY BUTTON -->
-      <button class="apply-btn w-100">APPLY</button>
+       <!-- <div class="apply-wrapper">
+  <button class="apply-btn" (click)="applyModifyPrice()">APPLY</button>
+</div> -->
+ <div class="modal-footer justify-content-end border-0 pt-0 pb-3 px-3">
+  <button class="apply-btn" (click)="applyModifyPrice()">APPLY</button>
+ </div>
+      <!-- <button class="apply-btn w-100" (click)="applyModifyPrice()">APPLY</button> -->
     </div>
   </div>
 </div>

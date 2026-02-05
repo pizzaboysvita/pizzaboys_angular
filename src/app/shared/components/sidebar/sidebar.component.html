@@ -218,5 +218,11 @@
         </div>
   </nav>
 </div>
+<!-- OVERLAY (outside sidebar) -->
+<div
+  class="sidebar-overlay"
+  *ngIf="!navService.collapseSidebar"
+  (click)="closeSidebar()"
+></div>
 
 }

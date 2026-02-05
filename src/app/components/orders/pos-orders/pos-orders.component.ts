@@ -432,11 +432,22 @@ export class PosOrdersComponent {
   }
 
   openPrintDialog(order: any): void {
+    const orderId = order.order_master_id.replace("P-", "");
+      this.apiService
+        .getApi(
+          `${AppConstants.api_end_points.orderList}?order_id=${orderId}&type=web`
+        )
+        .subscribe((response: any) => {
+          if (response.code === "1" || 1) {
+            this.orderDetails = response.categories[0];
     const modalRef = this.modalService.open(OrderprintdialogComponent, {
       size: "md",
       centered: true,
     });
-    modalRef.componentInstance.data = order;
+    modalRef.componentInstance.data = this.orderDetails;
+  }
+    });
+
   }
 
   getStaffList() {
