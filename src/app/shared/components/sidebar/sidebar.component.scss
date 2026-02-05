@@ -224,3 +224,63 @@
 .category-item.active { background-color: #e5e5e6; }
 // .category-item.active .category-indicator { background-color: #fff; }
 
+/* Sidebar */
+// .pos-sidebar-container {
+//   // position: fixed;
+//   top: 0;
+//   left: 0;
+//   // height: 100vh;
+//   z-index: 1050; // 🔥 ABOVE overlay
+// }
+
+// /* Overlay */
+// .sidebar-overlay {
+//    position: fixed;
+//   top: 0;
+//   left: 0;
+//   // width: 100vw;
+//   // height: 100vh;
+//   background: rgba(0, 0, 0, 0.4);
+//   z-index: 1040; // 🔥 BELOW sidebar
+// }
+// @media (min-width: 769px) {
+//   .sidebar-overlay {
+//     display: none !important;
+//   }
+// }
+/* DEFAULT (Desktop & Tablet) */
+.pos-sidebar-container {
+  position: relative;   // 👈 normal layout
+  z-index: auto;
+}
+
+/* MOBILE ONLY */
+@media (max-width: 768px) {
+  .pos-sidebar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 280px;              // adjust to your sidebar width
+    z-index: 1050;
+    background: #fff;
+    transition: transform 0.3s ease;
+  }
+
+  /* Closed state */
+  .pos-sidebar-container.closed {
+    transform: translateX(-100%);
+  }
+}
+@media (max-width: 768px) {
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 280px;                 // 👈 don’t cover sidebar
+    width: calc(100vw - 280px);
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1040;
+  }
+}
+

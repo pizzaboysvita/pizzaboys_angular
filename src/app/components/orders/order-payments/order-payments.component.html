@@ -955,17 +955,17 @@
       <div class="p-3 border rounded mb-1">
         <div class="d-flex justify-content-between mb-2">
           <strong>Bill Amount</strong>
-          <span>${{ totalPaid }}</span>
+          <span>${{ totalPaid.toFixed(2)}}</span>
         </div>
 
         <div class="d-flex justify-content-between mb-2">
           <strong>Tendered</strong>
-          <span>${{ tenderedAmount }}</span>
+          <span>${{ tenderedAmount.toFixed(2) }}</span>
         </div>
 
         <div class="d-flex justify-content-between mb-2">
           <strong>Change</strong>
-          <span class="text-success fw-bold">${{ changeAmount }}</span>
+          <span class="text-success fw-bold">${{ changeAmount.toFixed(2)}}</span>
         </div>
       </div>
 
@@ -1022,7 +1022,7 @@
               </span>
             </td>
             <td>{{ rowData.type }}</td>
-            <td>${{ rowData.amount }}</td>
+            <td>${{ rowData.amount.toFixed(2)}}</td>
             <td>${{ rowData.tender }}</td>
             <td>${{ rowData.change }}</td>
           </tr>

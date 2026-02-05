@@ -23,6 +23,8 @@ import { ToastrService } from "ngx-toastr";
 export class OrderPaymentsComponent {
   @Input() data: any;
   @Input() customer: any;
+  @Input() surcharges: any;
+  @Input() discounts: any;
   isLoading = false;
   progressValue = 10;
   splitBy = 2;
@@ -65,6 +67,8 @@ export class OrderPaymentsComponent {
   isVoucherConfirm = false;
   paymentAmountStr: string;
   newPayments: any = [];
+  disamount: any;
+  surchargeAmt: any;
   constructor(
     public modal: NgbModal,
     private cdr: ChangeDetectorRef,
@@ -73,6 +77,7 @@ export class OrderPaymentsComponent {
     private toastr: ToastrService
   ) {}
   ngOnInit(): void {
+    
     this.payItems = [];
     this.paidItems = []; // confirmed paid items
     this.calculateTotal();
@@ -81,13 +86,26 @@ export class OrderPaymentsComponent {
     this.setActiveTab("full");
   }
   calculateTotal(): void {
-    this.totalPrice = this.data.reduce(
-      (sum: number, row: {
-        dish_quantity: number; duplicate_dish_price: any 
-}) =>
-        sum + (Number(row.duplicate_dish_price) * row.dish_quantity || 0),
-      0
-    );
+    this.surchargeAmt = this.surcharges
+    .reduce((sum: number, item: { amount: any; }) => sum + Number(item.amount || 0), 0);
+     this.disamount= this.discounts
+    .reduce((sum: number, item: { amount: any; }) => sum + Number(item.amount || 0), 0);
+
+//     this.totalPrice = this.data.reduce(
+//       (sum: number, row: {
+//         dish_quantity: number; duplicate_dish_price: any 
+// }) =>
+//         sum + (Number(row.duplicate_dish_price) * row.dish_quantity || 0),
+//       0
+//     );
+const itemsTotal = this.data.reduce(
+  (sum: number, row: { dish_quantity: number; duplicate_dish_price: any }) =>
+    sum + (Number(row.duplicate_dish_price || 0) * (row.dish_quantity || 0)),
+  0
+);
+
+// ✅ Final total
+this.totalPrice = itemsTotal + this.surchargeAmt - this.disamount;
     // this.data.forEach((row: any) => {
     //   const price = Number(row.duplicate_dish_price) || 0;
     //   const qty = Number(row.dish_quantity) || 0;
@@ -227,12 +245,13 @@ export class OrderPaymentsComponent {
     //   }
     // });
 
-    const totalAmount = this.data.reduce(
+    const totalAmountt = this.data.reduce(
       (sum: number, item: {
         dish_quantity: number; duplicate_dish_price: number 
 }) => sum + item.duplicate_dish_price * item.dish_quantity,
       0
     );
+    const totalAmount =totalAmountt + this.surchargeAmt - this.disamount
     const splitAmount = +(totalAmount / this.splitBy).toFixed(2);
     let remaining = totalAmount;
     this.splitRows = [];

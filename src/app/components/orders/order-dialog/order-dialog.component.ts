@@ -8,6 +8,7 @@ import {
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
+  Validators,
 } from "@angular/forms";
 import { SessionStorageService } from "../../../shared/services/session-storage.service";
 import { ToastrService } from "ngx-toastr";
@@ -58,10 +59,18 @@ export class OrderDialogComponent {
     {id:4,name:'Add 20 min'},
     {id:5,name:'Add 25 min'},
   ]
-
+  refundModal: boolean;
+  refundData: any;
+refundForm:FormGroup
+  maxRefundAmount: any;
+  refundItems: any;
+  discountAmount: number;
+  paidAmount: number;
   constructor(public modal: NgbModal,public activeModal: NgbActiveModal,private toastr: ToastrService,private session:SessionStorageService,private apis: ApisService,private fb:FormBuilder) {}
 
   ngOnInit(): void {
+    console.log(this.data,"data");
+    
     this.currentStatus = this.data.order_status || "Confirmed";
 
     this.orderForm = this.fb.group({
@@ -69,7 +78,12 @@ export class OrderDialogComponent {
       modifyEstTime: [""],
       action: [""],
     });
-
+this.refundForm = this.fb.group({
+     refundType: ['FULL', Validators.required],
+       total_price: [0, [Validators.required, Validators.min(0)]],
+      payment_method: ['Cash'],
+      reason:['']
+    });
     this.buildOrderLogs(this.data);
 
     // parse safely (some fields may be null or stringified JSON)
@@ -278,7 +292,99 @@ closeOrdersModal(){
     const stepIndex = this.statuses.indexOf(step);
     return stepIndex <= currentIndex ? "progtrckr-done" : "progtrckr-todo";
   }
+  onRefundTypeChange() {
+  if (this.refundForm.value.refundType === 'FULL') {
+    this.setFullRefund();
+  } else {
+    this.refundForm.patchValue({ total_price: 0 });
+    this.refundItems.forEach((i: { checked: boolean; }) => (i.checked = false));
+  }
+}
+// toggleItem(item: any) {
+//   item.checked = !item.checked;
 
+//   const total = this.refundItems
+//     .filter((i: { checked: any; }) => i.checked)
+//     .reduce((sum: number, i: { price: any; }) => sum + Number(i.price), 0);
+
+//   this.refundForm.patchValue({
+//     total_price: total
+//   });
+// }
+toggleItem(item: any) {
+  item.checked = !item.checked;
+
+  const selectedItems = this.refundItems.filter((i: { checked: any; }) => i.checked);
+  const selectedTotal = selectedItems.reduce(
+    (sum: number, i: { price: any; }) => sum + Number(i.price),
+    0
+  );
+
+  const allSelected =
+    selectedItems.length === this.refundItems.length;
+
+  let refundAmount = selectedTotal;
+
+  // ✅ Apply discount ONLY if all items selected
+  if (allSelected && this.discountAmount > 0) {
+    refundAmount = selectedTotal - this.discountAmount;
+
+    // safety (never exceed what customer paid)
+    refundAmount = Math.min(refundAmount, this.paidAmount);
+  }
+
+  this.refundForm.patchValue({
+    total_price: +refundAmount.toFixed(2)
+  });
+}
+
+
+setFullRefund() {
+  this.refundForm.patchValue({
+    total_price: this.refundData.payment_amount
+  });
+}
+
+ openRefundModal(data:any){
+    this.refundForm.patchValue({ refundType: "FULL" });
+  console.log(data);
+  this.refundData=data
+  this.discountAmount = Number(this.refundData.discount_amount || 0);
+  this.paidAmount = Number(this.refundData.payment_amount);
+    this.refundItems = [];
+ const items = JSON.parse(this.refundData.order_items || '[]');
+  items.forEach((item: any) => {
+    this.refundItems.push({
+      dish_id: item.id,
+      dish_name: item.dish_name,
+      price: Number(item.price),
+      checked: false,
+      type: 'DISH'
+    });
+  });
+
+  this.refundForm.patchValue({
+  total_price: this.refundData?.payment_amount ||0,
+  payment_method: this.refundData?.payment_method || 'Cash'
+});
+    this.maxRefundAmount = data?.payment_amount;
+
+    const totalPriceCtrl = this.refundForm.get('total_price');
+
+    totalPriceCtrl?.setValidators([
+      Validators.required,
+      Validators.min(0),
+      Validators.max(this.maxRefundAmount)
+    ]);
+
+    totalPriceCtrl?.setValue(this.maxRefundAmount); // default full refund
+    totalPriceCtrl?.updateValueAndValidity();
+    this.refundModal=true
+  }
+   submitRefund() {
+    if (this.refundForm.invalid) return;
+    console.log(this.refundForm.value);
+  }
   get orderAddress(): string {
     // Delivery address priority
     if (this.data?.delivery_address) {
@@ -317,4 +423,5 @@ function safeParse(value: any): any[] {
   } catch {
     return [];
   }
+ 
 }

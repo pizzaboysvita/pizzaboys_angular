@@ -198,6 +198,10 @@
                             <p>Delivery Fees</p>
                             <span>${{ formatPrice(data.delivery_fees) }}</span>
                         </div>
+                        <div class="summary-row" *ngIf="data.discount_amount">
+                            <p>Discount</p>
+                            <span>-${{ formatPrice(data.discount_amount) }}</span>
+                        </div>
 
                         <!-- <div class="summary-row">
                             <p>GST (15%) inc. in price</p>
@@ -211,7 +215,7 @@
                     </div>
                 </div>
                 <div *ngIf="activeTab === 'payments'">
-                    <div class="payment-row">
+                    <div class="payment-row" (click)="openRefundModal(data)">
                         <div class="payment-icon"><i class="ri-money-dollar-circle-line"></i></div>
                         <div class="payment-details">
                             <p>{{ data.payment_method }}</p>
@@ -247,5 +251,171 @@
       Cancel</button>
     <button body class="btn btn-animation  save-button" style="margin-left: 10px;" (click)="updatedOrder()"
       type="button"><i class="ri-add-circle-line"></i>&nbsp; Update Order</button>&nbsp;
+  </div>
+</div>
+<div
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  [ngClass]="{ 'show d-block': refundModal }"
+  style="background: rgba(0,0,0,.5); z-index: 1040"
+>
+  <div class="modal-dialog modal-dialog-centered payment-modal">
+    <div class="modal-content p-3">
+
+      <!-- Header -->
+      <div class="modal-header border-bottom">
+        <h5 class="modal-title fw-bold">Payment Details</h5>
+        <button class="btn-close" (click)="refundModal = false"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body pt-3">
+
+        <!-- Info Grid -->
+        <div class="info-grid">
+          <div>
+            <div class="label">ORDER</div>
+            <div class="value">{{refundData?.unitnumber}}</div>
+          </div>
+          <div>
+            <div class="label">PAYMENT TYPE</div>
+            <div class="value">{{refundData?.payment_method}}</div>
+          </div>
+          <div>
+            <div class="label">PAYMENT ($)</div>
+            <div class="value">${{refundData?.payment_amount}}</div>
+          </div>
+          <div>
+            <div class="label">PAYMENT REFERENCE ID</div>
+            <div class="value muted">{{refundData?.payment_amount}}</div>
+          </div>
+        </div>
+        <hr />
+        <!-- Print Receipt -->
+        <!-- <div class="section">
+          <div class="section-title">PRINT EFTPOS RECEIPTS</div>
+          <button class="btn btn-outline-secondary btn-sm">
+            CUSTOMER
+          </button>
+        </div> -->
+
+        <!-- <hr /> -->
+
+        <!-- Refund -->
+         <form [formGroup]="refundForm">
+<!-- Refund Type -->
+<div class="mb-2">
+  <label class="form-label fw-bold d-block">Refund Type</label>
+
+  <div class="form-check form-check-inline">
+    <input
+      class="form-check-input"
+      type="radio"
+      value="FULL"
+      formControlName="refundType"
+      (change)="onRefundTypeChange()"
+      id="refundFull"
+    />
+    <label class="form-check-label" for="refundFull">
+      Pay Full
+    </label>
+  </div>
+
+  <div class="form-check form-check-inline">
+    <input
+      class="form-check-input"
+      type="radio"
+      value="PARTIAL"
+      formControlName="refundType"
+      (change)="onRefundTypeChange()"
+      id="refundPartial"
+    />
+    <label class="form-check-label" for="refundPartial">
+      Partial Pay
+    </label>
+  </div>
+</div>
+
+<!-- Partial Refund Items -->
+<div *ngIf="refundForm.value.refundType === 'PARTIAL'" class="mb-3">
+  <div class="fw-bold mb-1">Select Items</div>
+  <div
+    class="form-check"
+    *ngFor="let item of refundItems; let i = index"
+  >
+    <input
+      class="form-check-input"
+      type="checkbox"
+      [checked]="item.checked"
+      (change)="toggleItem(item)"
+    />
+
+    <label class="form-check-label d-flex justify-content-between w-100">
+      <span>{{ item.dish_name }}</span>
+      <span>${{ item.price }}</span>
+    </label>
+  </div>
+</div>
+        <div class="section">
+          <div class="section-title">REFUND PAYMENT</div>
+
+          <select class="form-select mb-2" formControlName="payment_method">
+            <option value="Cash">Cash</option>
+            <option value="EFTPOS">EFTPOS</option>
+          </select>
+          <input
+            type="number"
+            class="form-control mb-1"
+            placeholder="Refund Amount ($)"
+             formControlName="total_price"
+             [readonly]="refundForm.value.refundType === 'FULL'"
+          />
+          <div class="text-muted small mb-2">
+            Maximum refund value ${{refundData?.payment_amount}}
+          </div>
+<div
+  class="text-danger small mt-1 mb-1"
+  *ngIf="refundForm.get('total_price')?.touched"
+>
+  <div *ngIf="refundForm.get('total_price')?.errors?.['required']">
+    Refund amount is required
+  </div>
+
+  <div *ngIf="refundForm.get('total_price')?.errors?.['max']">
+    Refund amount cannot be more than {{ maxRefundAmount }}
+  </div>
+</div>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Refund Reason"
+            formControlName="reason"
+          />
+        </div>
+</form>
+        <!-- Warning -->
+        <div class="alert alert-warning d-flex align-items-center mt-3 small">
+          <i class="ri-alert-line me-2"></i>
+          This will reduce your float to $121.46
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer border-top">
+            <button class="btn btn-secondary" style="margin-top: 20px;" (click)="refundModal = false">
+      Cancel</button>
+    <button body class="btn btn-animation  save-button" style="margin-left: 10px;" 
+      type="button"> REFUND</button>&nbsp;
+        <!-- <button class="btn btn-outline-secondary" (click)="refundModal = false">
+          CANCEL
+        </button>
+        <button class="btn btn-danger fw-bold">
+          REFUND
+        </button> -->
+      </div>
+
+    </div>
   </div>
 </div>

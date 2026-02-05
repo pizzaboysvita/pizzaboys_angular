@@ -379,4 +379,8 @@ export class OrderprintdialogComponent implements OnInit {
 
     return sections;
   }
+    formatPrice(value: any): string {
+    const n = Number(value ?? 0);
+    return n.toFixed(2);
+  }
 }

@@ -13,7 +13,7 @@ import { CommonService } from '../../services/common.service';
 import { FloatAdjustmentComponent } from '../../../components/float-adjustment/float-adjustment.component';
 import { TakingsCashComponent } from '../../../components/takings-cash/takings-cash.component';
 import { PosSettingsComponent } from '../../../components/pos-settings/pos-settings.component';
-
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 @Component({
     selector: 'app-sidebar',
     imports: [FeatherIconsComponent, CommonModule, RouterModule],
@@ -45,11 +45,17 @@ export class SidebarComponent {
     currentTime: string = '';
   showFunctionsMenu: boolean;
   isSidebarOpen: boolean=true;
+  isMobile = false;
+
   constructor( private CommonService: CommonService,public modal: NgbModal,public navService: NavService,private sessionStorageService:SessionStorageService,
     private cdr: ChangeDetectorRef,
-    private router: Router,private apis:ApisService
+    private router: Router,private apis:ApisService,private breakpointObserver: BreakpointObserver
   ) {
-    
+     this.breakpointObserver
+    .observe([Breakpoints.Handset])
+    .subscribe(result => {
+      this.isMobile = result.matches;
+    });
   }
 ngOnInit(){
       // this.pos=this.sessionStorageService.getsessionStorage('Pos')
@@ -224,6 +230,10 @@ this.router.navigate(["/orders/order-detail"]);
  
    selectCategory(category: any) {
     this.selectedCategory = category;
+      if (this.isMobile) {
+    this.navService.collapseSidebar = true;
+  }
+
      this.CommonService.setTotalDishList( this.totalDishList)
      if(category.name=='Specials'){
        this.CommonService.setDishes(this.totalDishList.filter(x=>(x.dish_type == "combo")));
@@ -270,6 +280,12 @@ changeStaff(){
     localStorage.clear();
     this.router.navigateByUrl("/login");
 }
+closeSidebar() {
+  if (window.innerWidth <= 768) {
+    this.navService.collapseSidebar = true;
+  }
+}
+
 }
 export interface DishFromAPI {
   dish_id: number;

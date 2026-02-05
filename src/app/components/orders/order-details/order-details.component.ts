@@ -104,7 +104,9 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   orderItemsDetails: any[] = [];
   toppingDetails: any;
   ingredients_details: any;
-  deliveryfee: number = 5.9;
+  // deliveryfee: number = 5.9;
+   deliveryfee: number = 0;
+
   modalRef: any;
   paymentdetails: any;
   comboOrderDetails: any[] = [];
@@ -121,7 +123,12 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   discountValue = 0;   // entered value (number)
   discountAmount = 0;  // calculated amount
   isDiscountApplied = false;
-  surchargeAmount: number;
+  surchargeAmount=0;
+  discountPercent: number | null = null;
+  discounts: any = [];
+  surcharges: any = [];
+
+
 
   constructor(
     private apiService: ApisService,
@@ -150,12 +157,14 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
       streetName: [""],
       unitNumber: [""],
       deliveryNote: [""],
-    });
-    this.orderdueForm = this.fb.group({
       orderDue: ["ASAP", Validators.required],
       orderDateTime: [new Date(), Validators.required],
     });
-    this.orderDueDetails = this.orderdueForm.value.orderDue;
+    // this.orderdueForm = this.fb.group({
+    //   orderDue: ["ASAP", Validators.required],
+    //   orderDateTime: [new Date(), Validators.required],
+    // });
+    // this.orderDueDetails = this.orderdueForm.value.orderDue;
   }
 
   private loadInitialData(): void {
@@ -385,7 +394,15 @@ removeItems(item: any) {
     }
   }
 
-  openNewModelPopup() {
+  openNewModelPopup(type:any) {
+    if(type=='PICKUP'){
+      this.orderForm.get('orderType')?.setValue('pickup')
+    }
+    else{
+      this.orderForm.get('orderType')?.setValue('delivery')
+    }
+    console.log( this.orderForm.value.orderType);
+    
     this.showNewModelPopup = true;
   }
   closeNewModelPopup() {
@@ -408,12 +425,20 @@ removeItems(item: any) {
   //    return this.subtotal + fee;
 
   // }
-  get total(): number {
+//   get total(): number {
+//   const fee =
+//     this.orderForm.value.orderType === 'delivery' ? this.deliveryfee : 0;
+
+//   return this.subtotal + fee - this.discountAmount;
+// }
+get total(): number {
   const fee =
     this.orderForm.value.orderType === 'delivery' ? this.deliveryfee : 0;
 
-  return this.subtotal + fee - this.discountAmount;
+  // return this.subtotal + fee - this.totalDiscount;
+  return this.subtotal + fee + this.totalSurcharge - this.totalDiscount;
 }
+
   getComboItems(cartItems: any){
     console.log(cartItems);
     
@@ -756,6 +781,8 @@ getBaseType(cartItem: any): number {
     this.matchingCombos = [];
     this.showComboAlert = false;
     this.showComboSelection = false;
+    this.surcharges=[]
+    this.discounts=[]
     this.updateTotals();
   }
 
@@ -766,6 +793,15 @@ getBaseType(cartItem: any): number {
       size: "xl",
     });
   }
+getTotalPercentage(): number {
+  return this.discounts
+    .filter((d: { type: string; }) => d.type === '%')
+    .reduce((sum: number, d: { value: any; }) => sum + Number(d.value || 0), 0);
+}
+getTotalFlatAmount(): number {
+  return this.discounts
+    .reduce((sum: number, d: { amount: any; }) => sum + Number(d.amount || 0), 0);
+}
 
   submitOrder() {
     if (this.cartItems.length === 0) {
@@ -782,6 +818,8 @@ getBaseType(cartItem: any): number {
     });
     this.modalRef.componentInstance.data = this.totalCartDetails;
     this.modalRef.componentInstance.customer = this.customer;
+    this.modalRef.componentInstance.surcharges = this.surcharges;
+    this.modalRef.componentInstance.discounts = this.discounts;
     this.modalRef.componentInstance.totalAmount = this.total;
 
     this.modalRef.result.then(
@@ -794,6 +832,8 @@ getBaseType(cartItem: any): number {
         ).user;
 
         const reqbody: any = {
+          discount_percentage:this.getTotalPercentage(),
+          discount_amount:this.getTotalFlatAmount(),
           total_price: this.subtotal,
           total_quantity: this.cartItems.length,
           store_id: user.store_id,
@@ -811,8 +851,8 @@ getBaseType(cartItem: any): number {
           order_status: "Confirmed",
           order_created_by: user.store_id,
           order_details_json: this.orderItemsDetails,
-          order_due: this.orderdueForm.get("orderDue")?.value,
-          order_due_datetime: this.orderdueForm.get("orderDateTime")?.value,
+          order_due: this.orderForm.get("orderDue")?.value,
+          order_due_datetime: this.orderForm.get("orderDateTime")?.value,
           topping_details: this.toppingDetails,
           ingredients_details: this.ingredients_details,
           unitnumber: this.orderForm.value.unitNumber,
@@ -837,7 +877,7 @@ getBaseType(cartItem: any): number {
               this.clearOrderDetails();
               this.customer = { name: "", email: "", phone: "" };
               this.orderForm.value.orderType === 'PICKUP'
-              this.deliveryfee=5.9
+              this.deliveryfee=0
               this.cdr.detectChanges();
             } else {
               this.toastr.error(res?.message || "Order failed", "Error");
@@ -935,32 +975,38 @@ getBaseType(cartItem: any): number {
   }
 
   submitDUeOrder() {
-    if (this.orderdueForm.invalid || this.dateError) return;
+    this.showNewModelPopup = false;
+    if (this.orderForm.invalid || this.dateError) return;
     this.orderDueDetails =
-      this.orderdueForm.value.orderDue === "ASAP"
-        ? this.orderdueForm.value.orderDue
-        : this.orderdueForm.value.orderDateTime;
+      this.orderForm.value.orderDue === "ASAP"
+        ? this.orderForm.value.orderDue
+        : this.orderForm.value.orderDateTime;
     this.showOrderDuePopup = false;
     this.showNewModelPopup = false;
     this.selectedScheduleItem=null
     this.pendingCartItem=null
-    console.log("asdasd");
+    this.skipAvailabilityCheck = true;
+          if( this.orderForm.value.orderType=='delivery'){
+            this.deliveryfee = 5.9;
+          }
+    if( this.orderForm.value.orderDue === "Later"){
+    this.addToCart(this.pendingCartItem)
+    }
     
   }
-  submitLatDUeOrder(){
-     if (this.orderdueForm.invalid || this.dateError) return;
-    this.orderDueDetails =
-      this.orderdueForm.value.orderDue === "ASAP"
-        ? this.orderdueForm.value.orderDue
-        : this.orderdueForm.value.orderDateTime;
-         this.skipAvailabilityCheck = true;
-    this.addToCart(this.pendingCartItem)
-    this.showOrderDuePopup = false;
-    this.showNewModelPopup = false;
-    this.selectedScheduleItem=null
-    this.pendingCartItem=null
-    console.log("asdasd");
-  }
+  // submitLatDUeOrder(){
+  //    if (this.orderdueForm.invalid || this.dateError) return;
+  //   this.orderDueDetails =
+  //     this.orderdueForm.value.orderDue === "ASAP"
+  //       ? this.orderdueForm.value.orderDue
+  //       : this.orderdueForm.value.orderDateTime;
+  //        this.skipAvailabilityCheck = true;
+  //   this.addToCart(this.pendingCartItem)
+  //   this.showOrderDuePopup = false;
+  //   this.showNewModelPopup = false;
+  //   this.selectedScheduleItem=null
+  //   this.pendingCartItem=null
+  // }
   closeCustomerModal() {
     this.showCustomerModal = false;
   }
@@ -1024,7 +1070,7 @@ openApplicableHourModal(item: any) {
 scheduleLater(){
   this.showOrderDuePopup=true
    this.showOrderLaterPopup=false
-   this.orderdueForm.get('orderDue')?.setValue('Later')
+   this.orderForm.get('orderDue')?.setValue('Later')
 
 }
 // getAllowedDays(item: any): string[] {
@@ -1102,7 +1148,7 @@ validateApplicableDay(event: any) {
     this.dateError = true;
 
     //  Clear invalid date
-    this.orderdueForm.get('orderDateTime')?.setValue(null);
+    this.orderForm.get('orderDateTime')?.setValue(null);
   } else {
     this.dateError = false;
   }
@@ -1254,6 +1300,8 @@ proceedHoldOrder() {
   // 🔹 Reset note & close modal
   this.holdNote = '';
   this.Openmodal = false
+  this.discounts=[];
+  this.surcharges=[];
   // this.closeHoldModal();
 }
 deleteHoldOrder(index: number) {
@@ -1287,25 +1335,89 @@ restoreHoldOrder(order: any, index: number) {
 }
 onTabChange(tab: 'specific' | 'discount' | 'surcharge') {
   this.paymentTab = tab;
-
-  // reset input
-  this.modifyValue = '';
-
-  if (tab === 'specific') {
-    this.typeTab = '$'; // force amount
     this.discountAmount = 0;
     this.surchargeAmount = 0;
+  // reset input
+  this.modifyValue = '';
+  if (tab === 'specific') {
+    this.typeTab = '$'; // force amount
   }
 }
 
-applyModifyPrice() {
-  // if (this.paymentTab === 'discount') {
-  //   this.total = +(this.baseTotal - this.discountAmount).toFixed(2);
-  //   this.isDiscountApplied = true;
-  // }
+// applyModifyPrice() {
+//   if (this.paymentTab !== 'discount') return;
 
+//   const value = Number(this.modifyValue || 0);
+//   if (value <= 0) return;
+
+//   let amount = 0;
+
+//   if (this.typeTab === '%') {
+//     amount = +(this.subtotal * value / 100).toFixed(2);
+//   } else {
+//     amount = +value.toFixed(2);
+//   }
+
+//   // safety
+//   if (amount > this.subtotal) {
+//     amount = this.subtotal;
+//   }
+
+//   this.discounts.push({
+//     type: this.typeTab,
+//     value,
+//     amount
+//   });
+
+//   // reset input
+//   this.modifyValue = "0";
+//   this.cashCount = false;
+// }
+applyModifyPrice() {
+  const value = Number(this.modifyValue || 0);
+  if (value <= 0) return;
+
+  let amount = 0;
+
+  // ---------- DISCOUNT ----------
+  if (this.paymentTab === 'discount') {
+    amount =
+      this.typeTab === '%'
+        ? +(this.subtotal * value / 100).toFixed(2)
+        : +value.toFixed(2);
+
+    // safety: discount cannot exceed subtotal
+    if (amount > this.subtotal) {
+      amount = this.subtotal;
+    }
+
+    this.discounts.push({
+      type: this.typeTab,
+      value,
+      amount
+    });
+  }
+
+  // ---------- SURCHARGE ----------
+  if (this.paymentTab === 'surcharge') {
+    amount =
+      this.typeTab === '%'
+        ? +(this.subtotal * value / 100).toFixed(2)
+        : +value.toFixed(2);
+
+    this.surcharges.push({
+      type: this.typeTab,
+      value,
+      amount
+    });
+  }
+
+  // ---------- RESET ----------
+  this.modifyValue = '0';
   this.cashCount = false;
 }
+
+
 paymentTab = "discount";
   typeTab = "%";
   modifyValue = "0";
@@ -1317,8 +1429,6 @@ onKey(n: string) {
   if (this.modifyValue === "0") this.modifyValue = "";
     
   this.modifyValue += n;
-  this.modifyValue += n;
-
   if (this.paymentTab === 'discount') {
     this.calculateDiscount();
   }
@@ -1326,10 +1436,11 @@ onKey(n: string) {
   if (this.paymentTab === 'specific') {
     this.calculateSpecific();
   }
+    if (this.paymentTab === 'surcharge') {
+    this.calculateSurcharge();
+  }
 }
-
 // specificAmount = 0;
-
 calculateSpecific() {
   const value = Number(this.modifyValue || 0);
 
@@ -1351,6 +1462,59 @@ calculateDiscount() {
   if (this.discountAmount > this.subtotal) {
     this.discountAmount = this.subtotal;
   }
+}
+calculateSurcharge() {
+  const value = Number(this.modifyValue || 0);
+
+  if (this.typeTab === '%') {
+    this.surchargeAmount = +(this.subtotal * value / 100).toFixed(2);
+  } else {
+    this.surchargeAmount = +value.toFixed(2);
+  }
+
+  // safety
+  if (this.surchargeAmount > this.subtotal) {
+    this.surchargeAmount = this.subtotal;
+  }
+}
+removeDiscount(index: number) {
+  this.discounts.splice(index, 1);
+}
+removeSurcharge(i: number) {
+  this.surcharges.splice(i, 1);
+}
+
+get totalDiscount(): number {
+  if (!this.discounts || this.discounts.length === 0) {
+    return 0;
+  }
+
+  return this.discounts.reduce((sum: any, d: { amount: any; }) => sum + d.amount, 0);
+}
+get totalSurcharge(): number {
+  if (!this.surcharges || this.surcharges.length === 0) {
+    return 0;
+  }
+
+  return (this.surcharges || []).reduce((s: any, srg: { amount: any; }) => s + srg.amount, 0);
+}
+
+
+clearValue() {
+  this.modifyValue = '0';
+  // reset amounts
+  this.discountAmount = 0;
+  this.surchargeAmount = 0;
+}
+onTypeChange(type: '$' | '%') {
+  if (this.typeTab !== type) {
+    // reset when switching type
+    this.modifyValue = '0';
+    this.discountAmount = 0;
+    this.surchargeAmount=0
+  }
+
+  this.typeTab = type;
 }
 
 
