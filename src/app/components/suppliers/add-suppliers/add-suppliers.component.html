@@ -1,0 +1,87 @@
+<div class="modal-header">
+    <h5 class="modal-title">
+        {{ editData ? 'Edit Supplier' : 'Add Supplier' }}
+    </h5>
+    <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>
+</div>
+
+<div class="modal-body">
+    <form [formGroup]="addSupplierForm">
+        <div class="row g-3">
+
+            <div class="col-md-6">
+                <h6 class="fw-bold p-1">Name <span class="text-danger">*</span></h6>
+                <input class="form-control" placeholder="Enter Name" formControlName="name" />
+                <div *ngIf="f['name'].touched && f['name'].invalid" class="text-danger">
+                    Name is required
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <h6 class="fw-bold p-1">Email <span class="text-danger">*</span></h6>
+                <input class="form-control" placeholder="Enter Email" formControlName="email" />
+                <div *ngIf="f['email'].touched && f['email'].invalid" class="text-danger">
+                    Email is required
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <h6 class="fw-bold p-1">Phone <span class="text-danger">*</span></h6>
+                <input class="form-control" placeholder="Enter Phone" formControlName="phone" />
+                <div *ngIf="f['phone'].touched && f['phone'].invalid" class="text-danger">
+                    Phone is required
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <h6 class="fw-bold p-1">Item Name <span class="text-danger">*</span></h6>
+                <input class="form-control" placeholder="Enter Item Name" formControlName="item_name" />
+                <div *ngIf="f['item_name'].touched && f['item_name'].invalid" class="text-danger">
+                    Item Name is required
+                </div>
+            </div>
+
+            <div class="col-6">
+                <h6 class="fw-bold p-1">Address <span class="text-danger">*</span></h6>
+                <textarea rows="2" class="form-control" placeholder="Enter Address"
+                    formControlName="address"></textarea>
+                <div *ngIf="f['address'].touched && f['address'].invalid" class="text-danger">
+                    Address is required
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h6 class="fw-bold p-1">Quantity <span class="text-danger">*</span></h6>
+                <input type="number" class="form-control" placeholder="Enter Quantity" formControlName="quantity" />
+                <div *ngIf="f['quantity'].touched && f['quantity'].invalid" class="text-danger">
+                    Quantity is required
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h6 class="fw-bold p-1">Date <span class="text-danger">*</span></h6>
+                <input class="form-control" placeholder="DD/MM/YYYY" formControlName="date" maxlength="10" />
+                <div *ngIf="f['date'].touched && f['date'].invalid" class="text-danger">
+                    Date is required
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h6 class="fw-bold p-1">Status <span class="text-danger">*</span></h6>
+                <select class="form-select" formControlName="status">
+                    <option [ngValue]="1">Active</option>
+                    <option [ngValue]="0">Inactive</option>
+                </select>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-secondary" (click)="cancel()">Cancel</button>
+
+    @if (this.type != 'View') {
+    <button class="btn btn-animation save-button" [disabled]="isSubmitting" (click)="save()">
+        {{ isSubmitting
+        ? (type === 'Edit' ? 'Updating...' : 'Saving...')
+        : (type === 'Edit' ? 'Update' : 'Save') }}
+    </button>
+    }
+</div>
