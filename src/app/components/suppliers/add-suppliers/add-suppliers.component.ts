@@ -1,6 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+  FormArray
+} from '@angular/forms';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -22,7 +29,7 @@ export class AddSupplierComponent implements OnInit {
     private fb: FormBuilder,
     public activeModal: NgbActiveModal,
     public modal: NgbModal
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.addSupplierForm = this.fb.group({
@@ -30,9 +37,33 @@ export class AddSupplierComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       phone: ['', Validators.required],
       address: ['', Validators.required],
+      status: [1, Validators.required],
+      items: this.fb.array([])
+    });
+
+    if (this.type === 'Edit' || this.type === 'View') {
+      this.patchEditData();
+      if (this.type === 'View') {
+        this.addSupplierForm.disable();
+      }
+    } else {
+      // ✅ default one item row
+      this.addItem();
+    }
+  }
+
+  get f() {
+    return this.addSupplierForm.controls;
+  }
+
+  get items(): FormArray {
+    return this.addSupplierForm.get('items') as FormArray;
+  }
+
+  createItem(): FormGroup {
+    return this.fb.group({
       item_name: ['', Validators.required],
       quantity: [null, [Validators.required, Validators.min(1)]],
-      status: [1, Validators.required],
       date: [
         '',
         [
@@ -43,50 +74,55 @@ export class AddSupplierComponent implements OnInit {
         ]
       ]
     });
+  }
 
-    if (this.type === 'Edit') {
-      this.addSupplierForm.patchValue(this.editData);
-    }
-    else if (this.type === 'View') {
-      this.addSupplierForm.patchValue(this.editData);
-      this.addSupplierForm.disable();
-    }
-    else {
-      this.addSupplierForm.reset();
-      this.addSupplierForm.get('status')?.setValue(true);
+  addItem(): void {
+    this.items.push(this.createItem());
+  }
+
+  deleteItem(index: number): void {
+    this.items.removeAt(index);
+  }
+
+  patchEditData(): void {
+    if (!this.editData) return;
+
+    const { items, ...supplier } = this.editData;
+    this.addSupplierForm.patchValue(supplier);
+
+    if (items && Array.isArray(items)) {
+      items.forEach((item: any) => {
+        this.items.push(
+          this.fb.group({
+            item_name: [item.item_name, Validators.required],
+            quantity: [item.quantity, [Validators.required, Validators.min(1)]],
+            date: [item.date, Validators.required]
+          })
+        );
+      });
     }
   }
 
-  get f() {
-    return this.addSupplierForm.controls;
-  }
-  formatDate(event: any) {
+  formatDate(event: any, index: number): void {
     let value = event.target.value.replace(/\D/g, '');
+    if (value.length > 2) value = value.slice(0, 2) + '/' + value.slice(2);
+    if (value.length > 5) value = value.slice(0, 5) + '/' + value.slice(5, 9);
 
-    if (value.length > 2) {
-      value = value.slice(0, 2) + '/' + value.slice(2);
-    }
-    if (value.length > 5) {
-      value = value.slice(0, 5) + '/' + value.slice(5, 9);
-    }
-
-    this.addSupplierForm.get('date')?.setValue(value, { emitEvent: false });
+    this.items.at(index).get('date')?.setValue(value, { emitEvent: false });
   }
-  save() {
+
+  save(): void {
     if (this.addSupplierForm.invalid) {
       this.addSupplierForm.markAllAsTouched();
       return;
     }
 
     this.isSubmitting = true;
-
-    const formData = this.addSupplierForm.value;
-    console.log('Supplier Data:', formData);
-
-    this.activeModal.close(formData);
+    this.activeModal.close(this.addSupplierForm.value);
     this.isSubmitting = false;
   }
-  cancel() {
+
+  cancel(): void {
     this.activeModal.dismiss('cancel');
   }
 }
