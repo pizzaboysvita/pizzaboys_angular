@@ -35,7 +35,6 @@ export class ApisService {
 
     return this.http.put(environment.apiUrl + "/api/updatedetails", reqbody);
   }
-
   // ✅ GET BANNERS
   getBanners(userId: number) {
     return this.getApi(
@@ -46,6 +45,22 @@ export class ApisService {
   // ✅ INSERT / UPDATE BANNER
   saveBanner(payload: any) {
     return this.postApi(AppConstants.api_end_points.banner, payload);
+  }
+
+  // ✅ UPLOAD IMAGE
+  uploadImage(file: File) {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    return this.postApi(AppConstants.api_end_points.upload_image, formData);
+  }
+
+  // ✅ UPLOAD VIDEO
+  uploadVideo(file: File) {
+    const formData = new FormData();
+    formData.append("video", file);
+
+    return this.postApi(AppConstants.api_end_points.upload_video, formData);
   }
 
   show(): void {

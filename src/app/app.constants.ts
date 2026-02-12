@@ -16,6 +16,10 @@ export const AppConstants = {
     orderList: "/api/order",
     inventory: "/api/settings/inventory",
     cashflow: "/api/cashflow",
+
+    // ✅ Banner and Media Endpoints
     banner: "/api/banner",
+    upload_image: "/api/uploadImage",
+    upload_video: "/api/uploadVideo",
   },
 };
