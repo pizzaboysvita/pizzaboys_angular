@@ -36,7 +36,7 @@ export class AddAdminMediaComponent {
     private fb: FormBuilder,
     public activeModal: NgbActiveModal,
     private apiService: ApisService,
-    private sessionStorage: SessionStorageService
+    private sessionStorage: SessionStorageService,
   ) {}
 
   ngOnInit(): void {
@@ -45,7 +45,7 @@ export class AddAdminMediaComponent {
     this.addMediaForm = this.fb.group({
       store_id: ["", Validators.required],
       text: ["", Validators.required],
-      image: [null, Validators.required],
+      image: [null, this.type === "Edit" ? [] : Validators.required],
       video: [null],
       start_date: ["", Validators.required],
       end_date: ["", Validators.required],
@@ -56,11 +56,12 @@ export class AddAdminMediaComponent {
       this.addMediaForm.patchValue({
         store_id: this.editData.store_id,
         text: this.editData.text,
-        start_date: this.editData.start_date?.replace(" ", "T"),
-        end_date: this.editData.end_date?.replace(" ", "T"),
+        start_date: this.convertToDateTimeLocal(this.editData.start_date),
+        end_date: this.convertToDateTimeLocal(this.editData.end_date),
         status: this.editData.status === 1,
       });
 
+      // Remove required validation for edit
       this.addMediaForm.get("image")?.clearValidators();
       this.addMediaForm.get("image")?.updateValueAndValidity();
     }
@@ -68,6 +69,18 @@ export class AddAdminMediaComponent {
 
   get f() {
     return this.addMediaForm.controls;
+  }
+  convertToDateTimeLocal(dateString: string): string {
+    if (!dateString) return "";
+
+    const date = new Date(dateString);
+
+    const pad = (n: number) => n.toString().padStart(2, "0");
+
+    return (
+      `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T` +
+      `${pad(date.getHours())}:${pad(date.getMinutes())}`
+    );
   }
 
   storeList() {
@@ -103,7 +116,7 @@ export class AddAdminMediaComponent {
       // Upload Image
       if (this.selectedImageFile) {
         const imgRes: any = await firstValueFrom(
-          this.apiService.uploadImage(this.selectedImageFile)
+          this.apiService.uploadImage(this.selectedImageFile),
         );
         imageUrl = imgRes?.data?.image_url;
       }
@@ -111,13 +124,13 @@ export class AddAdminMediaComponent {
       // Upload Video
       if (this.selectedVideoFile) {
         const vidRes: any = await firstValueFrom(
-          this.apiService.uploadVideo(this.selectedVideoFile)
+          this.apiService.uploadVideo(this.selectedVideoFile),
         );
         videoUrl = vidRes?.data?.video_url;
       }
 
       const loginDetails = JSON.parse(
-        this.sessionStorage.getsessionStorage("loginDetails") as any
+        this.sessionStorage.getsessionStorage("loginDetails") as any,
       );
 
       const payload: any = {
@@ -137,7 +150,7 @@ export class AddAdminMediaComponent {
       }
 
       const res: any = await firstValueFrom(
-        this.apiService.saveBanner(payload)
+        this.apiService.saveBanner(payload),
       );
 
       this.isSubmitting = false;

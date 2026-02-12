@@ -39,6 +39,11 @@
           Image is required
         </div>
       </div>
+      <!-- Image Preview (Edit Mode) -->
+      <div *ngIf="type === 'Edit' && editData?.image && !selectedImageFile" style="margin-top:10px;">
+        <img [src]="editData.image" style="width:150px;height:100px;border-radius:6px;" />
+      </div>
+
       <br>
       <!-- Video -->
       <div class="media-cell">
@@ -48,6 +53,13 @@
           Video is required
         </div>
       </div>
+      <!-- Video Preview (Edit Mode) -->
+      <div *ngIf="type === 'Edit' && editData?.video && !selectedVideoFile" style="margin-top:10px;">
+        <video width="200" height="100" controls>
+          <source [src]="editData.video" type="video/mp4">
+        </video> 
+      </div>
+
 
     </div>
 
