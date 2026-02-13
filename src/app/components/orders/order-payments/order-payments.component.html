@@ -953,21 +953,24 @@
         ></button>
       </div>
       <div class="p-3 border rounded mb-1">
-        <div class="d-flex justify-content-between mb-2">
-          <strong>Bill Amount</strong>
-          <span>${{ totalPaid.toFixed(2)}}</span>
-        </div>
+  <div class="d-flex justify-content-between mb-2">
+    <strong>Bill Amount</strong>
+    <span>${{ (totalPaid ?? 0).toFixed(2) }}</span>
+  </div>
 
-        <div class="d-flex justify-content-between mb-2">
-          <strong>Tendered</strong>
-          <span>${{ tenderedAmount.toFixed(2) }}</span>
-        </div>
+  <div class="d-flex justify-content-between mb-2">
+    <strong>Tendered</strong>
+    <span>${{ (tenderedAmount ?? 0).toFixed(2) }}</span>
+  </div>
 
-        <div class="d-flex justify-content-between mb-2">
-          <strong>Change</strong>
-          <span class="text-success fw-bold">${{ changeAmount.toFixed(2)}}</span>
-        </div>
-      </div>
+  <div class="d-flex justify-content-between mb-2">
+    <strong>Change</strong>
+    <span class="text-success fw-bold">
+      ${{ (changeAmount ?? 0).toFixed(2) }}
+    </span>
+  </div>
+</div>
+
 
       <!-- <table class="table table-sm mb-3">
         <tbody>

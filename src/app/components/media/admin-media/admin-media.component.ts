@@ -47,7 +47,6 @@ export class AdminMediaComponent {
     flex: 1,
     minWidth: 100,
     sortable: true,
-    unSortIcon: true,
     suppressMenu: true,
   };
 
@@ -59,14 +58,15 @@ export class AdminMediaComponent {
     {
       headerName: "Text",
       field: "text",
-      tooltipField: "text",
     },
     {
       headerName: "Image Banner",
       field: "image",
       sortable: false,
       cellRenderer: (params: any) =>
-        params.value ? `<img src="${params.value}" class="media-img" />` : "-",
+        params.value
+          ? `<img src="${params.value}" class="media-img" />`
+          : "-",
     },
     {
       headerName: "Video",
@@ -81,9 +81,9 @@ export class AdminMediaComponent {
     },
     {
       headerName: "Actions",
-      minWidth: 150,
+      minWidth: 120,
       cellRenderer: () => `
-        <div style="display:flex;align-items:center;gap:15px">
+        <div style="display:flex;gap:10px">
           <button class="btn btn-sm p-0" data-action="edit">
             <span class="material-symbols-outlined text-success">edit</span>
           </button>
@@ -98,7 +98,7 @@ export class AdminMediaComponent {
   constructor(
     private fb: FormBuilder,
     private modalService: NgbModal,
-    private apis: ApisService,
+    private apis: ApisService
   ) {}
 
   ngOnInit(): void {
@@ -107,28 +107,28 @@ export class AdminMediaComponent {
     this.loadInventory();
   }
 
-  // ✅ Initialize Form
+  // ✅ Form
   initForm() {
     this.adminMediaForm = this.fb.group({
       store_id: [-1, Validators.required],
     });
   }
 
-  // ✅ Load Stores Dynamically
+  // ✅ Load Stores From API
   loadStores() {
     this.apis
       .getApi(AppConstants.api_end_points.store_list)
       .subscribe((data: any) => {
         if (data) {
           this.storesList = [
-            { store_id: -1, store_name: "All Stores" }, // Important
+            { store_id: -1, store_name: "All Stores" },
             ...data,
           ];
         }
       });
   }
 
-  // ✅ Load All Banners
+  // ✅ Load Banners
   loadInventory() {
     this.apis.getBanners(-1).subscribe({
       next: (res: any) => {
@@ -139,9 +139,9 @@ export class AdminMediaComponent {
             text: banner.banner_text,
             image: banner.banner_image_url,
             video: banner.banner_video_url,
+            status: banner.status,
             start_date: banner.start_date,
             end_date: banner.end_date,
-            status: banner.status,
           }));
 
           this.mediaListBackup = [...this.staff_list];
@@ -163,17 +163,16 @@ export class AdminMediaComponent {
     }
 
     this.staff_list = this.mediaListBackup.filter(
-      (item: any) => item.store_id === storeId,
+      (item: any) => item.store_id === storeId
     );
   }
 
-  // ✅ Reset
   reset() {
     this.adminMediaForm.patchValue({ store_id: -1 });
     this.staff_list = [...this.mediaListBackup];
   }
 
-  // ✅ Add New
+  // ✅ Open Add Modal
   openNew() {
     const modalRef = this.modalService.open(AddAdminMediaComponent, {
       centered: true,
@@ -205,7 +204,6 @@ export class AdminMediaComponent {
     });
   }
 
-  // ✅ Grid Actions
   onCellClicked(event: any): void {
     let target = event.event?.target as HTMLElement;
 
@@ -226,7 +224,6 @@ export class AdminMediaComponent {
     }
   }
 
-  // ✅ Confirm Delete (API can be added here)
   onConfirm(modal: any) {
     console.log("Delete:", this.selectedItem);
     modal.close();
