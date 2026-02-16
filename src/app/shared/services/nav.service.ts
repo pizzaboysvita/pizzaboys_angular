@@ -297,10 +297,18 @@ export class NavService {
       level: 1,
       title: "Media",
       path: "/media/admin-media",
-      icon: "ri-image-line",
+      icon: "ri-store-3-line",
       type: "link",
       active: false,
     },
+    {
+      level: 1,
+      title:"Suppliers",
+      path: "/suppliers/suppliers",
+      icon: "ri-truck-line",
+      type: "link",
+      active: false,
+    }
     
     // {
     //   level: 1,

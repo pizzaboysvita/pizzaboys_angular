@@ -21,7 +21,7 @@
           Store ID is required
         </div>
       </div>
-<br>
+      <br>
       <!-- Text -->
       <div class="media-cell">
         <h6 class="fw-bold">Text *</h6>
@@ -30,16 +30,21 @@
           Text is required
         </div>
       </div>
-<br>
+      <br>
       <!-- Image Banner -->
       <div class="media-cell">
         <h6 class="fw-bold">Image Banner *</h6>
-        <input type="file" class="form-control" (change)="onImageSelect($event)" />
+        <input type="file" class="form-control" accept=".webp,.jpg,.jpeg,.png" (change)="onImageSelect($event)" />
         <div *ngIf="f['image'].touched && f['image'].invalid" class="text-danger">
           Image is required
         </div>
       </div>
-<br>
+      <!-- Image Preview (Edit Mode) -->
+      <div *ngIf="type === 'Edit' && editData?.image && !selectedImageFile" style="margin-top:10px;">
+        <img [src]="editData.image" style="width:150px;height:100px;border-radius:6px;" />
+      </div>
+
+      <br>
       <!-- Video -->
       <div class="media-cell">
         <h6 class="fw-bold">Video *</h6>
@@ -48,8 +53,35 @@
           Video is required
         </div>
       </div>
+      <!-- Video Preview (Edit Mode) -->
+      <div *ngIf="type === 'Edit' && editData?.video && !selectedVideoFile" style="margin-top:10px;">
+        <video width="200" height="100" controls>
+          <source [src]="editData.video" type="video/mp4">
+        </video> 
+      </div>
+
 
     </div>
+
+    <div class="media-cell">
+      <h6 class="fw-bold">Start Date *</h6>
+      <input type="datetime-local" class="form-control" formControlName="start_date" />
+      <div *ngIf="f['start_date'].touched && f['start_date'].invalid" class="text-danger">
+        Start Date is required
+      </div>
+    </div>
+
+    <br>
+
+    <div class="media-cell">
+      <h6 class="fw-bold">End Date *</h6>
+      <input type="datetime-local" class="form-control" formControlName="end_date" />
+      <div *ngIf="f['end_date'].touched && f['end_date'].invalid" class="text-danger">
+        End Date is required
+      </div>
+    </div>
+
+
 
     <!-- STATUS -->
     <!-- <div class="col-xl-6">
@@ -67,22 +99,16 @@
 
 
 <div class="modal-footer align-items-center ">
-  <button
-    type="button"
-    class="btn btn-secondary action-btn"
-    (click)="cancel()">
+  <button type="button" class="btn btn-secondary action-btn" (click)="cancel()">
     Cancel
   </button>
 
   @if (this.type != 'View') {
-    <button
-      type="button"
-      class="btn btn-animation save-button action-btn font-family"
-      [disabled]="isSubmitting"
-      (click)="save()">
-      {{ isSubmitting
-        ? (type === 'Edit' ? 'Updating...' : 'Saving...')
-        : (type === 'Edit' ? 'Update' : 'Save') }}
-    </button>
+  <button type="button" class="btn btn-animation save-button action-btn font-family" [disabled]="isSubmitting"
+    (click)="save()">
+    {{ isSubmitting
+    ? (type === 'Edit' ? 'Updating...' : 'Saving...')
+    : (type === 'Edit' ? 'Update' : 'Save') }}
+  </button>
   }
 </div>

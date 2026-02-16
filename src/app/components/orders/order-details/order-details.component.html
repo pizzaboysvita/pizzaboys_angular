@@ -364,7 +364,7 @@
 
 
       @if(orderForm.value.orderType === 'delivery'){
-      <div class="d-flex justify-content-between mb-2">
+      <div class="d-flex justify-content-between mb-2" *ngIf="deliveryfee">
         <span class="text-muted">Delivery Fee</span>
         <span class="fw-semibold">${{ deliveryfee }}</span>
       </div>
@@ -413,22 +413,47 @@
           </div> -->
       <!-- <div class="p-3 border rounded mb-3"> -->
         <!-- <div class="row g-3"> -->
-         <div  class="mb-3">
-            <!-- <label class="form-label">Name</label> -->
+         <!-- <div  class="mb-3">
             <input
               type="text"
               class="form-control"
               [(ngModel)]="customer.name"
               placeholder="Search Name,Phone Number "
             />
-          </div>
+          </div> -->
+<div class="position-relative mb-3 autocomplete-wrapper">
+  <input
+    type="text"
+    class="form-control"
+    placeholder="Search Phone Number"
+    [formControl]="searchControl"
+    autocomplete="off"
+  />
+
+  <!-- Results -->
+  <ul
+    class="list-group position-absolute w-100"
+    *ngIf="searchResults.length"
+    style="z-index: 1000; max-height: 200px; overflow-y: auto;"
+  >
+    <li
+      class="list-group-item list-group-item-action"
+      *ngFor="let user of searchResults"
+      (click)="selectUser(user)"
+      style="cursor: pointer;"
+    >
+      <strong>{{ user.first_name }} ({{ user.phone_number }})</strong>
+    </li>
+  </ul>
+</div>
 
           <div  class="mb-3">
             <label class="form-label">Name</label>
             <input
               type="text"
               class="form-control"
-              [(ngModel)]="customer.name"
+              formControlName="name"
+
             />
           </div>
 
@@ -437,7 +462,8 @@
             <input
               type="email"
               class="form-control"
-              [(ngModel)]="customer.email"
+              formControlName="email"
+
             />
           </div>
 
@@ -446,7 +472,7 @@
             <input
               type="tel"
               class="form-control"
-              [(ngModel)]="customer.phone"
+              formControlName="phone"
             />
           </div>
         <!-- </div>
@@ -530,6 +556,55 @@
   </div>
 </div>
 
+<div
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  [ngClass]="{ 'show d-block': showconfirmModelPopup }"
+  style="background: rgba(0, 0, 0, 0.5); z-index: 1040"
+>
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Customer Details</h5>
+        <!-- <button class="btn-close" (click)="closeNewModelPopup()"></button> -->
+         <button class="btn-close" (click)="showconfirmModelPopup=false"></button>
+      </div>
+
+      <div class="modal-body">
+        <!-- <div *ngIf="selectedUser" class="mb-3 p-3 border rounded bg-light"> -->
+
+  <!-- <h6 class="mb-3">Customer Found</h6> -->
+
+  <p><strong>Name:</strong>
+    {{ selectedUser?.first_name }} {{ selectedUser?.last_name }}
+  </p>
+
+  <p><strong>Email:</strong>
+    {{ selectedUser?.email || 'N/A' }}
+  </p>
+
+  <p><strong>Phone:</strong>
+    {{ selectedUser?.phone_number }}
+  </p>
+
+  <p><strong>Address:</strong><br>
+    {{ selectedUser?.address_line_1 }}<br>
+    {{ selectedUser?.city }} {{ selectedUser?.state }} {{ selectedUser?.postcode }}
+  </p>
+</div>
+
+<div class="d-flex justify-content-end gap-2 mt-3 mb-3 mr-3">
+        <button class="btn btn-secondary"(click)="showconfirmModelPopup=false">
+          No
+        </button>
+        <button class="btn btn-primary" (click)="confirmCustomer()">
+          OK
+        </button>
+      </div>
+      </div>
+    </div>
+  </div>
 <!-- Order Due Modal -->
 <!-- <div
   class="modal fade"

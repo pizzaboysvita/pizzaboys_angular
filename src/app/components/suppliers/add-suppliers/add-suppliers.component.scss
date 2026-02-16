@@ -1,0 +1,30 @@
+.modal-footer {
+  padding: 20px 24px;
+  border-top: 1px solid #eee;
+}
+.action-btn {
+  min-width: 90px;
+  height: 40px;
+  border-radius: 10px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.save-button {
+  margin-top: 4px;
+}
+.delete-icon {
+  color: #ff3b3b;
+  font-size: 18px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+.items-add-btn {
+  width: 80px;
+  height: 35px;
+  padding: 0;
+}

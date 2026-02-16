@@ -72,6 +72,10 @@ export const content: Routes = [
     {
         path: 'inventory',
         loadChildren: () => import('../../components/inventory/inventory/inventory.routes'),
-    }
+    },
 
+    {
+        path: 'suppliers',
+        loadChildren: () => import('../../components/suppliers/suppliers.route'),
+    },
 ]

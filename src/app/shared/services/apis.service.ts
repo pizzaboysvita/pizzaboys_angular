@@ -2,6 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { BehaviorSubject, Subject } from "rxjs";
 import { environment } from "../../../environments/environment";
+import { AppConstants } from "../../app.constants";
 
 @Injectable({
   providedIn: "root",
@@ -34,6 +35,33 @@ export class ApisService {
 
     return this.http.put(environment.apiUrl + "/api/updatedetails", reqbody);
   }
+  // ✅ GET BANNERS
+  getBanners(userId: number) {
+    return this.getApi(
+      `${AppConstants.api_end_points.banner}?user_id=${userId}`,
+    );
+  }
+
+  // ✅ INSERT / UPDATE BANNER
+  saveBanner(payload: any) {
+    return this.postApi(AppConstants.api_end_points.banner, payload);
+  }
+
+  // ✅ UPLOAD IMAGE
+  uploadImage(file: File) {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    return this.postApi(AppConstants.api_end_points.upload_image, formData);
+  }
+
+  // ✅ UPLOAD VIDEO
+  uploadVideo(file: File) {
+    const formData = new FormData();
+    formData.append("video", file);
+
+    return this.postApi(AppConstants.api_end_points.upload_video, formData);
+  }
 
   show(): void {
     this.isLoading.next(true);
@@ -50,13 +78,13 @@ export class ApisService {
     return menus.map((menu) => {
       console.log(categories, "categories dev categories");
       const filteredCategories = categories.filter(
-        (c) => c.dish_menu_id === menu.dish_menu_id
+        (c) => c.dish_menu_id === menu.dish_menu_id,
       );
 
       const categoryNodes = filteredCategories.map((category) => {
         console.log(category, "category");
         const filteredDishes = dishes.filter(
-          (d) => d.dish_category_id === category.id
+          (d) => d.dish_category_id === category.id,
         );
         return {
           categoryId: category.id,
@@ -135,7 +163,7 @@ export class ApisService {
           console.error(
             "Invalid option_set_combo_json:",
             optSet.option_set_combo_json,
-            e
+            e,
           );
         }
         console.log(optSet, "optSet.option_type");
@@ -151,7 +179,7 @@ export class ApisService {
       console.error(
         "Invalid dish_option_set_json:",
         dish.dish_option_set_json,
-        e
+        e,
       );
     }
     return {
@@ -165,7 +193,7 @@ export class ApisService {
       const filteredDishes = dishes
         .filter((d) => d.dish_category_id === category.id)
         .map((dish) => {
-          dish.category_name=category?.name
+          dish.category_name = category?.name;
           // Initialize option set array
           dish.dish_ingredient_array = JSON.parse(dish.dish_ingredients_json);
           let dish_option_set_array = [];
@@ -173,7 +201,7 @@ export class ApisService {
           try {
             // Parse dish_option_set_json if present
             dish_option_set_array = JSON.parse(
-              dish.dish_option_set_json ?? "[]"
+              dish.dish_option_set_json ?? "[]",
             );
             //  dish_option_set_array.forEach((element:any)=>{
             //                 element.quantity=1
@@ -183,7 +211,7 @@ export class ApisService {
               let option_set_array = [];
               try {
                 option_set_array = JSON.parse(
-                  optSet.option_set_combo_json ?? "[]"
+                  optSet.option_set_combo_json ?? "[]",
                 );
                 option_set_array.forEach((element: any) => {
                   element.selected = false;
@@ -193,7 +221,7 @@ export class ApisService {
                 console.error(
                   "Invalid option_set_combo_json:",
                   optSet.option_set_combo_json,
-                  e
+                  e,
                 );
               }
               return {
@@ -205,7 +233,7 @@ export class ApisService {
             console.error(
               "Invalid dish_option_set_json:",
               dish.dish_option_set_json,
-              e
+              e,
             );
           }
 
@@ -246,7 +274,7 @@ export class ApisService {
       .reduce(
         (sum: number, opt: any) =>
           sum + (Number(opt.price) || 0) * (Number(opt.quantity) || 1),
-        0
+        0,
       );
 
     extraPrice += comboOptions
@@ -255,12 +283,12 @@ export class ApisService {
       .reduce(
         (sum: number, opt: any) =>
           sum + (Number(opt.price) || 0) * (Number(opt.quantity) || 1),
-        0
+        0,
       );
 
     extraPrice += ingredients.reduce(
       (sum: number, ing: any) => sum + (Number(ing.price) || 0),
-      0
+      0,
     );
 
     // extraPrice += toppings
@@ -317,7 +345,7 @@ export class ApisService {
     console.log(fullcomboDetails, "fullcomboDetails step 1");
     console.log(
       this.transformData(fullcomboDetails),
-      "fullcomboDetails step 2"
+      "fullcomboDetails step 2",
     );
     //   let grandTotal: any;
     //   console.log(fullcomboDetails, 'fullcomboDetails')
@@ -361,7 +389,7 @@ export class ApisService {
                 })
                 .filter((item: any) => item.choose_option.length > 0),
             };
-          }
+          },
         );
 
         return {
