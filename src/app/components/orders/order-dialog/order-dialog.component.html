@@ -199,7 +199,7 @@
                             <span>${{ formatPrice(data.delivery_fees) }}</span>
                         </div>
                         <div class="summary-row" *ngIf="data.discount_amount">
-                            <p>Discount</p>
+                            <p>Discount <span *ngIf="data.discount_percentage">({{data.discount_percentage}}%)</span></p>
                             <span>-${{ formatPrice(data.discount_amount) }}</span>
                         </div>
 

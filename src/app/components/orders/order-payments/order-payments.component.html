@@ -446,7 +446,7 @@
                         >
                       </td>
                       <td>{{ rowData.type }}</td>
-                      <td>${{ rowData.amount }}</td>
+                      <td>${{ rowData.amount | number:'1.2-2'}}</td>
                       <td>{{ rowData.tender }}</td>
                       <td>{{ rowData.change }}</td>
                     </tr>
@@ -955,18 +955,18 @@
       <div class="p-3 border rounded mb-1">
   <div class="d-flex justify-content-between mb-2">
     <strong>Bill Amount</strong>
-    <span>${{ (totalPaid ?? 0).toFixed(2) }}</span>
+    <span>${{ totalPaid | number:'1.2-2' }}</span>
   </div>
 
   <div class="d-flex justify-content-between mb-2">
     <strong>Tendered</strong>
-    <span>${{ (tenderedAmount ?? 0).toFixed(2) }}</span>
+    <span>${{ tenderedAmount | number:'1.2-2'}}</span>
   </div>
 
   <div class="d-flex justify-content-between mb-2">
     <strong>Change</strong>
     <span class="text-success fw-bold">
-      ${{ (changeAmount ?? 0).toFixed(2) }}
+      ${{ changeAmount | number:'1.2-2' }}
     </span>
   </div>
 </div>
@@ -1025,7 +1025,7 @@
               </span>
             </td>
             <td>{{ rowData.type }}</td>
-            <td>${{ rowData.amount.toFixed(2)}}</td>
+            <td>${{ rowData.amount | number:'1.2-2'}}</td>
             <td>${{ rowData.tender }}</td>
             <td>${{ rowData.change }}</td>
           </tr>

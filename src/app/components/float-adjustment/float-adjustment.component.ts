@@ -97,18 +97,38 @@ paymentForm: FormGroup
        this.storeId = user.store_id;
    this.getCashflow();
   }
-  getCashflow(){
-       const params =`?store_id=${this.storeId}&cash_flow_date=${this.today}`;
-   this.apiService
-      .getApi(AppConstants.api_end_points.cashflow + params)
-      .subscribe((res: any) => {
-        if (res.code === '1') {
-          this.rowData = res.cashFlowDetails;
-        } else {
-          alert(res.message || 'Failed to load cash flow');
-        }
-      });
-  }
+floatAmount: number = 0;
+cashInTill: number = 0;
+
+getCashflow() {
+  const params = `?store_id=${this.storeId}&cash_flow_date=${this.today}`;
+
+  this.apiService
+    .getApi(AppConstants.api_end_points.cashflow + params)
+    .subscribe((res: any) => {
+      if (res.code === '1') {
+        this.rowData = res.cashFlowDetails;
+
+        const summary = this.rowData.find((x: any) => x.Type === 'SUMMARY');
+        const nonSummary = this.rowData.filter((x: any) => x.Type == 'Cash');
+
+        // Float = SUMMARY Expected
+        this.floatAmount = Number(summary?.Expected ?? 0);
+
+        // Remaining Sales (excluding SUMMARY)
+        const remainingSales = nonSummary.reduce(
+          (sum: number, item: any) => sum + Number(item.Sales ?? 0),
+          0
+        );
+
+        // Cash in till = Float + Remaining Sales
+        this.cashInTill = this.floatAmount + remainingSales;
+      } else {
+        alert(res.message || 'Failed to load cash flow');
+      }
+    });
+}
+
    currencyFormatter(value: number) {
     if (value == null) return '0.00';
     return `₹ ${value.toFixed(2)}`;

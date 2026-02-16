@@ -26,6 +26,8 @@ import { ComboAlertComponent } from "../combo-alert/combo-alert.component";
 import { ComboSelectionComponent } from "../combo-selection/combo-selection.component";
 import { CommonModule as NgCommon } from "@angular/common";
 import { CommonService } from "../../../shared/services/common.service";
+import { FormControl } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs/operators';
 
 export interface ComboItem {
   dish_id: number;
@@ -128,6 +130,9 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   discounts: any = [];
   surcharges: any = [];
 
+searchControl = new FormControl('');
+searchResults: any[] = [];
+  selectedUser: any;
 
 
   constructor(
@@ -144,10 +149,88 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.initializeForms();
     this.loadInitialData();
+   this.searchControl.valueChanges.pipe(
+    debounceTime(400),
+    distinctUntilChanged(),
+    filter((value): value is string => !!value && value.length >= 3),
+    switchMap(async (value) => this.searchUser(value))
+  ).subscribe({
+    next: (res: any) => {
+      this.searchResults = res?.data || res;
+      console.log(this.searchResults);
+      
+    },
+    error: () => {
+      this.searchResults = [];
+    }
+  });
   }
   ngAfterViewInit() {
     this.setupAddressAutocompleteObserver();
   }
+searchUser(keyword: string) {
+  console.log(keyword);
+    this.apiService.getApi(`/api/user/address?phone_number=${keyword}`).subscribe({
+      next: (res: any) => {
+         this.searchResults = res?.data || [];
+  //         const data = res?.data || [];
+
+  // // Remove duplicate phone numbers
+  // const unique = data.filter(
+  //   (item: any, index: number, self: any[]) =>
+  //     index === self.findIndex(u => u.phone_number === item.phone_number)
+  // );
+
+  // this.searchResults = unique;
+
+      },
+      error: (err: any) => {
+        console.error("Failed to fetch combo details", err);
+        this.searchResults=[]
+        
+      },
+    });
+}
+showconfirmModelPopup=false
+selectUser(user: any) {
+  this.searchControl.setValue(user.phone_number); // show phone in input
+  this.searchResults = [];
+  this.selectedUser = user;   // store full user data
+  this.showconfirmModelPopup = true; // open modal
+
+}
+confirmCustomer() {
+  this.showconfirmModelPopup = false;
+  this.customer.name =
+    this.selectedUser?.first_name + ' ' + this.selectedUser?.last_name;
+
+  // this.customer.email = this.selectedUser?.email;
+  this.customer.phone = this.selectedUser?.phone_number;
+  // this.orderForm.patchValue({
+  //   deliveryAddress: address
+  // });
+   this.orderForm.patchValue({
+  name: this.selectedUser?.first_name + ' ' + this.selectedUser?.last_name})
+     this.orderForm.patchValue({
+  phone: this.selectedUser?.phone_number})
+  this.orderForm.patchValue({
+  email: this.selectedUser?.email})
+  this.orderForm.patchValue({
+  deliveryAddress:
+    // this.selectedUser?.address_line_1 + ', ' +
+    this.selectedUser?.street_address + ', ' +
+    this.selectedUser?.city + ', ' +
+    this.selectedUser?.state + ' ' +
+    this.selectedUser?.country + ' '+
+    this.selectedUser?.postal_code
+});
+
+  console.log(this.customer);
+  this.searchResults = [];
+   this.searchControl.reset('', { emitEvent: false });
+  
+
+}
 
   private initializeForms(): void {
     this.orderForm = this.fb.group({
@@ -159,6 +242,9 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
       deliveryNote: [""],
       orderDue: ["ASAP", Validators.required],
       orderDateTime: [new Date(), Validators.required],
+      name:[''],
+      phone:[''],
+      email:['']
     });
     // this.orderdueForm = this.fb.group({
     //   orderDue: ["ASAP", Validators.required],
@@ -395,6 +481,7 @@ removeItems(item: any) {
   }
 
   openNewModelPopup(type:any) {
+
     if(type=='PICKUP'){
       this.orderForm.get('orderType')?.setValue('pickup')
     }
@@ -402,7 +489,12 @@ removeItems(item: any) {
       this.orderForm.get('orderType')?.setValue('delivery')
     }
     console.log( this.orderForm.value.orderType);
-    
+    const orderTypeValue = this.orderForm.get('orderType')?.value;
+this.orderForm.reset({
+  orderType: orderTypeValue,   // keep existing value
+  orderDue: 'ASAP',            // optional default
+  orderDateTime: new Date()    // optional default
+});
     this.showNewModelPopup = true;
   }
   closeNewModelPopup() {
@@ -821,6 +913,7 @@ getTotalFlatAmount(): number {
     this.modalRef.componentInstance.surcharges = this.surcharges;
     this.modalRef.componentInstance.discounts = this.discounts;
     this.modalRef.componentInstance.totalAmount = this.total;
+    this.modalRef.componentInstance.deliveryfee = this.deliveryfee;
 
     this.modalRef.result.then(
       (result: any) => {
@@ -876,8 +969,11 @@ getTotalFlatAmount(): number {
               this.toastr.success(res.message, "Success");
               this.clearOrderDetails();
               this.customer = { name: "", email: "", phone: "" };
-              this.orderForm.value.orderType === 'PICKUP'
-              this.deliveryfee=0
+              this.orderForm.reset();
+              this.orderForm.get("orderType")?.setValue('PICKUP');
+              this.orderForm.get("orderDue")?.setValue('ASAP'); 
+              this.orderForm.get("orderDateTime")?.setValue(new Date()); 
+              this.deliveryfee=0;
               this.cdr.detectChanges();
             } else {
               this.toastr.error(res?.message || "Order failed", "Error");
@@ -975,6 +1071,14 @@ getTotalFlatAmount(): number {
   }
 
   submitDUeOrder() {
+   this.searchResults=[]
+   this.selectedUser=''
+     this.customer = {
+    name: this.orderForm.get('name')?.value,
+    email: this.orderForm.get('email')?.value,
+    phone: this.orderForm.get('phone')?.value
+  };
+
     this.showNewModelPopup = false;
     if (this.orderForm.invalid || this.dateError) return;
     this.orderDueDetails =
@@ -988,6 +1092,9 @@ getTotalFlatAmount(): number {
     this.skipAvailabilityCheck = true;
           if( this.orderForm.value.orderType=='delivery'){
             this.deliveryfee = 5.9;
+          }
+          else{
+                        this.deliveryfee = 0;
           }
     if( this.orderForm.value.orderDue === "Later"){
     this.addToCart(this.pendingCartItem)

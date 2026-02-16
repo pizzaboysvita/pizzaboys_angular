@@ -95,11 +95,11 @@ this.refundForm = this.fb.group({
     // merge toppings + ingredients into items for display
     this.totalOrdermerged = this.order_items.map((dish: any) => {
       const toppings = this.order_toppings
-        .filter((opt: any) => opt.dish_id === dish.dish_id)
+        .filter((opt: any) => opt?.dish_id === dish?.dish_id)
         .map(({ name, price, quantity }: any) => ({ name, price, quantity }));
 
       const ingredients = this.order_ingredients
-        .filter((opt: any) => opt.dish_id === dish.dish_id)
+        .filter((opt: any) => opt?.dish_id === dish?.dish_id)
         .map(({ name, price, quantity }: any) => ({ name, price, quantity }));
 
       // If your API provides item_total_price, use it; otherwise compute price * qty

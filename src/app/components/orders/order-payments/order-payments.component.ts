@@ -25,6 +25,8 @@ export class OrderPaymentsComponent {
   @Input() customer: any;
   @Input() surcharges: any;
   @Input() discounts: any;
+  @Input() deliveryfee: any;
+
   isLoading = false;
   progressValue = 10;
   splitBy = 2;
@@ -55,7 +57,7 @@ export class OrderPaymentsComponent {
   percentageJson: any = [];
   percentage: number = 0;
   userJson: any = [];
-  tenderedAmount: number = 0;
+  tenderedAmount = 0;
   showChangeModal = false;
   changeAmount = 0;
   orderList: any = [];
@@ -105,7 +107,14 @@ const itemsTotal = this.data.reduce(
 );
 
 // ✅ Final total
-this.totalPrice = itemsTotal + this.surchargeAmt - this.disamount;
+// this.totalPrice = itemsTotal + this.surchargeAmt - this.disamount;
+
+this.totalPrice =
+  (itemsTotal || 0) +
+  (this.surchargeAmt || 0) +
+  (this.deliveryfee || 0) -
+  (this.disamount || 0);
+
     // this.data.forEach((row: any) => {
     //   const price = Number(row.duplicate_dish_price) || 0;
     //   const qty = Number(row.dish_quantity) || 0;
@@ -141,8 +150,6 @@ this.totalPrice = itemsTotal + this.surchargeAmt - this.disamount;
   }
 
   setActiveTab(tab: string) {
-        console.log(this.data );
-
     this.activeTab = tab;
 
     // --- AUTOSELECT RULES ---
@@ -190,8 +197,6 @@ this.totalPrice = itemsTotal + this.surchargeAmt - this.disamount;
             (row: { status: string }) => row.status === "Success"
           )
         : false;
-        console.log(splitfulRows,this.data );
-        
       this.paidItems = splitfulRows ? this.paidItems : [];
     this.unpaidItems = !splitfulRows ? [...this.data] : [];
     if(this.unpaidItems){
@@ -201,7 +206,6 @@ this.totalPrice = itemsTotal + this.surchargeAmt - this.disamount;
     if (this.splitRows && this.splitRows.length > 0) {
       this.isSplitPayment = true;
     }
-    console.log(this.unpaidItems);
     
   }
 
@@ -251,7 +255,13 @@ this.totalPrice = itemsTotal + this.surchargeAmt - this.disamount;
 }) => sum + item.duplicate_dish_price * item.dish_quantity,
       0
     );
-    const totalAmount =totalAmountt + this.surchargeAmt - this.disamount
+    // const totalAmount =totalAmountt + this.surchargeAmt - this.disamount
+    const totalAmount =
+  (totalAmountt || 0) +
+  (this.surchargeAmt || 0) +
+  (this.deliveryfee || 0) -
+  (this.disamount || 0);
+
     const splitAmount = +(totalAmount / this.splitBy).toFixed(2);
     let remaining = totalAmount;
     this.splitRows = [];
@@ -527,7 +537,8 @@ getPayTotal() {
   }
 
   setCashQuick(amount: number) {
-    this.tenderedAmount = amount;
+    // this.tenderedAmount = amount;
+    this.tenderedAmount = amount ?? 0;
   }
   appendCashNumber(num: any) {
     this.cashpaymentAmount = Number(
@@ -548,6 +559,15 @@ getPayTotal() {
         this.tenderedAmount - this.cashpaymentAmount
       ).toFixed(2);
     }
+  //   if (this.tenderedAmount > this.cashpaymentAmount) {
+  // this.changeAmount = Math.round(
+  //   (this.tenderedAmount - this.cashpaymentAmount) * 100
+  // ) / 100;
+// } 
+else {
+  this.changeAmount = 0;
+}
+
     //   if (this.remainingAmount <= 0) {
     //   this.showChangeModal = true;   // ✅ open the summary modal
     // }
@@ -614,6 +634,8 @@ getPayTotal() {
       this.activeTab === "people" &&
       this.checkAllPeoplePaymentsSuccess()
     ) {
+      console.log("people");
+      
       this.collectPeopleSuccessfulPayments();
       this.showChangeModal = true; // open summary modal
     } else if (
@@ -632,19 +654,56 @@ getPayTotal() {
     this.orderList = this.fullArray.filter(
       (r: { status: string }) => r.status === "Success"
     );
+    console.log(this.orderList);
+    
     this.totalPaid = this.orderList.reduce(
       (s: number, r: { amount: any }) => s + (Number(r.amount) || 0),
       0
     );
   }
+  // checkAllPaymentsSuccess(): boolean {
+  //   if (!this.fullArray.length) return false;
+  //   const allSuccess = this.fullArray.every((r: any) => r.status === "Success");
+  //   console.log(allSuccess);
+  //   console.log(this.totalPrice);
+    
+  //   console.log(this.fullArray);
+    
+  //   const successTotal = this.fullArray
+  //     .filter((r: any) => r.status === "Success")
+  //     .reduce((sum: number, r: any) => sum + (Number((r.amount).toFixed(2)) || 0), 0);
+  //     console.log(successTotal);
+      
+  //   // return allSuccess && successTotal === this.totalPrice;
+  //   console.log(allSuccess);
+  //   console.log(successTotal.toFixed(2));
+
+  //   return allSuccess &&
+  //      Number(successTotal.toFixed(2)) ===
+  //      Number(this.totalPrice.toFixed(2));
+
+  // }
   checkAllPaymentsSuccess(): boolean {
-    if (!this.fullArray.length) return false;
-    const allSuccess = this.fullArray.every((r: any) => r.status === "Success");
-    const successTotal = this.fullArray
-      .filter((r: any) => r.status === "Success")
-      .reduce((sum: number, r: any) => sum + (Number(r.amount) || 0), 0);
-    return allSuccess && successTotal === this.totalPrice;
-  }
+  if (!this.fullArray.length) return false;
+
+  const allSuccess = this.fullArray.every(
+    (r: any) => r.status === "Success"
+  );
+
+  const successTotal = this.fullArray
+    .filter((r: any) => r.status === "Success")
+    .reduce(
+      (sum: number, r: any) => sum + (Number(r.amount) || 0),
+      0
+    );
+
+  return (
+    allSuccess &&
+    Math.round(successTotal * 100) ===
+    Math.round(this.totalPrice * 100)
+  );
+}
+
   collectPeopleSuccessfulPayments() {
     this.orderList = this.splitRows.filter(
       (r: { status: string }) => r.status === "Success"
@@ -660,7 +719,10 @@ getPayTotal() {
     const successTotal = this.splitRows
       .filter((r: any) => r.status === "Success")
       .reduce((sum: number, r: any) => sum + (Number(r.amount) || 0), 0);
-    return allSuccess && successTotal === this.totalPrice;
+       return allSuccess &&
+       Number(successTotal.toFixed(2)) ===
+       Number(this.totalPrice.toFixed(2));
+
   }
   collectItemsSuccessfulPayments() {
     this.orderList = this.paidItems.filter(
@@ -677,7 +739,11 @@ getPayTotal() {
     const successTotal = this.paidItems
       .filter((r: any) => r.status === "Success")
       .reduce((sum: number, r: any) => sum + (Number(r.amount) || 0), 0);
-    return allSuccess && successTotal === this.totalPrice;
+    // return allSuccess && successTotal === this.totalPrice;
+    return allSuccess &&
+       Number(successTotal.toFixed(2)) ===
+       Number(this.totalPrice.toFixed(2));
+
   }
   closeOrdersModal() {
     this.showChangeModal = false;

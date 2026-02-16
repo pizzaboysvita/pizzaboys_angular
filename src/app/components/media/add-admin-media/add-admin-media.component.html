@@ -34,7 +34,7 @@
       <!-- Image Banner -->
       <div class="media-cell">
         <h6 class="fw-bold">Image Banner *</h6>
-        <input type="file" class="form-control" (change)="onImageSelect($event)" />
+        <input type="file" class="form-control" accept=".webp,.jpg,.jpeg,.png" (change)="onImageSelect($event)" />
         <div *ngIf="f['image'].touched && f['image'].invalid" class="text-danger">
           Image is required
         </div>
