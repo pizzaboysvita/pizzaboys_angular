@@ -221,7 +221,8 @@
                             <p>{{ data.payment_method }}</p>
                             <small style="margin-left:-3%">{{ data.payment_status ?? 'Successful' }}</small>
                         </div>
-                        <div class="payment-amount">${{ formatPrice(data.payment_amount ?? data.total_price) }}</div>
+                        <div class="payment-amount">${{ formatPrice(data.total_price) }}</div>
+                        <!-- <div class="payment-amount">${{ formatPrice(data.payment_amount ?? data.total_price) }}</div> -->
                     </div>
                 </div>
                 <div *ngIf="activeTab === 'log'">
@@ -276,7 +277,7 @@
         <div class="info-grid">
           <div>
             <div class="label">ORDER</div>
-            <div class="value">{{refundData?.unitnumber}}</div>
+            <div class="value"># P-{{ refundData?.order_master_id }}</div>
           </div>
           <div>
             <div class="label">PAYMENT TYPE</div>
@@ -288,7 +289,7 @@
           </div>
           <div>
             <div class="label">PAYMENT REFERENCE ID</div>
-            <div class="value muted">{{refundData?.payment_amount}}</div>
+            <div class="value muted">-</div>
           </div>
         </div>
         <hr />
@@ -338,7 +339,7 @@
 </div>
 
 <!-- Partial Refund Items -->
-<div *ngIf="refundForm.value.refundType === 'PARTIAL'" class="mb-3">
+<!-- <div *ngIf="refundForm.value.refundType === 'PARTIAL'" class="mb-3">
   <div class="fw-bold mb-1">Select Items</div>
   <div
     class="form-check"
@@ -356,7 +357,37 @@
       <span>${{ item.price }}</span>
     </label>
   </div>
+</div> -->
+<!-- Refund Items -->
+<div *ngIf="refundForm.value.refundType" class="mb-3">
+  <div class="fw-bold mb-1">Select Items</div>
+
+  <div
+    class="form-check"
+    *ngFor="let item of refundItems; let i = index"
+  >
+    <input
+      class="form-check-input"
+      type="checkbox"
+      [checked]="item.checked"
+       [disabled]="
+    refundForm.get('refundType')?.value === 'FULL' ||
+    item.order_status === 'cancelled'
+  "
+      (change)="toggleItem(item)"
+      [id]="'item_' + i"
+    />
+
+    <label
+      class="form-check-label d-flex justify-content-between w-100"
+      [for]="'item_' + i"
+    >
+      <span>{{ item.dish_name }}</span>
+      <span>${{ item.price }}</span>
+    </label>
+  </div>
 </div>
+
         <div class="section">
           <div class="section-title">REFUND PAYMENT</div>
 
@@ -406,8 +437,8 @@
       <div class="modal-footer border-top">
             <button class="btn btn-secondary" style="margin-top: 20px;" (click)="refundModal = false">
       Cancel</button>
-    <button body class="btn btn-animation  save-button" style="margin-left: 10px;" 
-      type="button"> REFUND</button>&nbsp;
+    <button  class="btn btn-animation  save-button" style="margin-left: 10px;" 
+      type="button" (click)="saveRefund()"> REFUND</button>&nbsp;
         <!-- <button class="btn btn-outline-secondary" (click)="refundModal = false">
           CANCEL
         </button>

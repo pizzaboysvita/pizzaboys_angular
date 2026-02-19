@@ -433,7 +433,7 @@
   <!-- Results -->
   <ul
     class="list-group position-absolute w-100"
-    *ngIf="searchResults.length"
+      *ngIf="searchResults.length > 0"
     style="z-index: 1000; max-height: 200px; overflow-y: auto;"
   >
     <li
@@ -494,7 +494,7 @@
 
           <div *ngIf="orderForm.get('deliveryAddress')?.value">
             <div class="mb-3">
-              <label class="form-label">Street Number</label>
+              <label class="form  -label">Street Number</label>
               <input
                 type="text"
                 class="form-control"
@@ -594,7 +594,7 @@
   </p>
 </div>
 
-<div class="d-flex justify-content-end gap-2 mt-3 mb-3 mr-3">
+<div class="d-flex justify-content-end gap-2 m-3">
         <button class="btn btn-secondary"(click)="showconfirmModelPopup=false">
           No
         </button>
