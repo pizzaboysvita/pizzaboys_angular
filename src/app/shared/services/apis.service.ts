@@ -36,9 +36,9 @@ export class ApisService {
     return this.http.put(environment.apiUrl + "/api/updatedetails", reqbody);
   }
   // ✅ GET BANNERS
-  getBanners(userId: number) {
+  getBanners(storeId: number) {
     return this.getApi(
-      `${AppConstants.api_end_points.banner}?user_id=${userId}`,
+      `${AppConstants.api_end_points.banner}?store_id=${storeId}`,
     );
   }
 

@@ -292,14 +292,42 @@ closeOrdersModal(){
     const stepIndex = this.statuses.indexOf(step);
     return stepIndex <= currentIndex ? "progtrckr-done" : "progtrckr-todo";
   }
-  onRefundTypeChange() {
-  if (this.refundForm.value.refundType === 'FULL') {
-    this.setFullRefund();
+//   onRefundTypeChange() {
+//   if (this.refundForm.value.refundType === 'FULL') {
+//     this.setFullRefund();
+//   } else {
+//     this.refundForm.patchValue({ total_price: 0 });
+//     this.refundItems.forEach((i: { checked: boolean; }) => (i.checked = false));
+//   }
+// }
+onRefundTypeChange() {
+  const refundType = this.refundForm.value.refundType;
+
+  if (refundType === 'FULL') {
+
+    // ✅ Select all
+    this.refundItems.forEach((item: { checked: boolean; }) => item.checked = true);
+
+    const total = this.refundItems.reduce(
+      (sum: number, item: { price: any; }) => sum + Number(item.price),
+      0
+    );
+
+    this.refundForm.patchValue({
+      total_price: total.toFixed(2)
+    });
+
   } else {
-    this.refundForm.patchValue({ total_price: 0 });
-    this.refundItems.forEach((i: { checked: boolean; }) => (i.checked = false));
+
+    // ✅ Unselect all
+    this.refundItems.forEach((item: { checked: boolean; }) => item.checked = false);
+
+    this.refundForm.patchValue({
+      total_price: 0
+    });
   }
 }
+
 // toggleItem(item: any) {
 //   item.checked = !item.checked;
 
@@ -351,7 +379,7 @@ setFullRefund() {
   this.refundData=data
   this.discountAmount = Number(this.refundData.discount_amount || 0);
   this.paidAmount = Number(this.refundData.payment_amount);
-    this.refundItems = [];
+  this.refundItems = [];
  const items = JSON.parse(this.refundData.order_items || '[]');
   items.forEach((item: any) => {
     this.refundItems.push({
@@ -359,7 +387,10 @@ setFullRefund() {
       dish_name: item.dish_name,
       price: Number(item.price),
       checked: false,
-      type: 'DISH'
+      type: 'DISH',
+      order_details_id:item.order_details_id,
+      order_status:item.order_status
+      
     });
   });
 
@@ -380,6 +411,7 @@ setFullRefund() {
     totalPriceCtrl?.setValue(this.maxRefundAmount); // default full refund
     totalPriceCtrl?.updateValueAndValidity();
     this.refundModal=true
+    this.onRefundTypeChange();
   }
    submitRefund() {
     if (this.refundForm.invalid) return;
@@ -402,7 +434,66 @@ setFullRefund() {
 
     return parts.length ? parts.join(", ") : "--";
   }
+   saveRefund(){
+   if (this.refundForm.invalid) return;
+  // "order_details": "899,113.94", // "892,18.99|893,5.50"
+    const refundType = this.refundForm.value.refundType;
+  // if (refundType === 'FULL') {
+  //   // FULL refund → send single order_details_id with full amount
+  //   orderDetailsString = `${this.refundData.order_details_id},${this.refundForm.value.total_price}`;
+  // } 
+  // else if (refundType === 'PARTIAL') {
+  //   const selectedItems = this.refundItems.filter((i: { checked: any; }) => i.checked);
+  //   orderDetailsString = selectedItems
+  //     .map((item: { order_details_id: any; price: any; }) => `${item.order_details_id},${item.price}`)
+  //     .join('|');
+  // }
+let itemsToProcess = [];
+if (refundType === 'FULL') {
+  // Send ALL items
+  itemsToProcess = this.refundItems;
+} 
+else if (refundType === 'PARTIAL') {
+  // Send only selected items
+  itemsToProcess = this.refundItems.filter((i: { checked: any; }) => i.checked);
 }
+// Build string: id,amount|id,amount
+const orderDetailsString = itemsToProcess
+  .map((item: { order_details_id: any; price: any; }) => `${item.order_details_id},${item.price}`)
+  .join('|');
+    const reqbody = {
+      order_master: this.data.order_master_id,
+      order_details: orderDetailsString,
+      created_by: JSON.parse(
+        this.session.getsessionStorage("loginDetails") as any
+      ).user.user_id,
+    };
+
+
+  console.log(reqbody); // check before API call
+
+  this.apis.putApi(AppConstants.api_end_points.refund, reqbody).subscribe({
+    next: (data: any) => {
+      Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: data.message || "Refund processed successfully.",
+        confirmButtonColor: "#3085d6",
+      }).then(() => {
+        this.refundModal = false;
+      });
+    },
+    error: (err) => {
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Refund failed. Please try again.",
+      });
+    },
+  });
+
+  }
+ }
 
 /** small utility outside the class to safely parse possible JSON strings */
 function safeParse(value: any): any[] {
@@ -423,5 +514,5 @@ function safeParse(value: any): any[] {
   } catch {
     return [];
   }
- 
+
 }

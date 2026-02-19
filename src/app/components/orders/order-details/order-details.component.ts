@@ -215,6 +215,7 @@ confirmCustomer() {
   phone: this.selectedUser?.phone_number})
   this.orderForm.patchValue({
   email: this.selectedUser?.email})
+    if(this.orderForm.get('orderType')?.value === 'delivery'){
   this.orderForm.patchValue({
   deliveryAddress:
     // this.selectedUser?.address_line_1 + ', ' +
@@ -224,8 +225,7 @@ confirmCustomer() {
     this.selectedUser?.country + ' '+
     this.selectedUser?.postal_code
 });
-
-  console.log(this.customer);
+  }
   this.searchResults = [];
    this.searchControl.reset('', { emitEvent: false });
   
@@ -481,20 +481,20 @@ removeItems(item: any) {
   }
 
   openNewModelPopup(type:any) {
-
+     this.searchResults = [];
+   this.searchControl.reset('', { emitEvent: false });
     if(type=='PICKUP'){
       this.orderForm.get('orderType')?.setValue('pickup')
     }
     else{
       this.orderForm.get('orderType')?.setValue('delivery')
     }
-    console.log( this.orderForm.value.orderType);
     const orderTypeValue = this.orderForm.get('orderType')?.value;
-this.orderForm.reset({
-  orderType: orderTypeValue,   // keep existing value
-  orderDue: 'ASAP',            // optional default
-  orderDateTime: new Date()    // optional default
-});
+    this.orderForm.reset({
+      orderType: orderTypeValue,   // keep existing value
+      orderDue: 'ASAP',            // optional default
+      orderDateTime: new Date()    // optional default
+    });
     this.showNewModelPopup = true;
   }
   closeNewModelPopup() {
@@ -934,6 +934,7 @@ getTotalFlatAmount(): number {
             this.orderForm.get("orderType")?.value === "PICKUP" ? 1 : 2,
           pickup_datetime: new Date(),
           delivery_address: this.orderForm.get("deliveryAddress")?.value,
+          phone_number:this.orderForm.get("phone")?.value,
           delivery_fees:
             this.orderForm.get("orderType")?.value === "delivery"
               ? this.deliveryfee
