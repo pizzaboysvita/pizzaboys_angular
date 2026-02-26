@@ -9,7 +9,7 @@ import {
   Validators,
 } from "@angular/forms";
 import { CommonModule } from "@angular/common";
-import { ColDef, GridOptions } from "@ag-grid-community/core";
+import { ColDef, GridOptions, ITooltipParams } from "@ag-grid-community/core";
 import { AddAdminMediaComponent } from "../add-admin-media/add-admin-media.component";
 import { NgSelectModule } from "@ng-select/ng-select";
 import { ApisService } from "../../../shared/services/apis.service";
@@ -36,6 +36,7 @@ export class AdminMediaComponent {
   staff_list: any[] = [];
   mediaListBackup: any[] = [];
   selectedItem: any;
+  gridApi: any;
 
   @ViewChild("confirmModal") confirmModal!: any;
 
@@ -52,8 +53,13 @@ export class AdminMediaComponent {
 
   tableConfig: ColDef[] = [
     {
-      headerName: "Store ID",
+      headerName: "Store Name",
       field: "store_id",
+            sortable: true,
+            suppressMenu: true,
+            unSortIcon: true,
+            valueGetter: (params: any) => this.storeNameData(params.data.store_id),
+            tooltipValueGetter: (p: ITooltipParams) => p.value,
     },
     {
       headerName: "Text",
@@ -203,6 +209,17 @@ export class AdminMediaComponent {
       this.loadInventory();
     });
   }
+  storeNameData(data: any) {
+    console.log(this.storesList, "storeeeeee namee");
+    const storeName = this.storesList.find(
+      (store: any) => store.store_id == data
+    );
+    console.log(storeName, "storeeeeeeeee nammmme");
+    return storeName ? storeName.store_name : "--";
+  }
+  onGridReady(params: any) {
+  this.gridApi = params.api;
+}
 
   onCellClicked(event: any): void {
     let target = event.event?.target as HTMLElement;

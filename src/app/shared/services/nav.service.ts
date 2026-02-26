@@ -277,14 +277,7 @@ export class NavService {
       type: "link",
       active: false,
     },
-     {
-      level: 1,
-      title: "Settings",
-      path: "/settings",
-      icon: "ri-settings-2-line",
-      type: "link",
-      active: false,
-    },
+   
     {
       level: 1,
       title: "Inventory",
@@ -308,7 +301,15 @@ export class NavService {
       icon: "ri-truck-line",
       type: "link",
       active: false,
-    }
+    },
+      {
+      level: 1,
+      title: "Settings",
+      path: "/settings",
+      icon: "ri-settings-2-line",
+      type: "link",
+      active: false,
+    },
     
     // {
     //   level: 1,
