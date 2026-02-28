@@ -34,6 +34,7 @@ interface RowData {
   order_due: string;
   payment_method: string;
   order_due_datetime: string;
+  user_phone_number?:any;
 }
 
 interface OrderData {
@@ -181,14 +182,14 @@ export class PosOrdersComponent {
       // }
     },
     {
-      field: "phone_number",
+      field: "user_phone_number",
       headerName: "Phone",
       suppressMenu: true,
       unSortIcon: true,
       tooltipValueGetter: (p: ITooltipParams) => p.value,
     },
     {
-      field: "email",
+      field: "user_email",
       headerName: "Email-Id",
       suppressMenu: true,
       unSortIcon: true,

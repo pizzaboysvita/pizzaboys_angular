@@ -36,4 +36,18 @@ private totalDishList = new BehaviorSubject<any[]>([]);
    setTotalDishList(dishes: any[]) {
     this.totalDishList.next(dishes);
   }
+    private floatSource = new BehaviorSubject<number>(0);
+  private cashSource = new BehaviorSubject<number>(0);
+
+  float$ = this.floatSource.asObservable();
+  cash$ = this.cashSource.asObservable();
+
+  setFloat(value: number) {
+    this.floatSource.next(value);
+  }
+
+  setCash(value: number) {
+    this.cashSource.next(value);
+  }
+
 }

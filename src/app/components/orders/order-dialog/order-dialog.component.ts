@@ -66,6 +66,7 @@ refundForm:FormGroup
   refundItems: any;
   discountAmount: number;
   paidAmount: number;
+  discountPercentage: number;
   constructor(public modal: NgbModal,public activeModal: NgbActiveModal,private toastr: ToastrService,private session:SessionStorageService,private apis: ApisService,private fb:FormBuilder) {}
 
   ngOnInit(): void {
@@ -299,7 +300,7 @@ closeOrdersModal(){
 //     this.refundForm.patchValue({ total_price: 0 });
 //     this.refundItems.forEach((i: { checked: boolean; }) => (i.checked = false));
 //   }
-// }
+// }discount_percentage
 onRefundTypeChange() {
   const refundType = this.refundForm.value.refundType;
 
@@ -314,7 +315,7 @@ onRefundTypeChange() {
     );
 
     this.refundForm.patchValue({
-      total_price: total.toFixed(2)
+      total_price: this.paidAmount
     });
 
   } else {
@@ -339,34 +340,104 @@ onRefundTypeChange() {
 //     total_price: total
 //   });
 // }
+// toggleItem(item: any) {
+//   item.checked = !item.checked;
+
+//   const selectedItems = this.refundItems.filter((i: { checked: any; }) => i.checked);
+//   const selectedTotal = selectedItems.reduce(
+//     (sum: number, i: { price: any; }) => sum + Number(i.price),
+//     0
+//   );
+
+//   const allSelected =
+//     selectedItems.length === this.refundItems.length;
+
+//   let refundAmount = selectedTotal;
+
+//   // ✅ Apply discount ONLY if all items selected
+//   if (allSelected && this.discountAmount > 0) {
+//     refundAmount = selectedTotal - this.discountAmount;
+
+//     // safety (never exceed what customer paid)
+//     refundAmount = Math.min(refundAmount, this.paidAmount);
+//   }
+
+//   this.refundForm.patchValue({
+//     total_price: +refundAmount.toFixed(2)
+//   });
+// }
+
+// toggleItem(item: any) {
+
+//   if (this.refundForm.value.refundType === 'FULL') {
+//     return; // prevent changes in FULL mode
+//   }
+
+//   item.checked = !item.checked;
+
+//   const selectedItems = this.refundItems.filter((i: any) => i.checked);
+
+//   const selectedTotal = selectedItems.reduce(
+//     (sum: number, i: any) =>
+//       sum + (Number(i.price) * Number(i.quantity)),
+//     0
+//   );
+
+//   const allSelected =
+//     selectedItems.length === this.refundItems.length;
+
+//   let refundAmount = selectedTotal;
+
+//   // Apply discount only if ALL selected
+//   if (allSelected && this.discountAmount > 0) {
+//     refundAmount = selectedTotal - this.discountAmount;
+//     refundAmount = Math.min(refundAmount, this.paidAmount);
+//   }
+
+//   this.refundForm.patchValue({
+//     total_price: +refundAmount.toFixed(2)
+//   });
+// }
 toggleItem(item: any) {
+
+  if (this.refundForm.value.refundType === 'FULL') return;
+
   item.checked = !item.checked;
 
   const selectedItems = this.refundItems.filter((i: { checked: any; }) => i.checked);
+
   const selectedTotal = selectedItems.reduce(
-    (sum: number, i: { price: any; }) => sum + Number(i.price),
+    (sum: number, i: any) =>
+      sum + (Number(i.price) * Number(i.quantity)),
     0
   );
 
   const allSelected =
     selectedItems.length === this.refundItems.length;
 
-  let refundAmount = selectedTotal;
+  let refundAmount = 0;
 
-  // ✅ Apply discount ONLY if all items selected
-  if (allSelected && this.discountAmount > 0) {
-    refundAmount = selectedTotal - this.discountAmount;
+  // ✅ If all selected → full payment amount
+  if (allSelected) {
+    refundAmount = this.paidAmount;
+  }
+  else {
+    if (this.discountPercentage > 0) {
 
-    // safety (never exceed what customer paid)
-    refundAmount = Math.min(refundAmount, this.paidAmount);
+      const discountValue =
+        (selectedTotal * this.discountPercentage) / 100;
+
+      refundAmount = selectedTotal - discountValue;
+
+    } else {
+      refundAmount = selectedTotal;
+    }
   }
 
   this.refundForm.patchValue({
     total_price: +refundAmount.toFixed(2)
   });
 }
-
-
 setFullRefund() {
   this.refundForm.patchValue({
     total_price: this.refundData.payment_amount
@@ -378,6 +449,7 @@ setFullRefund() {
   console.log(data);
   this.refundData=data
   this.discountAmount = Number(this.refundData.discount_amount || 0);
+  this.discountPercentage=Number(this.refundData.discount_percentage  || 0);
   this.paidAmount = Number(this.refundData.payment_amount);
   this.refundItems = [];
  const items = JSON.parse(this.refundData.order_items || '[]');
@@ -386,10 +458,11 @@ setFullRefund() {
       dish_id: item.id,
       dish_name: item.dish_name,
       price: Number(item.price),
+      quantity: item.quantity,
       checked: false,
       type: 'DISH',
       order_details_id:item.order_details_id,
-      order_status:item.order_status
+      order_status:item.order_details_status
       
     });
   });
@@ -413,6 +486,11 @@ setFullRefund() {
     this.refundModal=true
     this.onRefundTypeChange();
   }
+  get allItemsCancelled(): boolean {
+  if (!this.refundItems || this.refundItems.length === 0) return false;
+
+  return this.refundItems.every((item: { order_status: string; }) => item.order_status === 'cancelled');
+}
    submitRefund() {
     if (this.refundForm.invalid) return;
     console.log(this.refundForm.value);
@@ -435,6 +513,15 @@ setFullRefund() {
     return parts.length ? parts.join(", ") : "--";
   }
    saveRefund(){
+      if (this.allItemsCancelled) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Not Allowed',
+      text: 'All items are already cancelled. Refund cannot be processed.'
+    });
+    return; // ❌ stop API call
+  }
+
    if (this.refundForm.invalid) return;
   // "order_details": "899,113.94", // "892,18.99|893,5.50"
     const refundType = this.refundForm.value.refundType;
