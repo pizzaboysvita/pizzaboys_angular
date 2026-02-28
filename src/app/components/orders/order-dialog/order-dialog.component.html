@@ -96,27 +96,27 @@
                     </div>
                     <div class="row-info">
                         <p>Placed:</p>
-                        <span>{{ data.order_created_datetime | date : "medium" }}</span>
+                        <span>{{ data?.order_created_datetime | date : "medium" }}</span>
                     </div>
                     <div class="row-info">
                         <p>Due:</p>
-                        <span>{{ data.order_due_datetime | date : "medium" }}</span>
+                        <span>{{ data?.order_due_datetime | date : "medium" }}</span>
                     </div>
                     <div class="row-info" *ngIf="data.order_type === 2">
                         <p>Address:</p>
                         <span>{{ orderAddress }}</span>
                     </div>
-                    <div *ngIf="data.name" class="row-info">
+                    <div *ngIf="data?.user_name" class="row-info">
                         <p>Name:</p>
-                        <span>{{ data.name }}</span>
+                        <span>{{ data?.user_name }}</span>
                     </div>
-                    <div *ngIf="data.email" class="row-info">
+                    <div *ngIf="data?.user_email" class="row-info">
                         <p>E-Mail:</p>
-                        <span>{{ data.email }}</span>
+                        <span>{{ data?.user_email }}</span>
                     </div>
-                    <div *ngIf="data.phone_number" class="row-info">
+                    <div *ngIf="data?.user_phone_number" class="row-info">
                         <p>Phone:</p>
-                        <span>{{ data.phone_number }}</span>
+                        <span>{{ data?.user_phone_number }}</span>
                     </div>
                 </div>
 
@@ -210,6 +210,7 @@
 
                         <div class="summary-row total-row">
                             <p>Total</p>
+                            <!-- <span>${{ formatPrice(data.payment_amount ?? data.total_price) }}</span> -->
                             <span>${{ formatPrice(data.payment_amount ?? data.total_price) }}</span>
                         </div>
                     </div>
@@ -221,8 +222,8 @@
                             <p>{{ data.payment_method }}</p>
                             <small style="margin-left:-3%">{{ data.payment_status ?? 'Successful' }}</small>
                         </div>
-                        <div class="payment-amount">${{ formatPrice(data.total_price) }}</div>
-                        <!-- <div class="payment-amount">${{ formatPrice(data.payment_amount ?? data.total_price) }}</div> -->
+                        <!-- <div class="payment-amount">${{ formatPrice(data.total_price) }}</div> -->
+                        <div class="payment-amount">${{ formatPrice(data.payment_amount ?? data.total_price) }}</div>
                     </div>
                 </div>
                 <div *ngIf="activeTab === 'log'">
@@ -285,7 +286,7 @@
           </div>
           <div>
             <div class="label">PAYMENT ($)</div>
-            <div class="value">${{refundData?.payment_amount}}</div>
+            <div class="value">${{refundData?.payment_amount ?? refundData?.total_price}}</div>
           </div>
           <div>
             <div class="label">PAYMENT REFERENCE ID</div>
@@ -383,7 +384,7 @@
       [for]="'item_' + i"
     >
       <span>{{ item.dish_name }}</span>
-      <span>${{ item.price }}</span>
+      <span>${{ item.quantity * item.price }}</span>
     </label>
   </div>
 </div>
