@@ -72,6 +72,10 @@
                     <span class="lableSubtext mb-2"
                       >Enter a description that will be shown in your menu</span
                     >
+                    
+                      <small class="text-muted">
+                       {{ menuForm.get('description')?.value?.length || 0 }} / 150 characters
+                      </small>
                   </div>
 
                   <div class="col-12">
@@ -568,7 +572,9 @@
       <button class="btn btn-cancel" type="button" (click)="modal.dismissAll()">
         Cancel
       </button>
-      <button class="btn btn-submit" (click)="addCategory()">Save</button>
+      <button class="btn btn-submit" type="submit" (click)="addCategory()">
+  {{ type === 'Edit' ? 'Update' : 'Add' }}
+</button>
     </div>
     }
   </div>

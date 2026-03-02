@@ -154,24 +154,42 @@ export class AddoptionsetmodalComponent {
         return select;
       }
     },
-    {
-      headerName: 'Actions',
-      cellRenderer: (params: any) => {
-        return `
-        <div style="display: flex; align-items: center; gap:15px">
-         
-          <button class="btn btn-sm p-0" data-action="delete" title="Delete">
-            <span class="material-symbols-outlined text-danger">
-              delete
-            </span>
-          </button>
-        </div>`;
-      },
-      minWidth: 150,
-      flex: 1,
-    },
-  ];
+   {
+  headerName: 'Actions',
+  cellRenderer: (params: any) => {
+    return `
+        <button class="btn btn-lg btn-outline-danger delete-btn" data-row="${params.rowIndex}">🗑</button>`;
+  },
+  minWidth: 150,
+  flex: 1,
+  onCellClicked: (params: any) => {
+   const target = params.event.target as HTMLElement;
+    const rowIndex = params.node.rowIndex;
 
+    if (target.classList.contains('delete-btn')) {
+      params.api.applyTransaction({ remove: [params.node.data] });
+    }
+  },
+}
+  ];
+  onCellClicked(params: any) {
+    const rowIndex = params.rowIndex;
+    const actionTarget = params.event.target as HTMLElement;
+
+    if (actionTarget.classList.contains("delete-btn")) {
+      console.log(rowIndex);
+      this.rowData.splice(rowIndex, 1);   
+      // this.rowData = [...this.rowData];
+    }
+    console.log(this.rowData,"rowdata");
+    
+
+    // if (actionTarget.classList.contains('copy-btn')) {
+    //   const copiedRow = { ...this.rowData[rowIndex] };
+    //   this.rowData.splice(rowIndex + 1, 0, copiedRow);
+    //   this.rowData = [...this.rowData];
+    // }
+  }
   rowData: any[] = []
   gridApi: any;
   defaultColDef: ColDef = {
@@ -244,6 +262,8 @@ selectedStore='-1'
   }
   }
   addNewRow() {
+    console.log( this.rowData );
+    
     console.log("new datat")
     const newRow = {
       name: '',
@@ -252,6 +272,8 @@ selectedStore='-1'
       inStock: true
     };
     this.rowData = [newRow, ...this.rowData];
+    console.log( this.rowData );
+    
     setTimeout(() => {
       this.gridApi.setFocusedCell(0, 'name');
       this.gridApi.startEditingCell({ rowIndex: 0, colKey: 'name' });
@@ -437,7 +459,8 @@ onCellValueChanged(event: any) {
         "inc_price_in_free": this.miscForm.value.PriceinFreeQuantityPromos = true ? 1 : 0,
         "created_by": JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,
         "updated_by": JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,
-        "option_type": this.optionSetForm.value.optionSetType
+        "option_type": this.optionSetForm.value.optionSetType,
+        "store_id": this.selectedStore
       }
     }
     else {
@@ -459,7 +482,9 @@ onCellValueChanged(event: any) {
         "inc_price_in_free": this.miscForm.value.PriceinFreeQuantityPromos = true ? 1 : 0,
         "created_by": JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,
 
-        "option_type": this.optionSetForm.value.optionSetType
+        "option_type": this.optionSetForm.value.optionSetType,
+        "store_id": this.selectedStore
+        
       }
     }
 

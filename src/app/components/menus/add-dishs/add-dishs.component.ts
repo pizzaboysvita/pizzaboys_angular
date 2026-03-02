@@ -659,6 +659,14 @@ addDishInventory() {
   if (!this.selectedInventoryItem || !this.quantity.trim()) {
     return;
   }
+   const alreadyExists = this.dishInventory.some(
+    item => item.inventory_item_id === this.selectedInventoryItem.item_id
+  );
+
+  if (alreadyExists) {
+    
+    return; 
+  }
 
   this.dishInventory.push({
     inventory_item_name: this.selectedInventoryItem.item_name,

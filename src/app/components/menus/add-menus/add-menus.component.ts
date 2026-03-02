@@ -587,39 +587,39 @@ this.copyMenuForm.reset();
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Stores");
 
-    // Define header row with styles
-    const headers = Object.keys(this.menuItemsList[0]).map((key) => {
-      // Capitalize each word from snake_case or camelCase
-      const formattedHeader = key
-        .replace(/_/g, " ") // snake_case -> snake case
-        .replace(/([a-z])([A-Z])/g, "$1 $2") // camelCase -> camel Case
-        .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize first letter of each word
+   // ✅ Define only required columns
+  worksheet.columns = [
+    { header: "Store Name", key: "store_name", width: 25 },
+    { header: "Menu Name", key: "menu_name", width: 25 },
+    { header: "Display Name", key: "display_name", width: 25 },
+    { header: "Created Date", key: "created_date", width: 20 },
+    { header: "Status", key: "status", width: 15 },
+    { header: "POS", key: "pos", width: 15 },
+    { header: "Web", key: "web", width: 15 },
+  ];
 
-      return {
-        header: formattedHeader,
-        key: key,
-        width: 20,
-      };
-    });
-    worksheet.columns = headers;
+  // ✅ Header style
 
     worksheet.getRow(1).eachCell((cell: any) => {
       cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
       cell.fill = {
         type: "pattern",
         pattern: "solid",
-        fgColor: { argb: "FF1F4E78" }, // dark blue
+        fgColor: { argb: "FF1F4E78" },
       };
     });
 
-    // Add data rows
-    this.menuItemsList.forEach((store: any) => {
-      const row: Record<string, any> = {};
-
-      Object.keys(store).forEach((key) => {
-        row[key] = store[key] ?? ""; // use '' for null or undefined
-      });
-      worksheet.addRow(row);
+     // ✅ Add only required fields
+  this.menuItemsList.forEach((item: any) => {
+  worksheet.addRow({
+    store_name: this.storeNameData(item.store_id), // ✅ same as grid
+    menu_name: item.name ?? "",                    // ✅ correct key
+    display_name: item.display_name ?? "",
+    created_date: item.created_on ?? "",
+    status: item.status ?? "",
+    pos: item.hide_menu_in_POS == 1 ? "Hide in POS" : "Show in POS",
+    web: item.is_online_hide == 1 ? "Hide in Web" : "Show in Web",
+  });
     });
     // Create buffer and save
     workbook.xlsx.writeBuffer().then((data: any) => {
