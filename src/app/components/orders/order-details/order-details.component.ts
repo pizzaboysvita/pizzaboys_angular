@@ -485,16 +485,18 @@ removeItems(item: any) {
    this.searchControl.reset('', { emitEvent: false });
     if(type=='PICKUP'){
       this.orderForm.get('orderType')?.setValue('pickup')
+      this.orderForm.get('deliveryAddress')?.setValue('')
+
     }
     else{
       this.orderForm.get('orderType')?.setValue('delivery')
     }
     const orderTypeValue = this.orderForm.get('orderType')?.value;
-    this.orderForm.reset({
-      orderType: orderTypeValue,   // keep existing value
-      orderDue: 'ASAP',            // optional default
-      orderDateTime: new Date()    // optional default
-    });
+    // this.orderForm.reset({
+    //   orderType: orderTypeValue,   // keep existing value
+    //   orderDue: 'ASAP',            // optional default
+    //   orderDateTime: new Date()    // optional default
+    // });
     this.showNewModelPopup = true;
   }
   closeNewModelPopup() {
@@ -875,6 +877,13 @@ getBaseType(cartItem: any): number {
     this.showComboSelection = false;
     this.surcharges=[]
     this.discounts=[]
+    this.orderForm.reset({
+      orderType: 'PICKUP',   // keep existing value
+      orderDue: 'ASAP',            // optional default
+      orderDateTime: new Date()    // optional default
+    });
+    this.customer = { name: "", email: "", phone: "" };
+              this.deliveryfee=0;
     this.updateTotals();
   }
 
@@ -971,10 +980,10 @@ getTotalFlatAmount(): number {
               this.clearOrderDetails();
               this.customer = { name: "", email: "", phone: "" };
               this.orderForm.reset();
+              this.deliveryfee=0;
               this.orderForm.get("orderType")?.setValue('PICKUP');
               this.orderForm.get("orderDue")?.setValue('ASAP'); 
               this.orderForm.get("orderDateTime")?.setValue(new Date()); 
-              this.deliveryfee=0;
               this.cdr.detectChanges();
             } else {
               this.toastr.error(res?.message || "Order failed", "Error");
@@ -1086,11 +1095,9 @@ getTotalFlatAmount(): number {
       this.orderForm.value.orderDue === "ASAP"
         ? this.orderForm.value.orderDue
         : this.orderForm.value.orderDateTime;
-    this.showOrderDuePopup = false;
-    this.showNewModelPopup = false;
-    this.selectedScheduleItem=null
-    this.pendingCartItem=null
-    this.skipAvailabilityCheck = true;
+    // this.showOrderDuePopup = false;
+    // this.selectedScheduleItem=null
+    // this.pendingCartItem=null
           if( this.orderForm.value.orderType=='delivery'){
             this.deliveryfee = 5.9;
           }
@@ -1098,8 +1105,14 @@ getTotalFlatAmount(): number {
                         this.deliveryfee = 0;
           }
     if( this.orderForm.value.orderDue === "Later"){
+    this.skipAvailabilityCheck = true;
     this.addToCart(this.pendingCartItem)
     }
+    // this.addToCart(this.pendingCartItem)
+    this.showOrderDuePopup = false;
+    this.showNewModelPopup = false;
+    this.selectedScheduleItem=null
+    this.pendingCartItem=null
     
   }
   // submitLatDUeOrder(){
@@ -1176,7 +1189,7 @@ openApplicableHourModal(item: any) {
 }
 
 scheduleLater(){
-  this.showOrderDuePopup=true
+  this.showNewModelPopup=true
    this.showOrderLaterPopup=false
    this.orderForm.get('orderDue')?.setValue('Later')
 

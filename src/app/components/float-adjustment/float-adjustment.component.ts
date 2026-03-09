@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 import { ColDef } from '@ag-grid-community/core';
 import { AgGridAngular } from '@ag-grid-community/angular';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { CommonService } from '../../shared/services/common.service';
 
 @Component({
   selector: 'app-float-adjustment',
@@ -22,6 +23,8 @@ export class FloatAdjustmentComponent {
   today: string | null;
   storeId: any;
     rowData: any[] = [];
+  floatAmount: number = 0;
+  cashInTill: number = 0;
 
   columnDefs: ColDef[] = [
     { headerName: 'Type', field: 'Type',width: 150 },
@@ -74,7 +77,7 @@ export class FloatAdjustmentComponent {
 
    constructor(public modal: NgbModal,public router: Router,private apiService: ApisService,
     private sessionStorageService: SessionStorageService,private datePipe: DatePipe,
-    private fb:FormBuilder) { }
+    private fb:FormBuilder,private CommonService:CommonService) { }
 activeTab = 'create';
 sourceOptions = [
   { value: 'FLOAT', label: 'Float Cash' },
@@ -97,9 +100,11 @@ paymentForm: FormGroup
        this.storeId = user.store_id;
    this.getCashflow();
   }
-floatAmount: number = 0;
-cashInTill: number = 0;
 
+updateValues() {
+  this.CommonService.setFloat(this.floatAmount);
+  this.CommonService.setCash(this.cashInTill);
+}
 getCashflow() {
   const params = `?store_id=${this.storeId}&cash_flow_date=${this.today}`;
 
@@ -123,6 +128,7 @@ getCashflow() {
 
         // Cash in till = Float + Remaining Sales
         this.cashInTill = this.floatAmount + remainingSales;
+        this.updateValues();
       } else {
         alert(res.message || 'Failed to load cash flow');
       }
@@ -162,6 +168,7 @@ createCashflow(){
                     Swal.fire("Success!", res.message, "success").then((result) => {
                       if (result) {
                         console.log("User clicked OK");
+                        this.getCashflow();
                         this.modal.dismissAll();
           
                       }

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { ChangeDetectorRef, Component, EventEmitter, HostListener, Output } from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { NavService, menuItem } from '../../services/nav.service';
@@ -18,7 +18,9 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
     selector: 'app-sidebar',
     imports: [FeatherIconsComponent, CommonModule, RouterModule],
     templateUrl: './sidebar.component.html',
-    styleUrl: './sidebar.component.scss'
+    styleUrl: './sidebar.component.scss',
+  providers: [DatePipe] 
+
 })
 
 export class SidebarComponent {
@@ -46,10 +48,15 @@ export class SidebarComponent {
   showFunctionsMenu: boolean;
   isSidebarOpen: boolean=true;
   isMobile = false;
+  floatAmount: number;
+  cashInTill: number;
+  rowData: any;
+  today: any;
+  storeId: any;
 
   constructor( private CommonService: CommonService,public modal: NgbModal,public navService: NavService,private sessionStorageService:SessionStorageService,
     private cdr: ChangeDetectorRef,
-    private router: Router,private apis:ApisService,private breakpointObserver: BreakpointObserver
+    private router: Router,private apis:ApisService,private breakpointObserver: BreakpointObserver,private datePipe:DatePipe
   ) {
      this.breakpointObserver
     .observe([Breakpoints.Handset])
@@ -75,7 +82,7 @@ ngOnInit(){
      this.menuItemsList = this.navService.customer_menu_items
 
 
-console.log( this.menuItemsList )
+
 
   }
   // }else    if(JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).staff_id =='2'){
@@ -104,10 +111,54 @@ console.log( this.menuItemsList )
         
       }
     });
-   
-}
- 
+   this.getCashflow();
+ this.CommonService.float$.subscribe(value => {
+    this.floatAmount = value;
+  });
 
+  this.CommonService.cash$.subscribe(value => {
+    this.cashInTill = value;
+  });
+}
+
+ 
+getCashflow() {
+      this.today = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
+    const user = JSON.parse(
+      this.sessionStorageService.getsessionStorage("loginDetails") as any).user;
+       this.storeId = user.store_id;
+  const params = `?store_id=${this.storeId}&cash_flow_date=${this.today}`;
+
+  this.apis
+    .getApi(AppConstants.api_end_points.cashflow + params)
+    .subscribe((res: any) => {
+      if (res.code === '1') {
+        this.rowData = res.cashFlowDetails;
+
+        const summary = this.rowData.find((x: any) => x.Type === 'SUMMARY');
+        const nonSummary = this.rowData.filter((x: any) => x.Type == 'Cash');
+
+        // Float = SUMMARY Expected
+        this.floatAmount = Number(summary?.Expected ?? 0);
+
+        // Remaining Sales (excluding SUMMARY)
+        const remainingSales = nonSummary.reduce(
+          (sum: number, item: any) => sum + Number(item.Sales ?? 0),
+          0
+        );
+
+        // Cash in till = Float + Remaining Sales
+        this.cashInTill = this.floatAmount + remainingSales;
+        this.updateValues();
+      } else {
+        alert(res.message || 'Failed to load cash flow');
+      }
+    });
+  }
+  updateValues() {
+  this.CommonService.setFloat(this.floatAmount);
+  this.CommonService.setCash(this.cashInTill);
+}
   setNavActive(item: menuItem) {
     this.menuItemsList.filter((menuItem:any) => {
       if (menuItem !== item) {
