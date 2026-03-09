@@ -27,8 +27,15 @@
                             <div class="col-12">
                                 <label class="col-form-label pt-0">Your Password</label>
                                 <div class="form-floating theme-form-floating log-in-form">
-                                    <input type="password" name="password" placeholder="Enter Password"
+                                    <input  [type]="showPassword ? 'text' : 'password'" type="password" name="password" placeholder="Enter Password"
                                         formControlName="password">
+                                        <span 
+                                            class="position-absolute top-50 end-0 translate-middle-y me-3"
+                                            style="cursor: pointer;"
+                                            (click)="togglePassword()"
+                                        >
+                                            <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                        </span>
                                     @if (loginForm.controls['password'].touched &&
                                     loginForm.controls['password'].errors?.['required']) {
                                     <div class="text text-danger mt-1">

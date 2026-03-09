@@ -1,17 +1,189 @@
-.modal-footer {
-  padding: 20px 24px;
-  border-top: 1px solid #eee;
+/* =========================
+   Form Wrapper
+========================= */
+
+.media-cell {
+  margin-bottom: 20px;
+
+  h6 {
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
 }
 
-.action-btn {
-  min-width: 90px;
-  height: 40px;
-  border-radius: 10px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+/* =========================
+   NG-SELECT Styling
+========================= */
+
+::ng-deep .ng-select {
+  min-height: 44px;
+  border-radius: 8px;
+  font-size: 14px;
 }
-.save-button{
+
+::ng-deep .ng-select .ng-select-container {
+  min-height: 44px;
+  border-radius: 8px;
+  border: 1px solid #ced4da;
+  box-shadow: none;
+  transition: 0.2s ease;
+}
+
+::ng-deep .ng-select.ng-select-focused .ng-select-container {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.15);
+}
+
+/* =========================
+   Multi Select Chips
+========================= */
+
+::ng-deep .ng-select .ng-value {
+  background: #e9f2ff;
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+::ng-deep .ng-select .ng-value-icon {
+  border-right: none;
+  padding-left: 6px;
+}
+
+/* =========================
+   Dropdown Panel
+========================= */
+
+::ng-deep .ng-dropdown-panel {
+  border-radius: 8px;
+  border: 1px solid #e4e7ec;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+::ng-deep .ng-option {
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+::ng-deep .ng-option.ng-option-selected {
+  background-color: #f0f7ff;
+  font-weight: 500;
+}
+
+::ng-deep .ng-option.ng-option-marked {
+  background-color: #e9f2ff;
+}
+
+/* =========================
+   Input Fields
+========================= */
+
+input.form-control,
+select.form-control {
+  border-radius: 8px;
+  height: 44px;
+  font-size: 14px;
+  box-shadow: none;
+  transition: 0.2s ease;
+}
+
+input.form-control:focus,
+select.form-control:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.15);
+}
+
+/* =========================
+   Error Styling
+========================= */
+
+.text-danger {
+  font-size: 12px;
   margin-top: 4px;
+}
+
+::ng-deep .ng-select.ng-invalid.ng-touched .ng-select-container {
+  border-color: #dc3545;
+}
+
+/* =========================
+   Time Based Section
+========================= */
+
+.time-based-section {
+  background: #f9fafb;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #e4e7ec;
+  margin-top: 10px;
+}
+
+/* =========================
+   File Upload Section
+========================= */
+
+.file-upload-wrapper {
+  border: 1px dashed #ced4da;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  transition: 0.2s ease;
+}
+
+.file-upload-wrapper:hover {
+  border-color: #0d6efd;
+  background: #f8fbff;
+}
+
+/* =========================
+   Status Toggle
+========================= */
+
+.form-check-input {
+  width: 40px;
+  height: 20px;
+}
+
+.form-check-input:checked {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+/* =========================
+   Buttons
+========================= */
+
+button {
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+button.btn-primary {
+  background-color: #0d6efd;
+  border: none;
+}
+
+button.btn-primary:hover {
+  background-color: #0b5ed7;
+}
+
+button.btn-outline-secondary:hover {
+  background-color: #f1f3f5;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 768px) {
+  .media-cell {
+    margin-bottom: 15px;
+  }
+
+  ::ng-deep .ng-select {
+    font-size: 13px;
+  }
 }

@@ -55,3 +55,36 @@ $primary-orange: #fd7e14;
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
 }
+
+
+.tree-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:4px 0;
+}
+
+.arrow{
+  cursor:pointer;
+  width:20px;
+}
+
+.category-block{
+  margin-left:20px;
+}
+
+.dish-block{
+  margin-left:40px;
+}
+
+.menu-title{
+  font-weight:600;
+}
+
+.category-name{
+  font-weight:500;
+}
+
+.dish-space{
+  width:20px;
+}

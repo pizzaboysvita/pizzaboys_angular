@@ -60,9 +60,15 @@ isHide=false
     return `
       <div class="d-flex align-items-center justify-content-center gap-2">
         <input type="checkbox" class="checkbox-24hr" ${checked} data-row="${params.rowIndex}" />
-        <button class="btn btn-sm btn-outline-danger delete-btn" data-row="${params.rowIndex}">🗑</button>
-        
-        <button class="btn btn-sm btn-outline-secondary copy-btn" data-row="${params.rowIndex}">📄</button>
+       <button 
+  class="btn btn-outline-danger delete-btn d-flex align-items-center justify-content-center"
+  style="width:40px; height:40px;"
+  data-row="${params.rowIndex}">
+  <span style="font-size:20px;">🗑</span>
+</button>        
+        <button class="btn btn-sm btn-outline-secondary copy-btn d-flex align-items-center justify-content-center"
+  style="width:40px; height:40px;"" data-row="${params.rowIndex}"><span style="font-size:20px;">📄</span> </button>
+   
       </div>
     `;
   },

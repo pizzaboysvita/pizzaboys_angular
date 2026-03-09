@@ -151,7 +151,7 @@
               <br>
 
               <ag-grid-angular class="ag-theme-alpine" [rowData]="rowData" [stopEditingWhenCellsLoseFocus]="true"
-                [columnDefs]="columnDefs" (cellValueChanged)="onCellValueChanged($event)"
+                [columnDefs]="columnDefs" (cellValueChanged)="onCellValueChanged($event)"  (cellClicked)="onCellClicked($event)"
                 [defaultColDef]="defaultColDef" [domLayout]="'autoHeight'" (gridReady)="onGridReady($event)">
               </ag-grid-angular>
 
@@ -419,7 +419,9 @@
   @if(type != 'View'){
   <div class="modal-footer">
     <button class="btn btn-cancel" type="button" (click)="modal.dismissAll()">Cancel</button>
-    <button class="btn btn-submit" type="submit" (click)="saveMenu()">Save</button>
+    <button class="btn btn-submit" type="submit" (click)="saveMenu()">
+  {{ type === 'Edit' ? 'Update' : 'Add' }}
+</button>
   </div>
   }
 </div>

@@ -12,6 +12,9 @@ import { AppConstants } from '../../app.constants';
 import { SessionStorageService } from '../../shared/services/session-storage.service';
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import Swal from 'sweetalert2';
+import * as ExcelJS from "exceljs";
+import FileSaver from 'file-saver';
+import { DatePipe } from "@angular/common";
 
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
@@ -26,6 +29,7 @@ interface RowData {
   standalone: true,
   templateUrl: './optionset.component.html',
   styleUrls: ['./optionset.component.scss'],
+   providers: [DatePipe],
   imports: [
     CommonModule,
     FormsModule,
@@ -33,7 +37,7 @@ interface RowData {
     AgGridAngular,
     NgSelectModule,
     CardComponent
-  ]
+  ] 
 })
 export class OptionsetComponent implements OnInit {
   searchForm: FormGroup;
@@ -54,7 +58,7 @@ export class OptionsetComponent implements OnInit {
     },
     {
       field: "dispaly_name",
-      headerName: "Dispaly Name",
+      headerName: "Display Name",
       sortable: true,
       suppressMenu: true,
       unSortIcon: true,
@@ -144,8 +148,9 @@ export class OptionsetComponent implements OnInit {
   optSetRowData: any;
   optSetDetailsLeng: any =0;
   optSortSetDetails: any;
+  optnItemsList: any;
 
-  constructor(private fb: FormBuilder, private modal: NgbModal, private apis: ApisService, private sessionStorage: SessionStorageService) {
+  constructor(private fb: FormBuilder, private modal: NgbModal, private apis: ApisService, private sessionStorage: SessionStorageService,private datePipe: DatePipe,) {
     this.searchForm = this.fb.group({
       name: [''],
       displayName: [''],
@@ -238,6 +243,59 @@ this.optSetRowData=event.data
 );
 
 
+  }
+  downloadDevicesExcel(): void {
+    if (!this.optSetDetails || this.optSetDetails.length === 0) {
+      console.warn("No data to export.");
+      return;
+    }
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Stores");
+
+    // Define header row with styles
+    const headers = Object.keys(this.optSetDetails[0]).map((key) => {
+      // Capitalize each word from snake_case or camelCase
+      const formattedHeader = key
+        .replace(/_/g, " ") // snake_case -> snake case
+        .replace(/([a-z])([A-Z])/g, "$1 $2") // camelCase -> camel Case
+        .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize first letter of each word
+
+      return {
+        header: formattedHeader,
+        key: key,
+        width: 20,
+      };
+    });
+    worksheet.columns = headers;
+
+    worksheet.getRow(1).eachCell((cell: any) => {
+      cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FF1F4E78" }, // dark blue
+      };
+    });
+
+    // Add data rows
+    this.optSetDetails.forEach((store: any) => {
+      const row: Record<string, any> = {};
+
+      Object.keys(store).forEach((key) => {
+        row[key] = store[key] ?? ""; // use '' for null or undefined
+      });
+      worksheet.addRow(row);
+    });
+    // Create buffer and save
+    workbook.xlsx.writeBuffer().then((data: any) => {
+      const blob = new Blob([data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const formattedDate = this.datePipe.transform(new Date(), "dd MMM yyyy");
+
+      FileSaver.saveAs(blob, `Option Set List ${formattedDate}.xlsx`);
+    });
   }
 
   openConfirmPopup() {

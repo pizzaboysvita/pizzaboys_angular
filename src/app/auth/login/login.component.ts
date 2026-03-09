@@ -5,10 +5,11 @@ import { ApisService } from '../../shared/services/apis.service';
 import { AppConstants } from '../../app.constants';
 import { SessionStorageService } from '../../shared/services/session-storage.service';
 import { ToastrService } from 'ngx-toastr';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-login',
-    imports: [RouterModule, ReactiveFormsModule],
+    imports: [RouterModule, ReactiveFormsModule,CommonModule],
     templateUrl: './login.component.html',
     styleUrl: './login.component.scss'
 })
@@ -16,6 +17,7 @@ import { ToastrService } from 'ngx-toastr';
 export class LoginComponent {
 
   public loginForm: FormGroup;
+  showPassword: boolean = false;
 
   constructor(public router: Router,private apis:ApisService,private toastr: ToastrService,private sessionStorage:SessionStorageService) {
     const userData = localStorage.getItem('user');
@@ -108,4 +110,7 @@ this.router.navigate(["/orders/order-detail"]);
     //   // this.router.navigate(["/orders/order-detail"]);
     // }
   }
+  togglePassword() {
+  this.showPassword = !this.showPassword;
+}
 }
