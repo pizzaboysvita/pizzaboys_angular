@@ -36,6 +36,7 @@ export class AddAdminMediaComponent {
 
   selectedImageFile: File | null = null;
   selectedVideoFile: File | null = null;
+  selectedpromoImageFile: File | null = null;;
 
   constructor(
     private fb: FormBuilder,
@@ -56,6 +57,7 @@ export class AddAdminMediaComponent {
       start_date: [""],
       end_date: [""],
       status: [true],
+      promoBanner:[null]
     });
 
     // Timebased validation
@@ -75,9 +77,7 @@ export class AddAdminMediaComponent {
 
     // Edit mode
     if (this.editData) {
-
       let storeArray = [];
-
       if (typeof this.editData.store_id === 'string') {
         storeArray = this.editData.store_id.split(',').map((id: any) => Number(id));
       } else {
@@ -134,14 +134,19 @@ export class AddAdminMediaComponent {
     try {
       let imageUrl = this.editData?.image || null;
       let videoUrl = this.editData?.video || null;
-
+      let PromoimageUrl=this.editData?.promo_banner || null;
       if (this.selectedImageFile) {
         const imgRes: any = await firstValueFrom(
           this.apiService.uploadImage(this.selectedImageFile)
         );
         imageUrl = imgRes?.data?.image_url;
       }
-
+      if (this.selectedpromoImageFile) {
+        const imgRes: any = await firstValueFrom(
+          this.apiService.uploadImage(this.selectedpromoImageFile)
+        );
+        PromoimageUrl = imgRes?.data?.image_url;
+      }
       if (this.selectedVideoFile) {
         const vidRes: any = await firstValueFrom(
           this.apiService.uploadVideo(this.selectedVideoFile)
@@ -182,6 +187,7 @@ export class AddAdminMediaComponent {
           : null,
         status: this.addMediaForm.value.status ? 1 : 0,
         user_id: loginDetails.user.user_id,
+        promo_banner:PromoimageUrl
       };
 
       const res: any = await firstValueFrom(
@@ -213,6 +219,13 @@ export class AddAdminMediaComponent {
     if (file) {
       this.selectedImageFile = file;
       this.addMediaForm.patchValue({ image: file });
+    }
+  }
+    onPromoImageSelect(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedpromoImageFile = file;
+      this.addMediaForm.patchValue({ promoBanner: file });
     }
   }
 
