@@ -1,31 +1,44 @@
-import { CommonModule, JsonPipe } from '@angular/common';
-import { Component, Input } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { NgbModal, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgSelectModule } from '@ng-select/ng-select';
-import { ApisService } from '../../../shared/services/apis.service';
-import { SessionStorageService } from '../../../shared/services/session-storage.service';
-import { AppConstants } from '../../../app.constants';
-import { forkJoin } from 'rxjs';
-import Swal from 'sweetalert2';
-import { Router } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
-import { AgGridAngular } from '@ag-grid-community/angular';
+import { CommonModule, JsonPipe } from "@angular/common";
+import { Component, Input } from "@angular/core";
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from "@angular/forms";
+import { NgbModal, NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
+import { NgSelectModule } from "@ng-select/ng-select";
+import { ApisService } from "../../../shared/services/apis.service";
+import { SessionStorageService } from "../../../shared/services/session-storage.service";
+import { AppConstants } from "../../../app.constants";
+import { forkJoin } from "rxjs";
+import Swal from "sweetalert2";
+import { Router } from "@angular/router";
+import { ToastrService } from "ngx-toastr";
+import { AgGridAngular } from "@ag-grid-community/angular";
 
 @Component({
-  selector: 'app-add-dishs',
+  selector: "app-add-dishs",
   standalone: true,
-  imports: [NgbNavModule, NgSelectModule, FormsModule, ReactiveFormsModule, CommonModule, AgGridAngular],
-  templateUrl: './add-dishs.component.html',
-  styleUrl: './add-dishs.component.scss'
+  imports: [
+    NgbNavModule,
+    NgSelectModule,
+    FormsModule,
+    ReactiveFormsModule,
+    CommonModule,
+    AgGridAngular,
+  ],
+  templateUrl: "./add-dishs.component.html",
+  styleUrl: "./add-dishs.component.scss",
 })
 export class AddDishsComponent {
-  @Input() type: any
+  @Input() type: any;
   @Input() myData: any;
-  active = 1
+  active = 1;
   menuForm!: FormGroup;
-  menuItemsList: any = []
-  categoryList: any = []
+  menuItemsList: any = [];
+  categoryList: any = [];
   optSetDetails: any;
   storesList: any;
   Ingredients: { name: string }[] = [];
@@ -35,63 +48,75 @@ export class AddDishsComponent {
   addedMenuIds: Set<number> = new Set();
   mainMenuItems: any[];
   selectedSubcategories: number[] = [];
-  dish_option_set_json: string = '';
-  reqbody: any
+  dish_option_set_json: string = "";
+  reqbody: any;
   uploadImagUrl: string | ArrayBuffer | null;
   file: File;
   previewUrl: string | ArrayBuffer | null = null;
   selectedFile: File | null = null;
   checkedDishString: string;
-  isView=true;
+  isView = true;
   isViewMode: boolean;
   inventoryList: any = [];
-  dish_inventory_json: any=[] ;
-  selectedInventoryItem: any = '';
-  quantity: string = '';
-  largePizzas:number=0
-  smallPizzas:number=0
-  drinks:number=0
-  sides:number=0
+  dish_inventory_json: any = [];
+  selectedInventoryItem: any = "";
+  quantity: string = "";
+  largePizzas: any;
+  smallPizzas: any;
+  drinks: any;
+  sides: any;
+  //  largePizzas: number = 0;
+  // smallPizzas: number = 0;
+  // drinks: number = 0;
+  // sides: number = 0;
   // dishInventory: any= [];
   baseTypeList = [
-  { id: 1, name: 'Small Pizza' },
-  { id: 2, name: 'Large Pizza' },
-  { id: 3, name: 'Drinks' },
-  { id: 4, name: 'Sides' },
-  // { id: 5, name: 'Desserts' } // new base type
-];
+    { id: 1, name: "Small Pizza" },
+    { id: 2, name: "Large Pizza" },
+    { id: 3, name: "Drinks" },
+    { id: 4, name: "Sides" },
+    // { id: 5, name: 'Desserts' } // new base type
+  ];
 
   dishInventory: any[] = [];
-   rowData :any= [];
-isHide=false
-  days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  rowData: any = [];
+  isHide = false;
+  days = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
 
-  columnDefs :any= [
+  columnDefs: any = [
     {
-      headerName: 'Day',
-      field: 'day',
+      headerName: "Day",
+      field: "day",
       editable: true,
-      cellEditor: 'agSelectCellEditor',
+      cellEditor: "agSelectCellEditor",
       cellEditorParams: {
-        values: this.days
-      }
+        values: this.days,
+      },
     },
     {
-    headerName: 'Open',
-    field: 'open',
-    editable: (params: any) => !params.data.is24Hour
-  },
-  {
-    headerName: 'Close',
-    field: 'close',
-    editable: (params: any) => !params.data.is24Hour
-  },
+      headerName: "Open",
+      field: "open",
+      editable: (params: any) => !params.data.is24Hour,
+    },
     {
-  headerName: '24 Hours',
-  field: 'is24Hour',
-  cellRenderer: (params: any) => {
-    const checked = params.value ? 'checked' : '';
-    return `
+      headerName: "Close",
+      field: "close",
+      editable: (params: any) => !params.data.is24Hour,
+    },
+    {
+      headerName: "24 Hours",
+      field: "is24Hour",
+      cellRenderer: (params: any) => {
+        const checked = params.value ? "checked" : "";
+        return `
       <div class="d-flex align-items-center justify-content-center gap-2">
         <input type="checkbox" class="checkbox-24hr" ${checked} data-row="${params.rowIndex}" />
         <button class="btn btn-sm btn-outline-danger delete-btn" data-row="${params.rowIndex}">🗑</button>
@@ -99,58 +124,62 @@ isHide=false
         <button class="btn btn-sm btn-outline-secondary copy-btn" data-row="${params.rowIndex}">📄</button>
       </div>
     `;
-  },
-  onCellClicked: (params: any) => {
-    const target = params.event.target as HTMLElement;
-    const rowIndex = params.node.rowIndex;
+      },
+      onCellClicked: (params: any) => {
+        const target = params.event.target as HTMLElement;
+        const rowIndex = params.node.rowIndex;
 
-    if (target.classList.contains('delete-btn')) {
-      params.api.applyTransaction({ remove: [params.node.data] });
-    }
+        if (target.classList.contains("delete-btn")) {
+          params.api.applyTransaction({ remove: [params.node.data] });
+        }
 
-    if (target.classList.contains('copy-btn')) {
-      const copy = { ...params.node.data };
-      params.api.applyTransaction({ add: [copy], addIndex: rowIndex + 1 });
-    }
+        if (target.classList.contains("copy-btn")) {
+          const copy = { ...params.node.data };
+          params.api.applyTransaction({ add: [copy], addIndex: rowIndex + 1 });
+        }
 
-    if (target.classList.contains('checkbox-24hr')) {
-      const checked = (target as HTMLInputElement).checked;
-      params.node.setDataValue('is24Hour', checked);
+        if (target.classList.contains("checkbox-24hr")) {
+          const checked = (target as HTMLInputElement).checked;
+          params.node.setDataValue("is24Hour", checked);
 
-      // Force Open/Close cells to update editable status
-      params.api.refreshCells({
-        rowNodes: [params.node],
-        force: true,
-        columns: ['open', 'close']
-      });
-    }
-  },
-  minWidth: 150,
-  flex: 1
-}
-
-    
+          // Force Open/Close cells to update editable status
+          params.api.refreshCells({
+            rowNodes: [params.node],
+            force: true,
+            columns: ["open", "close"],
+          });
+        }
+      },
+      minWidth: 150,
+      flex: 1,
+    },
   ];
-  constructor(private fb: FormBuilder, public modal: NgbModal, private router: Router,private toastr: ToastrService,private apiService: ApisService, private sessionStorage: SessionStorageService) { }
+  constructor(
+    private fb: FormBuilder,
+    public modal: NgbModal,
+    private router: Router,
+    private toastr: ToastrService,
+    private apiService: ApisService,
+    private sessionStorage: SessionStorageService,
+  ) {}
 
   ngOnInit() {
-    console.log(this.myData)
+    console.log(this.myData);
     this.menuForm = this.fb.group({
       menuType: [null, Validators.required],
       categoryType: [null, Validators.required],
-      dishType: ['standard'], // Default selected
-      firstName: ['', Validators.required],
+      dishType: ["standard"], // Default selected
+      firstName: ["", Validators.required],
       image: [null, Validators.required],
-      price: [''],
-      priceSuffix: [''],
-      displayName: [''],
-      printName: [''],
-      posName: [''],
-      description: [''],
+      price: [""],
+      priceSuffix: [""],
+      displayName: [""],
+      printName: [""],
+      posName: [""],
+      description: [""],
       // optionSet:[''],
-      subtitle: [''],
-      storeName: [this.myData?this.myData.store_id : '']
-
+      subtitle: [""],
+      storeName: [this.myData ? this.myData.store_id : ""],
     });
     this.storeList();
     this.getOptionSets();
@@ -158,32 +187,30 @@ isHide=false
     this.patchValue();
     this.loadInventory();
 
-      if (this.type === 'View') {
-       this.isViewMode=true
-    this.menuForm.disable();
-  }
+    if (this.type === "View") {
+      this.isViewMode = true;
+      this.menuForm.disable();
+    }
   }
   storeList() {
     this.apiService
       .getApi(AppConstants.api_end_points.store_list)
-      .subscribe((data:any) => {
+      .subscribe((data: any) => {
         if (data) {
           console.log(data);
-           data.unshift({ store_id: '', store_name: 'All Stores' })
+          data.unshift({ store_id: "", store_name: "All Stores" });
           this.storesList = data;
         }
       });
-
   }
   patchValue() {
-    
-    console.log(this.myData, this.type, 'opennnnnnnnnnnnn')
-    if (this.type == 'Edit' || this.type == 'View') {
-      this.menuForm.controls['menuType'].disable();
-      this.menuForm.controls['categoryType'].disable();
-      this.menuForm.controls['storeName'].disable();
-      this.menuForm.get('image')?.clearValidators();
-      this.menuForm.get('image')?.updateValueAndValidity();
+    console.log(this.myData, this.type, "opennnnnnnnnnnnn");
+    if (this.type == "Edit" || this.type == "View") {
+      this.menuForm.controls["menuType"].disable();
+      this.menuForm.controls["categoryType"].disable();
+      this.menuForm.controls["storeName"].disable();
+      this.menuForm.get("image")?.clearValidators();
+      this.menuForm.get("image")?.updateValueAndValidity();
       this.menuForm.patchValue({
         menuType: this.myData.dish_menu_id,
         categoryType: this.myData.dish_category_id,
@@ -201,128 +228,162 @@ isHide=false
         // optionSet:JSON.parse(dish_option_set_json)
       });
       //  this.Ingredients=JSON.parse(this.myData)
-      this.selectedSubcategories = JSON.parse(this.myData.dish_option_set_json)
-      this.Ingredients = JSON.parse(this.myData.dish_ingredients_json)
-      this.choices = JSON.parse(this.myData.dish_choices_json)
+      this.selectedSubcategories = JSON.parse(this.myData.dish_option_set_json);
+      this.Ingredients = JSON.parse(this.myData.dish_ingredients_json);
+      this.choices = JSON.parse(this.myData.dish_choices_json);
       this.previewUrl = this.myData.dish_image;
-      this.largePizzas=this.myData?.no_of_large_pizzas
-      this.smallPizzas=this.myData?.no_of_small_pizzas
-      this.drinks=this.myData?.no_of_drinks
-      this.sides=this.myData?.no_of_sides
-
-      
+      this.largePizzas = this.myData?.no_of_large_pizzas;
+      this.smallPizzas = this.myData?.no_of_small_pizzas;
+      this.drinks = this.myData?.no_of_drinks;
+      this.sides = this.myData?.no_of_sides;
 
       // dish_choices_json
       let parsed;
       console.log(this.dishInventory);
-if (this.myData?.dish_inventory_json) {
-  try {
-    let parsed = JSON.parse(this.myData.dish_inventory_json);
+      if (this.myData?.dish_inventory_json) {
+        try {
+          let parsed = JSON.parse(this.myData.dish_inventory_json);
 
-    // If it's a stringified string (double JSON), parse again
-    if (typeof parsed === 'string') parsed = JSON.parse(parsed);
+          // If it's a stringified string (double JSON), parse again
+          if (typeof parsed === "string") parsed = JSON.parse(parsed);
 
-    // ✅ Only assign if parsed is a valid array
-    this.dishInventory = Array.isArray(parsed) && parsed.length > 0 ? parsed : [];
-  } catch (e) {
-    console.error('Error parsing dish_inventory_json', e);
-    this.dishInventory = [];
-  }
-} else {
-  // ✅ When no data present at all
-  this.dishInventory = [];
-}
-   // ---------- Applicable Hours PATCH ----------
-   console.log(
-  'TYPE:',
-  typeof this.myData.applicable_hours,
-  this.myData.applicable_hours
-);
+          // ✅ Only assign if parsed is a valid array
+          this.dishInventory =
+            Array.isArray(parsed) && parsed.length > 0 ? parsed : [];
+        } catch (e) {
+          console.error("Error parsing dish_inventory_json", e);
+          this.dishInventory = [];
+        }
+      } else {
+        // ✅ When no data present at all
+        this.dishInventory = [];
+      }
+      // ---------- Applicable Hours PATCH ----------
+      console.log(
+        "TYPE:",
+        typeof this.myData.applicable_hours,
+        this.myData.applicable_hours,
+      );
 
-   let hours: any[] = [];
+      let hours: any[] = [];
 
-if (this.myData?.applicable_hours) {
-  try {
-    hours = JSON.parse(this.myData.applicable_hours);
+      if (this.myData?.applicable_hours) {
+        try {
+          hours = JSON.parse(this.myData.applicable_hours);
 
-    // safety: ensure array
-    if (!Array.isArray(hours)) {
-      hours = [];
+          // safety: ensure array
+          if (!Array.isArray(hours)) {
+            hours = [];
+          }
+        } catch (e) {
+          console.error("Failed to parse applicable_hours", e);
+          hours = [];
+        }
+      }
+
+      if (hours.length > 0) {
+        this.isHide = true;
+
+        this.rowData = hours.map((row) => ({
+          day: row.day,
+          open: row.open,
+          close: row.close,
+          is24Hour: row.is24Hour ?? false,
+        }));
+      } else {
+        this.isHide = false;
+        this.rowData = [];
+      }
+
+      console.log(this.rowData, "  this.rowData");
+      console.log(this.dishInventory, "  this.dishInventory");
     }
-  } catch (e) {
-    console.error('Failed to parse applicable_hours', e);
-    hours = [];
-  }
-}
-
-if (hours.length > 0) {
-  this.isHide = true;
-
-  this.rowData = hours.map(row => ({
-    day: row.day,
-    open: row.open,
-    close: row.close,
-    is24Hour: row.is24Hour ?? false
-  }));
-} else {
-  this.isHide = false;
-  this.rowData = [];
-}
-
-    console.log(  this.rowData,'  this.rowData');
-    console.log(  this.dishInventory,'  this.dishInventory');
-    
-    }
-    this.getMenuCategoryDishData()
-
+    this.getMenuCategoryDishData();
   }
 
   getMenuCategoryDishData() {
-    console.log(this.menuForm.value.storeName,this.menuForm.getRawValue().storeName);
-    
-    const userId = JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id;
-    const menuApi = this.apiService.getApi(AppConstants.api_end_points.menu + '?store_id=' + (this.menuForm.getRawValue().storeName==''?-1:this.menuForm.getRawValue().storeName));
-    const categoryApi = this.apiService.getApi(`/api/category?store_id=` + (this.menuForm.getRawValue().storeName==''?-1:this.menuForm.getRawValue().storeName));
-    const dishApi = this.apiService.getApi(AppConstants.api_end_points.dish + '?store_id=' + (this.menuForm.getRawValue().storeName==''?-1:this.menuForm.getRawValue().storeName));
+    console.log(
+      this.menuForm.value.storeName,
+      this.menuForm.getRawValue().storeName,
+    );
+
+    const userId = JSON.parse(
+      this.sessionStorage.getsessionStorage("loginDetails") as any,
+    ).user.user_id;
+    const menuApi = this.apiService.getApi(
+      AppConstants.api_end_points.menu +
+        "?store_id=" +
+        (this.menuForm.getRawValue().storeName == ""
+          ? -1
+          : this.menuForm.getRawValue().storeName),
+    );
+    const categoryApi = this.apiService.getApi(
+      `/api/category?store_id=` +
+        (this.menuForm.getRawValue().storeName == ""
+          ? -1
+          : this.menuForm.getRawValue().storeName),
+    );
+    const dishApi = this.apiService.getApi(
+      AppConstants.api_end_points.dish +
+        "?store_id=" +
+        (this.menuForm.getRawValue().storeName == ""
+          ? -1
+          : this.menuForm.getRawValue().storeName),
+    );
 
     forkJoin([menuApi, categoryApi, dishApi]).subscribe(
       ([menuRes, categoryRes, dishRes]: any) => {
-        this.menuItemsList = menuRes.data
-        this.categoryList = categoryRes.categories
-        const resi = this.apiService.buildMenuTree(menuRes.data, categoryRes.categories, dishRes.data)
-        this.mainMenuItems = resi
+        this.menuItemsList = menuRes.data;
+        this.categoryList = categoryRes.categories;
+        const resi = this.apiService.buildMenuTree(
+          menuRes.data,
+          categoryRes.categories,
+          dishRes.data,
+        );
+        this.mainMenuItems = resi;
         console.log(resi, "resi");
-
-      })
+      },
+    );
   }
 
   getOptionSets() {
-
-    this.apiService.getApi('/api/optionset?store_id=' + -1).subscribe((data: any) => {
-      if (data.code == 1) {
-        console.log(data, 'optionnnnnnnn')
-        data.data.forEach((item: any) => {
-          item.status = item.status == 1 ? 'Active' : item.status == 0 ? 'Inactive' : '--'
-        })
-        this.optSetDetails = data.data
-      }
-    })
+    this.apiService
+      .getApi("/api/optionset?store_id=" + -1)
+      .subscribe((data: any) => {
+        if (data.code == 1) {
+          console.log(data, "optionnnnnnnn");
+          data.data.forEach((item: any) => {
+            item.status =
+              item.status == 1
+                ? "Active"
+                : item.status == 0
+                  ? "Inactive"
+                  : "--";
+          });
+          this.optSetDetails = data.data;
+        }
+      });
   }
 
-  getMenu(){
-    this.apiService.getApi(AppConstants.api_end_points.menu + '?store_id=' +this.menuForm.getRawValue().storeName).subscribe((data: any) => {
-      if (data.code == 1) {
-        this.menuItemsList = data.data;
-      }
-    });
+  getMenu() {
+    this.apiService
+      .getApi(
+        AppConstants.api_end_points.menu +
+          "?store_id=" +
+          this.menuForm.getRawValue().storeName,
+      )
+      .subscribe((data: any) => {
+        if (data.code == 1) {
+          this.menuItemsList = data.data;
+        }
+      });
   }
   getCategories(data: any): void {
     console.log(data.dish_menu_id);
     const loginRaw = this.sessionStorage.getsessionStorage("loginDetails");
     const loginData = loginRaw ? JSON.parse(loginRaw) : null;
     const userId = loginData?.user?.user_id;
-    console.log(userId, 'user id');
-
+    console.log(userId, "user id");
 
     if (!userId) {
       console.error("No user ID found in session");
@@ -332,13 +393,13 @@ if (hours.length > 0) {
     this.apiService
       .getApi(`/api/category?store_id=${this.menuForm.getRawValue().storeName}`)
       .subscribe((res: any) => {
-
-        console.log(res, 'categories response');
+        console.log(res, "categories response");
 
         if (res.code === "1") {
-          this.categoryList = res.categories.filter((x: { dish_menu_id: any; status: number; }) => (x.dish_menu_id == data.dish_menu_id && x.status == 1))
-
-
+          this.categoryList = res.categories.filter(
+            (x: { dish_menu_id: any; status: number }) =>
+              x.dish_menu_id == data.dish_menu_id && x.status == 1,
+          );
         } else {
           console.error("Failed to load categories:", res.message);
         }
@@ -348,12 +409,12 @@ if (hours.length > 0) {
     const nextIndex = this.choices.length + 1;
     this.choices.push({
       expanded: false,
-      name: '',
-      menuItems: JSON.parse(JSON.stringify(this.mainMenuItems))  // Deep clone
+      name: "",
+      menuItems: JSON.parse(JSON.stringify(this.mainMenuItems)), // Deep clone
     });
   }
   onChoiceToggle(choice: any) {
-    console.log(choice)
+    console.log(choice);
     const isChecked = choice.checked;
 
     for (let sub of choice.categories) {
@@ -382,184 +443,199 @@ if (hours.length > 0) {
   removeChoice(index: number) {
     const removedMenuId = this.choices[index].menuId;
     this.choices.splice(index, 1);
-    this.addedMenuIds.delete(removedMenuId);  // Allow it to be added again
+    this.addedMenuIds.delete(removedMenuId); // Allow it to be added again
   }
   addIngredients() {
-    this.Ingredients.push({ name: '' });
+    this.Ingredients.push({ name: "" });
   }
   removeIngredients(index: number) {
     this.Ingredients.splice(index, 1);
   }
   insertDishData() {
-    console.log("innnnnnnnnnnnn", this.choices)
-//     if (this.menuForm.value.dishType == 'combo') {
-//     this.checkedDishString = [
-//   ...new Set(
-//     this.choices.flatMap(side =>
-//       side.menuItems.flatMap((menuItem:any) =>
-//         menuItem.categories.flatMap((category:any) =>
-//           category.dishes
-//             .filter((dish:any) => dish.checked)
-//             .map((dish:any) => dish.dishId)
-//         )
-//       )
-//     )
-//   )
-// ]
-// .map(id => `${id},1`)
-// .join('|');
-//     }
-if (this.menuForm.value.dishType === 'combo') {
-    if (!this.validateBaseTypes()) {
-    return; // stop execution
-  }
-  const result: string[] = [];
-  this.choices.forEach(choice => {
-    const baseType = choice.baseType ?? 0;
-    choice.menuItems.forEach((menuItem: any) => {
-      menuItem.categories.forEach((category: any) => {
-        category.dishes
-          .filter((dish: any) => dish.checked)
-          .forEach((dish: any) => {
-            result.push(`${dish.dishId},1,${baseType}`);
-          });
-      });
-    });
-  });
-
-  this.checkedDishString = [...new Set(result)].join('|');
-}
-
-        if (this.menuForm.value.dishType == 'combo') {
-           if(this.checkedDishString ==""){    
-                this.toastr.info("Dish Choices is required.", "Info");
-                 return
-           }
-        }
-    if( this.dishInventory.length>0){
-        this.dish_inventory_json = JSON.stringify(
-    this.dishInventory.map((item: { inventory_item_id: any; quantity: any; unit: any;inventory_item_name:any }) => ({
-      inventory_item_name:item?.inventory_item_name,
-      inventory_item_id: item?.inventory_item_id,
-      quantity: Number(item?.quantity),
-      unit: item?.unit
-    }))
-  ) 
-    }else{
-      this.dish_inventory_json=[]
-       this.toastr.info("Dish Inventory items is required.", "Info");
-       return
-    }
-   
-    if (this.type == 'Edit') {
-      this.reqbody = {
-        "type": "update",
-        combo_dish_id_csv: this.checkedDishString,
-        "dish_id": this.myData?.dish_id,
-        "dish_menu_id": this.menuForm.getRawValue().menuType,
-        "dish_category_id": this.menuForm.getRawValue().categoryType,
-        "dish_type": this.menuForm.value.dishType,
-        "dish_name": this.menuForm.value.firstName,
-        "dish_price": this.menuForm.value.price,
-        "price_pickup": 240,
-        "price_delivery": 260,
-        "price_dine_in": 250,
-        "price_suffix": this.menuForm.value.priceSuffix,
-        "display_name": this.menuForm.value.firstName,
-        "print_name": this.menuForm.value.printName,
-        "pos_name": this.menuForm.value.posName,
-        "description": this.menuForm.value.description,
-        "subtitle": this.menuForm.value.subtitle,
-        "store_id":this.menuForm.getRawValue().storeName,
-        dish_image: this.myData.dish_image,
-        "created_by":  JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,
-        "dish_option_set_json": JSON.stringify(this.selectedSubcategories),
-        "dish_ingredients_json": JSON.stringify(this.Ingredients),
-        "dish_choices_json": JSON.stringify(this.choices),
-        "dish_inventory_json":this.dish_inventory_json,
-        "applicable_hours":this.rowData.length ==0?'':JSON.stringify(this.rowData),
-        "no_of_large_pizzas":this.largePizzas,
-        "no_of_small_pizzas":this.smallPizzas,
-        "no_of_sides":this.sides,
-        "no_of_drinks":this.drinks
-
+    console.log("innnnnnnnnnnnn", this.choices);
+    //     if (this.menuForm.value.dishType == 'combo') {
+    //     this.checkedDishString = [
+    //   ...new Set(
+    //     this.choices.flatMap(side =>
+    //       side.menuItems.flatMap((menuItem:any) =>
+    //         menuItem.categories.flatMap((category:any) =>
+    //           category.dishes
+    //             .filter((dish:any) => dish.checked)
+    //             .map((dish:any) => dish.dishId)
+    //         )
+    //       )
+    //     )
+    //   )
+    // ]
+    // .map(id => `${id},1`)
+    // .join('|');
+    //     }
+    if (this.menuForm.value.dishType === "combo") {
+      if (!this.validateBaseTypes()) {
+        return; // stop execution
       }
+      const result: string[] = [];
+      this.choices.forEach((choice) => {
+        const baseType = choice.baseType ?? 0;
+        choice.menuItems.forEach((menuItem: any) => {
+          menuItem.categories.forEach((category: any) => {
+            category.dishes
+              .filter((dish: any) => dish.checked)
+              .forEach((dish: any) => {
+                result.push(`${dish.dishId},1,${baseType}`);
+              });
+          });
+        });
+      });
+
+      this.checkedDishString = [...new Set(result)].join("|");
+    }
+
+    if (this.menuForm.value.dishType == "combo") {
+      if (this.checkedDishString == "") {
+        this.toastr.info("Dish Choices is required.", "Info");
+        return;
+      }
+    }
+    if (this.dishInventory.length > 0) {
+      this.dish_inventory_json = JSON.stringify(
+        this.dishInventory.map(
+          (item: {
+            inventory_item_id: any;
+            quantity: any;
+            unit: any;
+            inventory_item_name: any;
+          }) => ({
+            inventory_item_name: item?.inventory_item_name,
+            inventory_item_id: item?.inventory_item_id,
+            quantity: Number(item?.quantity),
+            unit: item?.unit,
+          }),
+        ),
+      );
+    } else {
+      this.dish_inventory_json = [];
+      this.toastr.info("Dish Inventory items is required.", "Info");
+      return;
+    }
+
+    if (this.type == "Edit") {
+      this.reqbody = {
+        type: "update",
+        combo_dish_id_csv: this.checkedDishString,
+        dish_id: this.myData?.dish_id,
+        dish_menu_id: this.menuForm.getRawValue().menuType,
+        dish_category_id: this.menuForm.getRawValue().categoryType,
+        dish_type: this.menuForm.value.dishType,
+        dish_name: this.menuForm.value.firstName,
+        dish_price: this.menuForm.value.price,
+        price_pickup: 240,
+        price_delivery: 260,
+        price_dine_in: 250,
+        price_suffix: this.menuForm.value.priceSuffix,
+        display_name: this.menuForm.value.firstName,
+        print_name: this.menuForm.value.printName,
+        pos_name: this.menuForm.value.posName,
+        description: this.menuForm.value.description,
+        subtitle: this.menuForm.value.subtitle,
+        store_id: this.menuForm.getRawValue().storeName,
+        dish_image: this.myData.dish_image,
+        created_by: JSON.parse(
+          this.sessionStorage.getsessionStorage("loginDetails") as any,
+        ).user.user_id,
+        dish_option_set_json: JSON.stringify(this.selectedSubcategories),
+        dish_ingredients_json: JSON.stringify(this.Ingredients),
+        dish_choices_json: JSON.stringify(this.choices),
+        dish_inventory_json: this.dish_inventory_json,
+        applicable_hours:
+          this.rowData.length == 0 ? "" : JSON.stringify(this.rowData),
+        no_of_large_pizzas: this.largePizzas,
+        no_of_small_pizzas: this.smallPizzas,
+        no_of_sides: this.sides,
+        no_of_drinks: this.drinks,
+      };
     } else {
       this.reqbody = {
-        "type": "insert",
+        type: "insert",
         combo_dish_id_csv: this.checkedDishString,
-        "dish_menu_id": this.menuForm.getRawValue().menuType,
-        "dish_category_id": this.menuForm.getRawValue().categoryType,
-        "dish_type": this.menuForm.value.dishType,
-        "dish_name": this.menuForm.value.firstName,
-        "dish_price": this.menuForm.value.price,
-        "price_pickup": 240,
-        "price_delivery": 260,
-        "price_dine_in": 250,
-        "price_suffix": this.menuForm.value.priceSuffix,
-        "display_name": this.menuForm.value.firstName,
-        "print_name": this.menuForm.value.printName,
-        "pos_name": this.menuForm.value.posName,
-        "description": this.menuForm.value.description,
-        "subtitle": this.menuForm.value.subtitle,
+        dish_menu_id: this.menuForm.getRawValue().menuType,
+        dish_category_id: this.menuForm.getRawValue().categoryType,
+        dish_type: this.menuForm.value.dishType,
+        dish_name: this.menuForm.value.firstName,
+        dish_price: this.menuForm.value.price,
+        price_pickup: 240,
+        price_delivery: 260,
+        price_dine_in: 250,
+        price_suffix: this.menuForm.value.priceSuffix,
+        display_name: this.menuForm.value.firstName,
+        print_name: this.menuForm.value.printName,
+        pos_name: this.menuForm.value.posName,
+        description: this.menuForm.value.description,
+        subtitle: this.menuForm.value.subtitle,
         // "store_id": this.menuForm.value.storeName.length ==0?this.storesList.map((item:any)=>item.store_id).toString():this.menuForm.value.storeName,
-         "store_id":this.menuForm.getRawValue().storeName.length ==0?this.storesList.filter((item: any) => item.store_id).map((item:any)=>item.store_id):[this.menuForm.getRawValue().storeName],
+        store_id:
+          this.menuForm.getRawValue().storeName.length == 0
+            ? this.storesList
+                .filter((item: any) => item.store_id)
+                .map((item: any) => item.store_id)
+            : [this.menuForm.getRawValue().storeName],
 
-        "created_by":  JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,
-        "dish_option_set_json": JSON.stringify(this.selectedSubcategories),
-        "dish_ingredients_json": JSON.stringify(this.Ingredients as any),
-        "dish_choices_json": JSON.stringify(this.choices),
-        "dish_inventory_json":this.dish_inventory_json,
-        "applicable_hours":this.rowData.length ==0?'':JSON.stringify(this.rowData),
-        "no_of_large_pizzas":this.largePizzas,
-        "no_of_small_pizzas":this.smallPizzas,
-        "no_of_sides":this.sides,
-        "no_of_drinks":this.drinks
-
-      }
+        created_by: JSON.parse(
+          this.sessionStorage.getsessionStorage("loginDetails") as any,
+        ).user.user_id,
+        dish_option_set_json: JSON.stringify(this.selectedSubcategories),
+        dish_ingredients_json: JSON.stringify(this.Ingredients as any),
+        dish_choices_json: JSON.stringify(this.choices),
+        dish_inventory_json: this.dish_inventory_json,
+        applicable_hours:
+          this.rowData.length == 0 ? "" : JSON.stringify(this.rowData),
+        no_of_large_pizzas: this.largePizzas,
+        no_of_small_pizzas: this.smallPizzas,
+        no_of_sides: this.sides,
+        no_of_drinks: this.drinks,
+      };
     }
     console.log(this.reqbody);
     if (this.menuForm.invalid) {
-      Object.keys(this.menuForm.controls).forEach(key => {
+      Object.keys(this.menuForm.controls).forEach((key) => {
         this.menuForm.get(key)?.markAsTouched();
       });
     } else {
       const formData = new FormData();
       formData.append("image", this.file); // Attach Blob with a filename
       formData.append("body", JSON.stringify(this.reqbody));
-      console.log(this.reqbody)
-      this.apiService.postApi(AppConstants.api_end_points.dishV2, formData).subscribe((res: any) => {
-        if (res.code === "1") {
-          Swal.fire("Success!", res.message, "success").then((result) => {
-            if (result) {
-              console.log("User clicked OK");
-              // this.router.navigate(["/menus/dish"]);
-              this.modal.dismissAll();
-
-            }
-          });
-          // this.modal.dismissAll("refresh");
-        } else {
-          alert(res.message || "Failed to add Dish");
-        }
-      });
+      console.log(this.reqbody);
+      this.apiService
+        .postApi(AppConstants.api_end_points.dishV2, formData)
+        .subscribe((res: any) => {
+          if (res.code === "1") {
+            Swal.fire("Success!", res.message, "success").then((result) => {
+              if (result) {
+                console.log("User clicked OK");
+                // this.router.navigate(["/menus/dish"]);
+                this.modal.dismissAll();
+              }
+            });
+            // this.modal.dismissAll("refresh");
+          } else {
+            alert(res.message || "Failed to add Dish");
+          }
+        });
     }
   }
 
-validateBaseTypes(): boolean {
-  let isValid = true;
+  validateBaseTypes(): boolean {
+    let isValid = true;
 
-  this.choices.forEach(choice => {
-    if (choice.expanded && !choice.baseType) {
-      choice.showBaseTypeError = true;
-      isValid = false;
-    }
-  });
+    this.choices.forEach((choice) => {
+      if (choice.expanded && !choice.baseType) {
+        choice.showBaseTypeError = true;
+        isValid = false;
+      }
+    });
 
-  return isValid;
-}
-
-
+    return isValid;
+  }
 
   onSelectFile(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -568,8 +644,8 @@ validateBaseTypes(): boolean {
       this.selectedFile = this.file;
 
       // Manually update form value (not bound to input)
-      this.menuForm.get('image')?.setValue(this.file);
-      this.menuForm.get('image')?.markAsTouched();
+      this.menuForm.get("image")?.setValue(this.file);
+      this.menuForm.get("image")?.markAsTouched();
 
       const reader = new FileReader();
       reader.onload = () => {
@@ -579,17 +655,11 @@ validateBaseTypes(): boolean {
     }
   }
 
-
   removeImage(): void {
     this.previewUrl = null;
     this.selectedFile = null;
-    this.menuForm.get('image')?.reset();  // Reset form control
+    this.menuForm.get("image")?.reset(); // Reset form control
   }
-
-
-
-
-
 
   onMenuToggle(menu: any, menuList: any) {
     menu.checked = !menu.checked;
@@ -599,7 +669,7 @@ validateBaseTypes(): boolean {
         sub.checked = menu.checked;
         sub.indeterminate = false;
         if (sub.dishes) {
-          sub.dishes.forEach((dish: any) => dish.checked = menu.checked);
+          sub.dishes.forEach((dish: any) => (dish.checked = menu.checked));
         }
       });
     }
@@ -610,7 +680,7 @@ validateBaseTypes(): boolean {
     sub.checked = !sub.checked;
     sub.indeterminate = false;
     if (sub.dishes) {
-      sub.dishes.forEach((dish: any) => dish.checked = sub.checked);
+      sub.dishes.forEach((dish: any) => (dish.checked = sub.checked));
     }
     this.updateSubcategoryState(subList, menu);
   }
@@ -654,51 +724,46 @@ validateBaseTypes(): boolean {
     // If you have a parent above menu, update its state here
   }
 
+  addDishInventory() {
+    if (!this.selectedInventoryItem || !this.quantity.trim()) {
+      return;
+    }
+    const alreadyExists = this.dishInventory.some(
+      (item) => item.inventory_item_id === this.selectedInventoryItem.item_id,
+    );
 
-addDishInventory() {
-  if (!this.selectedInventoryItem || !this.quantity.trim()) {
-    return;
+    if (alreadyExists) {
+      return;
+    }
+
+    this.dishInventory.push({
+      inventory_item_name: this.selectedInventoryItem.item_name,
+      inventory_item_id: this.selectedInventoryItem.item_id,
+      quantity: this.quantity.trim(),
+      unit: this.selectedInventoryItem.unit,
+    });
+
+    // Reset fields
+    this.selectedInventoryItem = "";
+    this.quantity = "";
   }
-   const alreadyExists = this.dishInventory.some(
-    item => item.inventory_item_id === this.selectedInventoryItem.item_id
-  );
 
-  if (alreadyExists) {
-    
-    return; 
+  removeDishInventory(index: number) {
+    this.dishInventory.splice(index, 1);
   }
-
-  this.dishInventory.push({
-    inventory_item_name: this.selectedInventoryItem.item_name,
-    inventory_item_id:this.selectedInventoryItem.item_id,
-    quantity: this.quantity.trim(),
-    unit:this.selectedInventoryItem.unit
-  });
-
-  // Reset fields
-  this.selectedInventoryItem = '';
-  this.quantity = '';
-}
-
-removeDishInventory(index: number) {
-  this.dishInventory.splice(index, 1);
-}
   loadInventory(): void {
-    
     this.apiService.getApi(AppConstants.api_end_points.inventory).subscribe({
-      next: (res:any) => {
+      next: (res: any) => {
         this.inventoryList = res.data || res;
         console.log("Inventory loaded:", this.inventoryList);
-
       },
       error: (err) => {
-        console.error('Error loading inventory:', err);
-        Swal.fire('Error', 'Failed to load inventory', 'error');
-      }
-
+        console.error("Error loading inventory:", err);
+        Swal.fire("Error", "Failed to load inventory", "error");
+      },
     });
   }
-   formatTime(params: any) {
+  formatTime(params: any) {
     return params.value;
   }
 
@@ -706,8 +771,8 @@ removeDishInventory(index: number) {
     const rowIndex = params.rowIndex;
     const actionTarget = params.event.target as HTMLElement;
 
-    if (actionTarget.classList.contains('delete-btn')) {
-      console.log(rowIndex)
+    if (actionTarget.classList.contains("delete-btn")) {
+      console.log(rowIndex);
       this.rowData.splice(rowIndex, 1);
       // this.rowData = [...this.rowData];
     }
@@ -719,8 +784,24 @@ removeDishInventory(index: number) {
     // }
   }
   addNewRow() {
-  this.isHide =true
-  this.rowData.push({ day: 'Monday', open: '09:00', close: '21:00', is24Hour: false });
-  this.rowData = [...this.rowData]; // forces change detection
-}
+    this.isHide = true;
+    this.rowData.push({
+      day: "Monday",
+      open: "09:00",
+      close: "21:00",
+      is24Hour: false,
+    });
+    this.rowData = [...this.rowData]; // forces change detection
+  }
+
+  validateInput(event: any) {
+    let value = event.target.value;
+
+    value = value.replace(/[^A-Za-z0-9]/g, "");
+
+    value = value.replace(/^\s+/, "");
+
+    event.target.value = value;
+    this.quantity = value;
+  }
 }

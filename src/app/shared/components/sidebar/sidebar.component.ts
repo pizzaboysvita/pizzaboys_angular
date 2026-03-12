@@ -14,6 +14,7 @@ import { FloatAdjustmentComponent } from '../../../components/float-adjustment/f
 import { TakingsCashComponent } from '../../../components/takings-cash/takings-cash.component';
 import { PosSettingsComponent } from '../../../components/pos-settings/pos-settings.component';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { TimeSheetComponent } from '../../../components/time-sheet/time-sheet.component';
 @Component({
     selector: 'app-sidebar',
     imports: [FeatherIconsComponent, CommonModule, RouterModule],
@@ -325,6 +326,11 @@ openPosSettings(){
    this.modal.open(PosSettingsComponent,{
              windowClass:'theme-modal',centered:true
          })
+}
+openTimeSheet(){
+  this.modal.open(TimeSheetComponent,{
+     windowClass:'theme-modal',centered:true
+  })
 }
 changeStaff(){
    sessionStorage.clear()

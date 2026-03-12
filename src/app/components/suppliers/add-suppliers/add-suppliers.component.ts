@@ -17,7 +17,7 @@ import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
   templateUrl: './add-suppliers.component.html',
   styleUrls: ['./add-suppliers.component.scss']
 })
-export class AddSupplierComponent implements OnInit {
+export class AddSuppliersComponent implements OnInit {
 
   @Input() editData: any = null;
   @Input() type: 'Add' | 'Edit' | 'View' = 'Add';
@@ -35,7 +35,7 @@ export class AddSupplierComponent implements OnInit {
     this.addSupplierForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', Validators.required],
+     phone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
       address: ['', Validators.required],
       status: [1, Validators.required],
       items: this.fb.array([])

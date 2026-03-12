@@ -14,7 +14,7 @@
             <div class="d-flex gap-3 ">
               <div class="col-xl-3">
                 <div class="media-cell mt-1">
-                  <h6 class="fw-bold">Store ID *</h6>
+                  <h6 class="fw-bold">Store Names <span class="text-danger">*</span></h6>
 
                   <ng-select [items]="storesList" bindLabel="store_name" bindValue="store_id" formControlName="store_id"
                     [clearable]="true" [searchable]="false">
@@ -72,7 +72,7 @@
       <div body>
         <div style="overflow: auto">
           <ag-grid-angular class="ag-theme-alpine font-family my-grid" style="width: 100%" [columnDefs]="tableConfig"
-            [rowData]="staff_list" [domLayout]="'autoHeight'" [pagination]="true" [paginationPageSize]="10"
+            [rowData]="staff_list" [domLayout]="'autoHeight'" [pagination]="true" [paginationPageSize]="10" [paginationPageSizeSelector]="[10, 20, 50, 100]"
             [gridOptions]="gridOptions" [suppressColumnVirtualisation]="true" (cellClicked)="onCellClicked($event)"
             [defaultColDef]="{ flex: 1, minWidth: 100, sortable: true }" (gridReady)="onGridReady($event)">
           </ag-grid-angular>

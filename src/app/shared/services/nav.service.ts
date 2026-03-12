@@ -290,7 +290,7 @@ export class NavService {
       level: 1,
       title: "Media",
       path: "/media/admin-media",
-      icon: "ri-store-3-line",
+      icon: "ri-gallery-line",
       type: "link",
       active: false,
     },

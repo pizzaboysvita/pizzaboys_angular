@@ -20,7 +20,7 @@
                     <div class="input-box">
 
                       <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h6> Name</h6>
+                        <h6> Name <span class="text-danger">*</span></h6>
                         <span class="optional-tag">Required</span>
                       </div>
                       <input type="text" placeholder="Enter Name" formControlName="name">
@@ -61,7 +61,7 @@
                   <div class="col-12">
                     <div class="input-box">
                       <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h6> Option Set Type*</h6>
+                        <h6> Option Set Type<span class="text-danger">*</span></h6>
                         <span class="optional-tag">Required</span>
                       </div>
                       <ng-select [items]="optType" bindLabel="name" bindValue="value" [searchable]="false"
@@ -249,7 +249,7 @@
     <div class="col-12">
                     <div class="input-box">
                        <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h6>Store Type</h6>
+                        <h6>Store Type <span class="text-danger">*</span></h6>
                         <span class="optional-tag">Required</span>
                       </div>
                       <ng-select [items]="storesList" [searchable]="true" [multiple]="false" bindLabel="store_name"

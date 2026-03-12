@@ -337,6 +337,10 @@ savePromoCode() {
     ...this.promo,
 
     type: "insert",
+    
+    store_id: this.promo.store_id
+  ? this.promo.store_id.join(",")
+  : null,
 
     start_datetime,
     end_datetime,
@@ -358,6 +362,8 @@ savePromoCode() {
   };
 
   console.log("PROMO PAYLOAD", payload);
+  console.log("STORE ID TYPE:", typeof this.promo.store_id);
+console.log("STORE ID VALUE:", this.promo.store_id);
 
   this.settingsService.createPromoCode(payload).subscribe({
     next: (res: any) => {

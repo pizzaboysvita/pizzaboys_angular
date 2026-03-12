@@ -95,7 +95,7 @@
             [columnDefs]="columnDefs"
             [rowData]="optSetDetails"
             [domLayout]="'autoHeight'"
-            [suppressColumnVirtualisation]="true" [pagination]="true" [paginationPageSize]="15" (cellClicked)="onCellClicked($event)"
+            [suppressColumnVirtualisation]="true" [pagination]="true" [paginationPageSize]="10" [paginationPageSizeSelector]="[10, 20, 50, 100]" (cellClicked)="onCellClicked($event)"
             [defaultColDef]="{ flex: 1, minWidth: 100, sortable: true }"
           
           >
