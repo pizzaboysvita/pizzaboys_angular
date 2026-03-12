@@ -143,11 +143,12 @@ export class AdminMediaComponent {
             id: banner.id,
             store_id: banner.store_id,
             text: banner.banner_text,
-            image: banner.banner_image_url,
-            video: banner.banner_video_url,
+            image: banner?.banner_image_url,
+            video: banner?.banner_video_url,
             status: banner.status,
-            start_date: banner.start_date,
-            end_date: banner.end_date,
+            start_date: banner?.start_date,
+            end_date: banner?.end_date,
+            promo_banner:banner?.promo_banner
           }));
 
           this.mediaListBackup = [...this.staff_list];
