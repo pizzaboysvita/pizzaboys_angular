@@ -81,7 +81,7 @@ export class AddRestaurantsComponent {
       address: ["", Validators.required],
       city: ["", [Validators.required]],
       state: ["", Validators.required],
-      postalCode: ["", Validators.required],
+      zip_code: ["", Validators.required],
       country: ["", Validators.required],
       status: ["1", Validators.required],
       image: [null, Validators.required],
@@ -125,7 +125,7 @@ preventLeadingSpace(event: KeyboardEvent) {
         password_hash: this.storeForm.value.password,
         state: this.storeForm.value.state,
         country: this.storeForm.value.country,
-        zip_code: this.storeForm.value.postalCode,
+        zip_code: this.storeForm.value.zip_code,
         updated_by: 1,
         working_hours: this.workinghours,
       };
@@ -143,6 +143,7 @@ preventLeadingSpace(event: KeyboardEvent) {
             Swal.fire("Success!", data.message, "success").then((result) => {
               if (result) {
                 console.log("User clicked OK");
+                console.log("ZipCodee",this.storeForm.value.zip_code,)
                 this.router.navigate(["/restaurants/restaurants-list"]);
               }
             });

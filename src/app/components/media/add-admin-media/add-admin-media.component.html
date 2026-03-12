@@ -10,7 +10,7 @@
 
     <!-- STORE MULTI SELECT -->
     <div class="media-cell">
-      <h6 class="fw-bold">Store *</h6>
+      <h6 class="fw-bold">Store <span class="text-danger">*</span></h6>
 
       <ng-select
         [items]="storesList"
@@ -31,7 +31,7 @@
 
     <!-- BANNER TYPE -->
     <div class="media-cell">
-      <h6 class="fw-bold">Banner Type *</h6>
+      <h6 class="fw-bold">Banner Type <span class="text-danger">*</span></h6>
       <ng-select
         [items]="bannerTypes"
         bindLabel="label"
@@ -45,7 +45,7 @@
 
     <!-- TEXT -->
     <div class="media-cell">
-      <h6 class="fw-bold">Text *</h6>
+      <h6 class="fw-bold">Text <span class="text-danger">*</span></h6>
       <input type="text" class="form-control" formControlName="text" />
       <div *ngIf="f['text'].touched && f['text'].invalid" class="text-danger">
         Text is required
@@ -74,7 +74,7 @@
     <br>
     <!-- IMAGE -->
     <div class="media-cell">
-      <h6 class="fw-bold">Image *</h6>
+      <h6 class="fw-bold">Image <span class="text-danger">*</span></h6>
       <input type="file"
              class="form-control"
              accept=".webp,.jpg,.jpeg,.png"

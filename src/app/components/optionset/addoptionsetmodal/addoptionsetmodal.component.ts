@@ -249,7 +249,8 @@ optType=[
       PriceinFreeQuantityPromos: ['']
     })
   }
-selectedStore='-1'
+// selectedStore='-1'
+selectedStore: any = null; 
   ngOnInit() {
     this.storeListItem()
     this.getMenuCategoryDishData();

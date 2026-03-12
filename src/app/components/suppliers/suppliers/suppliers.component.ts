@@ -6,7 +6,7 @@ import { ColDef, GridOptions, CellClickedEvent } from '@ag-grid-community/core';
 import { NgbModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { CardComponent } from '../../../shared/components/card/card.component';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { AddSupplierComponent } from '../add-suppliers/add-suppliers.component';
+import { AddSuppliersComponent } from '../add-suppliers/add-suppliers.component';
 @Component({
   selector: 'app-suppliers',
   standalone: true,
@@ -179,7 +179,7 @@ export class SuppliersComponent {
   }
 
   openNew() {
-    const modalRef = this.modalService.open(AddSupplierComponent, {
+    const modalRef = this.modalService.open(AddSuppliersComponent, {
       centered: true,
       backdrop: 'static',
       size: 'l'

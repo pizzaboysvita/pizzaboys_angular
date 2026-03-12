@@ -13,3 +13,38 @@ $primary-orange: #fd7e14;
     border-color: darken($primary-orange, 10%);
   }
 }
+
+.promo-row {
+  background: #f8f9fa;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #eee;
+}
+
+.promo-info {
+  display: flex;
+  gap: 20px;
+  font-size: 16px;
+}
+
+.promo-name {
+  font-weight: 600;
+}
+
+// .promo-code {
+//   color: #6c757d;
+// }
+
+.promo-actions i {
+  font-size: 20px;
+  margin-left: 15px;
+  cursor: pointer;
+}
+
+// .edit-icon {
+//   color: #0d6efd;
+// }
+
+// .delete-icon {
+//   color: #dc3545;
+// }

@@ -84,7 +84,7 @@
       <div body>
         <div style="overflow: auto">
           <ag-grid-angular class="ag-theme-alpine font-family my-grid" style="width: 100%" [columnDefs]="tableConfig"
-            [rowData]="staff_list" [domLayout]="'autoHeight'" [pagination]="true" [paginationPageSize]="10"
+            [rowData]="staff_list" [domLayout]="'autoHeight'" [pagination]="true" [paginationPageSize]="10" [paginationPageSizeSelector]="[10, 20, 50, 100]"
             [gridOptions]="gridOptions" [suppressColumnVirtualisation]="true" (cellClicked)="onCellClicked($event)"
             [defaultColDef]="{ flex: 1, minWidth: 100, sortable: true }">
           </ag-grid-angular>

@@ -442,7 +442,7 @@
       (click)="selectUser(user)"
       style="cursor: pointer;"
     >
-      <strong>{{ user.first_name }} ({{ user.phone_number }})</strong>
+      <strong>{{ user.user_first_name }} ({{ user.user_phone_number }})</strong>
     </li>
   </ul>
 </div>
@@ -529,19 +529,95 @@
             </select>
           </div>
 
-          <div class="mb-3" *ngIf="orderForm.value.orderDue == 'Later'">
-            <label class="form-label">Date and Time</label>
-          <input
+         <div class="mb-3" *ngIf="orderForm.value.orderDue == 'Later'">
+  <label class="form-label">Date and Time</label>
+  <!-- <input
             type="datetime-local"
             class="form-control"
             formControlName="orderDateTime"
             (change)="validateApplicableDay($event)"
-          />
+          /> -->
+  
+  <div class="picker-container">
+    <div class="time-header">
+      <div class="date-part">
+        <span class="year fs-10">{{ selectedDate?.year }}</span
+        ><br />
+        <span class="date fs-9">
+          {{ getMonthName(selectedDate?.month) }} {{ selectedDate?.day }}
+        </span>
+      </div>
 
-          <div class="text-danger mt-1" *ngIf="dateError">
-            This item is available only on selected days.
+      <div class="time-part fs-4">
+        <span
+          [class.inactive-text]="pickingMode !== 'hours'"
+          (click)="setPickingMode('hours')"
+          class="clickable-unit"
+        >
+          {{ selectedHour | number: "2.0" }}
+        </span>
+        <span class="separator">:</span>
+        <span
+          [class.inactive-text]="pickingMode !== 'minutes'"
+          (click)="setPickingMode('minutes')"
+          class="clickable-unit"
+        >
+          {{ selectedMinute | number: "2.0" }}
+        </span>
+
+        <div class="ampm-group fs-6">
+          <span [class.active-ampm]="!isPM" (click)="toggleAMPM(false)"
+            >AM</span
+          >
+          <span [class.active-ampm]="isPM" (click)="toggleAMPM(true)">PM</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="picker-body">
+      <div *ngIf="!showClock" class="calendar-wrapper">
+        <ngb-datepicker
+          [(ngModel)]="selectedDate"
+          (dateSelect)="selectDate($event)"
+        ></ngb-datepicker>
+      </div>
+
+      <div *ngIf="showClock" class="clock-wrapper">
+        <div class="clock-label">Select {{ pickingMode | titlecase }}</div>
+        <div class="clock">
+          <div class="center-dot"></div>
+         <div style="position: absolute; color: red;">X</div> 
+
+ <div *ngFor="let n of (pickingMode === 'hours' ? hourNumbers : minuteNumbers)"
+        class="clock-num"
+        [style.transform]="'rotate(' + n.angle + 'deg) translateY(-100px) rotate(-' + n.angle + 'deg)'">
+     {{ n.value }}
+   </div>
+          <div
+            class="hand"
+            [style.transform]="'rotate(' + handAngle + 'deg)'"
+            (mousedown)="startDrag($event)"
+          >
+            <div class="hand-circle"></div>
           </div>
-          </div>
+        </div>
+        <button type="button" class="btn btn-link btn-sm mt-2 text-decoration-none text-muted" (click)="showClock = false">
+           Change Date
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="picker-footer p-3 border-top d-flex justify-content-end bg-light">
+    
+      <button type="button" class="btn btn-primary px-4 fw-bold" (click)="handleSave()">
+        Save
+      </button>
+    </div> -->
+
+  <div class="text-danger mt-1" *ngIf="dateError">
+    This item is available only on selected days.
+  </div>
+</div>
           <button
             type="button"
             class="btn fw-bold text-white"
@@ -577,19 +653,19 @@
   <!-- <h6 class="mb-3">Customer Found</h6> -->
 
   <p><strong>Name:</strong>
-    {{ selectedUser?.first_name }} {{ selectedUser?.last_name }}
+    {{ selectedUser?.user_first_name }} {{ selectedUser?.last_name }}
   </p>
 
   <p><strong>Email:</strong>
-    {{ selectedUser?.email || 'N/A' }}
+    {{ selectedUser?.user_email_id || 'N/A' }}
   </p>
 
   <p><strong>Phone:</strong>
-    {{ selectedUser?.phone_number }}
+    {{ selectedUser?.user_phone_number }}
   </p>
 
   <p><strong>Address:</strong><br>
-    {{ selectedUser?.address_line_1 }}<br>
+    {{ selectedUser?.delivery_address }}<br>
     {{ selectedUser?.city }} {{ selectedUser?.state }} {{ selectedUser?.postcode }}
   </p>
 </div>

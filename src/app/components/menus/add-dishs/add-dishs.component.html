@@ -19,7 +19,7 @@
                     <div class="input-box">
                       <!-- <h6>Store Type</h6> -->
                       <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h6>Store Type</h6>
+                        <h6>Store Type <span class="text-danger">*</span></h6>
                         <span class="optional-tag">Required</span>
                       </div>
                       <ng-select [items]="storesList" [searchable]="true" [multiple]="false" bindLabel="store_name"
@@ -38,7 +38,7 @@
                     <div class="input-box">
                       <!-- <h6>Menu Type</h6> -->
                       <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h6>Menu Type</h6>
+                        <h6>Menu Type <span class="text-danger">*</span></h6>
                         <span class="optional-tag">Required</span>
                       </div>
                       <ng-select [items]="menuItemsList" [searchable]="true" [multiple]="false" bindLabel="name"
@@ -58,7 +58,7 @@
                     <div class="input-box">
                       <!-- <h6>Category Type</h6> -->
                       <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h6>Category Type</h6>
+                        <h6>Category Type <span class="text-danger">*</span></h6>
                         <span class="optional-tag">Required</span>
                       </div>
                       <ng-select [items]="categoryList" [searchable]="true" [multiple]="false" bindLabel="name"
@@ -95,7 +95,7 @@
                     <div class="input-box">
                       <!-- <h6>Dish Name</h6> -->
                       <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h6>Dish Name</h6>
+                        <h6>Dish Name<span class="text-danger">*</span></h6>
                         <span class="optional-tag">Required</span>
                       </div>
 
@@ -197,7 +197,7 @@
 
                   <div class="col-12">
                     <div class="input-box">
-                      <h6 class="mb-2">Upload Images</h6>
+                      <h6 class="mb-2">Upload Images <span class="text-danger">*</span></h6>
 
                       <!-- Preview Section -->
                       <div *ngIf="previewUrl !== null; else uploadInput" class="image-preview-container">
@@ -311,7 +311,7 @@
             <div class="row mb-2">
                   <div class="col-md-3 col-sm-12">
         <input
-          type="text"
+          type="number"
           class="form-control"
           placeholder="No.of Large Pizzas"
           [(ngModel)]="largePizzas"
@@ -319,7 +319,7 @@
       </div>
       <div class="col-md-3 col-sm-12">
         <input
-          type="text"
+          type="number"
           class="form-control"
           placeholder="No.of Small Pizzas"
           [(ngModel)]="smallPizzas"
@@ -327,7 +327,7 @@
       </div>
       <div class="col-md-3 col-sm-12">
         <input
-          type="text"
+          type="number"
           class="form-control"
           placeholder="No.of drinks"
           [(ngModel)]="drinks"
@@ -335,7 +335,7 @@
       </div>
       <div class="col-md-3 col-sm-12">
         <input
-          type="text"
+          type="number"
           class="form-control"
           placeholder="No.of Sides"
           [(ngModel)]="sides"
@@ -410,6 +410,7 @@
     bindLabel="name"
     bindValue="id"
     placeholder="Select base type"
+   
     [(ngModel)]="choice.baseType"
     (change)="choice.showBaseTypeError = false">
   </ng-select>
@@ -487,13 +488,15 @@
       </div>
       <!-- Input Field -->
       <div class="col-md-5 col-sm-12">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Enter Quantity"
-          [(ngModel)]="quantity"
-        />
-      </div>
+  <input
+    type="text"
+    class="form-control"
+    placeholder="Enter Quantity"
+    [(ngModel)]="quantity"
+    pattern="^[A-Za-z0-9][A-Za-z0-9]*$"
+    (input)="validateInput($event)"
+  />
+</div>
       <!-- Add Button -->
       <div class="col-md-2 col-sm-12 text-md-start text-center">
            <button class="btn addChoice-button" type="button" (click)="type !='View' && addDishInventory()">Add

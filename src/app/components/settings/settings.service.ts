@@ -36,6 +36,9 @@ export class SettingsService {
   getStores() {
     return this.http.get(`${environment.apiUrl}/api/store`);
   }
+  getPromoCodes() {
+  return this.http.get('http://78.142.47.247:3003/api/promocode');
+}
   getCategories(store_id: number) {
     return this.http.get(
       `${environment.apiUrl}/api/category?store_id=${store_id}`,
