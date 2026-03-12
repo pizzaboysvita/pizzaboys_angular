@@ -9,10 +9,20 @@
         <!-- STORE -->
         <div class="form-group mb-4">
             <label class="fw-bold">Store</label>
-            <select class="form-control" [(ngModel)]="promo.store_id" (change)="onStoreChange()" name="store_id">
+              <ng-select
+        [items]="stores"
+        bindLabel="store_name"
+        bindValue="store_id"
+        placeholder="Select Store"
+        [multiple]="true"
+        [closeOnSelect]="false"
+        (change)="onStoreChange()"
+        [(ngModel)]="promo.store_id" >
+      </ng-select>
+            <!-- <select class="form-control" [(ngModel)]="promo.store_id" (change)="onStoreChange()" name="store_id">
                 <option [ngValue]="null">Select Store</option>
                 <option *ngFor="let store of stores" [ngValue]="store.store_id">{{ store.store_name }}</option>
-            </select>
+            </select> -->
         </div>
 
         <hr class="dotted-divider">

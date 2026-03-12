@@ -56,6 +56,24 @@
 
     <!-- IMAGE -->
     <div class="media-cell">
+      <h6 class="fw-bold">Promo Banner </h6>
+      <input type="file"
+             class="form-control"
+             accept=".webp,.jpg,.jpeg,.png"
+             (change)="onPromoImageSelect($event)" />
+      <div *ngIf="f['promoBanner'].touched && f['promoBanner'].invalid" class="text-danger">
+        Image is required
+      </div>
+    </div>
+
+    <div *ngIf="editData?.promo_banner && !selectedpromoImageFile" class="mt-2">
+      <img [src]="editData.promo_banner"
+           style="width:150px;height:100px;border-radius:6px;" />
+    </div>
+
+    <br>
+    <!-- IMAGE -->
+    <div class="media-cell">
       <h6 class="fw-bold">Image *</h6>
       <input type="file"
              class="form-control"

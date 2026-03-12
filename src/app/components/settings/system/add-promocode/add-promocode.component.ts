@@ -96,7 +96,6 @@ export class AddPromocodeComponent implements OnInit {
 
   onStoreChange() {
     if (!this.promo.store_id) return;
-
     this.limitMenus = [];
     this.freeMenus = [];
 
