@@ -113,7 +113,7 @@
               >
             </li>
           }
-            <li>
+            <li (click)="downloadCategoryExcel()">
               <a class="export-btn"
                 ><i class="ri-upload-2-fill me-1"></i> Export</a
               >
@@ -129,7 +129,7 @@
             [columnDefs]="columnDefs"
             [rowData]="rowData"
             [domLayout]="'autoHeight'"
-            [suppressColumnVirtualisation]="true" [pagination]="true" [paginationPageSize]="15"
+            [suppressColumnVirtualisation]="true" [pagination]="true" [paginationPageSize]="10" [paginationPageSizeSelector]="[10,20,50,100]"
             [defaultColDef]="{ flex: 1, minWidth: 160, sortable: true }"
             (cellClicked)="onCellClicked($event)"
           >

@@ -14,6 +14,9 @@ import { AddAdminMediaComponent } from "../add-admin-media/add-admin-media.compo
 import { NgSelectModule } from "@ng-select/ng-select";
 import { ApisService } from "../../../shared/services/apis.service";
 import { AppConstants } from "../../../app.constants";
+import Swal from "sweetalert2";
+import { firstValueFrom } from "rxjs";
+import { SessionStorageService } from "../../../shared/services/session-storage.service";
 
 @Component({
   selector: "app-admin-media",
@@ -104,7 +107,8 @@ export class AdminMediaComponent {
   constructor(
     private fb: FormBuilder,
     private modalService: NgbModal,
-    private apis: ApisService
+    private apis: ApisService,private session: SessionStorageService
+    
   ) {}
 
   ngOnInit(): void {
@@ -139,7 +143,8 @@ export class AdminMediaComponent {
     this.apis.getBanners(-1).subscribe({
       next: (res: any) => {
         if (res?.code === "1") {
-          this.staff_list = res.banners.map((banner: any) => ({
+          this.staff_list = res.banners.filter((banner: any) => banner.status === 1)
+            .map((banner: any) => ({     
             id: banner.id,
             store_id: banner.store_id,
             text: banner.banner_text,
@@ -242,8 +247,25 @@ export class AdminMediaComponent {
     }
   }
 
-  onConfirm(modal: any) {
+  async onConfirm(modal: any) {
+    const payload={
+       type:'Delete',
+        id:  this.selectedItem.id,
+        user_id:JSON.parse(this.session.getsessionStorage("loginDetails") as any).user.user_id,
+    }
     console.log("Delete:", this.selectedItem);
     modal.close();
-  }
-}
+       const res: any = await firstValueFrom(
+            this.apis.saveBanner(payload)
+          );
+    
+    
+          if (res?.code === "1") {
+            Swal.fire("Success!", res.message, "success").then(() => {
+              this.loadInventory();
+            });
+          } else {
+            Swal.fire("Error", res?.message || "Failed", "error");
+          }
+            }
+          }

@@ -23,6 +23,7 @@ export class ViewRestaurantsComponent {
   storeForm!: FormGroup;
   workinghours: any;
   storeData: any;
+  isViewMode: boolean = true;
   uploadImagUrl: string | ArrayBuffer | null;
   file: File;
   uploadImagUrl_data: any;
@@ -59,7 +60,7 @@ export class ViewRestaurantsComponent {
       address: ['', Validators.required],
       city: ['', Validators.required],
       state: ['', Validators.required],
-      postalCode: ['', Validators.required],
+      zip_code: ['', Validators.required],
       country: ['', Validators.required],
       status: ['Active', Validators.required],
     });
@@ -77,7 +78,7 @@ export class ViewRestaurantsComponent {
       address: details.street_address,
       city: details.city,
       state: details.state,
-      postalCode: details.store_name,
+      zip_code: details.zip_code,
       country: details.country,
       status: details.status,
     });
@@ -135,7 +136,8 @@ export class ViewRestaurantsComponent {
   street_address: this.storeForm.value.address,
   state: this.storeForm.value.state,
   country: this.storeForm.value.country,
-  zip_code: "94406",
+  // zip_code: "94406",
+  zip_code: this.storeForm.value.zip_code,
   working_hours: this.workinghours,
   created_by: 1,
   updated_by: 1,

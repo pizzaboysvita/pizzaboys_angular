@@ -42,7 +42,7 @@ export class OrderDialogComponent {
     { id: "Un-Confirmed", name: "Un-Confirmed" },
     { id: "Confirmed", name: "Confirmed" },
     { id: "Ready", name: "Ready" },
-    { id: "Completed", name: "Completed" },
+    { id: "Delivered", name: "Completed" },
   ];
 
   action = [
