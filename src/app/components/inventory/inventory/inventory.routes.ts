@@ -20,7 +20,8 @@ const routes: Routes = [
   {
     path: 'add-inventory',
     component: AddComponent
-  }
+  },
+  
 ];
 
 export default routes;

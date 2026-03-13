@@ -296,6 +296,14 @@ export class NavService {
     },
     {
       level: 1,
+      title:"Timesheet",
+      path: "/timesheet/view-timesheet",
+      icon: "ri-truck-line",
+      type: "link",
+      active: false,
+    },
+    {
+      level: 1,
       title:"Suppliers",
       path: "/suppliers/suppliers",
       icon: "ri-truck-line",
