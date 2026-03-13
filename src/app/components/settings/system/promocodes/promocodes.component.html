@@ -21,6 +21,7 @@
     [multiple]="true"
     [closeOnSelect]="false"
     (change)="onStoreChange()"
+    name="store_id"
     [(ngModel)]="promo.store_id"
   >
   </ng-select>
@@ -37,7 +38,7 @@
       </div>
 
       <div class="promo-actions">
-        <i class="ri-pencil-line edit-icon" (click)="editPromo(promo)"></i>
+        <i class="ri-pencil-line edit-icon" (click)="editPromo(promo,'Edit')"></i>
 
         <i
           class="ri-delete-bin-line delete-icon"
@@ -47,3 +48,18 @@
     </div>
   </div>
 </div>
+
+<ng-template #confirmModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Delete Promo</h5>
+  </div>
+
+  <div class="modal-body">
+    Are you sure you want to delete this promo code?
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
+    <button class="btn btn-danger" (click)="onConfirm()">Delete</button>
+  </div>
+</ng-template>

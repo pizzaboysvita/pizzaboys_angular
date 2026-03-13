@@ -478,7 +478,7 @@
   <div class="inventory-section p-3 border rounded">
     <div class="row align-items-center g-2 mb-3">
       <!-- Dropdown -->
-      <div class="col-md-5 col-sm-12">
+      <div class="col-md-4 col-sm-12">
         <select class="form-select" [(ngModel)]="selectedInventoryItem">
         <option value="" disabled selected>Select Item</option>
         <option *ngFor="let inventory of inventoryList" [ngValue]="inventory">
@@ -486,8 +486,18 @@
         </option>
        </select>
       </div>
+      <div class="col-md-2 col-sm-12">
+  <input
+    type="text"
+    class="form-control"
+    placeholder="unit"
+    [value]="selectedInventoryItem?.unit"
+    disabled
+  >
+</div>
+
       <!-- Input Field -->
-      <div class="col-md-5 col-sm-12">
+      <div class="col-md-4 col-sm-12">
   <input
     type="text"
     class="form-control"

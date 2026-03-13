@@ -16,6 +16,8 @@ export const AppConstants = {
     orderList: "/api/order",
     inventory: "/api/settings/inventory",
     cashflow: "/api/cashflow",
+    promoCode:"/api/promocode",
+   
 
     // ✅ Banner and Media Endpoints
     banner: "/api/banner",

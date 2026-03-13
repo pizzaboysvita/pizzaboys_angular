@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
-import { FormsModule } from "@angular/forms";
+import { Component, Input, OnInit } from "@angular/core";
+import { FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import {
   NgbActiveModal,
   NgbDateStruct,
@@ -17,14 +17,17 @@ interface DateRange {
 @Component({
   selector: "app-add-promocode",
   standalone: true,
-  imports: [CommonModule, FormsModule, NgbModule, NgSelectModule],
+  imports: [CommonModule, FormsModule, NgbModule, NgSelectModule,ReactiveFormsModule],
   templateUrl: "./add-promocode.component.html",
   styleUrls: ["./add-promocode.component.scss"],
 })
 export class AddPromocodeComponent implements OnInit {
+   @Input() type: any;
+  @Input() myData: any;
   stores: any[] = [];
   limitMenus: any[] = [];
   freeMenus: any[] = [];
+  reqbody: any
 
   dateRanges: DateRange[] = [];
 
@@ -74,6 +77,7 @@ export class AddPromocodeComponent implements OnInit {
 
     created_by: 2,
   };
+  sessionStorage: any;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -81,6 +85,16 @@ export class AddPromocodeComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+      if (this.type === "Edit" && this.myData) {
+        console.log(this.myData,"mydata");
+        
+    this.promo = { ...this.myData };
+    this.onStoreChange();
+    // if (this.promo.store_id) {
+    //   this.promo.store_id = (this.promo.store_id);
+    // }
+
+  }
     this.loadStores();
   }
 
@@ -321,6 +335,62 @@ export class AddPromocodeComponent implements OnInit {
 
   /* ---------------- SAVE PROMO ---------------- */
 
+// savePromoCode() {
+
+//   const start_datetime =
+//     this.dateRanges.length > 0
+//       ? this.ngbDateToISO(this.dateRanges[0].start)
+//       : null;
+
+//   const end_datetime =
+//     this.dateRanges.length > 0
+//       ? this.ngbDateToISO(this.dateRanges[0].end)
+//       : null;
+
+//   const payload = {
+//     ...this.promo,
+
+   
+
+//     type: "insert",
+    
+//     store_id: this.promo.store_id
+//   ? this.promo.store_id.join(",")
+//   : null,
+
+//     start_datetime,
+//     end_datetime,
+
+//     service_type: this.promo.service_type
+//       ? this.promo.service_type.join(",")
+//       : null,
+
+//     order_time: this.promo.order_time
+//       ? this.promo.order_time.join(",")
+//       : null,
+
+//     free_delivery: this.promo.free_delivery ? 1 : 0,
+//     once_per_customer: this.promo.once_per_customer ? 1 : 0,
+//     logged_in_only: this.promo.logged_in_only ? 1 : 0,
+//     auto_apply: this.promo.auto_apply ? 1 : 0,
+//     free_same_dish_only: this.promo.free_same_dish_only ? 1 : 0,
+//     disable_promotion: this.promo.disable_promotion ? 1 : 0
+//   };
+
+//   console.log("PROMO PAYLOAD", payload);
+//   console.log("STORE ID TYPE:", typeof this.promo.store_id);
+// console.log("STORE ID VALUE:", this.promo.store_id);
+
+//   this.settingsService.createPromoCode(payload).subscribe({
+//     next: (res: any) => {
+//       console.log("Promo created", res);
+//       this.activeModal.close("saved");
+//     },
+//     error: (err: any) => {
+//       console.error(err);
+//     },
+//   });
+// }
 savePromoCode() {
 
   const start_datetime =
@@ -333,41 +403,80 @@ savePromoCode() {
       ? this.ngbDateToISO(this.dateRanges[0].end)
       : null;
 
-  const payload = {
-    ...this.promo,
+  if (this.type === "Edit") {
 
-    type: "insert",
-    
-    store_id: this.promo.store_id
-  ? this.promo.store_id.join(",")
-  : null,
+    this.reqbody = {
+      ...this.promo,
+      type: "update",
+      promo_id: this.promo.promo_id,
 
-    start_datetime,
-    end_datetime,
+      store_id: this.promo.store_id || null,
 
-    service_type: this.promo.service_type
-      ? this.promo.service_type.join(",")
-      : null,
+      start_datetime,
+      end_datetime,
 
-    order_time: this.promo.order_time
-      ? this.promo.order_time.join(",")
-      : null,
+      service_type: Array.isArray(this.promo.service_type)
+        ? this.promo.service_type.join(",")
+        : this.promo.service_type,
 
-    free_delivery: this.promo.free_delivery ? 1 : 0,
-    once_per_customer: this.promo.once_per_customer ? 1 : 0,
-    logged_in_only: this.promo.logged_in_only ? 1 : 0,
-    auto_apply: this.promo.auto_apply ? 1 : 0,
-    free_same_dish_only: this.promo.free_same_dish_only ? 1 : 0,
-    disable_promotion: this.promo.disable_promotion ? 1 : 0
-  };
+      order_time: Array.isArray(this.promo.order_time)
+        ? this.promo.order_time.join(",")
+        : this.promo.order_time,
 
-  console.log("PROMO PAYLOAD", payload);
-  console.log("STORE ID TYPE:", typeof this.promo.store_id);
-console.log("STORE ID VALUE:", this.promo.store_id);
+      free_delivery: this.promo.free_delivery ? 1 : 0,
+      once_per_customer: this.promo.once_per_customer ? 1 : 0,
+      logged_in_only: this.promo.logged_in_only ? 1 : 0,
+      auto_apply: this.promo.auto_apply ? 1 : 0,
+      free_same_dish_only: this.promo.free_same_dish_only ? 1 : 0,
+      disable_promotion: this.promo.disable_promotion ? 1 : 0,
 
-  this.settingsService.createPromoCode(payload).subscribe({
+      
+      limit_dishes: this.promo.limit_dishes || 0,
+      free_dishes: this.promo.free_dishes || 0,
+      
+
+      created_at: this.promo.created_at,
+      updated_at: new Date()
+    };
+
+  } else {
+
+    this.reqbody = {
+      ...this.promo,
+      type: "insert",
+
+      store_id: this.promo.store_id || null,
+
+      start_datetime,
+      end_datetime,
+
+      service_type: Array.isArray(this.promo.service_type)
+        ? this.promo.service_type.join(",")
+        : this.promo.service_type,
+
+      order_time: Array.isArray(this.promo.order_time)
+        ? this.promo.order_time.join(",")
+        : this.promo.order_time,
+
+      free_delivery: this.promo.free_delivery ? 1 : 0,
+      once_per_customer: this.promo.once_per_customer ? 1 : 0,
+      logged_in_only: this.promo.logged_in_only ? 1 : 0,
+      auto_apply: this.promo.auto_apply ? 1 : 0,
+      free_same_dish_only: this.promo.free_same_dish_only ? 1 : 0,
+      disable_promotion: this.promo.disable_promotion ? 1 : 0,
+
+      
+      limit_dishes: this.promo.limit_dishes || 0,
+      free_dishes: this.promo.free_dishes || 0,
+    };
+
+  }
+
+  console.log("PROMO PAYLOAD", this.reqbody);
+
+  this.settingsService.createPromoCode(this.reqbody).subscribe({
     next: (res: any) => {
-      console.log("Promo created", res);
+      console.log("Promo saved", res);
       this.activeModal.close("saved");
     },
     error: (err: any) => {

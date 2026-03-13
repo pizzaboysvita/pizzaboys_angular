@@ -1,10 +1,14 @@
 import { CommonModule } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, Input, TemplateRef, ViewChild } from "@angular/core";
 import { NgbModal, NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import { AddPromocodeComponent } from "../add-promocode/add-promocode.component";
 import { NgSelectModule } from "@ng-select/ng-select";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { SettingsService } from "../../settings.service";
+import { ApisService } from "../../../../shared/services/apis.service";
+import Swal from "sweetalert2";
+import { AppConstants } from "../../../../app.constants";
+import { forkJoin } from "rxjs";
 
 @Component({
   selector: "app-promocodes",
@@ -20,6 +24,7 @@ import { SettingsService } from "../../settings.service";
   styleUrl: "./promocodes.component.scss",
 })
 export class PromocodesComponent {
+  @ViewChild("confirmModal") confirmModalRef!: TemplateRef<any>;
   stores: any[] = [];
   limitMenus: any[] = [];
   freeMenus: any[] = [];
@@ -60,9 +65,18 @@ export class PromocodesComponent {
 
     created_by: 2,
   };
+  promoRowData: any;
+  modelRef: any;
+  promoDetails: any;
+  selectedStoreId: any = -1;
+  promoList: any;
+  selectedPromoId = {};
+  storeList: any;
   constructor(
     private modalService: NgbModal,
     private settingsService: SettingsService,
+    private modal: NgbModal,
+    private apiService: ApisService,
   ) {}
 
   ngOnInit(): void {
@@ -76,76 +90,124 @@ export class PromocodesComponent {
     });
   }
   loadPromoCodes() {
-  this.settingsService.getPromoCodes().subscribe((res: any) => {
-    const promos = res?.data || res;
+    this.settingsService.getPromoCodes().subscribe((res: any) => {
+      const promos = res?.data || res;
 
-    this.allPromoCodes = promos;   
-    this.promoCodes = promos;      
-  });
-}
+      this.allPromoCodes = promos;
+      this.promoCodes = promos;
+    });
+  }
 
   openCreatePromoCodeModal() {
     this.modalService.open(AddPromocodeComponent, { size: "lg" });
   }
 
-onStoreChange() {
+  onStoreChange() {
+    if (!this.promo.store_id || this.promo.store_id.length === 0) {
+      this.promoCodes = this.allPromoCodes;
+      return;
+    }
 
-  if (!this.promo.store_id || this.promo.store_id.length === 0) {
-    this.promoCodes = this.allPromoCodes; 
-    return;
-  }
+    const selectedStores = this.promo.store_id.map((id: any) => Number(id));
 
-  const selectedStores = this.promo.store_id.map((id: any) => Number(id));
+    this.promoCodes = this.allPromoCodes.filter((promo: any) => {
+      if (!promo.store_id) return false;
 
-  this.promoCodes = this.allPromoCodes.filter((promo: any) => {
+      const promoStores = promo.store_id
+        .toString()
+        .split(",")
+        .map((id: any) => Number(id));
 
-    if (!promo.store_id) return false;
-
-    const promoStores = promo.store_id
-      .toString()
-      .split(',')
-      .map((id: string) => Number(id));
-
-    return promoStores.some((id: number) => selectedStores.includes(id));
-
-  });
-
-}
-
-  buildDishTree(categories: any[], dishes: any[]) {
-    const menu: any = {
-      menu_name: "Takeaway Menu",
-      expanded: true,
-      categories: [],
-    };
-
-    categories.forEach((cat) => {
-      const catId = cat.id ?? cat.category_id;
-      const catName = cat.name ?? cat.category_name;
-
-      const category: any = {
-        category_id: catId,
-        category_name: catName,
-        expanded: false,
-        dishes: dishes
-          .filter((d: any) => (d.dish_category_id ?? d.category_id) == catId)
-          .map((d: any) => ({
-            id: d.dish_id ?? d.id,
-            name: d.display_name ?? d.dish_name ?? d.name,
-          })),
-      };
-
-      menu.categories.push(category);
+      return selectedStores.some((storeId: number) =>
+        promoStores.includes(storeId),
+      );
     });
-
-    return [menu];
   }
 
-  editPromo(promo: any) {
-    console.log("Edit promo", promo);
+  editPromo(promo: any, type: any) {
+    console.log("Edit promo", promo, type);
+    this.promoRowData = promo;
+    if (type === "Edit") {
+      this.insertPromo("Edit");
+    } else if (type === "Delete") {
+    }
   }
 
   deletePromo(promo: any) {
-    console.log("Delete promo", promo);
+    this.promoDetails = promo;
+
+    this.modelRef = this.modalService.open(this.confirmModalRef, {
+      centered: true,
+      backdrop: "static",
+    });
+  }
+  insertPromo(type: any) {
+    console.log("Promo Data Passing:", this.promoRowData);
+    this.modelRef = this.modal.open(AddPromocodeComponent, {
+      windowClass: "theme-modal",
+      centered: true,
+      size: "lg",
+    });
+    this.modelRef.componentInstance.type = type;
+    this.modelRef.componentInstance.myData = this.promoRowData;
+
+    this.modelRef.result.then(
+      (result: any) => {
+        if (result) {
+          console.log("Option set saved and modal closed.");
+          this.getStorePromoData();
+        }
+      },
+      (reason: any) => {
+        console.log("Modal dismissed", reason);
+        this.getStorePromoData();
+      },
+    );
+  }
+
+  onConfirm() {
+    const reqboy = {
+      type: "delete",
+      promo_id: this.promoDetails.promo_id,
+    };
+
+    // const formData = new FormData();
+    // formData.append("body", JSON.stringify(reqboy));
+
+    this.apiService
+      .postApi(AppConstants.api_end_points.promoCode, reqboy)
+      .subscribe((data: any) => {
+        if (data.code == 1) {
+          this.modelRef.close();
+
+          Swal.fire({
+            title: "Success!",
+            text: data.message,
+            icon: "success",
+            width: "350px",
+          }).then(() => {
+            this.loadPromoCodes();
+          });
+        }
+      });
+  }
+  getStorePromoData() {
+    const promoApi = this.apiService.getApi(
+      AppConstants.api_end_points.store_list +
+        "?store_id=" +
+        this.selectedStoreId,
+    );
+    const storeApi = this.apiService.getApi(
+      `/api/promocode?store_id=` + this.selectedStoreId,
+    );
+
+    forkJoin([promoApi, storeApi]).subscribe(([promoRes, storeRes]: any) => {
+      console.log(promoRes.data, storeRes);
+      this.promoList = promoRes.data;
+      console.log(this.promoList[0]);
+      this.selectedPromoId = this.promoList[0];
+
+      this.storeList = storeRes.stores;
+    });
   }
 }
