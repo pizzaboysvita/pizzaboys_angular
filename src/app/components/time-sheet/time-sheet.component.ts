@@ -3,6 +3,8 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { NgbDatepickerModule, NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { CommonModule } from "@angular/common";
 import { NgSelectModule } from "@ng-select/ng-select";
+import { ApisService } from "../../shared/services/apis.service";
+import Swal from "sweetalert2";
 
 @Component({
   selector: "app-time-sheet",
@@ -49,7 +51,7 @@ export class TimeSheetComponent implements OnInit {
   ];
   selectedBreakTime: any;
 
-  constructor(public modal: NgbModal) {}
+  constructor(public modal: NgbModal, private api: ApisService) {}
 
   ngOnInit() {
     const now = new Date();
@@ -196,17 +198,68 @@ export class TimeSheetComponent implements OnInit {
     document.removeEventListener("mouseup", this.stopDrag);
   };
 
-  saveTime() {
-    this.savedData.break.duration = this.selectedBreakTime;
-    const finalPayload = {
-      login: this.savedData.login,
-      break: this.savedData.break,
-      logout: this.savedData.logout,
-      submittedAt: new Date().toLocaleString(),
-    };
-    console.log("Final Data:", finalPayload);
-    this.modal.dismissAll();
-  }
+  // saveTime() {
+  //   this.savedData.break.duration = this.selectedBreakTime;
+  //   const finalPayload = {
+  //     login: this.savedData.login,
+  //     break: this.savedData.break,
+  //     logout: this.savedData.logout,
+  //     submittedAt: new Date().toLocaleString(),
+  //   };
+  //   console.log("Final Data:", finalPayload);
+  //   this.modal.dismissAll();
+  // }
+
+saveTime() {
+
+  const login = this.savedData.login;
+  const logout = this.savedData.logout;
+
+  const logDate = `${login.date.year}-${login.date.month
+    .toString()
+    .padStart(2, "0")}-${login.date.day.toString().padStart(2, "0")}`;
+
+  const payload = {
+    store_id: 94,
+    user_id: 12,
+    log_date: logDate,
+    login_time: this.formatDateTime(
+      login.date,
+      login.hour,
+      login.minute,
+      login.period
+    ),
+    break_time: this.selectedBreakTime + " minutes",
+    logout_time: this.formatDateTime(
+      logout.date,
+      logout.hour,
+      logout.minute,
+      logout.period
+    ),
+  };
+
+  console.log("Timesheet Payload:", payload);
+
+  this.api.postApi("/api/timesheet", payload).subscribe({
+    next: (res: any) => {
+      console.log("Timesheet saved", res);
+
+      if (res?.code === "1") {
+        Swal.fire("Success!", res.message , "success")
+          .then(() => {
+            this.modal.dismissAll();
+          });
+      } else {
+        Swal.fire("Error", res?.message || "Failed", "error");
+      }
+    },
+
+    error: (err: any) => {
+      console.error("API Error", err);
+      Swal.fire("Error", err?.error?.message || "Upload failed", "error");
+    },
+  });
+}
 
   getMonthName(month: number | undefined) {
     const months = [
@@ -225,4 +278,23 @@ export class TimeSheetComponent implements OnInit {
     ];
     return month ? months[month - 1] : "";
   }
+  formatDateTime(date: any, hour: number, minute: number, period: string) {
+  let h = hour;
+
+  if (period === "PM" && hour !== 12) {
+    h += 12;
+  }
+  if (period === "AM" && hour === 12) {
+    h = 0;
+  }
+
+  const yyyy = date.year;
+  const mm = date.month.toString().padStart(2, "0");
+  const dd = date.day.toString().padStart(2, "0");
+
+  const hh = h.toString().padStart(2, "0");
+  const min = minute.toString().padStart(2, "0");
+
+  return `${yyyy}-${mm}-${dd} ${hh}:${min}:00`;
+}
 }

@@ -73,6 +73,10 @@ export const content: Routes = [
         path: 'inventory',
         loadChildren: () => import('../../components/inventory/inventory/inventory.routes'),
     },
+        {
+        path: 'timesheet',
+         loadChildren: () => import('../../components/time-sheet/timesheet.routes'),
+    },
 
     {
         path: 'suppliers',
