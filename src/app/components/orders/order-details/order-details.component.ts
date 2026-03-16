@@ -136,7 +136,10 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   discounts: any = [];
   surcharges: any = [];
 
-  searchControl = new FormControl("");
+  searchControl = new FormControl('', [
+  Validators.required,
+  Validators.pattern('^[0-9]{10}$') 
+]);
   searchResults: any[] = [];
   selectedUser: any;
 
@@ -176,16 +179,24 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
       .pipe(
         debounceTime(400),
         distinctUntilChanged(),
-        filter((value): value is string => !!value && value.length >= 3),
+        filter((value): value is string => !!value && value.length >= 4),
         switchMap(async (value) => this.searchUser(value)),
       )
       .subscribe({
         next: (res: any) => {
-          this.searchResults = res?.data || res;
-          console.log(this.searchResults);
+          this.searchResults = res?.data || [];
+          if(this.searchResults.length === 0){
+            this.orderForm.patchValue({
+              phone:this.searchControl.value
+            });
+          }
+         
         },
         error: () => {
           this.searchResults = [];
+           this.orderForm.patchValue({
+              phone:this.searchControl.value
+            });
         },
       });
   }
@@ -217,8 +228,14 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   }
   showconfirmModelPopup = false;
   selectUser(user: any) {
-    this.searchControl.setValue(user.phone_number); // show phone in input
+    this.searchControl.setValue(user.user_phone_number); // show phone in input
     this.searchResults = [];
+
+    this.orderForm.patchValue({
+      name:user.user_first_name,
+      email:user.user_email,
+      phone:user.user_phone_number
+    })
     this.selectedUser = user; // store full user data
     this.showconfirmModelPopup = true; // open modal
   }
@@ -233,8 +250,10 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
     //   deliveryAddress: address
     // });
     this.orderForm.patchValue({
-      name: this.selectedUser?.user_first_name + " " + this.selectedUser?.last_name,
-    });
+   name: 
+    (this.selectedUser?.user_first_name || '') + 
+    (this.selectedUser?.last_name ? ' ' + this.selectedUser.last_name : '')
+});
     this.orderForm.patchValue({
       phone: this.selectedUser?.user_phone_number,
     });
@@ -277,11 +296,68 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
       deliveryNote: [""],
       orderDue: ["ASAP", Validators.required],
       orderDateTime: [new Date(), Validators.required],
-      name: [""],
-      phone: [""],
-      email: [""],
+       name: [
+    '',
+    [
+      Validators.required,
+      Validators.minLength(3),
+      Validators.pattern('^[a-zA-Z ]*$')
+    ]
+  ],
+ phone: [
+  '',
+  [
+    Validators.required,
+    Validators.pattern('^[0-9]{10}$')
+  ]
+],
+      email: [
+  "",
+  [
+    Validators.required,
+    Validators.email
+  ]
+],
       redemption_points:[0],
     });
+    this.orderForm.get('orderType')?.valueChanges.subscribe((type) => {
+
+    const deliveryAddress = this.orderForm.get('deliveryAddress');
+    const streetNumber = this.orderForm.get('streetNumber');
+    const unitNumber = this.orderForm.get('unitNumber');
+    const deliveryNote = this.orderForm.get('deliveryNote');
+
+    if (type === 'delivery') {
+      deliveryAddress?.setValidators([Validators.required]);
+      streetNumber?.setValidators([Validators.required]);
+      unitNumber?.setValidators([Validators.required]);
+      deliveryNote?.setValidators([Validators.required]);
+    } else {
+      deliveryAddress?.clearValidators();
+      streetNumber?.clearValidators();
+      unitNumber?.clearValidators();
+      deliveryNote?.clearValidators();
+    }
+
+    deliveryAddress?.updateValueAndValidity();
+    streetNumber?.updateValueAndValidity();
+    unitNumber?.updateValueAndValidity();
+    deliveryNote?.updateValueAndValidity();
+
+  });
+  //   this.orderForm.get('orderType')?.valueChanges.subscribe((value) => {
+
+  //   const addressControl = this.orderForm.get('deliveryAddress');
+
+  //   if (value === 'delivery') {
+  //     addressControl?.setValidators([Validators.required]);
+  //   } else {
+  //     addressControl?.clearValidators();
+  //     addressControl?.setValue('');
+  //   }
+
+  //   addressControl?.updateValueAndValidity();
+  // });
     // this.orderdueForm = this.fb.group({
     //   orderDue: ["ASAP", Validators.required],
     //   orderDateTime: [new Date(), Validators.required],
@@ -1121,39 +1197,77 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
     this.showOrderDuePopup = false;
   }
 
-  submitDUeOrder() {
-    this.searchResults = [];
-    this.selectedUser = "";
-    this.customer = {
-      name: this.orderForm.get("name")?.value,
-      email: this.orderForm.get("email")?.value,
-      phone: this.orderForm.get("phone")?.value,
-    };
+  // submitDUeOrder() {
+  //   this.searchResults = [];
+  //   this.selectedUser = "";
+  //   this.customer = {
+  //     name: this.orderForm.get("name")?.value,
+  //     email: this.orderForm.get("email")?.value,
+  //     phone: this.orderForm.get("phone")?.value,
+  //   };
 
-    this.showNewModelPopup = false;
-    if (this.orderForm.invalid || this.dateError) return;
-    this.orderDueDetails =
-      this.orderForm.value.orderDue === "ASAP"
-        ? this.orderForm.value.orderDue
-        : this.orderForm.value.orderDateTime;
-    // this.showOrderDuePopup = false;
-    // this.selectedScheduleItem=null
-    // this.pendingCartItem=null
-    if (this.orderForm.value.orderType == "delivery") {
-      this.deliveryfee = 5.9;
-    } else {
-      this.deliveryfee = 0;
-    }
-    if (this.orderForm.value.orderDue === "Later") {
-      this.skipAvailabilityCheck = true;
-      this.addToCart(this.pendingCartItem);
-    }
-    // this.addToCart(this.pendingCartItem)
-    this.showOrderDuePopup = false;
-    this.showNewModelPopup = false;
-    this.selectedScheduleItem = null;
-    this.pendingCartItem = null;
+  //   this.showNewModelPopup = false;
+  //   if (this.orderForm.invalid || this.dateError) return;
+  //   this.orderDueDetails =
+  //     this.orderForm.value.orderDue === "ASAP"
+  //       ? this.orderForm.value.orderDue
+  //       : this.orderForm.value.orderDateTime;
+  //   // this.showOrderDuePopup = false;
+  //   // this.selectedScheduleItem=null
+  //   // this.pendingCartItem=null
+  //   if (this.orderForm.value.orderType == "delivery") {
+  //     this.deliveryfee = 5.9;
+  //   } else {
+  //     this.deliveryfee = 0;
+  //   }
+  //   if (this.orderForm.value.orderDue === "Later") {
+  //     this.skipAvailabilityCheck = true;
+  //     this.addToCart(this.pendingCartItem);
+  //   }
+  //   // this.addToCart(this.pendingCartItem)
+  //   this.showOrderDuePopup = false;
+  //   this.showNewModelPopup = false;
+  //   this.selectedScheduleItem = null;
+  //   this.pendingCartItem = null;
+  // }
+  submitDUeOrder() {
+
+  this.orderForm.markAllAsTouched();
+  if (this.orderForm.invalid || this.dateError) {
+    return;
   }
+
+  this.searchResults = [];
+  this.selectedUser = "";
+
+  this.customer = {
+    name: this.orderForm.get("name")?.value,
+    email: this.orderForm.get("email")?.value,
+    phone: this.orderForm.get("phone")?.value,
+  };
+
+  this.showNewModelPopup = false;
+
+  this.orderDueDetails =
+    this.orderForm.value.orderDue === "ASAP"
+      ? this.orderForm.value.orderDue
+      : this.orderForm.value.orderDateTime;
+
+  if (this.orderForm.value.orderType == "delivery") {
+    this.deliveryfee = 5.9;
+  } else {
+    this.deliveryfee = 0;
+  }
+
+  if (this.orderForm.value.orderDue === "Later") {
+    this.skipAvailabilityCheck = true;
+    this.addToCart(this.pendingCartItem);
+  }
+
+  this.showOrderDuePopup = false;
+  this.selectedScheduleItem = null;
+  this.pendingCartItem = null;
+}
   // submitLatDUeOrder(){
   //    if (this.orderdueForm.invalid || this.dateError) return;
   //   this.orderDueDetails =
@@ -1793,6 +1907,21 @@ syncHeader() {
     return months[m - 1] || "";
   }
 
+  allowOnlyNumbers(event: KeyboardEvent) {
+  const key = event.key;
+
+  if (!/^[0-9]$/.test(key) && key !== "Backspace") {
+    event.preventDefault();
+  }
+}
+  allowOnlyLetters(event: KeyboardEvent) {
+  const char = event.key;
+
+  if (!/^[a-zA-Z ]$/.test(char)) {
+    event.preventDefault();
+  }
+}
+
 //   handleSave() {
  
 //   const finalSelection = {
@@ -1811,4 +1940,9 @@ syncHeader() {
   
   
 // }
+
+
+closeModal(){
+this.showNewModelPopup=false;
+}
 }

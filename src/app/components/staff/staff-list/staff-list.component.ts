@@ -438,7 +438,12 @@ export class StaffListComponent {
       worksheet.addRow({
         user_id: store.user_id || "",
         role_id: store.role_id || "",
-        role_name: store.role_name || store.role?.role_name || "", 
+        role_name: 
+    store.role?.role_name ?? 
+    (store.role_id === 1 ? "Super Admin" :
+     store.role_id === 2 ? "Manager" :
+     store.role_id === 3 ? "POS" :
+     store.role_id === 4 ? "User" : ""),  
         store_name: store.store_name || store.store?.store_name || "", 
         email: store.email || "",
         first_name: store.first_name || "",

@@ -394,7 +394,7 @@
   [ngClass]="{ 'show d-block': showNewModelPopup }"
   style="background: rgba(0, 0, 0, 0.5); z-index: 1040"
 >
-  <div class="modal-dialog modal-sm modal-dialog-centered">
+  <div class="modal-dialog modal-md modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Order Type</h5>
@@ -422,12 +422,15 @@
             />
           </div> -->
 <div class="position-relative mb-3 autocomplete-wrapper">
+  <label class="form-label">Search Phone Number</label>
   <input
     type="text"
     class="form-control"
     placeholder="Search Phone Number"
     [formControl]="searchControl"
     autocomplete="off"
+    maxlength="10"
+    (keydown)="allowOnlyNumbers($event)"
   />
 
   <!-- Results -->
@@ -452,9 +455,27 @@
             <input
               type="text"
               class="form-control"
+              placeholder="Name"
               formControlName="name"
+              (keypress)="allowOnlyLetters($event)"
 
             />
+            <div
+    class="text-danger mt-1"
+    *ngIf="orderForm.get('name')?.touched && orderForm.get('name')?.invalid"
+  >
+    <div *ngIf="orderForm.get('name')?.errors?.['required']">
+      Name is required
+    </div>
+
+    <div *ngIf="orderForm.get('name')?.errors?.['minlength']">
+      Name must be at least 3 characters
+    </div>
+
+    <div *ngIf="orderForm.get('name')?.errors?.['pattern']">
+      Only letters allowed
+    </div>
+  </div>
           </div>
 
           <div  class="mb-3">
@@ -462,9 +483,24 @@
             <input
               type="email"
               class="form-control"
+              placeholder="Email"
               formControlName="email"
 
             />
+            <div
+    class="text-danger mt-1"
+    *ngIf="orderForm.get('email')?.touched && orderForm.get('email')?.invalid"
+  >
+
+    <div *ngIf="orderForm.get('email')?.errors?.['required']">
+      Email is required
+    </div>
+
+    <div *ngIf="orderForm.get('email')?.errors?.['email']">
+      Enter a valid email address
+    </div>
+
+  </div>
           </div>
 
           <div  class="mb-3">
@@ -472,8 +508,24 @@
             <input
               type="tel"
               class="form-control"
+              placeholder="Phone"
               formControlName="phone"
+              maxlength="10"
+              (keydown)="allowOnlyNumbers($event)"
             />
+               <div
+    class="text-danger mt-1"
+    *ngIf="orderForm.get('phone')?.touched && orderForm.get('phone')?.invalid"
+  >
+    <div *ngIf="orderForm.get('phone')?.errors?.['required']">
+      Phone number is required
+    </div>
+
+    <div *ngIf="orderForm.get('phone')?.errors?.['pattern']">
+      Enter valid 10 digit phone number
+    </div>
+  </div>
+
           </div>
         <!-- </div>
       </div> -->
@@ -490,6 +542,13 @@
               (input)="getAddressAutocomplete()"
               formControlName="deliveryAddress"
             />
+            <div class="text-danger mt-1"
+ *ngIf="
+ orderForm.get('deliveryAddress')?.touched &&
+ orderForm.get('deliveryAddress')?.errors?.['required']
+ ">
+ Delivery address is required
+</div>
           </div>
 
           <div *ngIf="orderForm.get('deliveryAddress')?.value">
@@ -499,7 +558,16 @@
                 type="text"
                 class="form-control"
                 formControlName="streetNumber"
+                placeholder="Street Number"
               />
+  <div
+    class="text-danger mt-1"
+    *ngIf="orderForm.get('streetNumber')?.touched && orderForm.get('streetNumber')?.invalid"
+  >
+    <div *ngIf="orderForm.get('streetNumber')?.errors?.['required']">
+      Street Number is required
+    </div>
+  </div>
             </div>
 
             <div class="mb-3">
@@ -507,8 +575,17 @@
               <input
                 type="text"
                 class="form-control"
+                placeholder="Unit Number"
                 formControlName="unitNumber"
               />
+               <div
+    class="text-danger mt-1"
+    *ngIf="orderForm.get('unitNumber')?.touched && orderForm.get('unitNumber')?.invalid"
+  >
+    <div *ngIf="orderForm.get('unitNumber')?.errors?.['required']">
+      Unit Number is required
+    </div>
+  </div>
             </div>
 
             <div class="mb-3">
@@ -516,8 +593,18 @@
               <input
                 type="text"
                 class="form-control"
+                placeholder="Delivery Note"
                 formControlName="deliveryNote"
+                
               />
+               <div
+    class="text-danger mt-1"
+    *ngIf="orderForm.get('deliveryNote')?.touched && orderForm.get('deliveryNote')?.invalid"
+  >
+    <div *ngIf="orderForm.get('deliveryNote')?.errors?.['required']">
+      Delivery Note is required
+    </div>
+  </div>
             </div>
 
           </div>
@@ -541,14 +628,12 @@
   <div class="picker-container">
     <div class="time-header">
       <div class="date-part">
-        <span class="year fs-10">{{ selectedDate?.year }}</span
-        ><br />
-        <span class="date fs-9">
-          {{ getMonthName(selectedDate?.month) }} {{ selectedDate?.day }}
-        </span>
+        <span class="date fs-5">{{ selectedDate?.day }} {{ getMonthName(selectedDate?.month) }} {{ selectedDate?.year }}</span
+        >
+        
       </div>
 
-      <div class="time-part fs-4">
+      <div class="time-part fs-5">
         <span
           [class.inactive-text]="pickingMode !== 'hours'"
           (click)="setPickingMode('hours')"
@@ -565,7 +650,7 @@
           {{ selectedMinute | number: "2.0" }}
         </span>
 
-        <div class="ampm-group fs-6">
+        <div class="ampm-group ">
           <span [class.active-ampm]="!isPM" (click)="toggleAMPM(false)"
             >AM</span
           >
@@ -578,6 +663,8 @@
       <div *ngIf="!showClock" class="calendar-wrapper">
         <ngb-datepicker
           [(ngModel)]="selectedDate"
+          [ngModelOptions]="{standalone:true}"
+          [startDate]="selectedDate"
           (dateSelect)="selectDate($event)"
         ></ngb-datepicker>
       </div>
@@ -618,14 +705,27 @@
     This item is available only on selected days.
   </div>
 </div>
+
+<div class="footer-buttons">
           <button
             type="button"
-            class="btn fw-bold text-white"
-            style="background: #f44336; margin-left: 30%"
+            class="btn submit-btn"
+          
             (click)="submitDUeOrder()"
           >
             Submit
           </button>
+          <button
+            type="button"
+            class="btn cancel-btn"
+          
+            (click)="closeModal()"
+          >
+            Submit
+          </button>
+
+
+          </div>
         </form>
       </div>
     </div>
@@ -652,12 +752,16 @@
 
   <!-- <h6 class="mb-3">Customer Found</h6> -->
 
-  <p><strong>Name:</strong>
-    {{ selectedUser?.user_first_name }} {{ selectedUser?.last_name }}
-  </p>
+  <p>
+  <strong>Name:</strong>
+  {{ selectedUser?.user_first_name }}
+  <span *ngIf="selectedUser?.last_name">
+    {{ selectedUser?.last_name }}
+  </span>
+</p>
 
   <p><strong>Email:</strong>
-    {{ selectedUser?.user_email_id || 'N/A' }}
+    {{ selectedUser?.user_email_id  }}
   </p>
 
   <p><strong>Phone:</strong>

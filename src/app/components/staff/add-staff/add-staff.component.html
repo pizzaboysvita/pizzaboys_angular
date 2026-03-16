@@ -181,7 +181,7 @@
                                 <div class="col-xl-6">
                                   <div class="input-box">
                                     <h6 class="f-w-600 p-1">Address<span class="text-danger">*</span></h6>
-                                    <input type="text" formControlName="address" placeholder="Enter Address" (keydown)="preventLeadingSpace($event)" (keypress)="allowOnlyAlphabets($event)" />
+                                    <input type="text" formControlName="address" placeholder="Enter Address" (keydown)="preventLeadingSpace($event)" />
                                       @if (staffForm.get('address')?.touched && staffForm.get('address')?.errors?.['required']) {
               <div class="text-danger">Address is required</div>
             }

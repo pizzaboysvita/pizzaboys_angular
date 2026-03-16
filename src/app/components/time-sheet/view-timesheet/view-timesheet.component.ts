@@ -147,17 +147,33 @@ export class ViewTimesheetComponent {
     const store = this.storesList.find((s: any) => s.store_id == storeId);
     return store ? store.store_name : "--";
   }
-  onStoreChange(storeId: any) {
-    this.sheetList =[];
-    this.storeListSorting =[];
-  console.log('Selected Store ID:', storeId.store_id);
-  this.apis.getApi(`/api/timesheet?store_id=${storeId.store_id}`).subscribe((res: any) => {
-      console.log("Timesheet API:", res);
+//   onStoreChange(storeId: any) {
+//     this.sheetList =[];
+//     this.storeListSorting =[];
+//   console.log('Selected Store ID:', storeId.store_id);
+//   this.apis.getApi(`/api/timesheet?store_id=${storeId.store_id}`).subscribe((res: any) => {
+//       console.log("Timesheet API:", res);
 
-      this.sheetList = res.timesheets; // 🔥 important line
-      this.storeListSorting = res.timesheets;
-    });
+//       this.sheetList = res.timesheets; // 🔥 important line
+//       this.storeListSorting = res.timesheets;
+//     });
+// }
+
+  onStoreChange(storeId: any) {
+  this.sheetList = [];
+  this.storeListSorting = [];
+
+  const url = `${AppConstants.api_end_points.timeSheet}?store_id=${storeId.store_id}`;
+  console.log("API URL:", url);
+
+  this.apis.getApi(url).subscribe((res: any) => {
+    console.log("Timesheet API Response:", res);
+
+    this.sheetList = res.timesheets;
+    this.storeListSorting = res.timesheets;
+  });
 }
+  
     // ✅ Search (Frontend Filtering)
   search() {
   const storeId = this.SheetForm.value.store_id;
@@ -204,10 +220,12 @@ export class ViewTimesheetComponent {
   //       })
   // }
   getTimesheetList() {
-    this.apis.getApi("/api/timesheet?store_id=-1").subscribe((res: any) => {
+   this.apis
+    .getApi(`${AppConstants.api_end_points.timeSheet}?store_id=-1`)
+    .subscribe((res: any) => {
       console.log("Timesheet API:", res);
 
-      this.sheetList = res.timesheets; // 🔥 important line
+      this.sheetList = res.timesheets; 
       this.storeListSorting = res.timesheets;
     });
   }

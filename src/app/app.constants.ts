@@ -23,6 +23,7 @@ export const AppConstants = {
     banner: "/api/banner",
     upload_image: "/api/uploadImage",
     upload_video: "/api/uploadVideo",
-    refund:"/api/order/refund"
+    refund:"/api/order/refund",
+    timeSheet: "/api/timesheet"
   },
 };
