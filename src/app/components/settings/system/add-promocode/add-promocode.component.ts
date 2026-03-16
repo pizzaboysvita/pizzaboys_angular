@@ -4,10 +4,13 @@ import { FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import {
   NgbActiveModal,
   NgbDateStruct,
+  NgbModal,
   NgbModule,
 } from "@ng-bootstrap/ng-bootstrap";
 import { NgSelectModule } from "@ng-select/ng-select";
 import { SettingsService } from "../../settings.service";
+import { SessionStorageService } from "../../../../shared/services/session-storage.service";
+import Swal from "sweetalert2";
 
 interface DateRange {
   start: NgbDateStruct | null;
@@ -78,26 +81,62 @@ export class AddPromocodeComponent implements OnInit {
     created_by: 2,
   };
   sessionStorage: any;
+  user_id: any;
 
   constructor(
     public activeModal: NgbActiveModal,
     private settingsService: SettingsService,
+    private sessionStorageService:SessionStorageService,
+    public modal:NgbModal,
   ) {}
 
-  ngOnInit(): void {
-      if (this.type === "Edit" && this.myData) {
-        console.log(this.myData,"mydata");
-        
-    this.promo = { ...this.myData };
+ ngOnInit(): void {
+
+  this.user_id = JSON.parse(sessionStorage.getItem("user") || "{}");
+
+  if (this.type === "Edit" && this.myData) {
+
+    this.promo = {
+      ...this.myData,
+
+      service_type: this.myData.service_type
+        ? this.myData.service_type.split(",")
+        : [],
+
+      order_time: this.myData.order_time
+        ? this.myData.order_time.split(",")
+        : [],
+
+      // limit_dishes: this.myData.limit_dishes
+      //   ? JSON.parse(this.myData.limit_dishes)
+      //   : [],
+
+      // free_dishes: this.myData.free_dishes
+      //   ? JSON.parse(this.myData.free_dishes)
+      //   : [],
+
+      // free_delivery: this.myData.free_delivery === 1,
+      // once_per_customer: this.myData.once_per_customer === 1,
+      // logged_in_only: this.myData.logged_in_only === 1,
+      // auto_apply: this.myData.auto_apply === 1,
+      // free_same_dish_only: this.myData.free_same_dish_only === 1,
+      // disable_promotion: this.myData.disable_promotion === 1
+    };
+
+    
+
+    if (this.myData.start_datetime && this.myData.end_datetime) {
+      this.dateRanges = [{
+        start: this.isoToNgbDate(this.myData.start_datetime),
+        end: this.isoToNgbDate(this.myData.end_datetime)
+      }];
+    }
+
     this.onStoreChange();
-    // if (this.promo.store_id) {
-    //   this.promo.store_id = (this.promo.store_id);
-    // }
-
-  }
-    this.loadStores();
   }
 
+  this.loadStores();
+}
   /* ---------------- STORES ---------------- */
 
   loadStores() {
@@ -105,7 +144,14 @@ export class AddPromocodeComponent implements OnInit {
       this.stores = res;
     });
   }
-
+private isoToNgbDate(dateStr: string): NgbDateStruct {
+  const d = new Date(dateStr);
+  return {
+    year: d.getFullYear(),
+    month: d.getMonth() + 1,
+    day: d.getDate()
+  };
+}
   /* ---------------- STORE CHANGE ---------------- */
 
   onStoreChange() {
@@ -403,17 +449,35 @@ savePromoCode() {
       ? this.ngbDateToISO(this.dateRanges[0].end)
       : null;
 
+  const limitDishes = Array.isArray(this.promo.limit_dishes)
+    ? this.promo.limit_dishes
+    : this.promo.limit_dishes
+      ? JSON.parse(this.promo.limit_dishes)
+      : [];
+
+  const freeDishes = Array.isArray(this.promo.free_dishes)
+    ? this.promo.free_dishes
+    : this.promo.free_dishes
+      ? JSON.parse(this.promo.free_dishes)
+      : [];
+
+  const updatedBy = JSON.parse(this.sessionStorageService.getsessionStorage('loginDetails') as any).user.user_id;
+
   if (this.type === "Edit") {
 
     this.reqbody = {
-      ...this.promo,
+      // ...this.promo,
       type: "update",
       promo_id: this.promo.promo_id,
+        promo_name: this.promo.promo_name,  
+      promo_code: this.promo.promo_code,
+
+      updated_by: updatedBy,
 
       store_id: this.promo.store_id || null,
 
-      start_datetime,
-      end_datetime,
+      start_datetime :start_datetime,
+      end_datetime:end_datetime,
 
       service_type: Array.isArray(this.promo.service_type)
         ? this.promo.service_type.join(",")
@@ -429,14 +493,16 @@ savePromoCode() {
       auto_apply: this.promo.auto_apply ? 1 : 0,
       free_same_dish_only: this.promo.free_same_dish_only ? 1 : 0,
       disable_promotion: this.promo.disable_promotion ? 1 : 0,
+      fixed_discount:this.promo.fixed_discount,
+      percent_discount:this.promo.percent_discount,
+      min_order:this.promo.min_order,
+      max_order:this.promo.max_order,
+      max_uses:this.promo.max_uses,
+      free_quantity:this.promo.free_quantity,
+      free_required_purchase_qty:this.promo.free_required_purchase_qty,
 
-      
-      limit_dishes: this.promo.limit_dishes || 0,
-      free_dishes: this.promo.free_dishes || 0,
-      
-
-      created_at: this.promo.created_at,
-      updated_at: new Date()
+      limit_dishes: limitDishes,
+      free_dishes: freeDishes
     };
 
   } else {
@@ -445,6 +511,8 @@ savePromoCode() {
       ...this.promo,
       type: "insert",
 
+      
+
       store_id: this.promo.store_id || null,
 
       start_datetime,
@@ -465,11 +533,9 @@ savePromoCode() {
       free_same_dish_only: this.promo.free_same_dish_only ? 1 : 0,
       disable_promotion: this.promo.disable_promotion ? 1 : 0,
 
-      
-      limit_dishes: this.promo.limit_dishes || 0,
-      free_dishes: this.promo.free_dishes || 0,
+      limit_dishes: limitDishes,
+      free_dishes: freeDishes
     };
-
   }
 
   console.log("PROMO PAYLOAD", this.reqbody);
@@ -478,9 +544,16 @@ savePromoCode() {
     next: (res: any) => {
       console.log("Promo saved", res);
       this.activeModal.close("saved");
+       Swal.fire("Success!", res.message, "success").then((result) => {
+                    if (result) {
+                      console.log("User clicked OK");
+                      
+                      this.modal.dismissAll();
+                    }
+                  });
     },
     error: (err: any) => {
-      console.error(err);
+      console.error("Error saving promo:", err);
     },
   });
 }

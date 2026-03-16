@@ -92,9 +92,11 @@ export class PromocodesComponent {
   loadPromoCodes() {
     this.settingsService.getPromoCodes().subscribe((res: any) => {
       const promos = res?.data || res;
-
+      console.log("PromoCodes",res)
       this.allPromoCodes = promos;
       this.promoCodes = promos;
+      
+      
     });
   }
 

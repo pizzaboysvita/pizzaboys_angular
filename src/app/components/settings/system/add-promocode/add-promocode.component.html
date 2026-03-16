@@ -127,7 +127,7 @@
         <div class="mb-4">
             <div class="d-flex justify-content-between align-items-center">
                 <label class="fw-bold mb-0">Services</label>
-                <span class="optional-badge">OPTIONAL</span>
+                <span class="optional-badge">REQUIRED</span>
             </div>
             <ng-select [items]="serviceOptions" bindLabel="label" bindValue="value" [multiple]="true"
                 placeholder="Select from the dropdown or type to search..." [(ngModel)]="promo.service_type"
@@ -143,7 +143,7 @@
         <div class="mb-4">
             <div class="d-flex justify-content-between align-items-center">
                 <label class="fw-bold mb-0">Order Times</label>
-                <span class="optional-badge">OPTIONAL</span>
+                <span class="optional-badge">REQUIRED</span>
             </div>
             <ng-select [items]="orderTimeOptions" bindLabel="label" bindValue="value" [multiple]="true"
                 placeholder="Select from the dropdown or type to search..." [(ngModel)]="promo.order_time"
@@ -185,7 +185,7 @@
         <div class="mb-4">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <label class="fw-bold mb-0">Valid Dates / Times</label>
-                <span class="optional-badge">OPTIONAL</span>
+                <span class="optional-badge">REQUIRED</span>
             </div>
 
             <button class="btn btn-warning mt-1" type="button" (click)="addDateRange()">
