@@ -17,7 +17,7 @@
                   <h6 class="fw-bold">Store Names <span class="text-danger">*</span></h6>
 
                   <ng-select [items]="storesList" bindLabel="store_name" bindValue="store_id" formControlName="store_id"
-                    [clearable]="true" [searchable]="false">
+                    [clearable]="true" [searchable]="false" (change)="onStoreChange($event)">
                   </ng-select>
 
                   <div *ngIf="SheetForm.get('store_id')?.touched &&

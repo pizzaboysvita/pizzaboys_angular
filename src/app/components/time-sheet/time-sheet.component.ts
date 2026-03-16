@@ -5,6 +5,7 @@ import { CommonModule } from "@angular/common";
 import { NgSelectModule } from "@ng-select/ng-select";
 import { ApisService } from "../../shared/services/apis.service";
 import Swal from "sweetalert2";
+import { SessionStorageService } from "../../shared/services/session-storage.service";
 
 @Component({
   selector: "app-time-sheet",
@@ -50,8 +51,9 @@ export class TimeSheetComponent implements OnInit {
     { label: "1 hour", value: 60 },
   ];
   selectedBreakTime: any;
+  storeId: any;
 
-  constructor(public modal: NgbModal, private api: ApisService) {}
+  constructor(public modal: NgbModal, private api: ApisService,private sessionStorage:SessionStorageService) {}
 
   ngOnInit() {
     const now = new Date();
@@ -218,10 +220,12 @@ saveTime() {
   const logDate = `${login.date.year}-${login.date.month
     .toString()
     .padStart(2, "0")}-${login.date.day.toString().padStart(2, "0")}`;
-
+const user = JSON.parse(
+      this.sessionStorage.getsessionStorage("loginDetails") as any).user;
+       this.storeId = user.store_id;
   const payload = {
-    store_id: 94,
-    user_id: 12,
+    store_id: this.storeId,
+    user_id: JSON.parse(this.sessionStorage.getsessionStorage('loginDetails') as any).user.user_id,
     log_date: logDate,
     login_time: this.formatDateTime(
       login.date,

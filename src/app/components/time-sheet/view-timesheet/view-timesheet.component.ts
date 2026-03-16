@@ -19,6 +19,7 @@ import { SessionStorageService } from "../../../shared/services/session-storage.
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import Swal from "sweetalert2";
 import { NgSelectModule } from "@ng-select/ng-select";
+import { CommonModule } from "@angular/common";
 
 interface RowData {
   store_name: String;
@@ -37,6 +38,7 @@ interface RowData {
     CardComponent,
     AgGridAngular,
     NgSelectModule,
+    CommonModule
   ],
   templateUrl: "./view-timesheet.component.html",
   styleUrl: "./view-timesheet.component.scss",
@@ -121,13 +123,14 @@ export class ViewTimesheetComponent {
   ];
 
   ngOnInit() {
-  this.getFormStore();
   this.getStoreList();
-  this.getTimesheetList();
+  this.getFormStore();
+
+  // this.getTimesheetList();
 }
   getFormStore() {
     this.SheetForm = this.fb.group({
-      storeName: [""],
+      store_id: [this.storesList ? this.storesList[0]?.store_id : null],
     });
   }
   getStoreList() {
@@ -136,16 +139,28 @@ export class ViewTimesheetComponent {
       .subscribe((res: any) => {
         console.log("Store List:", res);
         this.storesList = res;
+        this.SheetForm.get("store_id")?.setValue(this.storesList[0]?.store_id || null);
+        this.onStoreChange(this.storesList[0]);
       });
   }
   storeNameData(storeId: any) {
     const store = this.storesList.find((s: any) => s.store_id == storeId);
     return store ? store.store_name : "--";
   }
-  
+  onStoreChange(storeId: any) {
+    this.sheetList =[];
+    this.storeListSorting =[];
+  console.log('Selected Store ID:', storeId.store_id);
+  this.apis.getApi(`/api/timesheet?store_id=${storeId.store_id}`).subscribe((res: any) => {
+      console.log("Timesheet API:", res);
+
+      this.sheetList = res.timesheets; // 🔥 important line
+      this.storeListSorting = res.timesheets;
+    });
+}
     // ✅ Search (Frontend Filtering)
   search() {
-  const storeId = this.SheetForm.value.storeName;
+  const storeId = this.SheetForm.value.store_id;
 
   console.log("Selected Store ID:", storeId);
   console.log("Store List Sorting:", this.storeListSorting);
@@ -189,7 +204,7 @@ export class ViewTimesheetComponent {
   //       })
   // }
   getTimesheetList() {
-    this.apis.getApi("/api/timesheet?store_id=94").subscribe((res: any) => {
+    this.apis.getApi("/api/timesheet?store_id=-1").subscribe((res: any) => {
       console.log("Timesheet API:", res);
 
       this.sheetList = res.timesheets; // 🔥 important line
