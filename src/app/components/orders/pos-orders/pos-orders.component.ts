@@ -203,7 +203,7 @@ export class PosOrdersComponent {
       unSortIcon: true,
       tooltipValueGetter: (p: ITooltipParams) => p.value,
       valueFormatter: (params) =>
-        this.datePipe.transform(params.value, "dd-MM-yyyy, h:mm a") ?? "",
+        this.datePipe.transform(params.value, "MMM d, yyyy") ?? "",
     },
     {
       field: "order_due",
