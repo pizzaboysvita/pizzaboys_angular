@@ -34,15 +34,12 @@
     <div *ngIf="activeTab === 'login' || activeTab === 'logout'">
       <div class="time-header">
         <div class="date-part">
-          <span class="year fs-5">{{ selectedDate?.year }}</span
+          <span class="year fs-5">{{ selectedDate?.day }} {{ selectedDate?.year }} {{ getMonthName(selectedDate?.month) }}</span
           ><br />
-          <span class="date fs-2"
-            >{{ getMonthName(selectedDate?.month) }}
-            {{ selectedDate?.day }}</span
-          >
+         
         </div>
 
-        <div class="time-part">
+        <div class="time-part fs-5">
           <span
             [class.inactive-text]="pickingMode !== 'hours'"
             (click)="setPickingMode('hours')"

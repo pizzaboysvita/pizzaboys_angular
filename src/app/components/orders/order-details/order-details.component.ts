@@ -1025,6 +1025,15 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
       );
       return;
     }
+    if (this.orderForm.invalid) {
+    // this.orderForm.markAllAsTouched();
+    this.toastr.warning(
+      "Please fill all required fields correctly.",
+      "Order Type Form Incomplete"
+    );
+
+    return;
+  }
 
     this.modalRef = this.modalService.open(OrderPaymentsComponent, {
       size: "xl",
@@ -1239,6 +1248,8 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
 
   this.searchResults = [];
   this.selectedUser = "";
+
+  
 
   this.customer = {
     name: this.orderForm.get("name")?.value,
@@ -1907,6 +1918,55 @@ syncHeader() {
     return months[m - 1] || "";
   }
 
+
+  startTouch(event: TouchEvent) {
+  event.preventDefault();
+  this.dragging = true;
+
+  document.addEventListener("touchmove", this.rotateTouch, { passive: false });
+  document.addEventListener("touchend", this.stopTouch);
+}
+
+
+rotateTouch = (event: TouchEvent) => {
+  if (!this.dragging) return;
+
+  const touch = event.touches[0];
+
+  const clock = document.querySelector(".clock") as HTMLElement;
+  const rect = clock.getBoundingClientRect();
+
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+
+  let angle =
+    (Math.atan2(touch.clientY - centerY, touch.clientX - centerX) * 180) /
+      Math.PI +
+    90;
+
+  if (angle < 0) angle += 360;
+
+  if (this.pickingMode === "hours") {
+    this.selectedHour = Math.round(angle / 30) || 12;
+    this.handAngle = (this.selectedHour % 12) * 30;
+  } else {
+    this.selectedMinute = Math.round(angle / 6) % 60;
+    this.handAngle = this.selectedMinute * 6;
+  }
+
+  this.syncHeader();
+};
+
+stopTouch = () => {
+  if (this.dragging && this.pickingMode === "hours") {
+    setTimeout(() => this.setPickingMode("minutes"), 300);
+  }
+
+  this.dragging = false;
+
+  document.removeEventListener("touchmove", this.rotateTouch);
+  document.removeEventListener("touchend", this.stopTouch);
+};
   allowOnlyNumbers(event: KeyboardEvent) {
   const key = event.key;
 
