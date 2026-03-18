@@ -7,36 +7,57 @@ import { environment } from "../../../environments/environment";
   providedIn: "root",
 })
 export class SettingsService {
-  private baseUrl = "http://78.142.47.247:3003/api";
+  // private baseUrl = "http://78.142.47.247:3003/api";
 
   constructor(private http: HttpClient) {}
 
   private getAuthHeaders(): HttpHeaders {
-    const authToken =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJfaWQiOjF9LCJpYXQiOjE3NTgxOTY5NzEsImV4cCI6MTc1ODIwMDU3MX0.Y0kEk97i-XYBhTKGp_05FJvYfnd-MCEpoaUR2t1iMKc";
+    const loginDetails = sessionStorage.getItem("loginDetails");
 
-    if (!authToken) {
+    if (!loginDetails) {
       throw new Error("Authentication token not found.");
     }
+
+    const parsed = JSON.parse(loginDetails);
+    const authToken = parsed.access_token;
 
     return new HttpHeaders({
       Authorization: `Bearer ${authToken}`,
     });
   }
-
   // ---------- Existing methods ----------
   createPromoCode(promoCodeData: any): Observable<any> {
     const headers = this.getAuthHeaders();
+
     return this.http.post(`${environment.apiUrl}/api/promocode`, promoCodeData, {
       headers,
     });
   }
+  getStores() {
+    return this.http.get(`${environment.apiUrl}/api/store`);
+  }
+  getPromoCodes() {
+  return this.http.get('http://78.142.47.247:3003/api/promocode');
+}
+  getCategories(store_id: number) {
+    return this.http.get(
+      `${environment.apiUrl}/api/category?store_id=${store_id}`,
+    );
+  }
+
+  getDishes(store_id: number) {
+    return this.http.get(`${environment.apiUrl}/api/dish?store_id=${store_id}`);
+  }
 
   createFee(feeData: any): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.post(`${environment.apiUrl}/api/settings/conditionalfee`, feeData, {
-      headers,
-    });
+    return this.http.post(
+      `${environment.apiUrl}/api/settings/conditionalfee`,
+      feeData,
+      {
+        headers,
+      },
+    );
   }
 
   savePickupService(pickupData: any): Observable<any> {
@@ -44,7 +65,7 @@ export class SettingsService {
     return this.http.post(
       `${environment.apiUrl}/api/settings/pickupservice`,
       pickupData,
-      { headers }
+      { headers },
     );
   }
 
@@ -53,7 +74,7 @@ export class SettingsService {
     return this.http.post(
       `${environment.apiUrl}/api/settings/deliveryservice`,
       deliveryData,
-      { headers }
+      { headers },
     );
   }
 
@@ -90,34 +111,32 @@ export class SettingsService {
   // GET working hours (array of {type, day, from, to})
 
   // ---------- Working Hours ----------
-getWorkingHours(storeId: number): Observable<any> {
-  const payload = { type: "get", store_id: storeId };
+  getWorkingHours(storeId: number): Observable<any> {
+    const payload = { type: "get", store_id: storeId };
 
-  const formData = new FormData();
-  formData.append("body", JSON.stringify(payload));
+    const formData = new FormData();
+    formData.append("body", JSON.stringify(payload));
 
-  return this.http.post<any>(`${environment.apiUrl}/api/store`, formData, {
-    headers: this.getAuthHeaders(),
-  });
-}
+    return this.http.post<any>(`${environment.apiUrl}/api/store`, formData, {
+      headers: this.getAuthHeaders(),
+    });
+  }
 
-// ✅ Update working hours (minimal required fields)
-updateWorkingHours(storeId: number, workingHours: any[]): Observable<any> {
-  const payload = {
-    type: "update",
-    store_id: storeId,
-    working_hours: workingHours,
-  };
+  // ✅ Update working hours (minimal required fields)
+  updateWorkingHours(storeId: number, workingHours: any[]): Observable<any> {
+    const payload = {
+      type: "update",
+      store_id: storeId,
+      working_hours: workingHours,
+    };
 
-  console.log("Update Working Hours Payload:", payload);
+    console.log("Update Working Hours Payload:", payload);
 
-  const formData = new FormData();
-  formData.append("body", JSON.stringify(payload));
+    const formData = new FormData();
+    formData.append("body", JSON.stringify(payload));
 
-  return this.http.post(`${environment.apiUrl}/api/store`, formData, {
-    headers: this.getAuthHeaders(),
-  });
-}
-
-
+    return this.http.post(`${environment.apiUrl}/api/store`, formData, {
+      headers: this.getAuthHeaders(),
+    });
+  }
 }

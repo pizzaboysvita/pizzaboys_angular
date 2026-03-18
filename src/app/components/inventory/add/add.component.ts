@@ -68,7 +68,7 @@ export class AddComponent implements OnInit {
       .subscribe((data:any) => {
         if (data) {
           console.log(data);
-           data.unshift({ store_id: '', store_name: 'All Stores' })
+          //  data.unshift({ store_id: '', store_name: 'All Stores' })
           this.storesList = data;
         }
       });

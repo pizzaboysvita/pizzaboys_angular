@@ -13,7 +13,7 @@ import {
   FormGroup,
   Validators,
 } from "@angular/forms";
-import { NgbModal, NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
+import { NgbDatepickerModule, NgbModal, NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
 import { GoogleMap, GoogleMapsModule } from "@angular/google-maps";
 import { ToastrService } from "ngx-toastr";
 
@@ -26,8 +26,13 @@ import { ComboAlertComponent } from "../combo-alert/combo-alert.component";
 import { ComboSelectionComponent } from "../combo-selection/combo-selection.component";
 import { CommonModule as NgCommon } from "@angular/common";
 import { CommonService } from "../../../shared/services/common.service";
-import { FormControl } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs/operators';
+import { FormControl } from "@angular/forms";
+import {
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  switchMap,
+} from "rxjs/operators";
 
 export interface ComboItem {
   dish_id: number;
@@ -66,6 +71,7 @@ export interface CartItem {
     MediaComponent,
     ComboAlertComponent,
     ComboSelectionComponent,
+    NgbDatepickerModule
   ],
 })
 export class OrderDetailsComponent implements OnInit, AfterViewInit {
@@ -107,7 +113,7 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   toppingDetails: any;
   ingredients_details: any;
   // deliveryfee: number = 5.9;
-   deliveryfee: number = 0;
+  deliveryfee: number = 0;
 
   modalRef: any;
   paymentdetails: any;
@@ -121,19 +127,37 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
   selectedScheduleItem: any;
   skipAvailabilityCheck: boolean;
   pendingCartItem: any;
-  baseTotal = 0;        // original total
-  discountValue = 0;   // entered value (number)
-  discountAmount = 0;  // calculated amount
+  baseTotal = 0; // original total
+  discountValue = 0; // entered value (number)
+  discountAmount = 0; // calculated amount
   isDiscountApplied = false;
-  surchargeAmount=0;
+  surchargeAmount = 0;
   discountPercent: number | null = null;
   discounts: any = [];
   surcharges: any = [];
 
-searchControl = new FormControl('');
-searchResults: any[] = [];
+  searchControl = new FormControl('', [
+  Validators.required,
+  Validators.pattern('^[0-9]{10}$') 
+]);
+  searchResults: any[] = [];
   selectedUser: any;
 
+  showClock = false;
+  selectedDate: any;
+
+  pickingMode: "hours" | "minutes" = "hours";
+  selectedHour: number = 0;
+  selectedMinute: number = 0;
+  isPM: boolean = false;
+  currentTime: string = "";
+  handAngle = 0;
+  dragging = false;
+
+  hourNumbers: any[] = [];
+  minuteNumbers: any[] = [];
+
+  selectedBreakTime: any;
 
   constructor(
     private apiService: ApisService,
@@ -143,94 +167,124 @@ searchResults: any[] = [];
     private modalService: NgbModal,
     private toastr: ToastrService,
     private cdr: ChangeDetectorRef,
-    private sessionStorageService: SessionStorageService
+    private sessionStorageService: SessionStorageService,
   ) {}
 
   ngOnInit() {
     this.initializeForms();
     this.loadInitialData();
-   this.searchControl.valueChanges.pipe(
-    debounceTime(400),
-    distinctUntilChanged(),
-    filter((value): value is string => !!value && value.length >= 3),
-    switchMap(async (value) => this.searchUser(value))
-  ).subscribe({
-    next: (res: any) => {
-      this.searchResults = res?.data || res;
-      console.log(this.searchResults);
-      
-    },
-    error: () => {
-      this.searchResults = [];
-    }
-  });
+    this.initCurrentTime();
+    this.generateClockArrays();
+    this.searchControl.valueChanges
+      .pipe(
+        debounceTime(400),
+        distinctUntilChanged(),
+        filter((value): value is string => !!value && value.length >= 4),
+        switchMap(async (value) => this.searchUser(value)),
+      )
+      .subscribe({
+        next: (res: any) => {
+          this.searchResults = res?.data || [];
+          if(this.searchResults.length === 0){
+            this.orderForm.patchValue({
+              phone:this.searchControl.value
+            });
+          }
+         
+        },
+        error: () => {
+          this.searchResults = [];
+           this.orderForm.patchValue({
+              phone:this.searchControl.value
+            });
+        },
+      });
   }
   ngAfterViewInit() {
     this.setupAddressAutocompleteObserver();
   }
-searchUser(keyword: string) {
-  console.log(keyword);
-    this.apiService.getApi(`/api/user/address?phone_number=${keyword}`).subscribe({
-      next: (res: any) => {
-         this.searchResults = res?.data || [];
-  //         const data = res?.data || [];
+  searchUser(keyword: string) {
+    console.log(keyword);
+    this.apiService
+      .getApi(`/api/user/address?phone_number=${keyword}`)
+      .subscribe({
+        next: (res: any) => {
+          this.searchResults = res?.data || [];
+          //         const data = res?.data || [];
 
-  // // Remove duplicate phone numbers
-  // const unique = data.filter(
-  //   (item: any, index: number, self: any[]) =>
-  //     index === self.findIndex(u => u.phone_number === item.phone_number)
-  // );
+          // // Remove duplicate phone numbers
+          // const unique = data.filter(
+          //   (item: any, index: number, self: any[]) =>
+          //     index === self.findIndex(u => u.phone_number === item.phone_number)
+          // );
 
-  // this.searchResults = unique;
-
-      },
-      error: (err: any) => {
-        console.error("Failed to fetch combo details", err);
-        this.searchResults=[]
-        
-      },
-    });
-}
-showconfirmModelPopup=false
-selectUser(user: any) {
-  this.searchControl.setValue(user.phone_number); // show phone in input
-  this.searchResults = [];
-  this.selectedUser = user;   // store full user data
-  this.showconfirmModelPopup = true; // open modal
-
-}
-confirmCustomer() {
-  this.showconfirmModelPopup = false;
-  this.customer.name =
-    this.selectedUser?.first_name + ' ' + this.selectedUser?.last_name;
-
-  // this.customer.email = this.selectedUser?.email;
-  this.customer.phone = this.selectedUser?.phone_number;
-  // this.orderForm.patchValue({
-  //   deliveryAddress: address
-  // });
-   this.orderForm.patchValue({
-  name: this.selectedUser?.first_name + ' ' + this.selectedUser?.last_name})
-     this.orderForm.patchValue({
-  phone: this.selectedUser?.phone_number})
-  this.orderForm.patchValue({
-  email: this.selectedUser?.email})
-    if(this.orderForm.get('orderType')?.value === 'delivery'){
-  this.orderForm.patchValue({
-  deliveryAddress:
-    // this.selectedUser?.address_line_1 + ', ' +
-    this.selectedUser?.street_address + ', ' +
-    this.selectedUser?.city + ', ' +
-    this.selectedUser?.state + ' ' +
-    this.selectedUser?.country + ' '+
-    this.selectedUser?.postal_code
-});
+          // this.searchResults = unique;
+        },
+        error: (err: any) => {
+          console.error("Failed to fetch combo details", err);
+          this.searchResults = [];
+        },
+      });
   }
-  this.searchResults = [];
-   this.searchControl.reset('', { emitEvent: false });
-  
+  showconfirmModelPopup = false;
+  selectUser(user: any) {
+    this.searchControl.setValue(user.user_phone_number); // show phone in input
+    this.searchResults = [];
 
-}
+    this.orderForm.patchValue({
+      name:user.user_first_name,
+      email:user.user_email,
+      phone:user.user_phone_number
+    })
+    this.selectedUser = user; // store full user data
+    this.showconfirmModelPopup = true; // open modal
+  }
+  confirmCustomer() {
+    this.showconfirmModelPopup = false;
+    this.customer.name =
+      this.selectedUser?.first_name + " " + this.selectedUser?.last_name;
+
+    // this.customer.email = this.selectedUser?.email;
+    this.customer.phone = this.selectedUser?.phone_number;
+    // this.orderForm.patchValue({
+    //   deliveryAddress: address
+    // });
+    this.orderForm.patchValue({
+   name: 
+    (this.selectedUser?.user_first_name || '') + 
+    (this.selectedUser?.last_name ? ' ' + this.selectedUser.last_name : '')
+});
+    this.orderForm.patchValue({
+      phone: this.selectedUser?.user_phone_number,
+    });
+    this.orderForm.patchValue({
+      email: this.selectedUser?.user_email_id,
+    });
+    if (this.orderForm.get("orderType")?.value === "delivery") {
+      this.orderForm.patchValue({
+        deliveryAddress:
+          // this.selectedUser?.address_line_1 + ', ' +
+          this.selectedUser?.street_address +
+          ", " +
+          this.selectedUser?.city +
+          ", " +
+          this.selectedUser?.state +
+          " " +
+          this.selectedUser?.country +
+          " " +
+          this.selectedUser?.postal_code,
+
+      });
+      this.orderForm.patchValue({
+        deliveryNote:this.selectedUser?.delivery_notes
+      })
+      this.orderForm.patchValue({
+        redemption_points:this.selectedUser?.redemption_points || 0
+      })
+    }
+    this.searchResults = [];
+    this.searchControl.reset("", { emitEvent: false });
+  }
 
   private initializeForms(): void {
     this.orderForm = this.fb.group({
@@ -242,10 +296,68 @@ confirmCustomer() {
       deliveryNote: [""],
       orderDue: ["ASAP", Validators.required],
       orderDateTime: [new Date(), Validators.required],
-      name:[''],
-      phone:[''],
-      email:['']
+       name: [
+    '',
+    [
+      Validators.required,
+      Validators.minLength(3),
+      Validators.pattern('^[a-zA-Z ]*$')
+    ]
+  ],
+ phone: [
+  '',
+  [
+    Validators.required,
+    Validators.pattern('^[0-9]{10}$')
+  ]
+],
+      email: [
+  "",
+  [
+    Validators.required,
+    Validators.email
+  ]
+],
+      redemption_points:[0],
     });
+    this.orderForm.get('orderType')?.valueChanges.subscribe((type) => {
+
+    const deliveryAddress = this.orderForm.get('deliveryAddress');
+    const streetNumber = this.orderForm.get('streetNumber');
+    const unitNumber = this.orderForm.get('unitNumber');
+    const deliveryNote = this.orderForm.get('deliveryNote');
+
+    if (type === 'delivery') {
+      deliveryAddress?.setValidators([Validators.required]);
+      streetNumber?.setValidators([Validators.required]);
+      unitNumber?.setValidators([Validators.required]);
+      deliveryNote?.setValidators([Validators.required]);
+    } else {
+      deliveryAddress?.clearValidators();
+      streetNumber?.clearValidators();
+      unitNumber?.clearValidators();
+      deliveryNote?.clearValidators();
+    }
+
+    deliveryAddress?.updateValueAndValidity();
+    streetNumber?.updateValueAndValidity();
+    unitNumber?.updateValueAndValidity();
+    deliveryNote?.updateValueAndValidity();
+
+  });
+  //   this.orderForm.get('orderType')?.valueChanges.subscribe((value) => {
+
+  //   const addressControl = this.orderForm.get('deliveryAddress');
+
+  //   if (value === 'delivery') {
+  //     addressControl?.setValidators([Validators.required]);
+  //   } else {
+  //     addressControl?.clearValidators();
+  //     addressControl?.setValue('');
+  //   }
+
+  //   addressControl?.updateValueAndValidity();
+  // });
     // this.orderdueForm = this.fb.group({
     //   orderDue: ["ASAP", Validators.required],
     //   orderDateTime: [new Date(), Validators.required],
@@ -255,7 +367,7 @@ confirmCustomer() {
 
   private loadInitialData(): void {
     const user = JSON.parse(
-      this.sessionStorageService.getsessionStorage("loginDetails") as any
+      this.sessionStorageService.getsessionStorage("loginDetails") as any,
     ).user;
     const userId = user.store_id;
 
@@ -291,8 +403,8 @@ confirmCustomer() {
         //       c.dish_id === t.dish_id &&
         //       (c.unique_key ? c.unique_key === t.unique_key : true)
         //   ) || t;
-          const source =
-            this.cartItems.find((c) => c.unique_key === t.unique_key) || t;
+        const source =
+          this.cartItems.find((c) => c.unique_key === t.unique_key) || t;
         const combo_selected_dishes =
           source["combo_selected_dishes"] || t["combo_selected_dishes"] || [];
 
@@ -300,7 +412,7 @@ confirmCustomer() {
           (cs: any, idx: number) => ({
             slot_name: cs.combo_option_name || `Item ${idx + 1}`,
             dish_name: cs.combo_option_dish_name || "",
-          })
+          }),
         );
 
         return {
@@ -313,7 +425,7 @@ confirmCustomer() {
 
       return t;
     });
-    
+
     this.updateTotals();
   }
 
@@ -354,65 +466,64 @@ confirmCustomer() {
   //   this.cartItems = [...this.cartItems];
   // }
   addToCart(item: any) {
-  console.log("Add To Cart", item);
+    console.log("Add To Cart", item);
 
-  //  Prevent duplicate dish_id
-  const alreadyExists = this.cartItems.some(
-    (ci) => ci.dish_id === item.dish_id
-  );
-
-  // if (alreadyExists && !this.isEditing) {
-  //   console.warn("Dish already added to cart");
-  //   return; //  stop here
-  // }
-  // if (!this.isDishAvailableToday(item)) {
-  //   this.openApplicableHourModal(item); // show message
-  //   return;
-  // }
-  if (!this.skipAvailabilityCheck && !this.isDishAvailableToday(item)) {
-    this.pendingCartItem = item;      // store item
-    this.openApplicableHourModal(item);
-    return;
-  }
-  const key = item.unique_key || `${item.dish_id}_${Date.now()}`;
-
-  if (this.isEditing && item.unique_key) {
-    const idx = this.cartItems.findIndex(
-      (ci) => ci.unique_key === item.unique_key
+    //  Prevent duplicate dish_id
+    const alreadyExists = this.cartItems.some(
+      (ci) => ci.dish_id === item.dish_id,
     );
 
-    if (idx > -1) {
-      this.cartItems[idx] = {
-        ...this.cartItems[idx],
-        ...item,
-        unique_key: item.unique_key,
-      };
+    // if (alreadyExists && !this.isEditing) {
+    //   console.warn("Dish already added to cart");
+    //   return; //  stop here
+    // }
+    // if (!this.isDishAvailableToday(item)) {
+    //   this.openApplicableHourModal(item); // show message
+    //   return;
+    // }
+    if (!this.skipAvailabilityCheck && !this.isDishAvailableToday(item)) {
+      this.pendingCartItem = item; // store item
+      this.openApplicableHourModal(item);
+      return;
+    }
+    const key = item.unique_key || `${item.dish_id}_${Date.now()}`;
+
+    if (this.isEditing && item.unique_key) {
+      const idx = this.cartItems.findIndex(
+        (ci) => ci.unique_key === item.unique_key,
+      );
+
+      if (idx > -1) {
+        this.cartItems[idx] = {
+          ...this.cartItems[idx],
+          ...item,
+          unique_key: item.unique_key,
+        };
+      }
+
+      this.isEditing = false;
+    } else {
+      const withKey: CartItem = { ...item, unique_key: key } as any;
+      this.cartItems.push(withKey);
     }
 
-    this.isEditing = false;
-  } else {
-    const withKey: CartItem = { ...item, unique_key: key } as any;
-    this.cartItems.push(withKey);
+    this.rebuildCartView();
+    this.cartItems = [...this.cartItems];
+    console.log(this.cartItems);
+
+    //  const selectedStandardIds = this.cartItems
+    //   .filter((x: CartItem) => x.dish_type === "standard")
+    //   .map((x: CartItem) => x.dish_id);
+
+    // if (selectedStandardIds.length > 1)
+    //   this.checkComboOffer(selectedStandardIds);
+    // else this.showComboAlert = false;
+    this.getComboItems(this.cartItems);
   }
-
-  this.rebuildCartView();
-  this.cartItems = [...this.cartItems];
-  console.log(this.cartItems,);
-  
-  //  const selectedStandardIds = this.cartItems
-  //   .filter((x: CartItem) => x.dish_type === "standard")
-  //   .map((x: CartItem) => x.dish_id);
-
-  // if (selectedStandardIds.length > 1)
-  //   this.checkComboOffer(selectedStandardIds);
-  // else this.showComboAlert = false;
- this.getComboItems(this.cartItems)
-}
-
 
   removeItem(item: any) {
     this.cartItems = this.cartItems.filter(
-      (i: CartItem) => i.unique_key !== item.unique_key
+      (i: CartItem) => i.unique_key !== item.unique_key,
     );
     this.rebuildCartView();
   }
@@ -424,25 +535,27 @@ confirmCustomer() {
   //     this.getComboItems(this.cartItems)
 
   // }
-removeItems(item: any) {
-  if (!item) return;
+  removeItems(item: any) {
+    if (!item) return;
 
-  // Remove only the specific cart row (split or original)
-  this.cartItems = this.cartItems.filter(
-    (cartItem: any) => cartItem.unique_key !== item.unique_key
-  );
+    // Remove only the specific cart row (split or original)
+    this.cartItems = this.cartItems.filter(
+      (cartItem: any) => cartItem.unique_key !== item.unique_key,
+    );
+ if(this.cartItems.length === 0){
+          this.discounts = [];
+      }
+    // Rebuild totalCartDetails for UI
+    this.rebuildCartView();
 
-  // Rebuild totalCartDetails for UI
-  this.rebuildCartView();
-
-  // Update combo items if needed
-  this.getComboItems(this.cartItems);
-}
+    // Update combo items if needed
+    this.getComboItems(this.cartItems);
+  }
 
   private updateTotals(): void {
     this.totalPrice = this.totalCartDetails.reduce(
       (sum: number, it: any) => sum + this.apiService.getItemSubtotal(it),
-      0
+      0,
     );
 
     console.log("Updated total price:", this.totalCartDetails, this.totalPrice);
@@ -451,47 +564,45 @@ removeItems(item: any) {
 
   increaseModalQuantity(item: any) {
     item["dish_quantity"] = (item["dish_quantity"] || 0) + 1;
-      const index = this.cartItems.findIndex(
-    i => i.unique_key === item.unique_key
-  );
+    const index = this.cartItems.findIndex(
+      (i) => i.unique_key === item.unique_key,
+    );
 
-  if (index !== -1) {
-    this.cartItems[index].dish_quantity++;
-  }
+    if (index !== -1) {
+      this.cartItems[index].dish_quantity++;
+    }
 
-      this.updateTotals()
-      this.getComboItems(this.cartItems)
+    this.updateTotals();
+    this.getComboItems(this.cartItems);
 
     //  this.rebuildCartView();
   }
   decreaseModalQuantity(item: any) {
     if (item["dish_quantity"] > 1) {
       item["dish_quantity"]--;
-       const index = this.cartItems.findIndex(
-    i => i.unique_key === item.unique_key
-  );
+      const index = this.cartItems.findIndex(
+        (i) => i.unique_key === item.unique_key,
+      );
 
-  if (index !== -1 && this.cartItems[index].dish_quantity > 1) {
-    this.cartItems[index].dish_quantity--;
-  }
-      this.updateTotals()
-      this.getComboItems(this.cartItems)
+      if (index !== -1 && this.cartItems[index].dish_quantity > 1) {
+        this.cartItems[index].dish_quantity--;
+      }
+      this.updateTotals();
+      this.getComboItems(this.cartItems);
       // this.rebuildCartView();
     }
   }
 
-  openNewModelPopup(type:any) {
-     this.searchResults = [];
-   this.searchControl.reset('', { emitEvent: false });
-    if(type=='PICKUP'){
-      this.orderForm.get('orderType')?.setValue('pickup')
-      this.orderForm.get('deliveryAddress')?.setValue('')
-
+  openNewModelPopup(type: any) {
+    this.searchResults = [];
+    this.searchControl.reset("", { emitEvent: false });
+    if (type == "PICKUP") {
+      this.orderForm.get("orderType")?.setValue("pickup");
+      this.orderForm.get("deliveryAddress")?.setValue("");
+    } else {
+      this.orderForm.get("orderType")?.setValue("delivery");
     }
-    else{
-      this.orderForm.get('orderType')?.setValue('delivery')
-    }
-    const orderTypeValue = this.orderForm.get('orderType')?.value;
+    const orderTypeValue = this.orderForm.get("orderType")?.value;
     // this.orderForm.reset({
     //   orderType: orderTypeValue,   // keep existing value
     //   orderDue: 'ASAP',            // optional default
@@ -506,7 +617,7 @@ removeItems(item: any) {
   get subtotal(): number {
     return this.totalCartDetails.reduce(
       (sum: number, item: any) => sum + this.apiService.getItemSubtotal(item),
-      0
+      0,
     );
   }
   get tax(): number {
@@ -519,62 +630,61 @@ removeItems(item: any) {
   //    return this.subtotal + fee;
 
   // }
-//   get total(): number {
-//   const fee =
-//     this.orderForm.value.orderType === 'delivery' ? this.deliveryfee : 0;
+  //   get total(): number {
+  //   const fee =
+  //     this.orderForm.value.orderType === 'delivery' ? this.deliveryfee : 0;
 
-//   return this.subtotal + fee - this.discountAmount;
-// }
-get total(): number {
-  const fee =
-    this.orderForm.value.orderType === 'delivery' ? this.deliveryfee : 0;
+  //   return this.subtotal + fee - this.discountAmount;
+  // }
+  get total(): number {
+    const fee =
+      this.orderForm.value.orderType === "delivery" ? this.deliveryfee : 0;
 
-  // return this.subtotal + fee - this.totalDiscount;
-  return this.subtotal + fee + this.totalSurcharge - this.totalDiscount;
-}
+    // return this.subtotal + fee - this.totalDiscount;
+    return this.subtotal + fee + this.totalSurcharge - this.totalDiscount;
+  }
 
-  getComboItems(cartItems: any){
+  getComboItems(cartItems: any) {
     console.log(cartItems);
-    
-  const comboDishIdCsv = cartItems
-  .filter((item: any) => item.dish_type === 'standard')
-  .map((item: any) => {
-    const baseType = this.getBaseType(item);
-    return `${item.dish_id},${item.dish_quantity},${baseType}`;
-  })
-  .join('|');
-  console.log(comboDishIdCsv);
-  
-  if (comboDishIdCsv.split('|').length > 1)
-    this.checkComboOffer(comboDishIdCsv);
-  else this.showComboAlert = false;
+
+    const comboDishIdCsv = cartItems
+      .filter((item: any) => item.dish_type === "standard")
+      .map((item: any) => {
+        const baseType = this.getBaseType(item);
+        return `${item.dish_id},${item.dish_quantity},${baseType}`;
+      })
+      .join("|");
+    console.log(comboDishIdCsv);
+
+    if (comboDishIdCsv.split("|").length > 1)
+      this.checkComboOffer(comboDishIdCsv);
+    else this.showComboAlert = false;
   }
-getBaseType(cartItem: any): number {
+  getBaseType(cartItem: any): number {
+    // 1️⃣ If options exist (Pizza Small / Large)
+    if (cartItem.selectedOptions?.length) {
+      const selected = cartItem.selectedOptions.find(
+        (opt: any) => opt.selected,
+      );
 
-  // 1️⃣ If options exist (Pizza Small / Large)
-  if (cartItem.selectedOptions?.length) {
-    const selected = cartItem.selectedOptions.find(
-      (opt: any) => opt.selected
-    );
+      return selected?.name?.toLowerCase() === "small" ? 1 : 2;
+    }
 
-    return selected?.name?.toLowerCase() === 'small' ? 1 : 2;
+    // 2️ Keyword match on category name
+    const category = cartItem.category_name?.toLowerCase() || "";
+    console.log(category);
+
+    if (category.includes("drink")) {
+      return 3; // Drinks (cool drinks, soft drinks, etc.)
+    }
+
+    if (category.includes("side")) {
+      return 4; // Pizza sides, veg sides, etc.
+    }
+
+    // fallback
+    return 0;
   }
-
-  // 2️ Keyword match on category name
-  const category = cartItem.category_name?.toLowerCase() || '';
-   console.log(category);
-
-  if (category.includes('drink')) {
-    return 3; // Drinks (cool drinks, soft drinks, etc.)
-  }
-
-  if (category.includes('side')) {
-    return 4; // Pizza sides, veg sides, etc.
-  }
-
-  // fallback
-  return 0;
-}
 
   checkComboOffer(selectedDishIds: any) {
     if (this.isEditing) return;
@@ -586,10 +696,10 @@ getBaseType(cartItem: any): number {
 
     data.forEach((row: any) => {
       const comboId = Number(
-        row.combo_id ?? row.combo_dish_id ?? row.dish_id ?? 0
+        row.combo_id ?? row.combo_dish_id ?? row.dish_id ?? 0,
       );
       const comboDishId = Number(
-        row.combo_dish_id ?? row.combo_id ?? row.dish_id ?? 0
+        row.combo_dish_id ?? row.combo_id ?? row.dish_id ?? 0,
       );
       if (!comboId || !comboDishId) return;
 
@@ -609,7 +719,7 @@ getBaseType(cartItem: any): number {
 
       const comboObj = map.get(comboId)!;
       const itemDishId = Number(
-        row.combo_item_dish_id ?? row.dish_id ?? row.item_dish_id ?? 0
+        row.combo_item_dish_id ?? row.dish_id ?? row.item_dish_id ?? 0,
       );
       const itemDishName =
         row.combo_item_dish_name ??
@@ -632,9 +742,9 @@ getBaseType(cartItem: any): number {
 
   fetchComboDetails(dishIds: number[]) {
     console.log(dishIds);
-    
+
     const user = JSON.parse(
-      this.sessionStorageService.getsessionStorage("loginDetails") as any
+      this.sessionStorageService.getsessionStorage("loginDetails") as any,
     ).user;
     const storeId = user.store_id;
     // const q = dishIds.join(",");
@@ -691,7 +801,7 @@ getBaseType(cartItem: any): number {
 
     const matchedDishIds = combo.items.map((i) => i.dish_id);
     const userSelectedItems = this.cartItems.filter(
-      (i) => i.dish_type === "standard" && matchedDishIds.includes(i.dish_id)
+      (i) => i.dish_type === "standard" && matchedDishIds.includes(i.dish_id),
     );
 
     const uniqueKeysToRemove = userSelectedItems
@@ -702,7 +812,7 @@ getBaseType(cartItem: any): number {
         !(
           ci.dish_type === "standard" &&
           uniqueKeysToRemove.includes(ci.unique_key)
-        )
+        ),
     );
 
     this.CommonService.totalDishList$.subscribe((data) => {
@@ -738,7 +848,7 @@ getBaseType(cartItem: any): number {
         }
 
         const slotNames = parsedChoices.map(
-          (choice: any, idx: number) => choice?.name || `Item ${idx + 1}`
+          (choice: any, idx: number) => choice?.name || `Item ${idx + 1}`,
         );
 
         const comboSelected = userSelectedItems.map(
@@ -750,11 +860,11 @@ getBaseType(cartItem: any): number {
 
             combo_option_selected_array:
               this._buildSelectedArrayFromStandardItem(item),
-          })
+          }),
         );
 
         const comboPrice = Number(
-          directCombo.dish_price ?? combo.combo_price ?? 0
+          directCombo.dish_price ?? combo.combo_price ?? 0,
         );
 
         const comboCartItem: any = {
@@ -799,7 +909,7 @@ getBaseType(cartItem: any): number {
         categories: menu.categories
           .map((cat: any) => {
             const checkedDishes = cat.dishes.filter(
-              (dish: any) => dish.checked
+              (dish: any) => dish.checked,
             );
             const isIndeterminate =
               checkedDishes.length > 0 &&
@@ -824,7 +934,7 @@ getBaseType(cartItem: any): number {
     const optionSets = item.dish_option_set_array ?? [];
     optionSets.forEach((optSet: any) => {
       const chosen = (optSet.option_set_array || []).filter(
-        (o: any) => o.selected || (o.quantity && o.quantity > 0)
+        (o: any) => o.selected || (o.quantity && o.quantity > 0),
       );
       if (!chosen || chosen.length === 0) return;
       result.push({
@@ -841,7 +951,7 @@ getBaseType(cartItem: any): number {
     });
 
     const ing = (item.dish_ingredient_array || []).filter(
-      (i: any) => !i.selected
+      (i: any) => !i.selected,
     );
     if (ing && ing.length) {
       result.push({
@@ -875,15 +985,15 @@ getBaseType(cartItem: any): number {
     this.matchingCombos = [];
     this.showComboAlert = false;
     this.showComboSelection = false;
-    this.surcharges=[]
-    this.discounts=[]
+    this.surcharges = [];
+    this.discounts = [];
     this.orderForm.reset({
-      orderType: 'PICKUP',   // keep existing value
-      orderDue: 'ASAP',            // optional default
-      orderDateTime: new Date()    // optional default
+      orderType: "PICKUP", // keep existing value
+      orderDue: "ASAP", // optional default
+      orderDateTime: new Date(), // optional default
     });
     this.customer = { name: "", email: "", phone: "" };
-              this.deliveryfee=0;
+    this.deliveryfee = 0;
     this.updateTotals();
   }
 
@@ -894,24 +1004,38 @@ getBaseType(cartItem: any): number {
       size: "xl",
     });
   }
-getTotalPercentage(): number {
-  return this.discounts
-    .filter((d: { type: string; }) => d.type === '%')
-    .reduce((sum: number, d: { value: any; }) => sum + Number(d.value || 0), 0);
-}
-getTotalFlatAmount(): number {
-  return this.discounts
-    .reduce((sum: number, d: { amount: any; }) => sum + Number(d.amount || 0), 0);
-}
+  getTotalPercentage(): number {
+    return this.discounts
+      .filter((d: { type: string }) => d.type === "%")
+      .reduce(
+        (sum: number, d: { value: any }) => sum + Number(d.value || 0),
+        0,
+      );
+  }
+  getTotalFlatAmount(): number {
+    return this.discounts.reduce(
+      (sum: number, d: { amount: any }) => sum + Number(d.amount || 0),
+      0,
+    );
+  }
 
   submitOrder() {
     if (this.cartItems.length === 0) {
       this.toastr.warning(
         "Cart is empty. Please add items to order.",
-        "Cannot Submit"
+        "Cannot Submit",
       );
       return;
     }
+    if (this.orderForm.invalid) {
+    // this.orderForm.markAllAsTouched();
+    this.toastr.warning(
+      "Please fill all required fields correctly.",
+      "Order Type Form Incomplete"
+    );
+
+    return;
+  }
 
     this.modalRef = this.modalService.open(OrderPaymentsComponent, {
       size: "xl",
@@ -930,20 +1054,24 @@ getTotalFlatAmount(): number {
         this.paymentdetails = result;
         this.buildServerPayloads();
         const user = JSON.parse(
-          this.sessionStorageService.getsessionStorage("loginDetails") as any
+          this.sessionStorageService.getsessionStorage("loginDetails") as any,
         ).user;
 
         const reqbody: any = {
-          discount_percentage:this.getTotalPercentage(),
-          discount_amount:this.getTotalFlatAmount(),
+          discount_percentage: this.getTotalPercentage(),
+          discount_amount: this.getTotalFlatAmount(),
           total_price: this.subtotal,
           total_quantity: this.cartItems.length,
           store_id: user.store_id,
+            phone_number: this.orderForm.value.phone,
+            first_name:this.orderForm.value.name,
+            email_id:this.orderForm.value.email,
+            redemption_points:this.orderForm.value.redemption_points,
           order_type:
             this.orderForm.get("orderType")?.value === "PICKUP" ? 1 : 2,
           pickup_datetime: new Date(),
           delivery_address: this.orderForm.get("deliveryAddress")?.value,
-          phone_number:this.orderForm.get("phone")?.value,
+          // phone_number: this.orderForm.get("phone")?.value,
           delivery_fees:
             this.orderForm.get("orderType")?.value === "delivery"
               ? this.deliveryfee
@@ -980,10 +1108,10 @@ getTotalFlatAmount(): number {
               this.clearOrderDetails();
               this.customer = { name: "", email: "", phone: "" };
               this.orderForm.reset();
-              this.deliveryfee=0;
-              this.orderForm.get("orderType")?.setValue('PICKUP');
-              this.orderForm.get("orderDue")?.setValue('ASAP'); 
-              this.orderForm.get("orderDateTime")?.setValue(new Date()); 
+              this.deliveryfee = 0;
+              this.orderForm.get("orderType")?.setValue("PICKUP");
+              this.orderForm.get("orderDue")?.setValue("ASAP");
+              this.orderForm.get("orderDateTime")?.setValue(new Date());
               this.cdr.detectChanges();
             } else {
               this.toastr.error(res?.message || "Order failed", "Error");
@@ -997,7 +1125,7 @@ getTotalFlatAmount(): number {
       },
       (reason: any) => {
         console.log("Payment Modal dismissed:", reason);
-      }
+      },
     );
   }
 
@@ -1027,7 +1155,7 @@ getTotalFlatAmount(): number {
           name: opt.name,
           price: opt.price,
           quantity: opt.quantity,
-        }))
+        })),
     );
 
     this.ingredients_details = this.cartItems.flatMap((dish: any) =>
@@ -1038,7 +1166,7 @@ getTotalFlatAmount(): number {
           name: opt.name,
           price: opt.price,
           quantity: opt.quantity,
-        }))
+        })),
     );
   }
 
@@ -1064,7 +1192,7 @@ getTotalFlatAmount(): number {
       {
         componentRestrictions: { country: "nz" },
         fields: ["formatted_address", "geometry"],
-      }
+      },
     );
     autocomplete.addListener("place_changed", () => {
       const place = autocomplete.getPlace();
@@ -1080,41 +1208,79 @@ getTotalFlatAmount(): number {
     this.showOrderDuePopup = false;
   }
 
+  // submitDUeOrder() {
+  //   this.searchResults = [];
+  //   this.selectedUser = "";
+  //   this.customer = {
+  //     name: this.orderForm.get("name")?.value,
+  //     email: this.orderForm.get("email")?.value,
+  //     phone: this.orderForm.get("phone")?.value,
+  //   };
+
+  //   this.showNewModelPopup = false;
+  //   if (this.orderForm.invalid || this.dateError) return;
+  //   this.orderDueDetails =
+  //     this.orderForm.value.orderDue === "ASAP"
+  //       ? this.orderForm.value.orderDue
+  //       : this.orderForm.value.orderDateTime;
+  //   // this.showOrderDuePopup = false;
+  //   // this.selectedScheduleItem=null
+  //   // this.pendingCartItem=null
+  //   if (this.orderForm.value.orderType == "delivery") {
+  //     this.deliveryfee = 5.9;
+  //   } else {
+  //     this.deliveryfee = 0;
+  //   }
+  //   if (this.orderForm.value.orderDue === "Later") {
+  //     this.skipAvailabilityCheck = true;
+  //     this.addToCart(this.pendingCartItem);
+  //   }
+  //   // this.addToCart(this.pendingCartItem)
+  //   this.showOrderDuePopup = false;
+  //   this.showNewModelPopup = false;
+  //   this.selectedScheduleItem = null;
+  //   this.pendingCartItem = null;
+  // }
   submitDUeOrder() {
-   this.searchResults=[]
-   this.selectedUser=''
-     this.customer = {
-    name: this.orderForm.get('name')?.value,
-    email: this.orderForm.get('email')?.value,
-    phone: this.orderForm.get('phone')?.value
+
+  this.orderForm.markAllAsTouched();
+  if (this.orderForm.invalid || this.dateError) {
+    return;
+  }
+
+  this.searchResults = [];
+  this.selectedUser = "";
+
+  
+
+  this.customer = {
+    name: this.orderForm.get("name")?.value,
+    email: this.orderForm.get("email")?.value,
+    phone: this.orderForm.get("phone")?.value,
   };
 
-    this.showNewModelPopup = false;
-    if (this.orderForm.invalid || this.dateError) return;
-    this.orderDueDetails =
-      this.orderForm.value.orderDue === "ASAP"
-        ? this.orderForm.value.orderDue
-        : this.orderForm.value.orderDateTime;
-    // this.showOrderDuePopup = false;
-    // this.selectedScheduleItem=null
-    // this.pendingCartItem=null
-          if( this.orderForm.value.orderType=='delivery'){
-            this.deliveryfee = 5.9;
-          }
-          else{
-                        this.deliveryfee = 0;
-          }
-    if( this.orderForm.value.orderDue === "Later"){
-    this.skipAvailabilityCheck = true;
-    this.addToCart(this.pendingCartItem)
-    }
-    // this.addToCart(this.pendingCartItem)
-    this.showOrderDuePopup = false;
-    this.showNewModelPopup = false;
-    this.selectedScheduleItem=null
-    this.pendingCartItem=null
-    
+  this.showNewModelPopup = false;
+
+  this.orderDueDetails =
+    this.orderForm.value.orderDue === "ASAP"
+      ? this.orderForm.value.orderDue
+      : this.orderForm.value.orderDateTime;
+
+  if (this.orderForm.value.orderType == "delivery") {
+    this.deliveryfee = 5.9;
+  } else {
+    this.deliveryfee = 0;
   }
+
+  if (this.orderForm.value.orderDue === "Later") {
+    this.skipAvailabilityCheck = true;
+    this.addToCart(this.pendingCartItem);
+  }
+
+  this.showOrderDuePopup = false;
+  this.selectedScheduleItem = null;
+  this.pendingCartItem = null;
+}
   // submitLatDUeOrder(){
   //    if (this.orderdueForm.invalid || this.dateError) return;
   //   this.orderDueDetails =
@@ -1141,92 +1307,87 @@ getTotalFlatAmount(): number {
     console.log("PARENT RECEIVED EVENT:", event);
   }
   openholdModal() {
-  const stored = localStorage.getItem('heldOrders');
-  this.heldOrders = stored ? JSON.parse(stored) : [];
+    const stored = localStorage.getItem("heldOrders");
+    this.heldOrders = stored ? JSON.parse(stored) : [];
     this.Openmodal = true;
   }
- 
-openModifyPrice() {
+
+  openModifyPrice() {
     this.cashCount = true;
-  this.baseTotal = this.total; // store original
-  this.modifyValue = '';
-  this.discountAmount = 0;
-  this.isDiscountApplied = false;
-}
+    this.baseTotal = this.total; // store original
+    this.modifyValue = "";
+    this.discountAmount = 0;
+    this.isDiscountApplied = false;
+  }
   isDishAvailableToday(item: any): boolean {
-  if (!item?.applicable_hours) {
-    // no restriction → available all days
-    return true;
+    if (!item?.applicable_hours) {
+      // no restriction → available all days
+      return true;
+    }
+
+    let hours: any[] = [];
+
+    try {
+      hours = JSON.parse(item.applicable_hours);
+      if (!Array.isArray(hours)) return true;
+    } catch {
+      return true;
+    }
+
+    const today = this.getTodayName().toLowerCase();
+
+    return hours.some((h) => h.day?.toLowerCase() === today);
+  }
+  getTodayName(): string {
+    return new Date().toLocaleDateString("en-US", { weekday: "long" });
+  }
+  openApplicableHourModal(item: any) {
+    this.selectedScheduleItem = item;
+    const today = this.getTodayName();
+    this.showOrderLaterPopup = true;
+    // alert(
+    //   `This item is not available today (${today}). Please check applicable hours.`
+    // );
+
+    // OR open Angular Material / Bootstrap modal instead
   }
 
-  let hours: any[] = [];
-
-  try {
-    hours = JSON.parse(item.applicable_hours);
-    if (!Array.isArray(hours)) return true;
-  } catch {
-    return true;
+  scheduleLater() {
+    this.showNewModelPopup = true;
+    this.showOrderLaterPopup = false;
+    this.orderForm.get("orderDue")?.setValue("Later");
   }
+  // getAllowedDays(item: any): string[] {
+  //   if (!item?.applicable_hours) return [];
 
-  const today = this.getTodayName().toLowerCase();
+  //   try {
+  //     const parsed =
+  //       typeof item.applicable_hours === 'string'
+  //         ? JSON.parse(item.applicable_hours)
+  //         : item.applicable_hours;
 
-  return hours.some(
-    h => h.day?.toLowerCase() === today
-  );
-}
-getTodayName(): string {
-  return new Date().toLocaleDateString('en-US', { weekday: 'long' });
-}
-openApplicableHourModal(item: any) {
-  this.selectedScheduleItem=item
-  const today = this.getTodayName();
-   this.showOrderLaterPopup=true
-  // alert(
-  //   `This item is not available today (${today}). Please check applicable hours.`
-  // );
+  //     if (!Array.isArray(parsed) || !parsed.length) return [];
 
-  // OR open Angular Material / Bootstrap modal instead
-}
+  //     return parsed
+  //       .map((h: any) => h.day?.toLowerCase())
+  //       .filter(Boolean);
+  //   } catch {
+  //     return [];
+  //   }
 
-scheduleLater(){
-  this.showNewModelPopup=true
-   this.showOrderLaterPopup=false
-   this.orderForm.get('orderDue')?.setValue('Later')
-
-}
-// getAllowedDays(item: any): string[] {
-//   if (!item?.applicable_hours) return [];
-
-//   try {
-//     const parsed =
-//       typeof item.applicable_hours === 'string'
-//         ? JSON.parse(item.applicable_hours)
-//         : item.applicable_hours;
-
-//     if (!Array.isArray(parsed) || !parsed.length) return [];
-
-//     return parsed
-//       .map((h: any) => h.day?.toLowerCase())
-//       .filter(Boolean);
-//   } catch {
-//     return [];
-//   }
-  
-// }
- getAllowedDays(item: any): string[] {
+  // }
+  getAllowedDays(item: any): string[] {
     if (!item?.applicable_hours) return [];
 
     try {
       const parsed =
-        typeof item.applicable_hours === 'string'
+        typeof item.applicable_hours === "string"
           ? JSON.parse(item.applicable_hours)
           : item.applicable_hours;
 
       if (!Array.isArray(parsed) || !parsed.length) return [];
 
-      return parsed
-        .map((h: any) => h.day?.toLowerCase())
-        .filter(Boolean);
+      return parsed.map((h: any) => h.day?.toLowerCase()).filter(Boolean);
     } catch {
       return [];
     }
@@ -1236,407 +1397,614 @@ scheduleLater(){
   getAvailableDaysLabel(item: any): string {
     const days = this.getAllowedDays(item);
 
-    if (!days.length) return 'All days';
+    if (!days.length) return "All days";
 
-    return days
-      .map(d => d.charAt(0).toUpperCase() + d.slice(1))
-      .join(', ');
+    return days.map((d) => d.charAt(0).toUpperCase() + d.slice(1)).join(", ");
   }
 
-  
+  dateError = false;
 
+  validateApplicableDay(event: any) {
+    const value = event.target.value;
+    if (!value) return;
 
-dateError = false;
+    const selectedDate = new Date(value);
+    const selectedDay = selectedDate
+      .toLocaleDateString("en-US", { weekday: "long" })
+      .toLowerCase();
 
-validateApplicableDay(event: any) {
-  const value = event.target.value;
-  if (!value) return;
+    const allowedDays = this.getAllowedDays(this.selectedScheduleItem);
 
-  const selectedDate = new Date(value);
-  const selectedDay = selectedDate
-    .toLocaleDateString('en-US', { weekday: 'long' })
-    .toLowerCase();
-
-  const allowedDays = this.getAllowedDays(this.selectedScheduleItem);
-
-  // ✅ No restriction → allow all
-  if (!allowedDays.length) {
-    this.dateError = false;
-    return;
-  }
-
-  if (!allowedDays.includes(selectedDay)) {
-    this.dateError = true;
-
-    //  Clear invalid date
-    this.orderForm.get('orderDateTime')?.setValue(null);
-  } else {
-    this.dateError = false;
-  }
-}
-// splitItem(item: any) {
-//   if (!item || item.dish_quantity < 2 || item.dish_type !== 'combo') return;
-
-//   const index = this.totalCartDetails.findIndex(
-//     (i: any) => i.unique_key === item.unique_key
-//   );
-
-//   if (index === -1) return;
-
-//   const totalQty = item.dish_quantity;
-//   const totalPrice = item.item_total_price;
-//   // const unitPrice = totalPrice / totalQty;
-
-//   const newItem = JSON.parse(JSON.stringify(item));
-
-//   // Generate new unique_key for split
-//   newItem.unique_key = `${item.unique_key}_${Date.now()}_${Math.random()
-//     .toString(36)
-//     .substr(2, 5)}`;
-
-//   newItem.dish_quantity = totalQty - 1;
-//   newItem.item_total_price = +totalPrice;
-
-//   // Update original
-//   this.totalCartDetails[index].dish_quantity = 1;
-//   this.totalCartDetails[index].item_total_price = +totalPrice;
-
-//   // Insert new split item
-//   this.totalCartDetails.splice(index + 1, 0, newItem);
-
-//   // Refresh cart
-//   this.totalCartDetails = [...this.totalCartDetails];
-//   this.cartItems = [...this.cartItems, newItem];
-// }
-
-// splitItem(item: any) {
-//   if (!item || item.dish_quantity < 2 || item.dish_type !== 'combo') return;
-
-//   // find original in totalCartDetails
-//   const index = this.totalCartDetails.findIndex(
-//     (i: any) => i.unique_key === item.unique_key
-//   );
-//   if (index === -1) return;
-
-//   const totalQty = item.dish_quantity;
-//   const totalPrice = item.item_total_price;
-//   // const unitPrice = totalPrice / totalQty;
-
-//   // Deep clone original item
-//   const newItem = JSON.parse(JSON.stringify(item));
-
-//   // 🔑 Give new unique key for split item
-//   newItem.unique_key = `${item.unique_key}_${Date.now()}_${Math.random()
-//     .toString(36)
-//     .substr(2, 5)}`;
-
-//   // Set quantities & prices
-//   newItem.dish_quantity = totalQty - 1;       // remaining quantity
-//   newItem.item_total_price = +totalPrice;
-
-//   // Update original item
-//   this.totalCartDetails[index].dish_quantity = 1;    // always 1
-//   this.totalCartDetails[index].item_total_price = +totalPrice;
-
-//   // Insert split item after original
-//   this.totalCartDetails.splice(index + 1, 0, newItem);
-
-//   // Update cartItems array
-//   this.cartItems = [
-//     ...this.cartItems.filter((c) => c.unique_key !== item.unique_key),
-//     this.totalCartDetails[index],
-//     newItem,
-//   ];
-
-//   // Force UI refresh
-//   this.totalCartDetails = [...this.totalCartDetails];
-// }
-splitItem(item: any) {
-  if (!item || item.dish_type !== 'combo' || item.dish_quantity < 2) return;
-
-  // Find original in totalCartDetails
-  const index = this.totalCartDetails.findIndex(
-    (i: any) => i.unique_key === item.unique_key
-  );
-  if (index === -1) return;
-
-  const totalQty = item.dish_quantity;
-  const totalPrice = item.item_total_price;
-  // const unitPrice = totalPrice / totalQty;
-
-  // Remove original item
-  this.totalCartDetails.splice(index, 1);
-
-  // Create split items (qty times)
-  const splitItems = Array.from({ length: totalQty }).map(() => {
-    const newItem = JSON.parse(JSON.stringify(item));
-
-    newItem.dish_quantity = 1;
-    newItem.item_total_price = +totalPrice;
-    newItem.unique_key = `${item.dish_id}_${Date.now()}_${Math.random()
-      .toString(36)
-      .substr(2, 6)}`;
-
-    return newItem;
-  });
-
-  // Insert all split items at same position
-  this.totalCartDetails.splice(index, 0, ...splitItems);
-
-  // Sync cartItems (source of truth)
-  this.cartItems = this.cartItems.filter(
-    (c: any) => c.unique_key !== item.unique_key
-  );
-  this.cartItems.push(...splitItems);
-
-  // Force UI refresh
-  this.totalCartDetails = [...this.totalCartDetails];
-  this.cartItems = [...this.cartItems];
-}
-holdNote: string = '';
-heldOrders: any[] = [];
-
-proceedHoldOrder() {
-  if (!this.cartItems.length) return;
-
-  const holdOrder = {
-    holdId: Date.now(), // unique
-    note: this.holdNote || '',
-    items: [...this.cartItems], // clone cart
-    createdAt: new Date().toISOString()
-  };
-
-  // 🔹 Get existing held orders
-  // const stored = localStorage.getItem('heldOrders');
-  // this.heldOrders = stored ? JSON.parse(stored) : [];
-
-  // 🔹 Add new hold order
-  this.heldOrders.push(holdOrder);
-  // 🔹 Save back to storage
-  localStorage.setItem('heldOrders', JSON.stringify(this.heldOrders));
-  // 🔹 CLEAR CART
-  this.cartItems = [];
-  this.totalCartDetails=[]
-  // localStorage.removeItem('cartItems'); // if cart stored
-  // 🔹 Reset note & close modal
-  this.holdNote = '';
-  this.Openmodal = false
-  this.discounts=[];
-  this.surcharges=[];
-  // this.closeHoldModal();
-}
-deleteHoldOrder(index: number) {
-  this.heldOrders.splice(index, 1);
-  // update storage
-  localStorage.setItem('holdOrders', JSON.stringify(this.heldOrders));
-}
-restoreHoldOrder(order: any, index: number) {
-  // 1️⃣ Restore items
-  order.items.forEach((item: any) => {
-    this.cartItems.push({
-      ...item,
-      unique_key: item.unique_key || `${item.dish_id}_${Date.now()}`
-    });
-  });
-
-  // 2️⃣ Refresh cart
-  this.cartItems = [...this.cartItems];
-  this.totalCartDetails = this.cartItems;
-  this.rebuildCartView();
-  this.getComboItems(this.cartItems);
-
-  // 3️⃣ Remove by index ✅
-  this.heldOrders.splice(index, 1);
-
-  // 4️⃣ Sync localStorage (SAME KEY!)
-  localStorage.setItem('heldOrders', JSON.stringify(this.heldOrders));
-
-  // 5️⃣ Close modal
-  this.Openmodal = false;
-}
-onTabChange(tab: 'specific' | 'discount' | 'surcharge') {
-  this.paymentTab = tab;
-    this.discountAmount = 0;
-    this.surchargeAmount = 0;
-  // reset input
-  this.modifyValue = '';
-  if (tab === 'specific') {
-    this.typeTab = '$'; // force amount
-  }
-}
-
-// applyModifyPrice() {
-//   if (this.paymentTab !== 'discount') return;
-
-//   const value = Number(this.modifyValue || 0);
-//   if (value <= 0) return;
-
-//   let amount = 0;
-
-//   if (this.typeTab === '%') {
-//     amount = +(this.subtotal * value / 100).toFixed(2);
-//   } else {
-//     amount = +value.toFixed(2);
-//   }
-
-//   // safety
-//   if (amount > this.subtotal) {
-//     amount = this.subtotal;
-//   }
-
-//   this.discounts.push({
-//     type: this.typeTab,
-//     value,
-//     amount
-//   });
-
-//   // reset input
-//   this.modifyValue = "0";
-//   this.cashCount = false;
-// }
-applyModifyPrice() {
-  const value = Number(this.modifyValue || 0);
-  if (value <= 0) return;
-
-  let amount = 0;
-
-  // ---------- DISCOUNT ----------
-  if (this.paymentTab === 'discount') {
-    amount =
-      this.typeTab === '%'
-        ? +(this.subtotal * value / 100).toFixed(2)
-        : +value.toFixed(2);
-
-    // safety: discount cannot exceed subtotal
-    if (amount > this.subtotal) {
-      amount = this.subtotal;
+    // ✅ No restriction → allow all
+    if (!allowedDays.length) {
+      this.dateError = false;
+      return;
     }
 
-    this.discounts.push({
-      type: this.typeTab,
-      value,
-      amount
+    if (!allowedDays.includes(selectedDay)) {
+      this.dateError = true;
+
+      //  Clear invalid date
+      this.orderForm.get("orderDateTime")?.setValue(null);
+    } else {
+      this.dateError = false;
+    }
+  }
+  // splitItem(item: any) {
+  //   if (!item || item.dish_quantity < 2 || item.dish_type !== 'combo') return;
+
+  //   const index = this.totalCartDetails.findIndex(
+  //     (i: any) => i.unique_key === item.unique_key
+  //   );
+
+  //   if (index === -1) return;
+
+  //   const totalQty = item.dish_quantity;
+  //   const totalPrice = item.item_total_price;
+  //   // const unitPrice = totalPrice / totalQty;
+
+  //   const newItem = JSON.parse(JSON.stringify(item));
+
+  //   // Generate new unique_key for split
+  //   newItem.unique_key = `${item.unique_key}_${Date.now()}_${Math.random()
+  //     .toString(36)
+  //     .substr(2, 5)}`;
+
+  //   newItem.dish_quantity = totalQty - 1;
+  //   newItem.item_total_price = +totalPrice;
+
+  //   // Update original
+  //   this.totalCartDetails[index].dish_quantity = 1;
+  //   this.totalCartDetails[index].item_total_price = +totalPrice;
+
+  //   // Insert new split item
+  //   this.totalCartDetails.splice(index + 1, 0, newItem);
+
+  //   // Refresh cart
+  //   this.totalCartDetails = [...this.totalCartDetails];
+  //   this.cartItems = [...this.cartItems, newItem];
+  // }
+
+  // splitItem(item: any) {
+  //   if (!item || item.dish_quantity < 2 || item.dish_type !== 'combo') return;
+
+  //   // find original in totalCartDetails
+  //   const index = this.totalCartDetails.findIndex(
+  //     (i: any) => i.unique_key === item.unique_key
+  //   );
+  //   if (index === -1) return;
+
+  //   const totalQty = item.dish_quantity;
+  //   const totalPrice = item.item_total_price;
+  //   // const unitPrice = totalPrice / totalQty;
+
+  //   // Deep clone original item
+  //   const newItem = JSON.parse(JSON.stringify(item));
+
+  //   // 🔑 Give new unique key for split item
+  //   newItem.unique_key = `${item.unique_key}_${Date.now()}_${Math.random()
+  //     .toString(36)
+  //     .substr(2, 5)}`;
+
+  //   // Set quantities & prices
+  //   newItem.dish_quantity = totalQty - 1;       // remaining quantity
+  //   newItem.item_total_price = +totalPrice;
+
+  //   // Update original item
+  //   this.totalCartDetails[index].dish_quantity = 1;    // always 1
+  //   this.totalCartDetails[index].item_total_price = +totalPrice;
+
+  //   // Insert split item after original
+  //   this.totalCartDetails.splice(index + 1, 0, newItem);
+
+  //   // Update cartItems array
+  //   this.cartItems = [
+  //     ...this.cartItems.filter((c) => c.unique_key !== item.unique_key),
+  //     this.totalCartDetails[index],
+  //     newItem,
+  //   ];
+
+  //   // Force UI refresh
+  //   this.totalCartDetails = [...this.totalCartDetails];
+  // }
+  splitItem(item: any) {
+    if (!item || item.dish_type !== "combo" || item.dish_quantity < 2) return;
+
+    // Find original in totalCartDetails
+    const index = this.totalCartDetails.findIndex(
+      (i: any) => i.unique_key === item.unique_key,
+    );
+    if (index === -1) return;
+
+    const totalQty = item.dish_quantity;
+    const totalPrice = item.item_total_price;
+    // const unitPrice = totalPrice / totalQty;
+
+    // Remove original item
+    this.totalCartDetails.splice(index, 1);
+
+    // Create split items (qty times)
+    const splitItems = Array.from({ length: totalQty }).map(() => {
+      const newItem = JSON.parse(JSON.stringify(item));
+
+      newItem.dish_quantity = 1;
+      newItem.item_total_price = +totalPrice;
+      newItem.unique_key = `${item.dish_id}_${Date.now()}_${Math.random()
+        .toString(36)
+        .substr(2, 6)}`;
+
+      return newItem;
     });
+
+    // Insert all split items at same position
+    this.totalCartDetails.splice(index, 0, ...splitItems);
+
+    // Sync cartItems (source of truth)
+    this.cartItems = this.cartItems.filter(
+      (c: any) => c.unique_key !== item.unique_key,
+    );
+    this.cartItems.push(...splitItems);
+
+    // Force UI refresh
+    this.totalCartDetails = [...this.totalCartDetails];
+    this.cartItems = [...this.cartItems];
+  }
+  holdNote: string = "";
+  heldOrders: any[] = [];
+
+  proceedHoldOrder() {
+    if (!this.cartItems.length) return;
+
+    const holdOrder = {
+      holdId: Date.now(), // unique
+      note: this.holdNote || "",
+      items: [...this.cartItems], // clone cart
+      createdAt: new Date().toISOString(),
+    };
+
+    // 🔹 Get existing held orders
+    // const stored = localStorage.getItem('heldOrders');
+    // this.heldOrders = stored ? JSON.parse(stored) : [];
+
+    // 🔹 Add new hold order
+    this.heldOrders.push(holdOrder);
+    // 🔹 Save back to storage
+    localStorage.setItem("heldOrders", JSON.stringify(this.heldOrders));
+    // 🔹 CLEAR CART
+    this.cartItems = [];
+    this.totalCartDetails = [];
+    // localStorage.removeItem('cartItems'); // if cart stored
+    // 🔹 Reset note & close modal
+    this.holdNote = "";
+    this.Openmodal = false;
+    this.discounts = [];
+    this.surcharges = [];
+    // this.closeHoldModal();
+  }
+  deleteHoldOrder(index: number) {
+    this.heldOrders.splice(index, 1);
+    // update storage
+    localStorage.setItem("holdOrders", JSON.stringify(this.heldOrders));
+  }
+  restoreHoldOrder(order: any, index: number) {
+    // 1️⃣ Restore items
+    order.items.forEach((item: any) => {
+      this.cartItems.push({
+        ...item,
+        unique_key: item.unique_key || `${item.dish_id}_${Date.now()}`,
+      });
+    });
+
+    // 2️⃣ Refresh cart
+    this.cartItems = [...this.cartItems];
+    this.totalCartDetails = this.cartItems;
+    this.rebuildCartView();
+    this.getComboItems(this.cartItems);
+
+    // 3️⃣ Remove by index ✅
+    this.heldOrders.splice(index, 1);
+
+    // 4️⃣ Sync localStorage (SAME KEY!)
+    localStorage.setItem("heldOrders", JSON.stringify(this.heldOrders));
+
+    // 5️⃣ Close modal
+    this.Openmodal = false;
+  }
+  onTabChange(tab: "specific" | "discount" | "surcharge") {
+    this.paymentTab = tab;
+    this.discountAmount = 0;
+    this.surchargeAmount = 0;
+    // reset input
+    this.modifyValue = "";
+    if (tab === "specific") {
+      this.typeTab = "$"; // force amount
+    }
   }
 
-  // ---------- SURCHARGE ----------
-  if (this.paymentTab === 'surcharge') {
-    amount =
-      this.typeTab === '%'
-        ? +(this.subtotal * value / 100).toFixed(2)
-        : +value.toFixed(2);
+  // applyModifyPrice() {
+  //   if (this.paymentTab !== 'discount') return;
 
-    this.surcharges.push({
-      type: this.typeTab,
-      value,
-      amount
-    });
+  //   const value = Number(this.modifyValue || 0);
+  //   if (value <= 0) return;
+
+  //   let amount = 0;
+
+  //   if (this.typeTab === '%') {
+  //     amount = +(this.subtotal * value / 100).toFixed(2);
+  //   } else {
+  //     amount = +value.toFixed(2);
+  //   }
+
+  //   // safety
+  //   if (amount > this.subtotal) {
+  //     amount = this.subtotal;
+  //   }
+
+  //   this.discounts.push({
+  //     type: this.typeTab,
+  //     value,
+  //     amount
+  //   });
+
+  //   // reset input
+  //   this.modifyValue = "0";
+  //   this.cashCount = false;
+  // }
+  applyModifyPrice() {
+    const value = Number(this.modifyValue || 0);
+    if (value <= 0) return;
+
+    let amount = 0;
+
+    // ---------- DISCOUNT ----------
+    if (this.paymentTab === "discount") {
+      amount =
+        this.typeTab === "%"
+          ? +((this.subtotal * value) / 100).toFixed(2)
+          : +value.toFixed(2);
+
+      // safety: discount cannot exceed subtotal
+      if (amount > this.subtotal) {
+        amount = this.subtotal;
+      }
+
+      this.discounts.push({
+        type: this.typeTab,
+        value,
+        amount,
+      });
+    }
+
+    // ---------- SURCHARGE ----------
+    if (this.paymentTab === "surcharge") {
+      amount =
+        this.typeTab === "%"
+          ? +((this.subtotal * value) / 100).toFixed(2)
+          : +value.toFixed(2);
+
+      this.surcharges.push({
+        type: this.typeTab,
+        value,
+        amount,
+      });
+    }
+
+    // ---------- RESET ----------
+    this.modifyValue = "0";
+    this.cashCount = false;
   }
 
-  // ---------- RESET ----------
-  this.modifyValue = '0';
-  this.cashCount = false;
-}
-
-
-paymentTab = "discount";
+  paymentTab = "discount";
   typeTab = "%";
   modifyValue = "0";
   // onKey(key: string) {
   //   if (this.modifyValue === "0") this.modifyValue = "";
   //   this.modifyValue += key;
   // }
-onKey(n: string) {
-  if (this.modifyValue === "0") this.modifyValue = "";
-    
-  this.modifyValue += n;
-  if (this.paymentTab === 'discount') {
-    this.calculateDiscount();
+  onKey(n: string) {
+    if (this.modifyValue === "0") this.modifyValue = "";
+
+    this.modifyValue += n;
+    if (this.paymentTab === "discount") {
+      this.calculateDiscount();
+    }
+
+    if (this.paymentTab === "specific") {
+      this.calculateSpecific();
+    }
+    if (this.paymentTab === "surcharge") {
+      this.calculateSurcharge();
+    }
+  }
+  // specificAmount = 0;
+  calculateSpecific() {
+    const value = Number(this.modifyValue || 0);
+
+    this.discountAmount = value;
+
+    if (this.discountAmount < 0) this.discountAmount = 0;
   }
 
-  if (this.paymentTab === 'specific') {
-    this.calculateSpecific();
+  calculateDiscount() {
+    const value = Number(this.modifyValue || 0);
+
+    if (this.typeTab === "%") {
+      this.discountAmount = +((this.subtotal * value) / 100).toFixed(2);
+    } else {
+      this.discountAmount = +value.toFixed(2);
+    }
+
+    // safety
+    if (this.discountAmount > this.subtotal) {
+      this.discountAmount = this.subtotal;
+    }
   }
-    if (this.paymentTab === 'surcharge') {
-    this.calculateSurcharge();
+  calculateSurcharge() {
+    const value = Number(this.modifyValue || 0);
+
+    if (this.typeTab === "%") {
+      this.surchargeAmount = +((this.subtotal * value) / 100).toFixed(2);
+    } else {
+      this.surchargeAmount = +value.toFixed(2);
+    }
+
+    // safety
+    if (this.surchargeAmount > this.subtotal) {
+      this.surchargeAmount = this.subtotal;
+    }
   }
-}
-// specificAmount = 0;
-calculateSpecific() {
-  const value = Number(this.modifyValue || 0);
-
-  this.discountAmount = value;
-
-  if (this.discountAmount < 0) this.discountAmount = 0;
-}
-
-calculateDiscount() {
-  const value = Number(this.modifyValue || 0);
-
-  if (this.typeTab === '%') {
-    this.discountAmount = +(this.subtotal * value / 100).toFixed(2);
-  } else {
-    this.discountAmount = +value.toFixed(2);
+  removeDiscount(index: number) {
+    this.discounts.splice(index, 1);
   }
-
-  // safety
-  if (this.discountAmount > this.subtotal) {
-    this.discountAmount = this.subtotal;
-  }
-}
-calculateSurcharge() {
-  const value = Number(this.modifyValue || 0);
-
-  if (this.typeTab === '%') {
-    this.surchargeAmount = +(this.subtotal * value / 100).toFixed(2);
-  } else {
-    this.surchargeAmount = +value.toFixed(2);
+  removeSurcharge(i: number) {
+    this.surcharges.splice(i, 1);
   }
 
-  // safety
-  if (this.surchargeAmount > this.subtotal) {
-    this.surchargeAmount = this.subtotal;
-  }
-}
-removeDiscount(index: number) {
-  this.discounts.splice(index, 1);
-}
-removeSurcharge(i: number) {
-  this.surcharges.splice(i, 1);
-}
+  get totalDiscount(): number {
+    if (!this.discounts || this.discounts.length === 0) {
+      return 0;
+    }
 
-get totalDiscount(): number {
-  if (!this.discounts || this.discounts.length === 0) {
-    return 0;
+    return this.discounts.reduce(
+      (sum: any, d: { amount: any }) => sum + d.amount,
+      0,
+    );
   }
+  get totalSurcharge(): number {
+    if (!this.surcharges || this.surcharges.length === 0) {
+      return 0;
+    }
 
-  return this.discounts.reduce((sum: any, d: { amount: any; }) => sum + d.amount, 0);
-}
-get totalSurcharge(): number {
-  if (!this.surcharges || this.surcharges.length === 0) {
-    return 0;
+    return (this.surcharges || []).reduce(
+      (s: any, srg: { amount: any }) => s + srg.amount,
+      0,
+    );
   }
 
-  return (this.surcharges || []).reduce((s: any, srg: { amount: any; }) => s + srg.amount, 0);
-}
-
-
-clearValue() {
-  this.modifyValue = '0';
-  // reset amounts
-  this.discountAmount = 0;
-  this.surchargeAmount = 0;
-}
-onTypeChange(type: '$' | '%') {
-  if (this.typeTab !== type) {
-    // reset when switching type
-    this.modifyValue = '0';
+  clearValue() {
+    this.modifyValue = "0";
+    // reset amounts
     this.discountAmount = 0;
-    this.surchargeAmount=0
+    this.surchargeAmount = 0;
+  }
+  onTypeChange(type: "$" | "%") {
+    if (this.typeTab !== type) {
+      // reset when switching type
+      this.modifyValue = "0";
+      this.discountAmount = 0;
+      this.surchargeAmount = 0;
+    }
+
+    this.typeTab = type;
   }
 
-  this.typeTab = type;
+  initCurrentTime() {
+    const now = new Date();
+    this.selectedDate = {
+      year: now.getFullYear(),
+      month: now.getMonth() + 1,
+      day: now.getDate(),
+    };
+
+    const hours = now.getHours();
+    this.isPM = hours >= 12;
+    this.selectedHour = hours % 12 || 12;
+    this.selectedMinute = now.getMinutes();
+
+    this.syncHeader();
+  }
+
+  generateClockArrays() {
+  const hours = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(v => ({ value: v, angle: v * 30 }));
+  const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map(v => ({ 
+    value: v.toString().padStart(2, "0"), 
+    angle: v * 6 
+  }));
+
+  this.hourNumbers = hours;
+  this.minuteNumbers = minutes;
+}
+
+  
+  selectDate(date: any) {
+    this.selectedDate = date;
+    this.showClock = true; 
+    this.setPickingMode("hours");
+    this.syncHeader();
+  }
+
+  setPickingMode(mode: "hours" | "minutes") {
+    this.pickingMode = mode;
+    this.handAngle =
+      mode === "hours"
+        ? (this.selectedHour % 12) * 30
+        : this.selectedMinute * 6;
+  }
+
+  toggleAMPM(pm: boolean) {
+    this.isPM = pm;
+    this.syncHeader();
+  }
+
+syncHeader() {
+  const hr = this.selectedHour.toString().padStart(2, "0");
+  const min = this.selectedMinute.toString().padStart(2, "0");
+  const ampm = this.isPM ? "PM" : "AM";
+  this.currentTime = `${hr}:${min} ${ampm}`;
+
+  if (this.selectedDate) {
+    const formattedDate = `${this.selectedDate.year}-${this.selectedDate.month}-${this.selectedDate.day} ${this.currentTime}`;
+    
+    setTimeout(() => {
+      this.orderForm.get('orderDateTime')?.patchValue(formattedDate, { emitEvent: false });
+      this.validateApplicableDay(formattedDate);
+    });
+  }
 }
 
 
+  startDrag(event: MouseEvent) {
+    event.preventDefault();
+    this.dragging = true;
+    document.addEventListener("mousemove", this.rotateHand);
+    document.addEventListener("mouseup", this.stopDrag);
+  }
+
+  rotateHand = (event: MouseEvent) => {
+    if (!this.dragging) return;
+    const clock = document.querySelector(".clock") as HTMLElement;
+    const rect = clock.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    let angle =
+      (Math.atan2(event.clientY - centerY, event.clientX - centerX) * 180) /
+        Math.PI +
+      90;
+    if (angle < 0) angle += 360;
+
+    if (this.pickingMode === "hours") {
+      this.selectedHour = Math.round(angle / 30) || 12;
+      this.handAngle = (this.selectedHour % 12) * 30;
+    } else {
+      this.selectedMinute = Math.round(angle / 6) % 60;
+      this.handAngle = this.selectedMinute * 6;
+    }
+    this.syncHeader();
+  };
+
+  stopDrag = () => {
+    if (this.dragging && this.pickingMode === "hours") {
+      setTimeout(() => this.setPickingMode("minutes"), 300);
+    }
+    this.dragging = false;
+    document.removeEventListener("mousemove", this.rotateHand);
+    document.removeEventListener("mouseup", this.stopDrag);
+  };
+
+  getMonthName(m: number) {
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    return months[m - 1] || "";
+  }
+
+
+  startTouch(event: TouchEvent) {
+  event.preventDefault();
+  this.dragging = true;
+
+  document.addEventListener("touchmove", this.rotateTouch, { passive: false });
+  document.addEventListener("touchend", this.stopTouch);
+}
+
+
+rotateTouch = (event: TouchEvent) => {
+  if (!this.dragging) return;
+
+  const touch = event.touches[0];
+
+  const clock = document.querySelector(".clock") as HTMLElement;
+  const rect = clock.getBoundingClientRect();
+
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+
+  let angle =
+    (Math.atan2(touch.clientY - centerY, touch.clientX - centerX) * 180) /
+      Math.PI +
+    90;
+
+  if (angle < 0) angle += 360;
+
+  if (this.pickingMode === "hours") {
+    this.selectedHour = Math.round(angle / 30) || 12;
+    this.handAngle = (this.selectedHour % 12) * 30;
+  } else {
+    this.selectedMinute = Math.round(angle / 6) % 60;
+    this.handAngle = this.selectedMinute * 6;
+  }
+
+  this.syncHeader();
+};
+
+stopTouch = () => {
+  if (this.dragging && this.pickingMode === "hours") {
+    setTimeout(() => this.setPickingMode("minutes"), 300);
+  }
+
+  this.dragging = false;
+
+  document.removeEventListener("touchmove", this.rotateTouch);
+  document.removeEventListener("touchend", this.stopTouch);
+};
+  allowOnlyNumbers(event: KeyboardEvent) {
+  const key = event.key;
+
+  if (!/^[0-9]$/.test(key) && key !== "Backspace") {
+    event.preventDefault();
+  }
+}
+  allowOnlyLetters(event: KeyboardEvent) {
+  const char = event.key;
+
+  if (!/^[a-zA-Z ]$/.test(char)) {
+    event.preventDefault();
+  }
+}
+
+//   handleSave() {
+ 
+//   const finalSelection = {
+//     date: this.selectedDate, 
+//     time: this.currentTime,  
+//     timestamp: new Date(
+//       this.selectedDate.year, 
+//       this.selectedDate.month - 1, 
+//       this.selectedDate.day, 
+//       this.isPM ? (this.selectedHour % 12) + 12 : (this.selectedHour % 12), 
+//       this.selectedMinute
+//     )
+//   };
+
+//   console.log(" Final Saved Data:", finalSelection);
+  
+  
+// }
+
+
+closeModal(){
+this.showNewModelPopup=false;
+}
 }

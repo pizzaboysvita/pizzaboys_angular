@@ -22,7 +22,7 @@ interface RowData {
   total_price: string;
   total_quantity: string;
   order_status: string;
-  user_email: string;
+  user_email_id: string;
   profiles: string;
   phone_number: number;
   fullname: string;
@@ -189,7 +189,7 @@ export class PosOrdersComponent {
       tooltipValueGetter: (p: ITooltipParams) => p.value,
     },
     {
-      field: "user_email",
+      field: "user_email_id",
       headerName: "Email-Id",
       suppressMenu: true,
       unSortIcon: true,
@@ -203,7 +203,7 @@ export class PosOrdersComponent {
       unSortIcon: true,
       tooltipValueGetter: (p: ITooltipParams) => p.value,
       valueFormatter: (params) =>
-        this.datePipe.transform(params.value, "dd-MM-yyyy, h:mm a") ?? "",
+        this.datePipe.transform(params.value, "MMM d, yyyy") ?? "",
     },
     {
       field: "order_due",

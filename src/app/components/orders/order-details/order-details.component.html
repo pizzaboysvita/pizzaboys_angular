@@ -55,21 +55,21 @@
           <i class="ri-user-line"></i>
         </div> -->
         <div class="col icon-box">
-          <i class="ri-price-tag-line" (click)="openModifyPrice()"></i>
+          <i class="ri-price-tag-line" data-bs-toggle="tooltip" title="Discount" (click)="openModifyPrice()"></i>
         </div>
         <div class="col icon-box" (click)="openholdModal()">
-          <i class="ri-hand"></i>
+          <i class="ri-hand" data-bs-toggle="tooltip" title="Hold Order"></i>
         </div>
         <div class="col icon-box" (click)="matchingCombos.length > 0 && showComboAlert=true">
           <!-- <i class="ri-shopping-cart-line"></i> -->
            <!-- <i class="ri-stack-line"></i> -->
             <!-- <i class="ri-group-line"></i> -->
-            <i class="ri-stack-line"></i> 
+            <i class="ri-stack-line" data-bs-toggle="tooltip" title="Combo List"></i> 
 
 
       </div>
         <div class="col icon-box" (click)="clearOrderDetails()">
-          <i class="ri-delete-bin-6-line"></i></div>
+          <i class="ri-delete-bin-6-line" data-bs-toggle="tooltip" title="Delete"></i></div>
       </div>
     </div>
 
@@ -394,7 +394,7 @@
   [ngClass]="{ 'show d-block': showNewModelPopup }"
   style="background: rgba(0, 0, 0, 0.5); z-index: 1040"
 >
-  <div class="modal-dialog modal-sm modal-dialog-centered">
+  <div class="modal-dialog modal-md modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Order Type</h5>
@@ -422,12 +422,15 @@
             />
           </div> -->
 <div class="position-relative mb-3 autocomplete-wrapper">
+  <label class="form-label">Search Phone Number</label>
   <input
     type="text"
     class="form-control"
     placeholder="Search Phone Number"
     [formControl]="searchControl"
     autocomplete="off"
+    maxlength="10"
+    (keydown)="allowOnlyNumbers($event)"
   />
 
   <!-- Results -->
@@ -442,7 +445,7 @@
       (click)="selectUser(user)"
       style="cursor: pointer;"
     >
-      <strong>{{ user.first_name }} ({{ user.phone_number }})</strong>
+      <strong>{{ user.user_first_name }} ({{ user.user_phone_number }})</strong>
     </li>
   </ul>
 </div>
@@ -452,9 +455,27 @@
             <input
               type="text"
               class="form-control"
+              placeholder="Name"
               formControlName="name"
+              (keypress)="allowOnlyLetters($event)"
 
             />
+            <div
+    class="text-danger mt-1"
+    *ngIf="orderForm.get('name')?.touched && orderForm.get('name')?.invalid"
+  >
+    <div *ngIf="orderForm.get('name')?.errors?.['required']">
+      Name is required
+    </div>
+
+    <div *ngIf="orderForm.get('name')?.errors?.['minlength']">
+      Name must be at least 3 characters
+    </div>
+
+    <div *ngIf="orderForm.get('name')?.errors?.['pattern']">
+      Only letters allowed
+    </div>
+  </div>
           </div>
 
           <div  class="mb-3">
@@ -462,9 +483,24 @@
             <input
               type="email"
               class="form-control"
+              placeholder="Email"
               formControlName="email"
 
             />
+            <div
+    class="text-danger mt-1"
+    *ngIf="orderForm.get('email')?.touched && orderForm.get('email')?.invalid"
+  >
+
+    <div *ngIf="orderForm.get('email')?.errors?.['required']">
+      Email is required
+    </div>
+
+    <div *ngIf="orderForm.get('email')?.errors?.['email']">
+      Enter a valid email address
+    </div>
+
+  </div>
           </div>
 
           <div  class="mb-3">
@@ -472,8 +508,24 @@
             <input
               type="tel"
               class="form-control"
+              placeholder="Phone"
               formControlName="phone"
+              maxlength="10"
+              (keydown)="allowOnlyNumbers($event)"
             />
+               <div
+    class="text-danger mt-1"
+    *ngIf="orderForm.get('phone')?.touched && orderForm.get('phone')?.invalid"
+  >
+    <div *ngIf="orderForm.get('phone')?.errors?.['required']">
+      Phone number is required
+    </div>
+
+    <div *ngIf="orderForm.get('phone')?.errors?.['pattern']">
+      Enter valid 10 digit phone number
+    </div>
+  </div>
+
           </div>
         <!-- </div>
       </div> -->
@@ -490,6 +542,13 @@
               (input)="getAddressAutocomplete()"
               formControlName="deliveryAddress"
             />
+            <div class="text-danger mt-1"
+ *ngIf="
+ orderForm.get('deliveryAddress')?.touched &&
+ orderForm.get('deliveryAddress')?.errors?.['required']
+ ">
+ Delivery address is required
+</div>
           </div>
 
           <div *ngIf="orderForm.get('deliveryAddress')?.value">
@@ -499,7 +558,16 @@
                 type="text"
                 class="form-control"
                 formControlName="streetNumber"
+                placeholder="Street Number"
               />
+  <div
+    class="text-danger mt-1"
+    *ngIf="orderForm.get('streetNumber')?.touched && orderForm.get('streetNumber')?.invalid"
+  >
+    <div *ngIf="orderForm.get('streetNumber')?.errors?.['required']">
+      Street Number is required
+    </div>
+  </div>
             </div>
 
             <div class="mb-3">
@@ -507,8 +575,17 @@
               <input
                 type="text"
                 class="form-control"
+                placeholder="Unit Number"
                 formControlName="unitNumber"
               />
+               <div
+    class="text-danger mt-1"
+    *ngIf="orderForm.get('unitNumber')?.touched && orderForm.get('unitNumber')?.invalid"
+  >
+    <div *ngIf="orderForm.get('unitNumber')?.errors?.['required']">
+      Unit Number is required
+    </div>
+  </div>
             </div>
 
             <div class="mb-3">
@@ -516,8 +593,18 @@
               <input
                 type="text"
                 class="form-control"
+                placeholder="Delivery Note"
                 formControlName="deliveryNote"
+                
               />
+               <div
+    class="text-danger mt-1"
+    *ngIf="orderForm.get('deliveryNote')?.touched && orderForm.get('deliveryNote')?.invalid"
+  >
+    <div *ngIf="orderForm.get('deliveryNote')?.errors?.['required']">
+      Delivery Note is required
+    </div>
+  </div>
             </div>
 
           </div>
@@ -529,27 +616,119 @@
             </select>
           </div>
 
-          <div class="mb-3" *ngIf="orderForm.value.orderDue == 'Later'">
-            <label class="form-label">Date and Time</label>
-          <input
+         <div class="mb-3" *ngIf="orderForm.value.orderDue == 'Later'">
+  <label class="form-label">Date and Time</label>
+  <!-- <input
             type="datetime-local"
             class="form-control"
             formControlName="orderDateTime"
             (change)="validateApplicableDay($event)"
-          />
+          /> -->
+  
+  <div class="picker-container">
+    <div class="time-header">
+      <div class="date-part">
+        <span class="date fs-5">{{ selectedDate?.day }} {{ getMonthName(selectedDate?.month) }} {{ selectedDate?.year }}</span
+        >
+        
+      </div>
 
-          <div class="text-danger mt-1" *ngIf="dateError">
-            This item is available only on selected days.
+      <div class="time-part fs-5">
+        <span
+          [class.inactive-text]="pickingMode !== 'hours'"
+          (click)="setPickingMode('hours')"
+          class="clickable-unit"
+        >
+          {{ selectedHour | number: "2.0" }}
+        </span>
+        <span class="separator">:</span>
+        <span
+          [class.inactive-text]="pickingMode !== 'minutes'"
+          (click)="setPickingMode('minutes')"
+          class="clickable-unit"
+        >
+          {{ selectedMinute | number: "2.0" }}
+        </span>
+
+        <div class="ampm-group ">
+          <span [class.active-ampm]="!isPM" (click)="toggleAMPM(false)"
+            >AM</span
+          >
+          <span [class.active-ampm]="isPM" (click)="toggleAMPM(true)">PM</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="picker-body">
+      <div *ngIf="!showClock" class="calendar-wrapper">
+        <ngb-datepicker
+          [(ngModel)]="selectedDate"
+          [ngModelOptions]="{standalone:true}"
+          [startDate]="selectedDate"
+          (dateSelect)="selectDate($event)"
+        ></ngb-datepicker>
+      </div>
+
+      <div *ngIf="showClock" class="clock-wrapper">
+        <div class="clock-label">Select {{ pickingMode | titlecase }}</div>
+        <div class="clock">
+          <div class="center-dot"></div>
+         <div style="position: absolute; color: red;">X</div> 
+
+ <div *ngFor="let n of (pickingMode === 'hours' ? hourNumbers : minuteNumbers)"
+        class="clock-num"
+        [style.transform]="'rotate(' + n.angle + 'deg) translateY(-100px) rotate(-' + n.angle + 'deg)'">
+     {{ n.value }}
+   </div>
+          <div
+            class="hand"
+            [style.transform]="'rotate(' + handAngle + 'deg)'"
+            (mousedown)="startDrag($event)"
+            (touchstart)="startTouch($event)"
+          >
+            <div class="hand-circle"></div>
           </div>
-          </div>
+        </div>
+        <button type="button" class="btn btn-link btn-sm mt-2 text-decoration-none text-muted" (click)="showClock = false">
+           Change Date
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="picker-footer p-3 border-top d-flex justify-content-end bg-light">
+    
+      <button type="button" class="btn btn-primary px-4 fw-bold" (click)="handleSave()">
+        Save
+      </button>
+    </div> -->
+
+  <div class="text-danger mt-1" *ngIf="dateError">
+    This item is available only on selected days.
+  </div>
+</div>
+
+<div class="footer-buttons">
           <button
             type="button"
-            class="btn fw-bold text-white"
-            style="background: #f44336; margin-left: 30%"
+            class="btn cancel-btn"
+          
+            (click)="closeModal()"
+          >
+            Cancel
+          </button>
+          
+          <button
+            type="button"
+            class="btn submit-btn"
+          
             (click)="submitDUeOrder()"
           >
             Submit
           </button>
+          
+
+
+          </div>
         </form>
       </div>
     </div>
@@ -576,20 +755,24 @@
 
   <!-- <h6 class="mb-3">Customer Found</h6> -->
 
-  <p><strong>Name:</strong>
-    {{ selectedUser?.first_name }} {{ selectedUser?.last_name }}
-  </p>
+  <p>
+  <strong>Name:</strong>
+  {{ selectedUser?.user_first_name }}
+  <span *ngIf="selectedUser?.last_name">
+    {{ selectedUser?.last_name }}
+  </span>
+</p>
 
   <p><strong>Email:</strong>
-    {{ selectedUser?.email || 'N/A' }}
+    {{ selectedUser?.user_email_id  }}
   </p>
 
   <p><strong>Phone:</strong>
-    {{ selectedUser?.phone_number }}
+    {{ selectedUser?.user_phone_number }}
   </p>
 
   <p><strong>Address:</strong><br>
-    {{ selectedUser?.address_line_1 }}<br>
+    {{ selectedUser?.delivery_address }}<br>
     {{ selectedUser?.city }} {{ selectedUser?.state }} {{ selectedUser?.postcode }}
   </p>
 </div>
@@ -769,13 +952,16 @@
       <!-- Footer -->
 
       <div class="modal-footer justify-content-end border-0 pt-0 pb-3 px-3">
-        <button class="btn hold-cancel" (click)="Openmodal = false">
+        <button class="btn btn-secondary mt-4" (click)="Openmodal = false">
           CANCEL
         </button>
+         
         <!-- <button class="btn hold-proceed" >PROCEED</button> -->
-        <button class="btn fw-bold text-white" (click)="proceedHoldOrder()" style="background: #f44336">
+        <!-- <button class="btn fw-bold text-white" (click)="proceedHoldOrder()" style="background: #f44336">
           PROCEED
-        </button>
+        </button> -->
+         
+        <button type="button" class="btn btn-animation save-button font-family" (click)="proceedHoldOrder()">PROCEED</button>
       </div>
       <hr class="my-0" />
 
@@ -821,12 +1007,12 @@
     <div class="modal-content">
       <!-- TITLE -->
       <div class="modal-header border-bottom pt-3 pb-2">
-        <h5 class="modal-title fw-bold">Modify Price</h5>
+        <h5 class="modal-title text-dark fw-bold">Modify Price</h5>
         <button class="btn-close" (click)="cashCount = false"></button>
       </div>
 
       <!-- TABS -->
-      <div class="modify-tabs d-flex p-2">
+      <div class="modify-tabs d-flex">
         <!-- <button
           class="tab-btn"
           [class.active]="paymentTab === 'specific'"

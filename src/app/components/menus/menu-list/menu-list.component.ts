@@ -198,8 +198,8 @@ this.selectedStoreId=this.loginUser.store_id
   category_dish(category: any) {
     console.log(category, this.totalDishList, 'ttall')
     this.dishList = []
-    this.dishList = this.totalDishList.filter((dish: any) => dish.dish_category_id == category.id && dish.dish_menu_id == category.dish_menu_id)
-    console.log(this.dishList, 'ttall')
+ this.dishList = this.totalDishList.filter((dish: any) => dish.dish_category_id == category?.id && dish.dish_menu_id == category?.dish_menu_id)
+     console.log(this.dishList, 'ttall')
   }
   open(data: any) {
     this.dishList.forEach((item: any) => {

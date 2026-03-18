@@ -169,3 +169,19 @@ h3 {
   opacity: 0.8;
   transform: scale(1.02);
 }
+label[for="fileInput"] {
+  display: inline-block;
+  width: 170px;   // same as image
+  height: 170px;  // same as image
+  cursor: pointer;
+}
+.col-xl-3.d-flex.justify-content-center {
+  flex-wrap: wrap;
+  align-content: flex-start;
+}
+
+.col-xl-3.d-flex.justify-content-center .text-danger {
+  width: 100%;
+  text-align: center;
+  margin-top: 6px;
+}

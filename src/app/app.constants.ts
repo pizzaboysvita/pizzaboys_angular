@@ -16,11 +16,14 @@ export const AppConstants = {
     orderList: "/api/order",
     inventory: "/api/settings/inventory",
     cashflow: "/api/cashflow",
+    promoCode:"/api/promocode",
+   
 
     // ✅ Banner and Media Endpoints
     banner: "/api/banner",
     upload_image: "/api/uploadImage",
     upload_video: "/api/uploadVideo",
-    refund:"/api/order/refund"
+    refund:"/api/order/refund",
+    timeSheet: "/api/timesheet"
   },
 };

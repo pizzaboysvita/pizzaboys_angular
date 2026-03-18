@@ -100,6 +100,7 @@ export class AddStaffComponent {
   rolesList: any;
   rolesId: any;
   file: File;
+  imageError: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -122,7 +123,8 @@ export class AddStaffComponent {
         lastName: ["", [Validators.required,Validators.pattern("^[A-Za-z ]+$")]],
         phone: [
           "",
-          [Validators.required, Validators.pattern(/^\+?\d[\d\s]{7,13}$/)],
+          [Validators.required, Validators.pattern(/^\+?\d[\d\s]{7,13}$/), Validators.minLength(10),
+    Validators.maxLength(10)],
         ],
         email: [
           "",
@@ -328,6 +330,7 @@ console.log(this.file)
   }
      if(!this.file){
          this.toastr.error('Please upload a file', 'Error');
+         this.imageError = true;
      }
       Object.keys(this.staffForm.controls).forEach(key => {
         this.staffForm.get(key)?.markAsTouched();
@@ -388,6 +391,7 @@ console.log(this.file)
       },
     };
     console.log(this.file, req_body);
+    this.imageError = false;
     const formData = new FormData();
     formData.append("image", this.file); // Attach Blob with a filename
     formData.append("body", JSON.stringify(req_body));
@@ -412,6 +416,7 @@ console.log(this.file)
     if (input.files && input.files[0]) {
       console.log(input.files[0]);
       this.file = input.files[0];
+      this.imageError = false;
       console.log();
       const reader = new FileReader();
 

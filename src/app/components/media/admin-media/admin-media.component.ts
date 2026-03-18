@@ -9,11 +9,14 @@ import {
   Validators,
 } from "@angular/forms";
 import { CommonModule } from "@angular/common";
-import { ColDef, GridOptions } from "@ag-grid-community/core";
+import { ColDef, GridOptions, ITooltipParams } from "@ag-grid-community/core";
 import { AddAdminMediaComponent } from "../add-admin-media/add-admin-media.component";
 import { NgSelectModule } from "@ng-select/ng-select";
 import { ApisService } from "../../../shared/services/apis.service";
 import { AppConstants } from "../../../app.constants";
+import Swal from "sweetalert2";
+import { firstValueFrom } from "rxjs";
+import { SessionStorageService } from "../../../shared/services/session-storage.service";
 
 @Component({
   selector: "app-admin-media",
@@ -36,6 +39,7 @@ export class AdminMediaComponent {
   staff_list: any[] = [];
   mediaListBackup: any[] = [];
   selectedItem: any;
+  gridApi: any;
 
   @ViewChild("confirmModal") confirmModal!: any;
 
@@ -52,8 +56,13 @@ export class AdminMediaComponent {
 
   tableConfig: ColDef[] = [
     {
-      headerName: "Store ID",
+      headerName: "Store Name",
       field: "store_id",
+            sortable: true,
+            suppressMenu: true,
+            unSortIcon: true,
+            valueGetter: (params: any) => this.storeNameData(params.data.store_id),
+            tooltipValueGetter: (p: ITooltipParams) => p.value,
     },
     {
       headerName: "Text",
@@ -98,7 +107,8 @@ export class AdminMediaComponent {
   constructor(
     private fb: FormBuilder,
     private modalService: NgbModal,
-    private apis: ApisService
+    private apis: ApisService,private session: SessionStorageService
+    
   ) {}
 
   ngOnInit(): void {
@@ -133,15 +143,17 @@ export class AdminMediaComponent {
     this.apis.getBanners(-1).subscribe({
       next: (res: any) => {
         if (res?.code === "1") {
-          this.staff_list = res.banners.map((banner: any) => ({
+          this.staff_list = res.banners.filter((banner: any) => banner.status === 1)
+            .map((banner: any) => ({     
             id: banner.id,
             store_id: banner.store_id,
             text: banner.banner_text,
-            image: banner.banner_image_url,
-            video: banner.banner_video_url,
+            image: banner?.banner_image_url,
+            video: banner?.banner_video_url,
             status: banner.status,
-            start_date: banner.start_date,
-            end_date: banner.end_date,
+            start_date: banner?.start_date,
+            end_date: banner?.end_date,
+            promo_banner:banner?.promo_banner
           }));
 
           this.mediaListBackup = [...this.staff_list];
@@ -203,6 +215,17 @@ export class AdminMediaComponent {
       this.loadInventory();
     });
   }
+  storeNameData(data: any) {
+    console.log(this.storesList, "storeeeeee namee");
+    const storeName = this.storesList.find(
+      (store: any) => store.store_id == data
+    );
+    console.log(storeName, "storeeeeeeeee nammmme");
+    return storeName ? storeName.store_name : "--";
+  }
+  onGridReady(params: any) {
+  this.gridApi = params.api;
+}
 
   onCellClicked(event: any): void {
     let target = event.event?.target as HTMLElement;
@@ -224,8 +247,25 @@ export class AdminMediaComponent {
     }
   }
 
-  onConfirm(modal: any) {
+  async onConfirm(modal: any) {
+    const payload={
+       type:'Delete',
+        id:  this.selectedItem.id,
+        user_id:JSON.parse(this.session.getsessionStorage("loginDetails") as any).user.user_id,
+    }
     console.log("Delete:", this.selectedItem);
     modal.close();
-  }
-}
+       const res: any = await firstValueFrom(
+            this.apis.saveBanner(payload)
+          );
+    
+    
+          if (res?.code === "1") {
+            Swal.fire("Success!", res.message, "success").then(() => {
+              this.loadInventory();
+            });
+          } else {
+            Swal.fire("Error", res?.message || "Failed", "error");
+          }
+            }
+          }

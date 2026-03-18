@@ -106,14 +106,14 @@
                         <p>Address:</p>
                         <span>{{ orderAddress }}</span>
                     </div>
-                    <div *ngIf="data?.user_name" class="row-info">
-                        <p>Name:</p>
-                        <span>{{ data?.user_name }}</span>
-                    </div>
-                    <div *ngIf="data?.user_email" class="row-info">
-                        <p>E-Mail:</p>
-                        <span>{{ data?.user_email }}</span>
-                    </div>
+                    <div *ngIf="data?.user_first_name" class="row-info">
+  <p>Name:</p>
+  <span>{{ data?.user_first_name }} {{ data?.user_last_name }}</span>
+</div>
+                    <div *ngIf="data?.user_email_id" class="row-info">
+  <p>E-Mail:</p>
+  <span>{{ data?.user_email_id }}</span>
+</div>
                     <div *ngIf="data?.user_phone_number" class="row-info">
                         <p>Phone:</p>
                         <span>{{ data?.user_phone_number }}</span>

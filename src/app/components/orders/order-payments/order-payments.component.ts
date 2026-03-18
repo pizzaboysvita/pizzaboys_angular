@@ -71,6 +71,7 @@ export class OrderPaymentsComponent {
   newPayments: any = [];
   disamount: any;
   surchargeAmt: any;
+  selectedPercent: any;
   constructor(
     public modal: NgbModal,
     private cdr: ChangeDetectorRef,
@@ -208,7 +209,30 @@ this.totalPrice =
     }
     
   }
+get paymentAmountAuto(): number {
+  console.log(this.splitRows,"this.splitRows");
+  
+  switch (this.activeTab) {
+    case 'full':
+      return this.calculateTotalAmount(this.fullArray);
 
+    case 'people':
+      return this.calculateTotalAmount(this.splitRows);
+
+    case 'items':
+      return this.calculateTotalAmount(this.paidItems);
+
+    default:
+      return 0;
+  }
+}
+calculateTotalAmount(array: any[]): number {
+  if (!array || array.length === 0) return 0;
+
+  return array.reduce((sum, item) => {
+    return sum + (item.amount || item.totalPrice || 0);
+  }, 0);
+}
   incSplit() {
     this.splitBy++;
   }
@@ -282,6 +306,8 @@ this.totalPrice =
 
       remaining -= splitAmount;
     }
+    console.log(this.splitRows,"this.splitRows");
+    
     // this.fullArray=this.splitRows
   }
   moveToPay(item: any, index: number) {
@@ -416,6 +442,7 @@ getPayTotal() {
   }
 
   clearAmount() {
+    this.selectedPercent = null;
     this.paymentAmountStr = "";
     if (this.fullArray.length > 0) {
       const totalPaid = this.fullArray?.reduce(
@@ -430,6 +457,7 @@ getPayTotal() {
     }
   }
   setPayment(percent: number) {
+     this.selectedPercent = percent;
     this.percentage = percent;
     this.paymentAmount = (this.remaining * percent) / 100;
     // this.remaining = this.totalPrice - this.paymentAmount;
@@ -484,7 +512,7 @@ getPayTotal() {
     this.paymentAmountStr = "";
 
     this.setDefaultSelectedRowForFull();
-
+    this.selectedPercent=null
     // this.paymentAmount = this.remaining;
     // this.paymentAmountStr = "";
   }

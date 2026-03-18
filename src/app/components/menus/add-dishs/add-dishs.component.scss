@@ -200,3 +200,11 @@
     background: #f60;
     color: #fff;
 }
+.ng-dropdown-panel {
+  max-height: 200px !important;
+  overflow-y: auto;
+   z-index: 9999 !important;
+}
+.modal-body {
+  overflow: visible !important;
+}

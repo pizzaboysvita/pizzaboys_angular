@@ -30,12 +30,22 @@
                             <label for="fileInput" class="position-relative">
                                 <img class="img1" style="width: 180px; border-radius: 12px;"
                                   [src]="uploadImagUrl || 'https://www.w3schools.com/howto/img_avatar.png'" />
-                                <div class="background position-absolute top-0 start-0 w-100 h-100" style="z-index: 1;">
-                                </div>
+                                <div
+                                  class="background position-absolute"
+                                  style="
+                                    top: 0;
+                                    left: 0;
+                                    width: 170px;
+                                    height: 170px;
+                                  "
+                                ></div>
                               </label>
                               <input id="fileInput" type="file" accept="image/*" style="display: none"
                                 (change)="onSelectFile($event)" />
-</div>
+                                <div *ngIf="imageError" class="text-danger text-center mt-2">
+                                    Image is required
+                                </div>
+                              </div>
 
 
                             <!-- Form Fields -->
@@ -46,7 +56,7 @@
                                   <div class="input-box">
                                     <h6 class="f-w-600 p-1">First Name<span class="text-danger">*</span></h6>
                                     <input type="text" formControlName="firstName" placeholder="Enter First Name"
-                                      (input)="capitalizeWords_firstName($event)" (keypress)="allowOnlyAlphabets($event)" />
+                                      (input)="capitalizeWords_firstName($event)" (keypress)="allowOnlyAlphabets($event)" (keydown)="preventLeadingSpace($event)" />
                                     @if (staffForm.get('firstName')?.touched && staffForm.get('firstName')?.invalid) {
                                     <div class="text-danger">First name is required.</div>
                                     }
@@ -62,7 +72,7 @@
                                   <div class="input-box">
                                     <h6 class="f-w-600 p-1">Last Name<span class="text-danger">*</span></h6>
                                     <input type="text" formControlName="lastName" placeholder="Enter Last Name"
-                                      (input)="capitalizeWords_lastName($event)" (keypress)="allowOnlyAlphabets($event)"/>
+                                      (input)="capitalizeWords_lastName($event)" (keypress)="allowOnlyAlphabets($event)"  (keydown)="preventLeadingSpace($event)"/>
                                     @if ((staffForm.get('lastName')?.touched || staffForm.get('lastName')?.dirty) &&
                                     staffForm.get('lastName')?.hasError('pattern')) {
                                     <div class="text-danger">Only alphabets are allowed.</div>
@@ -75,15 +85,28 @@
 
                                 <!-- Phone -->
                                 <div class="col-xl-6">
-                                  <div class="input-box">
-                                    <h6 class="f-w-600 p-1">Phone Number<span class="text-danger">*</span></h6>
-                                    <input type="text" formControlName="phone" mask="(000)-000 0000" placeholder="Enter Phone Number" />
-                                    @if (staffForm.get('phone')?.touched &&
-                                    staffForm.get('phone')?.hasError('required')) {
-                                    <div class="text-danger">Phone Number is required</div>
-                                    }
-                                  </div>
-                                </div>
+  <div class="input-box">
+    <h6 class="f-w-600 p-1">
+      Phone Number<span class="text-danger">*</span>
+    </h6>
+
+    <input
+      type="text"
+      formControlName="phone"
+      mask="(000)-000 0000"
+      placeholder="Enter Phone Number"
+    />
+
+    @if (staffForm.get('phone')?.touched && staffForm.get('phone')?.hasError('required')) {
+      <div class="text-danger">Phone Number is required</div>
+    }
+
+    @if (staffForm.get('phone')?.touched && (staffForm.get('phone')?.hasError('minlength') || staffForm.get('phone')?.hasError('pattern'))) {
+      <div class="text-danger">Valid phone number is required</div>
+    }
+
+  </div>
+</div>
 
                                 <!-- Email -->
                                 <div class="col-xl-6">
@@ -169,7 +192,7 @@
                                 <div class="col-xl-6">
                                   <div class="input-box">
                                     <h6 class="f-w-600 p-1">Country<span class="text-danger">*</span></h6>
-                                    <input type="text" formControlName="country" placeholder="Enter Country" (keydown)="preventLeadingSpace($event)" />
+                                    <input type="text" formControlName="country" placeholder="Enter Country" (keydown)="preventLeadingSpace($event)" (keypress)="allowOnlyAlphabets($event)"/>
                                             @if (staffForm.get('country')?.touched && staffForm.get('country')?.errors?.['required']) {
               <div class="text-danger">Country is required</div>
             }
@@ -180,7 +203,7 @@
                                 <div class="col-xl-6">
                                   <div class="input-box">
                                     <h6 class="f-w-600 p-1">State<span class="text-danger">*</span></h6>
-                                    <input type="text" formControlName="state" placeholder="Enter State"  (keydown)="preventLeadingSpace($event)"/>
+                                    <input type="text" formControlName="state" placeholder="Enter State"  (keydown)="preventLeadingSpace($event)" (keypress)="allowOnlyAlphabets($event)"/>
                                             @if (staffForm.get('state')?.touched && staffForm.get('state')?.errors?.['required']) {
               <div class="text-danger">State is required</div>
             }
@@ -191,7 +214,7 @@
                                 <div class="col-xl-6">
                                   <div class="input-box">
                                     <h6 class="f-w-600 p-1">City<span class="text-danger">*</span></h6>
-                                    <input type="text" formControlName="city" placeholder="Enter City"  (keydown)="preventLeadingSpace($event)"/>
+                                    <input type="text" formControlName="city" placeholder="Enter City"  (keydown)="preventLeadingSpace($event)" (keypress)="allowOnlyAlphabets($event)"/>
                                             @if (staffForm.get('city')?.touched && staffForm.get('city')?.errors?.['required']) {
               <div class="text-danger">City is required</div>
             }

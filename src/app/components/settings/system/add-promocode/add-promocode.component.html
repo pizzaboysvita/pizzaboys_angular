@@ -1,315 +1,398 @@
-<div class="modal-header">
-    <h4 class="modal-title">Create Promo</h4>
-    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('Cross click')"></button>
+<div class="modal-header border-bottom pb-3">
+    <h4 class="modal-title fw-semibold">Create Promo</h4>
+    <button class="btn-close" (click)="activeModal.dismiss()"></button>
 </div>
+
 <div class="modal-body p-4">
     <form>
-        <div class="mb-4">
-            <label for="name" class="form-label fw-bold">Name</label>
-            <input type="text" class="form-control" id="name" name="promo_name" [(ngModel)]="promoCode.promo_name" />
-            <small class="form-text text-muted">A name for your promotion, will be displayed to the customer when
-                checking out</small>
-        </div>
-        <hr class="dotted-divider" />
-        <div class="mb-4">
-            <label for="promoCode" class="form-label fw-bold">Promo Code</label>
-            <input type="text" class="form-control" id="promoCode" name="promo_code"
-                [(ngModel)]="promoCode.promo_code" />
-            <small class="form-text text-muted">The promotional code that your customers must enter to use the
-                promotion. Case-insensitive</small>
-        </div>
-        <hr class="dotted-divider" />
 
+        <!-- STORE -->
+        <div class="form-group mb-4">
+            <label class="fw-bold">Store</label>
+              <ng-select
+        [items]="stores"
+        bindLabel="store_name"
+        bindValue="store_id"
+        placeholder="Select Store"
+      
+        [closeOnSelect]="false"
+        (change)="onStoreChange()"
+        [(ngModel)]="promo.store_id" >
+      </ng-select>
+            <!-- <select class="form-control" [(ngModel)]="promo.store_id" (change)="onStoreChange()" name="store_id">
+                <option [ngValue]="null">Select Store</option>
+                <option *ngFor="let store of stores" [ngValue]="store.store_id">{{ store.store_name }}</option>
+            </select> -->
+        </div>
+
+        <hr class="dotted-divider">
+
+        <!-- NAME -->
         <div class="mb-4">
-            <label class="form-label fw-bold">Fixed Price Discount</label>
+            <label class="fw-bold">Name</label>
+            <input class="form-control" [(ngModel)]="promo.promo_name" name="promo_name">
+            <small class="text-muted">A name for your promotion, will be displayed to the customer when checking
+                out</small>
+        </div>
+
+        <hr class="dotted-divider">
+
+        <!-- PROMO CODE -->
+        <div class="mb-4">
+            <label class="fw-bold">Promo Code</label>
+            <input class="form-control" [(ngModel)]="promo.promo_code" name="promo_code">
+            <small class="text-muted">The promotional code that your customers must enter to use the promotion.
+                Case-insensitive</small>
+        </div>
+
+        <hr class="dotted-divider">
+
+        <!-- FIXED DISCOUNT -->
+        <div class="mb-4">
+            <label class="fw-bold">Fixed Price Discount</label>
             <div class="input-group">
                 <span class="input-group-text">$</span>
-                <input type="number" class="form-control" id="fixed_discount" name="fixed_discount"
-                    [(ngModel)]="promoCode.fixed_discount" />
+                <input type="number" class="form-control" [(ngModel)]="promo.fixed_discount" name="fixed_discount"
+                    placeholder="0.00">
             </div>
-            <small class="form-text text-muted">Enter a fixed value discount that will be applied to the customers
-                cart</small>
+            <small class="text-muted">Enter a fixed value discount that will be applied to the customers cart</small>
         </div>
-        <hr class="dotted-divider" />
 
+        <hr class="dotted-divider">
+
+        <!-- PERCENT DISCOUNT -->
         <div class="mb-4">
-            <label class="form-label fw-bold">Percent Discount</label>
+            <label class="fw-bold">Percent Discount</label>
             <div class="input-group">
-                <input type="number" class="form-control" id="percent_discount" name="percent_discount"
-                    [(ngModel)]="promoCode.percent_discount" />
                 <span class="input-group-text">%</span>
+                <input type="number" class="form-control" [(ngModel)]="promo.percent_discount" name="percent_discount"
+                    placeholder="0">
             </div>
-            <small class="form-text text-muted">Enter a % discount that will be applied to the customers cart</small>
+            <small class="text-muted">Enter a % discount that will be applied to the customers cart</small>
         </div>
-        <hr class="dotted-divider" />
 
-        <div class="mb-4 d-flex flex-column">
-            <div>
-                <label class="form-check-label fw-bold" for="freeDelivery">Free Delivery</label>
-            </div>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="freeDelivery" name="free_delivery"
-                    [(ngModel)]="promoCode.free_delivery" />
-            </div>
-            <small class="text-muted">Enabling this will reduce any delivery fee associated with the order to
-                $0</small>
-        </div>
-        <hr class="dotted-divider" />
+        <hr class="dotted-divider">
 
+        <!-- FREE DELIVERY -->
         <div class="mb-4">
-            <label for="minOrder" class="form-label fw-bold">Minimum Order</label>
+            <label class="fw-bold d-block">Free Delivery</label>
+            <div class="form-check form-switch mt-1">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="promo.free_delivery" name="free_delivery"
+                    id="free_delivery">
+            </div>
+            <small class="text-muted">Enabling this will reduce any delivery fee associated with the order to $0</small>
+        </div>
+
+        <hr class="dotted-divider">
+
+        <!-- MIN ORDER -->
+        <div class="mb-4">
+            <label class="fw-bold">Minimum Order</label>
             <div class="input-group">
                 <span class="input-group-text">$</span>
-                <input type="number" class="form-control" id="minOrder" name="min_order"
-                    [(ngModel)]="promoCode.min_order" />
+                <input type="number" class="form-control" [(ngModel)]="promo.min_order" name="min_order"
+                    placeholder="0.00">
             </div>
-            <small class="form-text text-muted">The minimum value of the customers cart before this promotion can
-                apply, doesn't include other fees</small>
+            <small class="text-muted">The minimum value of the customers cart before this promotion can apply, doesn't
+                include other fees</small>
         </div>
-        <hr class="dotted-divider" />
 
+        <hr class="dotted-divider">
+
+        <!-- MAX ORDER -->
         <div class="mb-4">
-            <label for="maxOrder" class="form-label fw-bold">Maximum Order</label>
+            <label class="fw-bold">Maximum Order</label>
             <div class="input-group">
                 <span class="input-group-text">$</span>
-                <input type="number" class="form-control" id="maxOrder" name="max_order"
-                    [(ngModel)]="promoCode.max_order" />
+                <input type="number" class="form-control" [(ngModel)]="promo.max_order" name="max_order"
+                    placeholder="0.00">
             </div>
-            <small class="form-text text-muted">The maximum value of the customers cart before this cannot be used,
-                doesn't include other fees</small>
+            <small class="text-muted">The maximum value of the customers cart before this cannot be used, doesn't
+                include other fees</small>
         </div>
-        <hr class="dotted-divider" />
 
+        <hr class="dotted-divider">
+
+        <!-- MAX USES -->
         <div class="mb-4">
-            <label for="maxUses" class="form-label fw-bold">Maximum Number Of Uses</label>
-            <input type="number" class="form-control" id="maxUses" name="max_uses" [(ngModel)]="promoCode.max_uses" />
-            <small class="form-text text-muted">The maximum number of times this promotion can be used totally, set 0
-                for unlimited</small>
+            <label class="fw-bold">Maximum Number Of Uses</label>
+            <input type="number" class="form-control" [(ngModel)]="promo.max_uses" name="max_uses" placeholder="0">
+            <small class="text-muted">The maximum number of times this promotion can be used totally, set 0 for
+                unlimited</small>
         </div>
-        <hr class="dotted-divider" />
 
-        <div class="mb-4">
-            <div class="d-flex justify-content-between align-items-center">
-                <label for="services" class="form-label fw-bold">Services</label>
-                <span class="optional-badge">OPTIONAL</span>
-            </div>
-            <input type="text" class="form-control" id="services" name="service_type"
-                [(ngModel)]="promoCode.service_type" placeholder="Select from the dropdown or type to search..." />
-            <small class="form-text text-muted">Select which services this promo will be valid for. Leave empty for it
-                to be valid for all services</small>
-        </div>
-        <hr class="dotted-divider" />
+        <hr class="dotted-divider">
 
+        <!-- SERVICES -->
         <div class="mb-4">
             <div class="d-flex justify-content-between align-items-center">
-                <label for="orderTimes" class="form-label fw-bold">Order Times</label>
-                <span class="optional-badge">OPTIONAL</span>
+                <label class="fw-bold mb-0">Services</label>
+                <span class="optional-badge">REQUIRED</span>
             </div>
-            <input type="text" class="form-control" id="orderTimes" name="order_time" [(ngModel)]="promoCode.order_time"
-                placeholder="Select from the dropdown or type to search..." />
-            <small class="form-text text-muted">Select which order times this promo will be valid for, i.e. orders due
-                immediately or pre-orders. Leave empty for it to be valid at all
-                times</small>
-        </div>
-        <hr class="dotted-divider" />
-
-        <div class="mb-4 d-flex flex-column">
-            <div>
-                <label class="form-check-label fw-bold" for="oncePerCustomer">Once Per Customer</label>
-            </div>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="oncePerCustomer"
-                    name="once_per_customer" [(ngModel)]="promoCode.once_per_customer" />
-            </div>
-            <small class="text-muted">Allows a customer to only redeem this promotion only once. If a
-                customer is not logged in, it resets if their browser cookies are
-                cleared</small>
-        </div>
-        <hr class="dotted-divider" />
-
-        <div class="mb-4 d-flex flex-column">
-            <div>
-                <label class="form-check-label fw-bold" for="loggedInOnly">Logged In Customers Only</label>
-            </div>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="loggedInOnly" name="logged_in_only"
-                    [(ngModel)]="promoCode.logged_in_only" />
-            </div>
-            <small class="text-muted">This promo can only be redeemed by customers who have created an
-                account and logged in</small>
+            <ng-select [items]="serviceOptions" bindLabel="label" bindValue="value" [multiple]="true"
+                placeholder="Select from the dropdown or type to search..." [(ngModel)]="promo.service_type"
+                name="service_type" class="mt-2">
+            </ng-select>
+            <small class="text-muted">Select which services this promo will be valid for. Leave empty for it to be valid
+                for all services</small>
         </div>
 
-        <!-- ✅ Add the toggle button for the date fields here -->
+        <hr class="dotted-divider">
+
+        <!-- ORDER TIMES -->
         <div class="mb-4">
-            <div class="d-flex justify-content-between">
-                <label for="validDates" class="form-label fw-bold">Valid Dates / Times</label>
-                <span class="optional-badge">OPTIONAL</span>
+            <div class="d-flex justify-content-between align-items-center">
+                <label class="fw-bold mb-0">Order Times</label>
+                <span class="optional-badge">REQUIRED</span>
             </div>
-            <button class="btn btn-primary w-25 mb-3" type="button" (click)="toggleDateFields()">
-                <span *ngIf="!showDateFields">Add Date Time Range</span>
-                <span *ngIf="showDateFields">Remove Date Time Range</span>
+            <ng-select [items]="orderTimeOptions" bindLabel="label" bindValue="value" [multiple]="true"
+                placeholder="Select from the dropdown or type to search..." [(ngModel)]="promo.order_time"
+                name="order_time" class="mt-2">
+            </ng-select>
+            <small class="text-muted">Select which order times this promo will be valid for, i.e. orders due immediately
+                or pre-orders. Leave empty for it to be valid at all times</small>
+        </div>
+
+        <hr class="dotted-divider">
+
+        <!-- ONCE PER CUSTOMER -->
+        <div class="mb-4">
+            <label class="fw-bold d-block">Once Per Customer</label>
+            <div class="form-check form-switch mt-1">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="promo.once_per_customer"
+                    name="once_per_customer" id="once_per_customer">
+            </div>
+            <small class="text-muted">Allows a customer to only redeem this promotion only once. If a customer is not
+                logged in, it resets if their browser cookies are cleared</small>
+        </div>
+
+        <hr class="dotted-divider">
+
+        <!-- LOGGED IN ONLY -->
+        <div class="mb-4">
+            <label class="fw-bold d-block">Logged In Customers Only</label>
+            <div class="form-check form-switch mt-1">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="promo.logged_in_only" name="logged_in_only"
+                    id="logged_in_only">
+            </div>
+            <small class="text-muted">This promo can only be redeemed by customers who have created an account and
+                logged in</small>
+        </div>
+
+        <hr class="dotted-divider">
+
+        <!-- DATE RANGE -->
+        <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <label class="fw-bold mb-0">Valid Dates / Times</label>
+                <span class="optional-badge">REQUIRED</span>
+            </div>
+
+            <button class="btn btn-warning mt-1" type="button" (click)="addDateRange()">
+                Add Date Time Range
             </button>
-            <small class="form-text text-muted">Set specific date-time ranges when this promotion can be used. Ignore
+
+            <div *ngIf="dateRanges.length > 0" class="mt-3">
+                <div class="row fw-semibold mb-1 ms-1">
+                    <div class="col-1"></div>
+                    <div class="col-5">Start</div>
+                    <div class="col-5">End</div>
+                    <div class="col-1"></div>
+                </div>
+
+                <div *ngFor="let range of dateRanges; let i = index"
+                    class="d-flex align-items-center gap-2 mb-2 border rounded p-2">
+                    <span class="text-muted small me-1">{{ i + 1 }}</span>
+
+                    <input class="form-control form-control-sm" [(ngModel)]="range.start" [name]="'start_' + i"
+                        placeholder="Click to select" ngbDatepicker #ds="ngbDatepicker" (click)="ds.toggle()" readonly>
+
+                    <input class="form-control form-control-sm" [(ngModel)]="range.end" [name]="'end_' + i"
+                        placeholder="Click to select" ngbDatepicker #de="ngbDatepicker" (click)="de.toggle()" readonly>
+
+                    <button class="btn btn-sm btn-outline-danger border-0" type="button" (click)="removeDateRange(i)"
+                        title="Remove">
+                        <i class="bi bi-dash-circle-fill text-secondary fs-5"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary border-0" type="button"
+                        (click)="duplicateDateRange(i)" title="Duplicate">
+                        <i class="bi bi-copy text-secondary fs-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <small class="text-muted d-block mt-2">Set specific date-time ranges when this promotion can be used. Ignore
                 this if the promotion is valid at all times</small>
         </div>
 
-        <!-- ✅ Un-commented and updated this section with *ngIf -->
-        <div class="mb-4" *ngIf="showDateFields">
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="startDate">Start Date</label>
-                    <div class="input-group">
-                        <input class="form-control" placeholder="yyyy-mm-dd" name="startDate"
-                            [(ngModel)]="startDateModel" ngbDatepicker #d="ngbDatepicker" />
-                        <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button">
-                            <i class="bi bi-calendar"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="startTime">Start Time</label>
-                    <input type="time" class="form-control" name="startTime" [(ngModel)]="startTimeModel" />
-                </div>
-            </div>
+        <hr class="dotted-divider">
 
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="endDate">End Date</label>
-                    <div class="input-group">
-                        <input class="form-control" placeholder="yyyy-mm-dd" name="endDate" [(ngModel)]="endDateModel"
-                            ngbDatepicker #d2="ngbDatepicker" />
-                        <button class="btn btn-outline-secondary calendar" (click)="d2.toggle()" type="button">
-                            <i class="bi bi-calendar"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="endTime">End Time</label>
-                    <input type="time" class="form-control" name="endTime" [(ngModel)]="endTimeModel" />
-                </div>
-            </div>
-        </div>
-
-        <hr class="dotted-divider" />
-
-        <div class="mb-4 d-flex flex-column">
-            <div>
-                <label class="form-check-label fw-bold" for="autoApply">Automatically Apply Promotion</label>
-            </div>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="autoApply" name="auto_apply"
-                    [(ngModel)]="promoCode.auto_apply" />
-            </div>
-            <small class="text-muted">Automatically apply the promotion to a customers order if the above
-                requirements are met</small>
-        </div>
-        <hr class="dotted-divider" />
-
+        <!-- AUTO APPLY -->
         <div class="mb-4">
-            <div class="d-flex justify-content-between align-items-center">
-                <label for="limitDishes" class="form-label fw-bold">Limit To Dishes</label>
+            <label class="fw-bold d-block">Automatically Apply Promotion</label>
+            <div class="form-check form-switch mt-1">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="promo.auto_apply" name="auto_apply"
+                    id="auto_apply">
+            </div>
+            <small class="text-muted">Automatically apply the promotion to a customers order if the above requirements
+                are met</small>
+        </div>
+
+        <hr class="dotted-divider">
+
+        <!-- LIMIT TO DISHES -->
+        <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <label class="fw-bold mb-0">Limit To Dishes</label>
                 <span class="optional-badge">OPTIONAL</span>
             </div>
-            <div class="accordion accordion-flush" id="dishesAccordion">
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingOne">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                            Takeaway Menu
-                        </button>
-                    </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
-                        data-bs-parent="#dishesAccordion">
-                        <div class="accordion-body">
-                            <p>Content for Takeaway Menu...</p>
+
+            <div *ngFor="let menu of limitMenus">
+                <div class="d-flex align-items-center gap-2 fw-bold mt-2 cursor-pointer"
+                    (click)="toggleMenu(menu, 'limit')">
+                    <span>{{ menu.expanded ? '▼' : '▶' }}</span>
+                    <input type="checkbox" class="form-check-input mt-0" [checked]="isMenuAllLimitChecked(menu)"
+                        [indeterminate]="isMenuLimitIndeterminate(menu)"
+                        (change)="toggleAllLimitDishesInMenu(menu, $event)" (click)="$event.stopPropagation()">
+                    <span>{{ menu.menu_name }} (updated 29.09.2025)</span>
+                </div>
+
+                <div *ngIf="menu.expanded">
+                    <div *ngFor="let category of menu.categories" class="ms-3">
+                        <div class="d-flex align-items-center gap-2 fw-semibold mt-1 cursor-pointer"
+                            (click)="toggleCategory(category, 'limit')">
+                            <span>{{ category.expanded ? '▼' : '▶' }}</span>
+                            <input type="checkbox" class="form-check-input mt-0"
+                                [checked]="isCategoryAllLimitChecked(category)"
+                                [indeterminate]="isCategoryLimitIndeterminate(category)"
+                                (change)="toggleAllLimitDishesInCategory(category, $event)"
+                                (click)="$event.stopPropagation()">
+                            <span>{{ category.category_name }}</span>
+                        </div>
+
+                        <div *ngIf="category.expanded">
+                            <div *ngFor="let dish of category.dishes" class="ms-5 d-flex align-items-center gap-2 mt-1">
+                                <input type="checkbox" class="form-check-input mt-0"
+                                    [checked]="promo.limit_dishes.includes(dish.id)"
+                                    (change)="toggleLimitDish(dish.id, $event)">
+                                <span>{{ dish.name }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <small class="form-text text-muted">Use this to limit the promo code to certain dishes. If limited to
-                specific dishes, the percent and fixed discount will be applied
-                separately to every matching dishes</small>
-        </div>
-        <hr class="dotted-divider" />
 
+            <small class="text-muted d-block mt-2">Use this to limit the promo code to certain dishes. If limited to
+                specific dishes, the percent and fixed discount will be applied separately to every matching
+                dishes</small>
+        </div>
+
+        <hr class="dotted-divider">
+
+        <!-- FREE DISHES -->
         <div class="mb-4">
-            <div class="d-flex justify-content-between align-items-center">
-                <label for="freeDishes" class="form-label fw-bold">Free Dishes</label>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <label class="fw-bold mb-0">Free Dishes</label>
                 <span class="optional-badge">OPTIONAL</span>
             </div>
-            <div class="accordion accordion-flush" id="freeDishesAccordion">
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="freeDishesHeading">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#freeDishesCollapse" aria-expanded="false"
-                            aria-controls="freeDishesCollapse">
-                            Takeaway Menu
-                        </button>
-                    </h2>
-                    <div id="freeDishesCollapse" class="accordion-collapse collapse" aria-labelledby="freeDishesHeading"
-                        data-bs-parent="#freeDishesAccordion">
-                        <div class="accordion-body">
-                            <p>Content for Free Dishes Takeaway Menu...</p>
+
+            <div *ngFor="let menu of freeMenus">
+                <div class="d-flex align-items-center gap-2 fw-bold mt-2 cursor-pointer"
+                    (click)="toggleMenu(menu, 'free')">
+                    <span>{{ menu.expanded ? '▼' : '▶' }}</span>
+                    <input type="checkbox" class="form-check-input mt-0" [checked]="isMenuAllFreeChecked(menu)"
+                        [indeterminate]="isMenuFreeIndeterminate(menu)"
+                        (change)="toggleAllFreeDishesInMenu(menu, $event)" (click)="$event.stopPropagation()">
+                    <span>{{ menu.menu_name }} (updated 29.09.2025)</span>
+                </div>
+
+                <div *ngIf="menu.expanded">
+                    <div *ngFor="let category of menu.categories" class="ms-3">
+                        <div class="d-flex align-items-center gap-2 fw-semibold mt-1 cursor-pointer"
+                            (click)="toggleCategory(category, 'free')">
+                            <span>{{ category.expanded ? '▼' : '▶' }}</span>
+                            <input type="checkbox" class="form-check-input mt-0"
+                                [checked]="isCategoryAllFreeChecked(category)"
+                                [indeterminate]="isCategoryFreeIndeterminate(category)"
+                                (change)="toggleAllFreeDishesInCategory(category, $event)"
+                                (click)="$event.stopPropagation()">
+                            <span>{{ category.category_name }}</span>
+                        </div>
+
+                        <div *ngIf="category.expanded">
+                            <div *ngFor="let dish of category.dishes" class="ms-5 d-flex align-items-center gap-2 mt-1">
+                                <input type="checkbox" class="form-check-input mt-0"
+                                    [checked]="promo.free_dishes.includes(dish.id)"
+                                    (change)="toggleFreeDish(dish.id, $event)">
+                                <span>{{ dish.name }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <small class="form-text text-muted">Use this to designate dishes that can be added for free to a customers
-                cart if the promo conditions above are matched</small>
-        </div>
-        <hr class="dotted-divider" />
 
-        <div class="mb-4 d-flex flex-column">
-            <div>
-                <label class="form-check-label fw-bold" for="freeSameDishOnly">Free Same Dish Only</label>
-            </div>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="freeSameDishOnly"
-                    name="free_same_dish_only" [(ngModel)]="promoCode.free_same_dish_only" />
-            </div>
-            <small class="text-muted">If this option is enabled, the free quantity will only be applied if
-                ordering multiple of the same item. For example you could have all your
-                pizzas as part of the free dishes, but a customer would only get a free
-                pizza if they buy 2 of the same type</small>
+            <small class="text-muted d-block mt-2">Use this to designate dishes that can be added for free to a
+                customers cart if the promo conditions above are matched</small>
         </div>
-        <hr class="dotted-divider" />
 
+        <hr class="dotted-divider">
+
+        <!-- FREE SAME DISH ONLY -->
+        <div class="mb-4">
+            <label class="fw-bold d-block">Free Same Dish Only</label>
+            <div class="form-check form-switch mt-1">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="promo.free_same_dish_only"
+                    name="free_same_dish_only" id="free_same_dish_only">
+            </div>
+            <small class="text-muted">If this option is enabled, the free quantity will only be applied if ordering
+                multiple of the same item. For example you could have all your pizzas as part of the free dishes, but a
+                customer would only get a free pizza if they buy 2 of the same type</small>
+        </div>
+
+        <hr class="dotted-divider">
+
+        <!-- FREE QUANTITY -->
         <div class="mb-4">
             <div class="d-flex justify-content-between align-items-center">
-                <label for="freeQuantity" class="form-label fw-bold">Free Quantity</label>
+                <label class="fw-bold mb-0">Free Quantity</label>
                 <span class="optional-badge">OPTIONAL</span>
             </div>
-            <input type="number" class="form-control" id="freeQuantity" name="free_quantity"
-                [(ngModel)]="promoCode.free_quantity" />
-            <small class="form-text text-muted">The maximum quantity of dishes that can be redeemed for free with the
-                above free dishes. Defaults to 1</small>
+            <input type="number" class="form-control mt-2" [(ngModel)]="promo.free_quantity" name="free_quantity">
+            <small class="text-muted">The maximum quantity of dishes that can be redeemed for free with the above free
+                dishes. Defaults to 1</small>
         </div>
-        <hr class="dotted-divider" />
 
+        <hr class="dotted-divider">
+
+        <!-- FREE REQUIRED PURCHASE QUANTITY -->
         <div class="mb-4">
             <div class="d-flex justify-content-between align-items-center">
-                <label for="requiredPurchaseQuantity" class="form-label fw-bold">Free Required Purchase Quantity</label>
+                <label class="fw-bold mb-0">Free Required Purchase Quantity</label>
                 <span class="optional-badge">OPTIONAL</span>
             </div>
-            <input type="number" class="form-control" id="requiredPurchaseQuantity" name="free_required_purchase_qty"
-                [(ngModel)]="promoCode.free_required_purchase_qty" />
-            <small class="form-text text-muted">Will only allow free dishes if this minimum purchase quantity has been
-                met. Defaults to 1</small>
+            <input type="number" class="form-control mt-2" [(ngModel)]="promo.free_required_purchase_qty"
+                name="free_required_purchase_qty">
+            <small class="text-muted">Will only allow free dishes if this minimum purchase quantity has been met.
+                Defaults to 1</small>
         </div>
-        <hr class="dotted-divider" />
 
-        <div class="mb-4 d-flex justify-content-between align-items-center">
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="disablePromotion"
-                    name="disable_promotion" [(ngModel)]="promoCode.disable_promotion" />
-                <label class="form-check-label fw-bold" for="disablePromotion">Disable Promotion</label>
+        <hr class="dotted-divider">
+
+        <!-- DISABLE PROMOTION -->
+        <div class="mb-4">
+            <label class="fw-bold d-block">Disable Promotion</label>
+            <div class="form-check form-switch mt-1">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="promo.disable_promotion"
+                    name="disable_promotion" id="disable_promotion">
             </div>
             <small class="text-muted">Disable the usage of this promo code without deleting it</small>
         </div>
+
+        <hr class="dotted-divider">
+
+        <button type="button" class="btn btn-warning w-100 py-3 fw-semibold" (click)="savePromoCode()">
+            Save
+        </button>
+
     </form>
-</div>
-<div class="modal-footer">
-    <button type="button" class="btn btn-primary w-100" (click)="savePromoCode()">
-        Save
-    </button>
 </div>

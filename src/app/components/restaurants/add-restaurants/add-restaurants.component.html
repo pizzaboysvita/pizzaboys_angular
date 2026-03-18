@@ -96,7 +96,7 @@
         <div class="col-xl-6">
           <div class="input-box">
             <h6 class="f-w-600 p-1">City<span class="text-danger">*</span></h6>
-            <input type="text" formControlName="city" placeholder="Enter City"  (keydown)="preventLeadingSpace($event)" />
+            <input type="text" formControlName="city" placeholder="Enter City"  (keydown)="preventLeadingSpace($event)" (keypress)="allowOnlyAlphabets($event)" />
               @if (storeForm.get('city')?.touched && storeForm.get('city')?.errors?.['required']) {
               <div class="text-danger">City is required</div>
             }
@@ -106,7 +106,7 @@
         <div class="col-xl-6">
           <div class="input-box">
             <h6 class="f-w-600 p-1">State<span class="text-danger">*</span></h6>
-            <input type="text" formControlName="state" placeholder="Enter State"  (keydown)="preventLeadingSpace($event)"/>
+            <input type="text" formControlName="state" placeholder="Enter State"  (keydown)="preventLeadingSpace($event)" (keypress)="allowOnlyAlphabets($event)"/>
               @if (storeForm.get('state')?.touched && storeForm.get('state')?.errors?.['required']) {
               <div class="text-danger">State is required</div>
             }
@@ -116,8 +116,8 @@
         <div class="col-xl-6">
           <div class="input-box">
             <h6 class="f-w-600 p-1">Postal Code<span class="text-danger">*</span></h6>
-            <input type="text" formControlName="postalCode" maxlength="10" (keypress)="allowOnlyNumbers($event)"  placeholder="Enter Postal Code" />
-              @if (storeForm.get('postalCode')?.touched && storeForm.get('postalCode')?.errors?.['required']) {
+            <input type="text" formControlName="zip_code" maxlength="10" (keypress)="allowOnlyNumbers($event)"  placeholder="Enter Postal Code" />
+              @if (storeForm.get('zip_code')?.touched && storeForm.get('zip_code')?.errors?.['required']) {
               <div class="text-danger">Postal Code is required</div>
             }
           </div>
@@ -126,7 +126,7 @@
         <div class="col-xl-6">
           <div class="input-box">
             <h6 class="f-w-600 p-1">Country<span class="text-danger">*</span></h6>
-            <input type="text" formControlName="country" placeholder="Enter Country" (keydown)="preventLeadingSpace($event)"/>
+            <input type="text" formControlName="country" placeholder="Enter Country" (keydown)="preventLeadingSpace($event)" (keypress)="allowOnlyAlphabets($event)"/>
                 @if (storeForm.get('country')?.touched && storeForm.get('country')?.errors?.['required']) {
               <div class="text-danger">Country is required</div>
             }
@@ -164,7 +164,7 @@
         </div>
         <div class="col-12">
           <div class="input-box">
-            <h6 class="font-family">Upload Images </h6>
+            <h6 class="font-family">Upload Images <span class="text-danger">*</span> </h6>
             <!-- <span class="choose-img-box font-family" > -->
             
                <input autocomplete="off" formControlName="image" id="fileInput" type="file" accept="image/*" (change)="onSelectFile($event)"

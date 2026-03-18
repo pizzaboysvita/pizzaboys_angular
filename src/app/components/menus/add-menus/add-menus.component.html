@@ -113,7 +113,7 @@
             [columnDefs]="columnDefs"
             [rowData]="menuItemsList"
             [domLayout]="'autoHeight'"
-            [suppressColumnVirtualisation]="true"[pagination]="true" [paginationPageSize]="15"
+            [suppressColumnVirtualisation]="true"[pagination]="true" [paginationPageSize]="10" [paginationPageSizeSelector]="[10, 20, 50, 100]"
             [defaultColDef]="{ flex: 1, minWidth: 170, sortable: true }"
             (cellClicked)="onCellClicked($event)"
           >

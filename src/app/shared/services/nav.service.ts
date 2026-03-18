@@ -277,14 +277,7 @@ export class NavService {
       type: "link",
       active: false,
     },
-     {
-      level: 1,
-      title: "Settings",
-      path: "/settings",
-      icon: "ri-settings-2-line",
-      type: "link",
-      active: false,
-    },
+   
     {
       level: 1,
       title: "Inventory",
@@ -297,7 +290,15 @@ export class NavService {
       level: 1,
       title: "Media",
       path: "/media/admin-media",
-      icon: "ri-store-3-line",
+      icon: "ri-gallery-line",
+      type: "link",
+      active: false,
+    },
+    {
+      level: 1,
+      title:"Timesheet",
+      path: "/timesheet/view-timesheet",
+      icon: "ri-truck-line",
       type: "link",
       active: false,
     },
@@ -308,7 +309,15 @@ export class NavService {
       icon: "ri-truck-line",
       type: "link",
       active: false,
-    }
+    },
+      {
+      level: 1,
+      title: "Settings",
+      path: "/settings",
+      icon: "ri-settings-2-line",
+      type: "link",
+      active: false,
+    },
     
     // {
     //   level: 1,

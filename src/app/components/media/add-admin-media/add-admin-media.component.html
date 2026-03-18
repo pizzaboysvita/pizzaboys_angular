@@ -8,107 +8,150 @@
 <div class="modal-body">
   <form [formGroup]="addMediaForm">
 
-    <!-- MEDIA HEADER ROW -->
-    <div class="media-header-row mb-4">
-
-      <!-- Store ID -->
-      <div class="media-cell">
-        <h6 class="fw-bold">Store ID *</h6>
-        <ng-select [items]="storesList" bindLabel="store_name" bindValue="store_id" placeholder="Select Store"
-          formControlName="store_id">
-        </ng-select>
-        <div *ngIf="f['store_id'].touched && f['store_id'].invalid" class="text-danger">
-          Store ID is required
-        </div>
-      </div>
-      <br>
-      <!-- Text -->
-      <div class="media-cell">
-        <h6 class="fw-bold">Text *</h6>
-        <input type="text" class="form-control" placeholder="Enter Text" formControlName="text" />
-        <div *ngIf="f['text'].touched && f['text'].invalid" class="text-danger">
-          Text is required
-        </div>
-      </div>
-      <br>
-      <!-- Image Banner -->
-      <div class="media-cell">
-        <h6 class="fw-bold">Image Banner *</h6>
-        <input type="file" class="form-control" accept=".webp,.jpg,.jpeg,.png" (change)="onImageSelect($event)" />
-        <div *ngIf="f['image'].touched && f['image'].invalid" class="text-danger">
-          Image is required
-        </div>
-      </div>
-      <!-- Image Preview (Edit Mode) -->
-      <div *ngIf="type === 'Edit' && editData?.image && !selectedImageFile" style="margin-top:10px;">
-        <img [src]="editData.image" style="width:150px;height:100px;border-radius:6px;" />
-      </div>
-
-      <br>
-      <!-- Video -->
-      <div class="media-cell">
-        <h6 class="fw-bold">Video</h6>
-        <input type="file" class="form-control" (change)="onVideoSelect($event)" />
-        <div *ngIf="f['video'].touched && f['video'].invalid" class="text-danger">
-          Video is required
-        </div>
-      </div>
-      <!-- Video Preview (Edit Mode) -->
-      <div *ngIf="type === 'Edit' && editData?.video && !selectedVideoFile" style="margin-top:10px;">
-        <video width="200" height="100" controls>
-          <source [src]="editData.video" type="video/mp4">
-        </video> 
-      </div>
-
-
-    </div>
-
+    <!-- STORE MULTI SELECT -->
     <div class="media-cell">
-      <h6 class="fw-bold">Start Date *</h6>
-      <input type="datetime-local" class="form-control" formControlName="start_date" />
-      <div *ngIf="f['start_date'].touched && f['start_date'].invalid" class="text-danger">
-        Start Date is required
+      <h6 class="fw-bold">Store <span class="text-danger">*</span></h6>
+
+      <!-- <ng-select
+        [items]="storesList"
+        bindLabel="store_name"
+        bindValue="store_id"
+        placeholder="Select Store"
+        formControlName="store_id"
+        [multiple]="true"
+        [closeOnSelect]="false">
+      </ng-select> -->
+      <ng-select [items]="storesList" bindLabel="store_name" bindValue="store_id" formControlName="store_id" 
+                   placeholder="Select Store" [clearable]="true" [searchable]="false">
+                  </ng-select>
+
+      <div *ngIf="f['store_id'].touched && f['store_id'].invalid" class="text-danger">
+        Store is required
       </div>
     </div>
 
     <br>
 
+    <!-- BANNER TYPE -->
     <div class="media-cell">
-      <h6 class="fw-bold">End Date *</h6>
-      <input type="datetime-local" class="form-control" formControlName="end_date" />
-      <div *ngIf="f['end_date'].touched && f['end_date'].invalid" class="text-danger">
-        End Date is required
+      <h6 class="fw-bold">Banner Type <span class="text-danger">*</span></h6>
+      <ng-select
+        [items]="bannerTypes"
+        bindLabel="label"
+        bindValue="value"
+        formControlName="banner_type"
+        [clearable]="false">
+      </ng-select>
+    </div>
+
+    <br>
+
+    <!-- TEXT -->
+    <div class="media-cell">
+      <h6 class="fw-bold">Text <span class="text-danger">*</span></h6>
+      <input type="text" class="form-control" formControlName="text" />
+      <div *ngIf="f['text'].touched && f['text'].invalid" class="text-danger">
+        Text is required
       </div>
     </div>
 
+    <br>
 
-
-    <!-- STATUS -->
-    <!-- <div class="col-xl-6">
-      <div class="input-box">
-        <h6 class="f-w-600 p-1">Status</h6>
-        <label class="switch">
-          <input type="checkbox" formControlName="status" />
-          <span class="slider round"></span>
-        </label>
+    <!-- IMAGE -->
+    <div class="media-cell">
+      <h6 class="fw-bold">Promo Banner </h6>
+      <input type="file"
+             class="form-control"
+             accept=".webp,.jpg,.jpeg,.png"
+             (change)="onPromoImageSelect($event)" />
+      <div *ngIf="f['promoBanner'].touched && f['promoBanner'].invalid" class="text-danger">
+        Image is required
       </div>
-    </div> -->
+    </div>
+
+    <div *ngIf="editData?.promo_banner && !selectedpromoImageFile" class="mt-2">
+      <img [src]="editData.promo_banner"
+           style="width:150px;height:100px;border-radius:6px;" />
+    </div>
+
+    <br>
+    <!-- IMAGE -->
+    <div class="media-cell">
+      <h6 class="fw-bold">Image <span class="text-danger">*</span></h6>
+      <input type="file"
+             class="form-control"
+             accept=".webp,.jpg,.jpeg,.png"
+             (change)="onImageSelect($event)" />
+      <div *ngIf="f['image'].touched && f['image'].invalid" class="text-danger">
+        Image is required
+      </div>
+    </div>
+
+    <div *ngIf="editData?.image && !selectedImageFile" class="mt-2">
+      <img [src]="editData.image"
+           style="width:150px;height:100px;border-radius:6px;" />
+    </div>
+
+    <br>
+
+    <!-- VIDEO -->
+    <div class="media-cell">
+      <h6 class="fw-bold">Video</h6>
+      <input type="file"
+             class="form-control"
+             accept="video/mp4"
+             (change)="onVideoSelect($event)" />
+    </div>
+
+    <div *ngIf="editData?.video && !selectedVideoFile" class="mt-2">
+      <video width="200" height="100" controls>
+        <source [src]="editData.video" type="video/mp4">
+      </video>
+    </div>
+
+    <br>
+
+    <!-- TIMEBASED -->
+    <div *ngIf="addMediaForm.get('banner_type')?.value === 'timebased'">
+
+      <div class="media-cell">
+        <h6 class="fw-bold">Start Date *</h6>
+        <input type="datetime-local"
+               class="form-control"
+               formControlName="start_date" />
+        <div *ngIf="f['start_date'].touched && f['start_date'].invalid" class="text-danger">
+          Start Date is required
+        </div>
+      </div>
+
+      <br>
+
+      <div class="media-cell">
+        <h6 class="fw-bold">End Date *</h6>
+        <input type="datetime-local"
+               class="form-control"
+               formControlName="end_date" />
+        <div *ngIf="f['end_date'].touched && f['end_date'].invalid" class="text-danger">
+          End Date is required
+        </div>
+      </div>
+
+    </div>
 
   </form>
 </div>
 
-
-<div class="modal-footer align-items-center ">
-  <button type="button" class="btn btn-secondary action-btn" (click)="cancel()">
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="cancel()">
     Cancel
   </button>
 
-  @if (this.type != 'View') {
-  <button type="button" class="btn btn-animation save-button action-btn font-family" [disabled]="isSubmitting"
-    (click)="save()">
+  <button type="button"
+          class="btn btn-primary"
+          [disabled]="isSubmitting"
+          (click)="save()">
     {{ isSubmitting
-    ? (type === 'Edit' ? 'Updating...' : 'Saving...')
-    : (type === 'Edit' ? 'Update' : 'Save') }}
+        ? (editData ? 'Updating...' : 'Saving...')
+        : (editData ? 'Update' : 'Save') }}
   </button>
-  }
 </div>

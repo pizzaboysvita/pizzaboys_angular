@@ -16,6 +16,9 @@ import {
   FormsModule,
   ReactiveFormsModule,
 } from "@angular/forms";
+import * as ExcelJS from "exceljs";
+import { DatePipe } from "@angular/common";
+import FileSaver from "file-saver";
 
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 interface RowData {
@@ -41,6 +44,7 @@ interface RowData {
   ],
   templateUrl: "./category.component.html",
   styleUrl: "./category.component.scss",
+   providers: [DatePipe]
 })
 export class CategoryComponent implements OnInit {
   @ViewChild("confirmModal") confirmModalRef!: TemplateRef<any>;
@@ -64,7 +68,8 @@ statusList = [
       sortable: true,
       suppressMenu: true,
       unSortIcon: true,
-      tooltipField: "store_id",
+     tooltipValueGetter: (params: any) =>
+      this.storeNameData(params.data.store_id),
       valueGetter: (params: any) => this.storeNameData(params.data.store_id),
     },
     {
@@ -73,7 +78,8 @@ statusList = [
       sortable: true,
       suppressMenu: true,
       unSortIcon: true,
-      tooltipField: "dish_menu_id",
+       tooltipValueGetter:(params: any)=>
+      this.menuNameData(params.data.dish_menu_id),
       valueGetter: (params: any) => this.menuNameData(params.data.dish_menu_id),
     },
     {
@@ -85,7 +91,7 @@ statusList = [
     },
     {
       field: "display_name",
-      headerName: "Dispaly Name",
+      headerName: "Display Name",
       suppressMenu: true,
       unSortIcon: true,
       tooltipField: "display_name",
@@ -287,7 +293,8 @@ delete
     public modal: NgbModal,
     private apiService: ApisService,
     private sessionStorage: SessionStorageService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+     private datePipe: DatePipe,
   ) {}
 
   ngOnInit(): void {
@@ -584,6 +591,66 @@ this.fetchCategories();
       }
     );
   }
+  downloadCategoryExcel(): void {
+  if (!this.rowData || this.rowData.length === 0) {
+    console.warn("No category data to export.");
+    return;
+  }
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Category List");
+
+  // Define columns manually (BEST PRACTICE)
+  worksheet.columns = [
+    { header: "Store Name", key: "store_id", width: 25 },
+    { header: "Menu Type", key: "dish_menu_id", width: 25 },
+    { header: "Category Name", key: "name", width: 25 },
+    { header: "Display Name", key: "display_name", width: 25 },
+    { header: "Status", key: "status", width: 15 },
+    { header: "POS", key: "hide_category_in_POS", width: 20 },
+    { header: "Web", key: "is_online_hide", width: 20 },
+  ];
+
+  // Style header
+  worksheet.getRow(1).eachCell((cell: any) => {
+    cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+    cell.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "FF1F4E78" },
+    };
+  });
+
+  // Add rows
+  this.rowData.forEach((category: any) => {
+    worksheet.addRow({
+      store_id: this.storeNameData(category.store_id),
+      dish_menu_id: this.menuNameData(category.dish_menu_id),
+      name: category.name ?? "",
+      display_name: category.display_name ?? "",
+      status: category.status ?? "",
+      hide_category_in_POS:
+        category.hide_category_in_POS == 1
+          ? "Hide in POS"
+          : "Show in POS",
+      is_online_hide:
+        category.is_online_hide == 1
+          ? "Hide in Web"
+          : "Show in Web",
+    });
+  });
+
+  workbook.xlsx.writeBuffer().then((data: any) => {
+    const blob = new Blob([data], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const formattedDate = this.datePipe.transform(new Date(), "dd MMM yyyy");
+
+    FileSaver.saveAs(blob, `Category List ${formattedDate}.xlsx`);
+  });
+}
+
 
   onConfirm() {
     console.log(this.categoryRowData);

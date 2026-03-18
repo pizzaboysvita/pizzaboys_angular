@@ -25,7 +25,7 @@
                       <div
                         class="d-flex align-items-center justify-content-between mb-1"
                       >
-                        <h6>Name</h6>
+                        <h6>Name <span class="text-danger">*</span></h6>
                         <span class="optional-tag optional-label"
                           >Required</span
                         >
@@ -72,6 +72,10 @@
                     <span class="lableSubtext mb-2"
                       >Enter a description that will be shown in your menu</span
                     >
+                    
+                      <small class="text-muted">
+                       {{ menuForm.get('description')?.value?.length || 0 }} / 150 characters
+                      </small>
                   </div>
 
                   <div class="col-12">
@@ -98,7 +102,7 @@
                   </div>
                   <div class="col-12">
                     <div class="input-box">
-                      <h6 class="mb-2">Upload Images</h6>
+                      <h6 class="mb-2">Upload Images<span class="text-danger">*</span></h6>
 
                       <!-- Preview Section -->
                       @if(previewUrl !== null || previewUrlNew){
@@ -153,7 +157,7 @@
                       <div
                         class="d-flex align-items-center justify-content-between mb-2"
                       >
-                        <h6>Store</h6>
+                        <h6>Store <span class="text-danger">*</span></h6>
                         <span class="optional-tag optional-label"
                           >Required</span
                         >
@@ -568,7 +572,9 @@
       <button class="btn btn-cancel" type="button" (click)="modal.dismissAll()">
         Cancel
       </button>
-      <button class="btn btn-submit" (click)="addCategory()">Save</button>
+      <button class="btn btn-submit" type="submit" (click)="addCategory()">
+  {{ type === 'Edit' ? 'Update' : 'Add' }}
+</button>
     </div>
     }
   </div>

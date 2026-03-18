@@ -42,7 +42,7 @@ export class OrderDialogComponent {
     { id: "Un-Confirmed", name: "Un-Confirmed" },
     { id: "Confirmed", name: "Confirmed" },
     { id: "Ready", name: "Ready" },
-    { id: "Completed", name: "Completed" },
+    { id: "Delivered", name: "Completed" },
   ];
 
   action = [
@@ -448,14 +448,14 @@ setFullRefund() {
     this.refundForm.patchValue({ refundType: "FULL" });
   console.log(data);
   this.refundData=data
-  this.discountAmount = Number(this.refundData.discount_amount || 0);
-  this.discountPercentage=Number(this.refundData.discount_percentage  || 0);
-  this.paidAmount = Number(this.refundData.payment_amount);
+  this.discountAmount = Number(this.refundData?.discount_amount || 0);
+  this.discountPercentage=Number(this.refundData?.discount_percentage  || 0);
+  this.paidAmount = Number(this.refundData?.payment_amount);
   this.refundItems = [];
  const items = JSON.parse(this.refundData.order_items || '[]');
   items.forEach((item: any) => {
     this.refundItems.push({
-      dish_id: item.id,
+      dish_id: item.dish_id,
       dish_name: item.dish_name,
       price: Number(item.price),
       quantity: item.quantity,
@@ -535,6 +535,7 @@ setFullRefund() {
   //     .map((item: { order_details_id: any; price: any; }) => `${item.order_details_id},${item.price}`)
   //     .join('|');
   // }
+
 let itemsToProcess = [];
 if (refundType === 'FULL') {
   // Send ALL items

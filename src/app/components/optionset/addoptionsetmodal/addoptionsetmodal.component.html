@@ -20,7 +20,7 @@
                     <div class="input-box">
 
                       <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h6> Name</h6>
+                        <h6> Name <span class="text-danger">*</span></h6>
                         <span class="optional-tag">Required</span>
                       </div>
                       <input type="text" placeholder="Enter Name" formControlName="name">
@@ -61,7 +61,7 @@
                   <div class="col-12">
                     <div class="input-box">
                       <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h6> Option Set Type*</h6>
+                        <h6> Option Set Type<span class="text-danger">*</span></h6>
                         <span class="optional-tag">Required</span>
                       </div>
                       <ng-select [items]="optType" bindLabel="name" bindValue="value" [searchable]="false"
@@ -151,7 +151,7 @@
               <br>
 
               <ag-grid-angular class="ag-theme-alpine" [rowData]="rowData" [stopEditingWhenCellsLoseFocus]="true"
-                [columnDefs]="columnDefs" (cellValueChanged)="onCellValueChanged($event)"
+                [columnDefs]="columnDefs" (cellValueChanged)="onCellValueChanged($event)"  (cellClicked)="onCellClicked($event)"
                 [defaultColDef]="defaultColDef" [domLayout]="'autoHeight'" (gridReady)="onGridReady($event)">
               </ag-grid-angular>
 
@@ -249,7 +249,7 @@
     <div class="col-12">
                     <div class="input-box">
                        <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h6>Store Type</h6>
+                        <h6>Store Type <span class="text-danger">*</span></h6>
                         <span class="optional-tag">Required</span>
                       </div>
                       <ng-select [items]="storesList" [searchable]="true" [multiple]="false" bindLabel="store_name"
@@ -419,7 +419,9 @@
   @if(type != 'View'){
   <div class="modal-footer">
     <button class="btn btn-cancel" type="button" (click)="modal.dismissAll()">Cancel</button>
-    <button class="btn btn-submit" type="submit" (click)="saveMenu()">Save</button>
+    <button class="btn btn-submit" type="submit" (click)="saveMenu()">
+  {{ type === 'Edit' ? 'Update' : 'Add' }}
+</button>
   </div>
   }
 </div>

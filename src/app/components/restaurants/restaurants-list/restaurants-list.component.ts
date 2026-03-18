@@ -46,7 +46,7 @@ export class RestaurantsListComponent {
   constructor(private router: Router, private apis: ApisService, private fb: FormBuilder, private datePipe: DatePipe, private modalService: NgbModal, private session: SessionStorageService) { }
   modules = [ClientSideRowModelModule];
 
-  stausList = ['Active', 'In-Active']
+  stausList = ['Active','Pending', 'In-Active']
   columnDefs: ColDef<RowData>[] = [
     {
       field: 'store_name', headerName: 'Store Name', sortable: true,
@@ -170,7 +170,13 @@ delete
     this.apis.getApi(AppConstants.api_end_points.store_list).subscribe((data: any) => {
       console.log(data)
       data.forEach((element: any) => {
-        element.status = element.status == 1 ? 'Active' : element.status == 0 ? 'Inactive' : element.status
+        element.status =element.status == 1
+    ? "Active"
+    : element.status == 0
+      ? "Inactive"
+      : element.status == 2
+        ? "Pending"
+        : "";
       })
       this.storeList = data.reverse()
       this.storeListSorting = data.reverse()
@@ -268,7 +274,7 @@ delete
       { header: 'Phone Number', key: 'phone', width: 15 },
       { header: 'Store Address', key: 'street_address', width: 30 },
       { header: 'Created Date', key: 'created_on', width: 20 },
-      { header: 'Status', key: 'Status', width: 12 },
+      { header: 'Status', key: 'status', width: 12 },
     ];
 
     worksheet.columns = headers;
@@ -290,7 +296,7 @@ delete
         phone: store.phone || '',
         street_address: store.street_address || '',
         created_on: store.created_on || '',
-        Status: store.Status || '',
+        status: store.status ||'',
       });
     });
 

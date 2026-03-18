@@ -13,12 +13,12 @@
 <!-- user-name-hide -->
 <div class="media profile-media align-items-center">
   <div class="media-body ms-2">
-<!-- {{userDetails.store_name}} -->
-     @if(userDetails.store_name){
- <span class="store-name d-block" >
-      Store Name: {{ userDetails?.store_name  }}
-    </span>
-     }
+    <!-- {{userDetails.store_name}} -->
+    @if (userDetails.store_name) {
+      <span class="store-name d-block">
+        Store Name: {{ userDetails?.store_name }}
+      </span>
+    }
     <!--  User Name -->
     <span class="user-name d-block">
       User Name: {{ userDetails?.first_name }} {{ userDetails?.last_name }}
@@ -26,12 +26,17 @@
 
     <!-- Role -->
     <p class="role mb-0">
-      Role: {{
+      Role:
+      {{
         userDetails?.role_id == 1
-          ? 'Admin'
+          ? "Admin"
           : userDetails?.role_id == 3
-          ? 'POS'
-          : 'Manager'
+            ? "POS"
+            : userDetails?.role_id == 2
+              ? "Manager"
+              : userDetails?.role_id == 4
+                ? "User"
+                : "Unknown"
       }}
       <i class="ri-arrow-down-s-line align-middle ms-1"></i>
     </p>
@@ -45,19 +50,19 @@
   />
 </div>
 <ul class="profile-dropdown onhover-show-div">
-    <li>
-        <a [routerLink]="['/users/all-users']">
-            <app-feather-icons [icons]="'users'"></app-feather-icons>
-            <span>Profile</span>
-        </a>
-    </li>
-    <!-- <li>
+  <li>
+    <a [routerLink]="['/users/all-users']">
+      <app-feather-icons [icons]="'users'"></app-feather-icons>
+      <span>Profile</span>
+    </a>
+  </li>
+  <!-- <li>
         <a [routerLink]="['/orders/order-list']">
             <app-feather-icons [icons]="'archive'"></app-feather-icons>
             <span>Orders</span>
         </a>
     </li> -->
-    <!-- <li>
+  <!-- <li>
         <a [routerLink]="['/support-ticket']">
             <app-feather-icons [icons]="'phone'"></app-feather-icons>
             <span>Spports Tickets</span>
@@ -69,10 +74,10 @@
             <span>Settings</span>
         </a>
     </li> -->
-    <li>
-        <a (click)="logOut()">
-            <app-feather-icons [icons]="'log-out'"></app-feather-icons>
-            <span>Log out</span>
-        </a>
-    </li>
+  <li>
+    <a (click)="logOut()">
+      <app-feather-icons [icons]="'log-out'"></app-feather-icons>
+      <span>Log out</span>
+    </a>
+  </li>
 </ul>

@@ -1,6 +1,7 @@
 <div class="promo-codes-container p-3">
   <p class="text-muted">
-    Promo codes can be entered by your customers during checkout to receive a discount
+    Promo codes can be entered by your customers during checkout to receive a
+    discount
   </p>
   <button
     class="btn btn-primary btn-lg create-promo-btn"
@@ -9,3 +10,56 @@
     Create Promo Code
   </button>
 </div>
+
+<div class="form-group mb-4">
+  <label class="fw-bold">Store</label>
+  <ng-select
+    [items]="stores"
+    bindLabel="store_name"
+    bindValue="store_id"
+    placeholder="Select Store"
+    [multiple]="true"
+    [closeOnSelect]="false"
+    (change)="onStoreChange()"
+    name="store_id"
+    [(ngModel)]="promo.store_id"
+  >
+  </ng-select>
+</div>
+
+<div class="row">
+  <div class="col-12 mb-2" *ngFor="let promo of promoCodes">
+    <div class="promo-row d-flex justify-content-between align-items-center">
+      <div class="promo-info">
+        <span class="promo-name"
+          ><i class="ri-coupon-3-fill"></i> {{ promo.promo_name }}</span
+        >
+        <!-- <span class="promo-code">{{ promo.promo_code }}</span> -->
+      </div>
+
+      <div class="promo-actions">
+        <i class="ri-pencil-line edit-icon" (click)="editPromo(promo,'Edit')"></i>
+
+        <i
+          class="ri-delete-bin-line delete-icon"
+          (click)="deletePromo(promo)"
+        ></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #confirmModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Delete Promo</h5>
+  </div>
+
+  <div class="modal-body">
+    Are you sure you want to delete this promo code?
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
+    <button class="btn btn-danger" (click)="onConfirm()">Delete</button>
+  </div>
+</ng-template>
