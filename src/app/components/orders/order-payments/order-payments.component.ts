@@ -306,6 +306,7 @@ calculateTotalAmount(array: any[]): number {
 
       remaining -= splitAmount;
     }
+    console.log(this.splitRows,"this.splitRows");
     
     // this.fullArray=this.splitRows
   }
