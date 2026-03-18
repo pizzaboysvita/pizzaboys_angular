@@ -542,7 +542,9 @@ export class OrderDetailsComponent implements OnInit, AfterViewInit {
     this.cartItems = this.cartItems.filter(
       (cartItem: any) => cartItem.unique_key !== item.unique_key,
     );
-
+ if(this.cartItems.length === 0){
+          this.discounts = [];
+      }
     // Rebuild totalCartDetails for UI
     this.rebuildCartView();
 
