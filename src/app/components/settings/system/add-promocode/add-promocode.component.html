@@ -204,20 +204,26 @@
                     class="d-flex align-items-center gap-2 mb-2 border rounded p-2">
                     <span class="text-muted small me-1">{{ i + 1 }}</span>
 
-                    <input class="form-control form-control-sm" [(ngModel)]="range.start" [name]="'start_' + i"
-                        placeholder="Click to select" ngbDatepicker #ds="ngbDatepicker" (click)="ds.toggle()" readonly>
+                   
+    <input class="form-control form-control-sm" [(ngModel)]="range.startDate"
+        [name]="'startDate_' + i" placeholder="Select date" ngbDatepicker #ds="ngbDatepicker" (click)="ds.toggle()" readonly>
 
-                    <input class="form-control form-control-sm" [(ngModel)]="range.end" [name]="'end_' + i"
-                        placeholder="Click to select" ngbDatepicker #de="ngbDatepicker" (click)="de.toggle()" readonly>
+   
+    <input type="time" class="form-control form-control-sm" [(ngModel)]="range.startTime"
+        [name]="'startTime_' + i">
 
-                    <button class="btn btn-sm btn-outline-danger border-0" type="button" (click)="removeDateRange(i)"
-                        title="Remove">
-                        <i class="bi bi-dash-circle-fill text-secondary fs-5"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-secondary border-0" type="button"
-                        (click)="duplicateDateRange(i)" title="Duplicate">
-                        <i class="bi bi-copy text-secondary fs-5"></i>
-                    </button>
+    <input class="form-control form-control-sm" [(ngModel)]="range.endDate"
+        [name]="'endDate_' + i" placeholder="Select date" ngbDatepicker #de="ngbDatepicker" (click)="de.toggle()" readonly>
+
+    <input type="time" class="form-control form-control-sm" [(ngModel)]="range.endTime"
+        [name]="'endTime_' + i">
+
+    <button class="btn btn-sm btn-outline-danger border-0" type="button" (click)="removeDateRange(i)" title="Remove">
+        <i class="bi bi-dash-circle-fill text-secondary fs-5"></i>
+    </button>
+    <button class="btn btn-sm btn-outline-secondary border-0" type="button" (click)="duplicateDateRange(i)" title="Duplicate">
+        <i class="bi bi-copy text-secondary fs-5"></i>
+    </button>
                 </div>
             </div>
 

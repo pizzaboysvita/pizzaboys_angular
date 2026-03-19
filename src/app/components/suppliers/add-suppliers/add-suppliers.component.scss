@@ -1,3 +1,17 @@
+.modal-container {
+  width: 100%;
+  max-width: 900px;
+  margin: auto;
+}
+.modal-body {
+  // max-height: 70vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+::ng-deep .modal-dialog {
+  max-width: 900px;
+  width: 95%;
+}
 .modal-footer {
   padding: 20px 24px;
   border-top: 1px solid #eee;

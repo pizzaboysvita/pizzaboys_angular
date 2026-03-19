@@ -32,7 +32,7 @@ export class AddPromocodeComponent implements OnInit {
   freeMenus: any[] = [];
   reqbody: any
 
-  dateRanges: DateRange[] = [];
+ dateRanges: { startDate?: any, startTime?: string, endDate?: any, endTime?: string }[] = [];
 
   serviceOptions = [
     { label: "Delivery", value: "delivery" },
@@ -107,30 +107,39 @@ export class AddPromocodeComponent implements OnInit {
         ? this.myData.order_time.split(",")
         : [],
 
-      // limit_dishes: this.myData.limit_dishes
-      //   ? JSON.parse(this.myData.limit_dishes)
-      //   : [],
+      limit_dishes: this.myData.limit_dishes
+        ? JSON.parse(this.myData.limit_dishes)
+        : [],
 
-      // free_dishes: this.myData.free_dishes
-      //   ? JSON.parse(this.myData.free_dishes)
-      //   : [],
+      free_dishes: this.myData.free_dishes
+        ? JSON.parse(this.myData.free_dishes)
+        : [],
 
-      // free_delivery: this.myData.free_delivery === 1,
-      // once_per_customer: this.myData.once_per_customer === 1,
-      // logged_in_only: this.myData.logged_in_only === 1,
-      // auto_apply: this.myData.auto_apply === 1,
-      // free_same_dish_only: this.myData.free_same_dish_only === 1,
-      // disable_promotion: this.myData.disable_promotion === 1
+      free_delivery: this.myData.free_delivery === 1,
+      once_per_customer: this.myData.once_per_customer === 1,
+      logged_in_only: this.myData.logged_in_only === 1,
+      auto_apply: this.myData.auto_apply === 1,
+      free_same_dish_only: this.myData.free_same_dish_only === 1,
+      disable_promotion: this.myData.disable_promotion === 1
     };
 
     
 
-    if (this.myData.start_datetime && this.myData.end_datetime) {
-      this.dateRanges = [{
-        start: this.isoToNgbDate(this.myData.start_datetime),
-        end: this.isoToNgbDate(this.myData.end_datetime)
-      }];
-    }
+   if (this.myData.start_datetime && this.myData.end_datetime) {
+
+  const start = new Date(this.myData.start_datetime);
+  const end = new Date(this.myData.end_datetime);
+
+  this.dateRanges = [{
+    startDate: this.isoToNgbDate(this.myData.start_datetime),
+    endDate: this.isoToNgbDate(this.myData.end_datetime),
+
+    
+    startTime: this.formatTime(start),
+    endTime: this.formatTime(end)
+  }];
+}
+
 
     this.onStoreChange();
   }
@@ -144,6 +153,11 @@ export class AddPromocodeComponent implements OnInit {
       this.stores = res;
     });
   }
+  formatTime(date: Date): string {
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${hours}:${minutes}`;  
+}
 private isoToNgbDate(dateStr: string): NgbDateStruct {
   const d = new Date(dateStr);
   return {
@@ -362,7 +376,7 @@ private isoToNgbDate(dateStr: string): NgbDateStruct {
   /* ---------------- DATE RANGES ---------------- */
 
   addDateRange() {
-    this.dateRanges.push({ start: null, end: null });
+    this.dateRanges.push({ startDate: null, endDate: null });
   }
 
   removeDateRange(index: number) {
@@ -437,18 +451,44 @@ private isoToNgbDate(dateStr: string): NgbDateStruct {
 //     },
 //   });
 // }
+combineDateTime(range: any, type: 'start' | 'end'): string | null {
+  if (!range) return null;
+
+  const date = type === 'start' ? range.startDate : range.endDate;
+  const time = type === 'start' ? range.startTime : range.endTime;
+
+  if (!date || !time) return null;
+
+  
+  const [hours, minutes] = time.split(':').map(Number);
+  const dt = new Date(date.year, date.month - 1, date.day, hours, minutes);
+
+  const yyyy = dt.getFullYear();
+  const mm = String(dt.getMonth() + 1).padStart(2,'0');
+  const dd = String(dt.getDate()).padStart(2,'0');
+  const hh = String(dt.getHours()).padStart(2,'0');
+  const min = String(dt.getMinutes()).padStart(2,'0');
+  const ss = String(dt.getSeconds()).padStart(2,'0');
+
+  return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}`;
+}
 savePromoCode() {
 
-  const start_datetime =
-    this.dateRanges.length > 0
-      ? this.ngbDateToISO(this.dateRanges[0].start)
-      : null;
+ const start_datetime = this.dateRanges.length > 0
+  ? this.combineDateTime(this.dateRanges[0], 'start')
+  : null;
 
-  const end_datetime =
-    this.dateRanges.length > 0
-      ? this.ngbDateToISO(this.dateRanges[0].end)
-      : null;
+const end_datetime = this.dateRanges.length > 0
+  ? this.combineDateTime(this.dateRanges[0], 'end')
+  : null;
 
+console.log('Start:', start_datetime, 'End:', end_datetime);
+if (this.myData?.start_datetime) {
+  console.log(
+    "Start Time:",
+    this.formatTime(new Date(this.myData.start_datetime))
+  );
+}
   const limitDishes = Array.isArray(this.promo.limit_dishes)
     ? this.promo.limit_dishes
     : this.promo.limit_dishes
