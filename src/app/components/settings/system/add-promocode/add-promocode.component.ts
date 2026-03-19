@@ -375,9 +375,15 @@ private isoToNgbDate(dateStr: string): NgbDateStruct {
 
   /* ---------------- DATE RANGES ---------------- */
 
-  addDateRange() {
-    this.dateRanges.push({ startDate: null, endDate: null });
-  }
+ addDateRange() {
+  this.dateRanges.push({
+    startDate: null,
+    startTime: '',
+    endDate: null,
+    endTime: ''
+  });
+}
+
 
   removeDateRange(index: number) {
     this.dateRanges.splice(index, 1);
@@ -392,6 +398,87 @@ private isoToNgbDate(dateStr: string): NgbDateStruct {
     if (!date) return null;
     return new Date(date.year, date.month - 1, date.day).toISOString();
   }
+  validateDateRange(range: any): boolean {
+  if (!range.startDate || !range.endDate || !range.startTime || !range.endTime) {
+    return true; 
+  }
+
+  const start = new Date(
+    range.startDate.year,
+    range.startDate.month - 1,
+    range.startDate.day
+  );
+
+  const end = new Date(
+    range.endDate.year,
+    range.endDate.month - 1,
+    range.endDate.day
+  );
+
+ 
+  const [sh, sm] = range.startTime.split(':').map(Number);
+  const [eh, em] = range.endTime.split(':').map(Number);
+
+  start.setHours(sh, sm);
+  end.setHours(eh, em);
+
+  return end >= start;
+}
+onEndDateChange(range: any) {
+  if (!range.startDate || !range.endDate) return;
+
+ 
+  if (this.isBefore(range.endDate, range.startDate)) {
+    range.endDate = range.startDate;
+  }
+}
+onStartTimeChange(range: any) {
+  if (!range.startDate || !range.endDate) return;
+
+  if (this.isSameDate(range.startDate, range.endDate)) {
+    if (range.endTime) {
+      const start = this.convertToMinutes(range.startTime);
+      const end = this.convertToMinutes(range.endTime);
+
+      if (end <= start) {
+        range.endTime = ''; 
+      }
+    }
+  }
+}
+
+onEndTimeChange(range: any) {
+  if (!range.startDate || !range.endDate) return;
+
+  if (this.isSameDate(range.startDate, range.endDate)) {
+    const start = this.convertToMinutes(range.startTime);
+    const end = this.convertToMinutes(range.endTime);
+
+    if (end <= start) {
+      range.endTime = ''; 
+    }
+  }
+}
+isSameDate(d1: any, d2: any): boolean {
+  return d1.year === d2.year &&
+         d1.month === d2.month &&
+         d1.day === d2.day;
+}
+convertToMinutes(time: string): number {
+  if (!time) return 0;
+
+  const [hours, minutes] = time.split(':').map(Number);
+  return hours * 60 + minutes;
+}
+
+isBefore(d1: any, d2: any): boolean {
+  if (!d1 || !d2) return false;
+
+  const date1 = new Date(d1.year, d1.month - 1, d1.day);
+  const date2 = new Date(d2.year, d2.month - 1, d2.day);
+
+  return date1 < date2;
+}
 
   /* ---------------- SAVE PROMO ---------------- */
 

@@ -13,11 +13,12 @@ import { ApisService } from "../../../shared/services/apis.service";
 import { AppConstants } from "../../../app.constants";
 import Swal from "sweetalert2";
 import { Router } from "@angular/router";
+import { NgSelectModule } from "@ng-select/ng-select";
 
 @Component({
   selector: "app-add-supplier",
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, NgSelectModule],
   templateUrl: "./add-suppliers.component.html",
   styleUrls: ["./add-suppliers.component.scss"],
 })
@@ -27,6 +28,8 @@ export class AddSuppliersComponent implements OnInit {
 
   addSupplierForm!: FormGroup;
   isSubmitting = false;
+  rowData: any;
+  storesList: any;
 
   constructor(
     private fb: FormBuilder,
@@ -46,24 +49,34 @@ export class AddSuppliersComponent implements OnInit {
       ],
       address: ["", Validators.required],
       status: [1, Validators.required],
-      // items: this.fb.array([]),
+      items: this.fb.array([]),
       office_number: ["", Validators.required],
       contact_person: ["", Validators.required],
       gst_number: ["", Validators.required],
       notes: ["", Validators.required],
     });
 
-   if (this.type === "Edit" || this.type === "View") {
-    this.patchEditData();
-  }
+    this.loadInventory();
+    this.storeList();
 
-  if (this.type === "View") {
-    this.addSupplierForm.disable();
-  }
+    if (this.type === "Edit" || this.type === "View") {
+      this.patchEditData();
+    }
 
-  if (this.type === "Add") {
-    this.addItem();
-  }
+    if (this.type === "Add") {
+      this.addItem();
+    }
+
+   if (this.type === "View") {
+  this.addSupplierForm.disable({ emitEvent: false });
+
+ 
+  this.items.controls.forEach((group: any) => {
+    group.enable({ emitEvent: false }); 
+    group.get('quantity')?.disable();
+    group.get('units')?.disable();
+  });
+}
   }
 
   get f() {
@@ -74,19 +87,48 @@ export class AddSuppliersComponent implements OnInit {
     return this.addSupplierForm.get("items") as FormArray;
   }
 
+  loadInventory(): void {
+    this.apis.getApi(AppConstants.api_end_points.inventory).subscribe({
+      next: (res: any) => {
+        this.rowData = res.data || res;
+        console.log("Inventory loaded:", this.rowData);
+      },
+      error: (err) => {
+        console.error("Error loading inventory:", err);
+        Swal.fire("Error", "Failed to load inventory", "error");
+      },
+    });
+  }
+  storeList() {
+    this.apis
+      .getApi(AppConstants.api_end_points.store_list)
+      .subscribe((data) => {
+        if (data) {
+          this.storesList = data;
+          console.log("Store list loaded:", this.storesList);
+        }
+      });
+  }
+  onItemChange(selected: any, index: number) {
+    if (!selected) return;
+
+    const itemGroup = this.items.at(index);
+
+    itemGroup.patchValue({
+      item_id: selected.item_id,
+      store_id: selected.store_id,
+      quantity: Number(selected.quantity) || 0,
+      units: selected.unit || "",
+       price: selected.price || 0
+    });
+  }
   createItem(): FormGroup {
     return this.fb.group({
-      item_name: ["", Validators.required],
-      quantity: [null, [Validators.required, Validators.min(1)]],
-      date: [
-        "",
-        [
-          Validators.required,
-          Validators.pattern(
-            /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/,
-          ),
-        ],
-      ],
+      store_id: ["", Validators.required],
+      item_id: ["", Validators.required],
+      quantity: [{ value: 0, disabled: true }, Validators.required],
+      units: [{ value: "", disabled: true }, Validators.required],
+      price: ["", [Validators.required, Validators.min(0)]],
     });
   }
 
@@ -98,39 +140,45 @@ export class AddSuppliersComponent implements OnInit {
     this.items.removeAt(index);
   }
 
-patchEditData(): void {
-  if (!this.editData) return;
+  patchEditData(): void {
+    if (!this.editData) return;
 
-  console.log("Edit Data:", this.editData); 
+    const { items, ...supplier } = this.editData;
 
-  const { items, ...supplier } = this.editData;
-
-  
-  this.addSupplierForm.patchValue({
-    supplier_name: supplier.supplier_name,
-    email_id: supplier.email_id,
-    phone_number: supplier.phone_number,
-    address: supplier.address,
-    status: supplier.status,
-    office_number: supplier.office_number,
-    contact_person: supplier.contact_person,
-    gst_number: supplier.gst_number,
-    notes: supplier.notes,
-  });
-
-  
-  if (items && Array.isArray(items)) {
-    items.forEach((item: any) => {
-      this.items.push(
-        this.fb.group({
-          item_name: [item.item_name, Validators.required],
-          quantity: [item.quantity, [Validators.required, Validators.min(1)]],
-          date: [item.date, Validators.required],
-        })
-      );
+    
+    this.addSupplierForm.patchValue({
+      supplier_name: supplier.supplier_name,
+      email_id: supplier.email_id,
+      phone_number: supplier.phone_number,
+      address: supplier.address,
+      status: supplier.status,
+      office_number: supplier.office_number,
+      contact_person: supplier.contact_person,
+      gst_number: supplier.gst_number,
+      notes: supplier.notes,
     });
+
+    
+    this.items.clear();
+
+    if (items && items.length > 0) {
+      items.forEach((item: any) => {
+        const group = this.createItem();
+
+        group.patchValue({
+          store_id: item.store_id,
+          item_id: item.item_id,
+          quantity: item.quantity,
+          units: item.units,
+         price: Number(item.price) || 0
+        });
+
+        this.items.push(group);
+      });
+    } else {
+      this.addItem();
+    }
   }
-}
 
   formatDate(event: any, index: number): void {
     let value = event.target.value.replace(/\D/g, "");
@@ -140,72 +188,66 @@ patchEditData(): void {
     this.items.at(index).get("date")?.setValue(value, { emitEvent: false });
   }
 
-save(): void {
-  if (this.addSupplierForm.invalid) {
-    this.addSupplierForm.markAllAsTouched();
-    return;
-  }
+  save(): void {
+    if (this.addSupplierForm.invalid) {
+      this.addSupplierForm.markAllAsTouched();
+      return;
+    }
 
-  const formValue = this.addSupplierForm.value;
-  let req_body: any;
+    const formValue = this.addSupplierForm.getRawValue();
+    const firstItem = formValue.items?.[0];
 
-  
-  if (this.type === "Edit") {
-    req_body = {
-      action: "UPDATE",
-      supplier_id: this.editData?.supplier_id,
-      supplier_name: formValue.supplier_name,
-      office_number: formValue.office_number,
-      contact_person: formValue.contact_person,
-      phone_number: formValue.phone_number,
-      email_id: formValue.email_id,
-      address: formValue.address,
-      gst_number: formValue.gst_number,
+    if (!firstItem) {
+      Swal.fire("Error", "Please select an item", "error");
+      return;
+    }
+
+    const req_body: any = {
+      action: this.type === "Edit" ? "UPDATE" : "INSERT",
+      supplier_id: this.type === "Edit" ? this.editData?.supplier_id : null,
+      supplier_name: formValue.supplier_name?.trim(),
+      office_number: formValue.office_number?.trim(),
+      contact_person: formValue.contact_person?.trim(),
+      phone_number: formValue.phone_number?.trim(),
+      email_id: formValue.email_id?.trim(),
+      address: formValue.address?.trim(),
+      gst_number: formValue.gst_number?.trim(),
       status: formValue.status ? 1 : 0,
-      notes: formValue.notes,
-      created_by: null,
-      updated_by: 1,
+      notes: formValue.notes?.trim(),
+
+      store_id: firstItem.store_id,
+      item_id: firstItem.item_id,
+      quantity: firstItem.quantity,
+      units: firstItem.units,
+      price: firstItem.price,
+
+      created_by: this.type === "Add" ? 1001 : null,
+      updated_by: this.type === "Edit" ? 1001 : null,
     };
-  } else {
-    req_body = {
-      action: "INSERT",
-      supplier_id: null,
-      supplier_name: formValue.supplier_name,
-      office_number: formValue.office_number,
-      contact_person: formValue.contact_person,
-      phone_number: formValue.phone_number,
-      email_id: formValue.email_id,
-      address: formValue.address,
-      gst_number: formValue.gst_number,
-      status: formValue.status ? 1 : 0,
-      notes: formValue.notes,
-      created_by: 1,
-      updated_by: null,
-    };
+
+    console.log("Request Body:", req_body);
+    console.log("GST number", formValue.gst_number);
+
+    this.isSubmitting = true;
+
+    this.apis
+      .postApi(AppConstants.api_end_points.suppliers, req_body)
+      .subscribe({
+        next: (data: any) => {
+          if (data.code == 1) {
+            Swal.fire("Success!", data.message, "success").then(() => {
+              this.activeModal.close(true);
+            });
+          }
+        },
+        error: () => {
+          this.isSubmitting = false;
+        },
+        complete: () => {
+          this.isSubmitting = false;
+        },
+      });
   }
-
-  console.log(req_body);
- 
-
-  this.isSubmitting = true;
-
-  this.apis.postApi(AppConstants.api_end_points.suppliers, req_body)
-    .subscribe({
-      next: (data: any) => {
-        if (data.code == 1) {
-          Swal.fire("Success!", data.message, "success").then(() => {
-            this.activeModal.close(true);
-          });
-        }
-      },
-      error: () => {
-        this.isSubmitting = false;
-      },
-      complete: () => {
-        this.isSubmitting = false;
-      },
-    });
-}
   cancel(): void {
     this.activeModal.dismiss("cancel");
   }

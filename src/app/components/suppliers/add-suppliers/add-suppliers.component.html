@@ -1,324 +1,350 @@
 <div class="modal-container">
-<div class="modal-header">
-  <h5 class="modal-title fw-bold text-dark">
-  {{
-    type === 'Add' ? 'Add Supplier' :
-    type === 'Edit' ? 'Edit Supplier' :
-    'View Supplier'
-  }}
-</h5>
-  <button
-    type="button"
-    class="btn-close"
-    (click)="activeModal.dismiss()"
-  ></button>
-</div>
+  <div class="modal-header">
+    <h5 class="modal-title fw-bold text-dark">
+      {{
+        type === "Add"
+          ? "Add Supplier"
+          : type === "Edit"
+            ? "Edit Supplier"
+            : "View Supplier"
+      }}
+    </h5>
+    <button
+      type="button"
+      class="btn-close"
+      (click)="activeModal.dismiss()"
+    ></button>
+  </div>
 
-<div class="modal-body">
-  <form [formGroup]="addSupplierForm">
-    <div class="row g-3">
-      <div class="col-md-6">
-        <h6 class="fw-bold p-1">Name <span class="text-danger">*</span></h6>
-        <input
-          class="form-control"
-          placeholder="Enter Name"
-          formControlName="supplier_name"
-          [class.is-invalid]="f['supplier_name'].touched && f['supplier_name'].invalid"
-        />
-        <div *ngIf="f['supplier_name'].touched && f['supplier_name'].invalid" class="text-danger">
-          Name is required
+  <div class="modal-body">
+    <form [formGroup]="addSupplierForm">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <h6 class="fw-bold p-1">Name <span class="text-danger">*</span></h6>
+          <input
+            class="form-control"
+            placeholder="Enter Name"
+            formControlName="supplier_name"
+            [class.is-invalid]="
+              f['supplier_name'].touched && f['supplier_name'].invalid
+            "
+          />
+          <div
+            *ngIf="f['supplier_name'].touched && f['supplier_name'].invalid"
+            class="text-danger"
+          >
+            Name is required
+          </div>
         </div>
-      </div>
-      <div class="col-md-6">
-        <h6 class="fw-bold p-1">Email <span class="text-danger">*</span></h6>
-        <input
-          type="email"
-          class="form-control"
-          placeholder="Enter Email"
-          formControlName="email_id"
-          [class.is-invalid]="f['email_id'].touched && f['email_id'].invalid"
-        />
-        <div
-          *ngIf="f['email_id'].touched && f['email_id'].errors?.['required']"
-          class="text-danger"
-        >
-          Email is required
-        </div>
+        <div class="col-md-6">
+          <h6 class="fw-bold p-1">Email <span class="text-danger">*</span></h6>
+          <input
+            type="email"
+            class="form-control"
+            placeholder="Enter Email"
+            formControlName="email_id"
+            [class.is-invalid]="f['email_id'].touched && f['email_id'].invalid"
+          />
+          <div
+            *ngIf="f['email_id'].touched && f['email_id'].errors?.['required']"
+            class="text-danger"
+          >
+            Email is required
+          </div>
 
-        <div
-          *ngIf="f['email_id'].touched && f['email_id'].errors?.['email_id']"
-          class="text-danger"
-        >
-          Invalid Email
-        </div>
-      </div>
-
-      <div class="col-md-6">
-        <h6 class="fw-bold p-1">Phone <span class="text-danger">*</span></h6>
-        <input
-          class="form-control"
-          placeholder="Enter Phone"
-          formControlName="phone_number"
-          [class.is-invalid]="f['phone_number'].touched && f['phone_number'].invalid"
-        />
-        <div
-          *ngIf="f['phone_number'].touched && f['phone_number'].errors?.['required']"
-          class="text-danger"
-        >
-          Phone Number is required
+          <div
+            *ngIf="f['email_id'].touched && f['email_id'].errors?.['email_id']"
+            class="text-danger"
+          >
+            Invalid Email
+          </div>
         </div>
 
-        <div
-          *ngIf="f['phone_number'].touched && f['phone_number'].errors?.['pattern']"
-          class="text-danger"
-        >
-          Enter valid 10 digit phone
-        </div>
-      </div>
-       <div class="col-md-6">
-        <h6 class="fw-bold p-1">Conatct Person <span class="text-danger">*</span></h6>
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Enter Contact Person Name"
-          formControlName="contact_person"
-          [class.is-invalid]="f['contact_person'].touched && f['contact_person'].invalid"
-        />
-        <div
-          *ngIf="f['contact_person'].touched && f['contact_person'].errors?.['required']"
-          class="text-danger"
-        >
-          Contact Person Name is required
-        </div>
+        <div class="col-md-6">
+          <h6 class="fw-bold p-1">Phone <span class="text-danger">*</span></h6>
+          <input
+            class="form-control"
+            placeholder="Enter Phone"
+            formControlName="phone_number"
+            [class.is-invalid]="
+              f['phone_number'].touched && f['phone_number'].invalid
+            "
+          />
+          <div
+            *ngIf="
+              f['phone_number'].touched &&
+              f['phone_number'].errors?.['required']
+            "
+            class="text-danger"
+          >
+            Phone Number is required
+          </div>
 
-        <!-- <div
+          <div
+            *ngIf="
+              f['phone_number'].touched && f['phone_number'].errors?.['pattern']
+            "
+            class="text-danger"
+          >
+            Enter valid 10 digit phone
+          </div>
+        </div>
+        <div class="col-md-6">
+          <h6 class="fw-bold p-1">
+            Conatct Person <span class="text-danger">*</span>
+          </h6>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Enter Contact Person Name"
+            formControlName="contact_person"
+            [class.is-invalid]="
+              f['contact_person'].touched && f['contact_person'].invalid
+            "
+          />
+          <div
+            *ngIf="
+              f['contact_person'].touched &&
+              f['contact_person'].errors?.['required']
+            "
+            class="text-danger"
+          >
+            Contact Person Name is required
+          </div>
+
+          <!-- <div
           *ngIf="f['email'].touched && f['email'].errors?.['email']"
           class="text-danger"
         >
           Invalid Email
         </div> -->
-      </div>
-      <div class="col-md-6">
-        <h6 class="fw-bold p-1">Office Number <span class="text-danger">*</span></h6>
-        <input
-          class="form-control"
-          placeholder="Enter Office Phone Number"
-          formControlName="office_number"
-          [class.is-invalid]="f['office_number'].touched && f['office_number'].invalid"
-        />
-        <div
-          *ngIf="f['office_number'].touched && f['office_number'].errors?.['required']"
-          class="text-danger"
-        >
-          Office Phone Number is required
         </div>
+        <div class="col-md-6">
+          <h6 class="fw-bold p-1">
+            Office Number <span class="text-danger">*</span>
+          </h6>
+          <input
+            class="form-control"
+            placeholder="Enter Office Phone Number"
+            formControlName="office_number"
+            [class.is-invalid]="
+              f['office_number'].touched && f['office_number'].invalid
+            "
+          />
+          <div
+            *ngIf="
+              f['office_number'].touched &&
+              f['office_number'].errors?.['required']
+            "
+            class="text-danger"
+          >
+            Office Phone Number is required
+          </div>
 
-        <div
-          *ngIf="f['office_number'].touched && f['office_number'].errors?.['pattern']"
-          class="text-danger"
-        >
-          Enter valid 10 digit phone
+          <div
+            *ngIf="
+              f['office_number'].touched &&
+              f['office_number'].errors?.['pattern']
+            "
+            class="text-danger"
+          >
+            Enter valid 10 digit phone
+          </div>
         </div>
-      </div>
-      <div class="col-md-6">
-        <h6 class="fw-bold p-1">GST Number <span class="text-danger">*</span></h6>
-        <input
-          class="form-control"
-          placeholder="Enter GST Number"
-          formControlName="gst_number"
-          [class.is-invalid]="f['gst_number'].touched && f['gst_number'].invalid"
-        />
-        <div
-          *ngIf="f['gst_number'].touched && f['gst_number'].errors?.['required']"
-          class="text-danger"
-        >
-          GST Number is required
-        </div>
+        <div class="col-md-6">
+          <h6 class="fw-bold p-1">
+            GST Number <span class="text-danger">*</span>
+          </h6>
+          <input
+            class="form-control"
+            placeholder="Enter GST Number"
+            formControlName="gst_number"
+            [class.is-invalid]="
+              f['gst_number'].touched && f['gst_number'].invalid
+            "
+          />
+          <div
+            *ngIf="
+              f['gst_number'].touched && f['gst_number'].errors?.['required']
+            "
+            class="text-danger"
+          >
+            GST Number is required
+          </div>
 
-        <!-- <div
+          <!-- <div
           *ngIf="f['gst_number'].touched && f['gst_number'].errors?.['pattern']"
           class="text-danger"
         >
           Enter valid 10 digit phone
         </div> -->
-      </div>
-       <div class="col-md-6">
-        <h6 class="fw-bold p-1">Status <span class="text-danger">*</span></h6>
-        <select class="form-select" formControlName="status">
-          <option [ngValue]="1">Active</option>
-          <option [ngValue]="0">Inactive</option>
-        </select>
-        <div
-          *ngIf="f['status'].touched && f['status'].invalid"
-          class="text-danger"
-        >
-          Status is required
         </div>
-      </div>
-      <div class="col-md-">
-        <h6 class="fw-bold p-1">Address <span class="text-danger">*</span></h6>
-        <textarea
-          rows="2"
-          class="form-control"
-          placeholder="Enter Address"
-          formControlName="address"
-          [class.is-invalid]="f['address'].touched && f['address'].invalid"
-        ></textarea>
-
-        <div
-          *ngIf="f['address'].touched && f['address'].invalid"
-          class="text-danger"
-        >
-          Address is required
-        </div>
-      </div>
-       <div class="col-md-">
-        <h6 class="fw-bold p-1">Notes <span class="text-danger">*</span></h6>
-        <textarea
-          rows="2"
-          class="form-control"
-          placeholder="Enter Notes"
-          formControlName="notes"
-          [class.is-invalid]="f['notes'].touched && f['notes'].invalid"
-        ></textarea>
-
-        <div
-          *ngIf="f['notes'].touched && f['notes'].invalid"
-          class="text-danger"
-        >
-          Notes is required
-        </div>
-      </div>
-      <!-- <div class="col-12" formArrayName="items">
-        <div class="d-flex justify-content-between align-items-center mt-2">
-          <h6 class="fw-bold mb-0">Items</h6>
-          <button
-            type="button"
-            class="btn btn-animation save-button btn-sm items-add-btn"
-            (click)="addItem()"
-            [disabled]="type === 'View'"
+        <div class="col-md-6">
+          <h6 class="fw-bold p-1">Status <span class="text-danger">*</span></h6>
+          <select class="form-select" formControlName="status">
+            <option [ngValue]="1">Active</option>
+            <option [ngValue]="0">Inactive</option>
+          </select>
+          <div
+            *ngIf="f['status'].touched && f['status'].invalid"
+            class="text-danger"
           >
-            + Add
-          </button>
-        </div>
-        <div
-          class="row g-3 align-items-end border rounded p-3 mt-2"
-          *ngFor="let item of items.controls; let i = index"
-          [formGroupName]="i"
-        >
-          <div class="col-md-4">
-            <h6 class="fw-bold p-1">
-              Item Name <span class="text-danger">*</span>
-            </h6>
-            <input
-              class="form-control"
-              formControlName="item_name"
-              [class.is-invalid]="f['name'].touched && f['name'].invalid"
-            />
-
-            <div
-              *ngIf="
-                item.get('item_name')?.touched && item.get('item_name')?.invalid
-              "
-              class="text-danger"
-            >
-              Item Name is required
-            </div>
-          </div>
-          <div class="col-md-4">
-            <h6 class="fw-bold p-1">
-              Quantity <span class="text-danger">*</span>
-            </h6>
-            <input
-              type="number"
-              class="form-control"
-              formControlName="quantity"
-              [class.is-invalid]="f['name'].touched && f['name'].invalid"
-            />
-            <div
-              *ngIf="
-                item.get('quantity')?.touched &&
-                item.get('quantity')?.errors?.['required']
-              "
-              class="text-danger"
-            >
-              Quantity is required
-            </div>
-
-            <div
-              *ngIf="
-                item.get('quantity')?.touched &&
-                item.get('quantity')?.errors?.['min']
-              "
-              class="text-danger"
-            >
-              Quantity must be greater than 0
-            </div>
-          </div>
-          <div class="col-md-3">
-            <h6 class="fw-bold p-1">Date <span class="text-danger">*</span></h6>
-            <input
-              class="form-control"
-              placeholder="DD/MM/YYYY"
-              formControlName="date"
-              (input)="formatDate($event, i)"
-              [class.is-invalid]="f['name'].touched && f['name'].invalid"
-            />
-            <div
-              *ngIf="
-                item.get('date')?.touched &&
-                item.get('date')?.errors?.['required']
-              "
-              class="text-danger"
-            >
-              Date is required
-            </div>
-
-            <div
-              *ngIf="
-                item.get('date')?.touched &&
-                item.get('date')?.errors?.['pattern']
-              "
-              class="text-danger"
-            >
-              Date must be DD/MM/YYYY
-            </div>
-          </div>
-          <div class="col-md-1 text-end">
-            <i
-              class="fa fa-trash delete-icon"
-              (click)="deleteItem(i)"
-              [class.disabled]="type === 'View' || items.length === 1"
-              title="Delete"
-            >
-            </i>
+            Status is required
           </div>
         </div>
-      </div> -->
-     
-    </div>
-  </form>
-</div>
+        <div class="col-md-">
+          <h6 class="fw-bold p-1">
+            Address <span class="text-danger">*</span>
+          </h6>
+          <textarea
+            rows="2"
+            class="form-control"
+            placeholder="Enter Address"
+            formControlName="address"
+            [class.is-invalid]="f['address'].touched && f['address'].invalid"
+          ></textarea>
 
-<div class="modal-footer">
-  <button class="btn btn-secondary" (click)="cancel()">Cancel</button>
+          <div
+            *ngIf="f['address'].touched && f['address'].invalid"
+            class="text-danger"
+          >
+            Address is required
+          </div>
+        </div>
+        <div class="col-md-">
+          <h6 class="fw-bold p-1">Notes <span class="text-danger">*</span></h6>
+          <textarea
+            rows="2"
+            class="form-control"
+            placeholder="Enter Notes"
+            formControlName="notes"
+            [class.is-invalid]="f['notes'].touched && f['notes'].invalid"
+          ></textarea>
 
-  @if (this.type != "View") {
-    <button
-      class="btn btn-animation save-button"
-      [disabled]="isSubmitting"
-      (click)="save()"
-    >
-      {{
-        isSubmitting
-          ? type === "Edit"
-            ? "Updating..."
-            : "Saving..."
-          : type === "Edit"
-            ? "Update"
-            : "Save"
-      }}
-    </button>
-  }
-</div>
+          <div
+            *ngIf="f['notes'].touched && f['notes'].invalid"
+            class="text-danger"
+          >
+            Notes is required
+          </div>
+        </div>
+        <div class="col-12" formArrayName="items">
+          <div class="d-flex justify-content-between align-items-center mt-2">
+            <h6 class="fw-bold mb-0">Items</h6>
+            <button
+              type="button"
+              class="btn btn-animation save-button btn-sm items-add-btn"
+              (click)="addItem()"
+              [disabled]="type === 'View'"
+            >
+              + Add
+            </button>
+          </div>
+          <div
+            class="row g-3 align-items-end border rounded p-3 mt-2"
+            *ngFor="let item of items.controls; let i = index"
+            [formGroupName]="i"
+          >
+            <div class="col-md-4">
+              <h6 class="fw-bold p-1">Store List</h6>
+              <ng-select
+                [items]="storesList"
+                bindLabel="store_name"
+                bindValue="store_id"
+                formControlName="store_id"
+                placeholder="Select Store"
+              >
+              </ng-select>
+            </div>
+
+            <div class="col-md-4">
+              <h6 class="fw-bold p-1">
+                Item Name <span class="text-danger">*</span>
+              </h6>
+
+              <ng-select
+                [items]="rowData"
+                bindLabel="item_name"
+                [bindValue]="'item_id'" 
+                formControlName="item_id"
+                placeholder="Select Item"
+                (change)="onItemChange($event, i)"
+              >
+              </ng-select>
+
+              <div
+                *ngIf="
+                  item.get('item_id')?.touched && item.get('item_id')?.invalid
+                "
+                class="text-danger"
+              >
+                Item is required
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <h6 class="fw-bold p-1">Quantity</h6>
+              <input
+                type="number"
+                class="form-control"
+                formControlName="quantity"
+                readonly
+              />
+            </div>
+
+            <div class="col-md-2">
+              <h6 class="fw-bold p-1">Units</h6>
+              <input type="text" class="form-control" formControlName="units" />
+            </div>
+            <div class="col-md-2">
+              <h6 class="fw-bold p-1">Price</h6>
+              <input
+                type="number"
+                class="form-control"
+                formControlName="price"
+                placeholder="Enter Price"
+                
+              />
+            </div>
+            <div
+              *ngIf="item.get('price')?.touched && item.get('price')?.invalid"
+              class="text-danger"
+            >
+              Price is required
+            </div>
+
+            <div class="col-md-1 text-end">
+              <i
+                class="fa fa-trash delete-icon"
+                (click)="deleteItem(i)"
+                [class.disabled]="type === 'View' || items.length === 1"
+              ></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn btn-secondary" (click)="cancel()">Cancel</button>
+
+    @if (this.type != "View") {
+      <button
+        class="btn btn-animation save-button"
+        [disabled]="isSubmitting"
+        (click)="save()"
+      >
+        {{
+          isSubmitting
+            ? type === "Edit"
+              ? "Updating..."
+              : "Saving..."
+            : type === "Edit"
+              ? "Update"
+              : "Save"
+        }}
+      </button>
+    }
+  </div>
 </div>

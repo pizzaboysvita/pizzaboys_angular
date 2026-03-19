@@ -34,8 +34,8 @@
     <div *ngIf="activeTab === 'login' || activeTab === 'logout'">
       <div class="time-header">
         <div class="date-part">
-          <span class="year fs-5">{{ selectedDate?.day }} {{ selectedDate?.year }} {{ getMonthName(selectedDate?.month) }}</span
-          ><br />
+          <span class="date fs-5">{{ selectedDate?.day }} {{ selectedDate?.year }} {{ getMonthName(selectedDate?.month) }}</span
+          >
          
         </div>
 
@@ -67,9 +67,11 @@
         </div>
       </div>
 
-      <div *ngIf="!showClock" class="calendar-show">
+      <div *ngIf="!showClock" class="calendar-wrapper">
         <ngb-datepicker
           [(ngModel)]="selectedDate"
+          [ngModelOptions]="{standalone:true}"
+          [startDate]="selectedDate"
           (dateSelect)="selectDate($event)"
         ></ngb-datepicker>
       </div>
@@ -78,11 +80,13 @@
         <div class="clock-label">Select {{ pickingMode | titlecase }}</div>
         <div class="clock">
           <div class="center-dot"></div>
+                   <div style="position: absolute; color: red;">X</div> 
+
           <div
             *ngFor="
               let n of pickingMode === 'hours' ? hourNumbers : minuteNumbers
             "
-            class="minute"
+            class="clock-num"
             [style.transform]="
               'rotate(' +
               n.angle +
@@ -97,6 +101,7 @@
             class="hand"
             [style.transform]="'rotate(' + handAngle + 'deg)'"
             (mousedown)="startDrag($event)"
+             (touchstart)="startTouch($event)"
           >
             <div class="hand-circle"></div>
           </div>
