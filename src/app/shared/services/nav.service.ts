@@ -298,7 +298,7 @@ export class NavService {
       level: 1,
       title:"Timesheet",
       path: "/timesheet/view-timesheet",
-      icon: "ri-truck-line",
+      icon: "ri-timer-line",
       type: "link",
       active: false,
     },
