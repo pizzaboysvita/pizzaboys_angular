@@ -54,6 +54,7 @@ export class AddSuppliersComponent implements OnInit {
       contact_person: ["", Validators.required],
       gst_number: ["", Validators.required],
       notes: ["", Validators.required],
+      store_id: ["", Validators.required],
     });
 
     this.loadInventory();
@@ -67,16 +68,15 @@ export class AddSuppliersComponent implements OnInit {
       this.addItem();
     }
 
-   if (this.type === "View") {
-  this.addSupplierForm.disable({ emitEvent: false });
+    if (this.type === "View") {
+      this.addSupplierForm.disable({ emitEvent: false });
 
- 
-  this.items.controls.forEach((group: any) => {
-    group.enable({ emitEvent: false }); 
-    group.get('quantity')?.disable();
-    group.get('units')?.disable();
-  });
-}
+      this.items.controls.forEach((group: any) => {
+        group.enable({ emitEvent: false });
+        group.get("quantity")?.disable();
+        group.get("unit")?.disable();
+      });
+    }
   }
 
   get f() {
@@ -87,18 +87,25 @@ export class AddSuppliersComponent implements OnInit {
     return this.addSupplierForm.get("items") as FormArray;
   }
 
-  loadInventory(): void {
-    this.apis.getApi(AppConstants.api_end_points.inventory).subscribe({
-      next: (res: any) => {
-        this.rowData = res.data || res;
-        console.log("Inventory loaded:", this.rowData);
-      },
-      error: (err) => {
-        console.error("Error loading inventory:", err);
-        Swal.fire("Error", "Failed to load inventory", "error");
-      },
-    });
-  }
+ loadInventory(): void {
+  this.apis.getApi(AppConstants.api_end_points.inventory).subscribe({
+    next: (res: any) => {
+      const data = res.data || res;
+
+     
+      this.rowData = data.map((supplier: any) => ({
+        ...supplier,
+        items: supplier.items.filter((item: any) => item.status == 1)
+      }));
+
+      console.log("Filtered Inventory:", this.rowData);
+    },
+    error: (err) => {
+      console.error("Error loading inventory:", err);
+      Swal.fire("Error", "Failed to load inventory", "error");
+    },
+  });
+}
   storeList() {
     this.apis
       .getApi(AppConstants.api_end_points.store_list)
@@ -116,18 +123,17 @@ export class AddSuppliersComponent implements OnInit {
 
     itemGroup.patchValue({
       item_id: selected.item_id,
-      store_id: selected.store_id,
+
       quantity: Number(selected.quantity) || 0,
-      units: selected.unit || "",
-       price: selected.price || 0
+      unit: selected.unit || "",
+      price: selected.price || 0,
     });
   }
   createItem(): FormGroup {
     return this.fb.group({
-      store_id: ["", Validators.required],
       item_id: ["", Validators.required],
       quantity: [{ value: 0, disabled: true }, Validators.required],
-      units: [{ value: "", disabled: true }, Validators.required],
+      unit: [{ value: "", disabled: true }, Validators.required],
       price: ["", [Validators.required, Validators.min(0)]],
     });
   }
@@ -145,7 +151,6 @@ export class AddSuppliersComponent implements OnInit {
 
     const { items, ...supplier } = this.editData;
 
-    
     this.addSupplierForm.patchValue({
       supplier_name: supplier.supplier_name,
       email_id: supplier.email_id,
@@ -156,9 +161,9 @@ export class AddSuppliersComponent implements OnInit {
       contact_person: supplier.contact_person,
       gst_number: supplier.gst_number,
       notes: supplier.notes,
+      store_id: supplier.store_id,
     });
 
-    
     this.items.clear();
 
     if (items && items.length > 0) {
@@ -166,11 +171,10 @@ export class AddSuppliersComponent implements OnInit {
         const group = this.createItem();
 
         group.patchValue({
-          store_id: item.store_id,
           item_id: item.item_id,
           quantity: item.quantity,
-          units: item.units,
-         price: Number(item.price) || 0
+          unit: item.unit,
+          price: Number(item.price) || 0,
         });
 
         this.items.push(group);
@@ -187,6 +191,10 @@ export class AddSuppliersComponent implements OnInit {
 
     this.items.at(index).get("date")?.setValue(value, { emitEvent: false });
   }
+  getItemName(item_id: any): string {
+    const found = this.rowData?.find((x: any) => x.item_id === item_id);
+    return found ? found.item_name : "";
+  }
 
   save(): void {
     if (this.addSupplierForm.invalid) {
@@ -195,38 +203,64 @@ export class AddSuppliersComponent implements OnInit {
     }
 
     const formValue = this.addSupplierForm.getRawValue();
-    const firstItem = formValue.items?.[0];
 
-    if (!firstItem) {
-      Swal.fire("Error", "Please select an item", "error");
-      return;
+    const items = (formValue.items || []).map((item: any) => ({
+      item_id: item.item_id ?? 0,
+      item_name: this.getItemName(item.item_id),
+      quantity: item.quantity ?? 0,
+      unit: item.unit ?? "",
+      price: item.price ?? 0,
+    }));
+
+    let req_body: any;
+
+    if (this.type === "Edit") {
+      req_body = {
+        action: "UPDATE",
+        supplier_id: this.editData?.supplier_id,
+
+        supplier_name: formValue.supplier_name?.trim(),
+        office_number: formValue.office_number?.trim(),
+        contact_person: formValue.contact_person?.trim(),
+        phone_number: formValue.phone_number?.trim(),
+        email_id: formValue.email_id?.trim(),
+        address: formValue.address?.trim(),
+        gst_number: formValue.gst_number?.trim() || "",
+
+        status: formValue.status ? 1 : 0,
+        notes: formValue.notes?.trim(),
+        store_id: formValue.store_id ?? 0,
+
+        items: items,
+
+        created_by: null,
+        updated_by: 1001,
+      };
+    } else {
+      req_body = {
+        action: "INSERT",
+        supplier_id: null,
+
+        supplier_name: formValue.supplier_name?.trim(),
+        office_number: formValue.office_number?.trim(),
+        contact_person: formValue.contact_person?.trim(),
+        phone_number: formValue.phone_number?.trim(),
+        email_id: formValue.email_id?.trim(),
+        address: formValue.address?.trim(),
+        gst_number: formValue.gst_number?.trim() || "",
+        store_id: formValue.store_id ?? 0,
+
+        status: formValue.status ? 1 : 0,
+        notes: formValue.notes?.trim(),
+
+        items: items,
+
+        created_by: 1001,
+        updated_by: null,
+      };
     }
 
-    const req_body: any = {
-      action: this.type === "Edit" ? "UPDATE" : "INSERT",
-      supplier_id: this.type === "Edit" ? this.editData?.supplier_id : null,
-      supplier_name: formValue.supplier_name?.trim(),
-      office_number: formValue.office_number?.trim(),
-      contact_person: formValue.contact_person?.trim(),
-      phone_number: formValue.phone_number?.trim(),
-      email_id: formValue.email_id?.trim(),
-      address: formValue.address?.trim(),
-      gst_number: formValue.gst_number?.trim(),
-      status: formValue.status ? 1 : 0,
-      notes: formValue.notes?.trim(),
-
-      store_id: firstItem.store_id,
-      item_id: firstItem.item_id,
-      quantity: firstItem.quantity,
-      units: firstItem.units,
-      price: firstItem.price,
-
-      created_by: this.type === "Add" ? 1001 : null,
-      updated_by: this.type === "Edit" ? 1001 : null,
-    };
-
-    console.log("Request Body:", req_body);
-    console.log("GST number", formValue.gst_number);
+    console.log("Final Request Body:", req_body);
 
     this.isSubmitting = true;
 
@@ -238,9 +272,13 @@ export class AddSuppliersComponent implements OnInit {
             Swal.fire("Success!", data.message, "success").then(() => {
               this.activeModal.close(true);
             });
+          } else {
+            Swal.fire("Error", data.message || "Something went wrong", "error");
           }
         },
-        error: () => {
+        error: (err) => {
+          console.error("API Error:", err);
+          Swal.fire("Error", "Failed to save supplier", "error");
           this.isSubmitting = false;
         },
         complete: () => {

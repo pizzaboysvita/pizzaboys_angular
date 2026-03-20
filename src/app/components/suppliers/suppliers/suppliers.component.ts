@@ -21,6 +21,7 @@ import { ApisService } from "../../../shared/services/apis.service";
 import { AppComponent } from "../../../app.component";
 import { AppConstants } from "../../../app.constants";
 import Swal from "sweetalert2";
+import { SessionStorageService } from "../../../shared/services/session-storage.service";
 @Component({
   selector: "app-suppliers",
   standalone: true,
@@ -43,6 +44,7 @@ export class SuppliersComponent {
   supplierList: any[] = [];
   supplierData: any;
   supplierDataBackup: any[] = [];
+   storesList: any;
 
   selectedItem: any;
 
@@ -96,6 +98,14 @@ export class SuppliersComponent {
       unSortIcon: true,
       suppressMenu: true,
     },
+    {
+      headerName: "Status",
+      field: "status",
+      sortable: true,
+      tooltipField: "status",
+      unSortIcon: true,
+      suppressMenu: true,
+    },
     // {
     //   headerName: 'Item',
     //   field: 'item',
@@ -128,12 +138,14 @@ export class SuppliersComponent {
     private fb: FormBuilder,
     private modalService: NgbModal,
     private apis: ApisService,
+    private sessionStorageService: SessionStorageService,
   ) {}
 
   ngOnInit(): void {
     this.initForm();
-    this.loadSuppliers();
+
     this.loadSupplierData();
+    this.storeList()
   }
 
   initForm() {
@@ -142,61 +154,50 @@ export class SuppliersComponent {
     });
   }
 
-  loadSuppliers() {
-    this.supplierList = [
-      { supplier_id: -1, supplier_name: "All Suppliers" },
-      { supplier_id: 201, supplier_name: "ABC Traders" },
-      { supplier_id: 202, supplier_name: "Fresh Farms Ltd" },
-    ];
-  }
-
   loadSupplierData() {
-    // this.supplierData = [
-    //   {
-    //     supplier_id: 201,
-    //     supplier_name: 'John Doe',
-    //     email: 'john@mail.com',
-    //     provider: 'ABC Traders',
-    //     address: 'Chennai, Tamil Nadu',
-    //     item: 'Vegetables'
-    //   },
-    //   {
-    //     supplier_id: 202,
-    //     supplier_name: 'Ravi Kumar',
-    //     email: 'ravi@mail.com',
-    //     provider: 'Fresh Farms Ltd',
-    //     address: 'Bangalore, Karnataka',
-    //     item: 'Fruits'
-    //   }
-    // ];
-
-    // this.supplierDataBackup = [...this.supplierData];
-
     this.apis
-      .getApi(AppConstants.api_end_points.suppliers)
+      .getApi(AppConstants.api_end_points.suppliers_get)
       .subscribe((data: any) => {
         if (data) {
-          data.data.forEach((element: any) => {
-            element.status =
+          const formattedData = data.data.map((element: any) => ({
+            ...element,
+            status:
               element.status == 1
                 ? "Active"
                 : element.status == 0
                   ? "Inactive"
                   : element.status == 2
                     ? "Pending"
-                    : "";
+                    : "",
+          }));
 
-            console.log("Suppliers List", data);
-          });
+          const activeSuppliers = formattedData.filter(
+            (item: any) => item.status === "Active",
+          );
 
-          ((this.supplierData = data.data),
-            (this.supplierDataBackup = data.data));
+          this.supplierData = activeSuppliers;
+
+          this.supplierDataBackup = activeSuppliers;
+
+          this.supplierList = [
+            { supplier_id: -1, supplier_name: "All Suppliers" },
+            ...activeSuppliers,
+          ];
         }
       });
   }
-
+ storeList() {
+    this.apis
+      .getApi(AppConstants.api_end_points.store_list)
+      .subscribe((data) => {
+        if (data) {
+          this.storesList = data;
+          console.log("Store list loaded:", this.storesList);
+        }
+      });
+  }
   delete(data: any) {
-    this.supplierData = data;
+    this.selectedItem = data;
     this.openConfirmPopup();
   }
 
@@ -210,6 +211,9 @@ export class SuppliersComponent {
     const req_body = {
       action: "DELETE",
       supplier_id: this.selectedItem.supplier_id,
+      updated_by: JSON.parse(
+        this.sessionStorageService.getsessionStorage("loginDetails") as any,
+      ).user.user_id,
     };
 
     console.log("Selected Item:", this.selectedItem);
@@ -226,7 +230,7 @@ export class SuppliersComponent {
             icon: "success",
             width: "350px",
           }).then(() => {
-            this.loadSupplierData(); 
+            this.loadSupplierData();
           });
         }
       });

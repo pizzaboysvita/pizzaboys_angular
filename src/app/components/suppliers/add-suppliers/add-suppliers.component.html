@@ -192,6 +192,17 @@
             Status is required
           </div>
         </div>
+        <div class="col-md-4">
+          <h6 class="fw-bold p-1">Store List</h6>
+          <ng-select
+            [items]="storesList"
+            bindLabel="store_name"
+            bindValue="store_id"
+            formControlName="store_id"
+            placeholder="Select Store"
+          >
+          </ng-select>
+        </div>
         <div class="col-md-">
           <h6 class="fw-bold p-1">
             Address <span class="text-danger">*</span>
@@ -246,18 +257,6 @@
             [formGroupName]="i"
           >
             <div class="col-md-4">
-              <h6 class="fw-bold p-1">Store List</h6>
-              <ng-select
-                [items]="storesList"
-                bindLabel="store_name"
-                bindValue="store_id"
-                formControlName="store_id"
-                placeholder="Select Store"
-              >
-              </ng-select>
-            </div>
-
-            <div class="col-md-4">
               <h6 class="fw-bold p-1">
                 Item Name <span class="text-danger">*</span>
               </h6>
@@ -265,7 +264,7 @@
               <ng-select
                 [items]="rowData"
                 bindLabel="item_name"
-                [bindValue]="'item_id'" 
+                [bindValue]="'item_id'"
                 formControlName="item_id"
                 placeholder="Select Item"
                 (change)="onItemChange($event, i)"
@@ -294,7 +293,7 @@
 
             <div class="col-md-2">
               <h6 class="fw-bold p-1">Units</h6>
-              <input type="text" class="form-control" formControlName="units" />
+              <input type="text" class="form-control" formControlName="unit" />
             </div>
             <div class="col-md-2">
               <h6 class="fw-bold p-1">Price</h6>
@@ -303,7 +302,6 @@
                 class="form-control"
                 formControlName="price"
                 placeholder="Enter Price"
-                
               />
             </div>
             <div

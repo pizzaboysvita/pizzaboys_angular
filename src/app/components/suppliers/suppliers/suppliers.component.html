@@ -15,21 +15,23 @@
       <div class="accordion-body">
         <form [formGroup]="suppliersForm">
           <div class="row align-items-end">
-            <div class="col-xl-6 d-flex align-items-end gap-1">
-              <div class="flex-grow-1">
-                <h6 class="fw-bold">Supplier Name</h6>
+            
+            <div class="col-xl-6 d-flex align-items-end gap-2">
+              <div style="flex: 1">
+                <h6 class="fw-bold mb-1">Supplier Name</h6>
                 <ng-select
-  [items]="supplierData"
-  bindLabel="supplier_name"
-  bindValue="supplier_id"
-  formControlName="supplier_name"
-  [clearable]="true"
->
-</ng-select>
+                  class="custom-ng-select"
+                  [items]="supplierList"
+                  bindLabel="supplier_name"
+                  bindValue="supplier_id"
+                  formControlName="supplier_name"
+                  [clearable]="true"
+                >
+                </ng-select>
               </div>
 
               <button
-                class="btn btn-animation save-button"
+                class="btn btn-animation save-button align-btn"
                 type="button"
                 (click)="search()"
               >
@@ -37,7 +39,7 @@
               </button>
 
               <button
-                class="btn btn-animation reset-button"
+                class="btn btn-animation reset-button align-btn"
                 type="button"
                 (click)="reset()"
               >

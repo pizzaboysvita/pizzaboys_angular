@@ -18,6 +18,8 @@ export const AppConstants = {
     cashflow: "/api/cashflow",
     promoCode:"/api/promocode",
     suppliers:"/api/supplier",
+    suppliers_get:"/api/suppliers/search",
+    suppliers_search: '/api/suppliers/search',
    
 
     // ✅ Banner and Media Endpoints
